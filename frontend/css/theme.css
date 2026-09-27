@@ -1,0 +1,347 @@
+/* frontend/css/theme.css */
+/* ============================================================
+   SHATOVA — GLOBAL THEME (Light + Dark)
+   Applied on every page via <link rel="stylesheet" href="/css/theme.css">
+   ============================================================ */
+
+/* ---------- LIGHT (default) ---------- */
+:root {
+  --bg-page: #fbfcfb;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #f6f8f7;
+  --bg-elevated: #ffffff;
+
+  --text-main: #0a0a0a;
+  --text-sub: #1f2937;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+
+  --border-soft: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+
+  --brand-green: #0a4534;
+  --brand-green-light: #0e5a41;
+  --brand-green-dark: #052b20;
+  --gold: #f5c542;
+
+  --app-zoom: 1;
+}
+
+/* ---------- DARK ---------- */
+html[data-theme="dark"] {
+  --bg-page: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-surface-2: #1a1a1a;
+  --bg-elevated: #1f1f1f;
+
+  --text-main: #f9fafb;
+  --text-sub: #e5e7eb;
+  --text-muted: #9ca3af;
+  --text-light: #6b7280;
+
+  --border-soft: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --brand-green: #22c55e;
+  --brand-green-light: #4ade80;
+  --brand-green-dark: #16a34a;
+
+  color-scheme: dark;
+  background: var(--bg-page);
+}
+
+html[data-theme="dark"] body {
+  background: var(--bg-page) !important;
+  color: var(--text-main);
+}
+
+/* ============================================================
+   HEADER — dark
+   ============================================================ */
+html[data-theme="dark"] .home-topbar {
+  background: rgba(20, 20, 20, 0.95) !important;
+  border-bottom-color: var(--border-soft) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+html[data-theme="dark"] .brand-name {
+  background: linear-gradient(135deg, #ffffff, #d1d5db) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+html[data-theme="dark"] .icon-btn,
+html[data-theme="dark"] .header-icon {
+  background: #1f1f1f !important;
+  border-color: var(--border-soft) !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .icon-btn:hover,
+html[data-theme="dark"] .header-icon:hover {
+  background: #262626 !important;
+  border-color: var(--border-default) !important;
+}
+
+/* ============================================================
+   BOTTOM NAV — dark
+   ============================================================ */
+html[data-theme="dark"] .bottom-nav {
+  background: rgba(20, 20, 20, 0.98) !important;
+  border-top-color: var(--border-soft) !important;
+  box-shadow: 0 -4px 20px -8px rgba(0, 0, 0, 0.5);
+}
+html[data-theme="dark"] .nav-item { color: #6b7280; }
+html[data-theme="dark"] .nav-item:hover {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.08);
+}
+html[data-theme="dark"] .nav-item.active { color: #22c55e; }
+
+/* ============================================================
+   CARDS — dark surface
+   ============================================================ */
+html[data-theme="dark"] .category-card,
+html[data-theme="dark"] .bundle-card,
+html[data-theme="dark"] .selected-bundle,
+html[data-theme="dark"] .form-card,
+html[data-theme="dark"] .info-box,
+html[data-theme="dark"] .pay-option,
+html[data-theme="dark"] .total-box,
+html[data-theme="dark"] .profile-card,
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .svc-card,
+html[data-theme="dark"] .tx-list,
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .auth-container,
+html[data-theme="dark"] .wallet-card,
+html[data-theme="dark"] .balance-card,
+html[data-theme="dark"] .bundles-empty,
+html[data-theme="dark"] .terms-box {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-soft) !important;
+  color: var(--text-main);
+}
+
+html[data-theme="dark"] .category-card:hover,
+html[data-theme="dark"] .bundle-card:hover,
+html[data-theme="dark"] .pay-option:hover,
+html[data-theme="dark"] .svc-card:hover,
+html[data-theme="dark"] .profile-card:hover,
+html[data-theme="dark"] .settings-row.link:hover {
+  border-color: var(--border-default) !important;
+  background: var(--bg-surface) !important;
+}
+
+html[data-theme="dark"] .back-btn {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-soft) !important;
+  color: var(--brand-green) !important;
+}
+html[data-theme="dark"] .back-btn:hover { background: var(--bg-surface-2) !important; }
+
+/* ============================================================
+   TEXT — dark
+   ============================================================ */
+html[data-theme="dark"] .page-title,
+html[data-theme="dark"] .cat-name,
+html[data-theme="dark"] .bundle-name,
+html[data-theme="dark"] .bundle-price,
+html[data-theme="dark"] .sb-name,
+html[data-theme="dark"] .sb-price,
+html[data-theme="dark"] .total-amount,
+html[data-theme="dark"] .pay-option-name,
+html[data-theme="dark"] .row-title,
+html[data-theme="dark"] .profile-name,
+html[data-theme="dark"] .svc-title,
+html[data-theme="dark"] .tx-title,
+html[data-theme="dark"] .greet-name,
+html[data-theme="dark"] .balance-amount,
+html[data-theme="dark"] .auth-headline h1,
+html[data-theme="dark"] .success-title,
+html[data-theme="dark"] .section-head h3,
+html[data-theme="dark"] .legal-title,
+html[data-theme="dark"] .panel h2,
+html[data-theme="dark"] .panel p strong,
+html[data-theme="dark"] .empty-title {
+  color: var(--text-main) !important;
+}
+
+html[data-theme="dark"] .page-eyebrow,
+html[data-theme="dark"] .cat-sub,
+html[data-theme="dark"] .bundle-meta,
+html[data-theme="dark"] .sb-meta,
+html[data-theme="dark"] .total-label,
+html[data-theme="dark"] .pay-option-sub,
+html[data-theme="dark"] .row-sub,
+html[data-theme="dark"] .profile-email,
+html[data-theme="dark"] .svc-sub,
+html[data-theme="dark"] .tx-sub,
+html[data-theme="dark"] .greet-line,
+html[data-theme="dark"] .balance-sub,
+html[data-theme="dark"] .auth-sub,
+html[data-theme="dark"] .success-text,
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .panel p,
+html[data-theme="dark"] .panel ul li,
+html[data-theme="dark"] .empty-text,
+html[data-theme="dark"] .terms-text {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .panel h2 {
+  border-top-color: var(--border-soft) !important;
+}
+
+html[data-theme="dark"] .legal-footer {
+  border-top-color: var(--border-soft) !important;
+}
+html[data-theme="dark"] .legal-footer p { color: var(--text-muted); }
+
+/* ============================================================
+   INPUTS — dark
+   ============================================================ */
+html[data-theme="dark"] .field-input,
+html[data-theme="dark"] .phone-input,
+html[data-theme="dark"] .mode-switch,
+html[data-theme="dark"] .segment {
+  background: var(--bg-surface-2) !important;
+  border-color: var(--border-soft) !important;
+  color: var(--text-main) !important;
+}
+html[data-theme="dark"] .field-input::placeholder,
+html[data-theme="dark"] .phone-input::placeholder {
+  color: var(--text-light);
+}
+html[data-theme="dark"] .field-input:hover,
+html[data-theme="dark"] .phone-input:hover {
+  border-color: var(--border-default) !important;
+}
+html[data-theme="dark"] .field-input:focus,
+html[data-theme="dark"] .phone-input:focus {
+  background: #1a1a1a !important;
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15) !important;
+}
+html[data-theme="dark"] .field-icon,
+html[data-theme="dark"] .field-toggle { color: var(--text-light); }
+html[data-theme="dark"] .field-wrap:focus-within .field-icon { color: #22c55e; }
+
+html[data-theme="dark"] .pick-btn {
+  background: var(--bg-surface-2) !important;
+  border-color: var(--border-soft) !important;
+  color: var(--brand-green) !important;
+}
+html[data-theme="dark"] .pick-btn:hover { background: var(--bg-elevated) !important; }
+
+/* ============================================================
+   NETWORK CHIPS — dark
+   ============================================================ */
+html[data-theme="dark"] .network-chip {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-soft) !important;
+}
+html[data-theme="dark"] .network-chip.active {
+  background: var(--bg-surface) !important;
+  border-color: var(--brand-green) !important;
+}
+html[data-theme="dark"] .network-chip:hover {
+  border-color: var(--border-default) !important;
+}
+
+/* ============================================================
+   TRANSACTIONS — dark
+   ============================================================ */
+html[data-theme="dark"] .tx-item { border-bottom-color: var(--border-soft); }
+html[data-theme="dark"] .tx-item:hover { background: var(--bg-surface-2); }
+
+/* ============================================================
+   SETTINGS rows — dark
+   ============================================================ */
+html[data-theme="dark"] .settings-row {
+  border-bottom-color: var(--border-soft) !important;
+}
+html[data-theme="dark"] .settings-row.link:hover {
+  background: var(--bg-surface-2) !important;
+}
+html[data-theme="dark"] .row-icon {
+  background: var(--bg-surface-2) !important;
+  color: var(--brand-green) !important;
+}
+html[data-theme="dark"] .row-icon.danger {
+  background: rgba(220, 38, 38, 0.15) !important;
+  color: #f87171 !important;
+}
+html[data-theme="dark"] .settings-row.danger .row-title { color: #f87171 !important; }
+html[data-theme="dark"] .settings-row.danger:hover { background: rgba(220, 38, 38, 0.08) !important; }
+html[data-theme="dark"] .profile-edit {
+  background: var(--bg-surface-2) !important;
+  color: var(--text-main) !important;
+}
+
+/* ============================================================
+   SWITCH — dark
+   ============================================================ */
+html[data-theme="dark"] .switch-slider { background: #333333; }
+html[data-theme="dark"] .switch input:checked + .switch-slider { background: #22c55e; }
+
+/* ============================================================
+   AUTH pages — dark
+   ============================================================ */
+html[data-theme="dark"] .auth-page { background: var(--bg-page) !important; }
+html[data-theme="dark"] .auth-brand-name {
+  background: linear-gradient(135deg, #ffffff, #d1d5db) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+html[data-theme="dark"] .auth-headline h1 .accent {
+  background: linear-gradient(135deg, #22c55e, #4ade80) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+html[data-theme="dark"] .btn-primary {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
+  color: #0a0a0a !important;
+}
+html[data-theme="dark"] .btn-primary .spinner-inline {
+  border-color: rgba(10, 10, 10, 0.25);
+  border-top-color: #0a0a0a;
+}
+
+/* ============================================================
+   HOME services — dark
+   ============================================================ */
+html[data-theme="dark"] .svc-icon.data         { background: rgba(37, 99, 235, 0.15) !important; color: #60a5fa !important; box-shadow: none; }
+html[data-theme="dark"] .svc-icon.airtime      { background: rgba(67, 56, 202, 0.15) !important; color: #a5b4fc !important; box-shadow: none; }
+html[data-theme="dark"] .svc-icon.bills        { background: rgba(124, 58, 237, 0.15) !important; color: #c4b5fd !important; box-shadow: none; }
+html[data-theme="dark"] .svc-icon.cables       { background: rgba(109, 40, 217, 0.15) !important; color: #d8b4fe !important; box-shadow: none; }
+html[data-theme="dark"] .svc-icon.exam         { background: rgba(67, 56, 202, 0.15) !important; color: #a5b4fc !important; box-shadow: none; }
+html[data-theme="dark"] .svc-icon.airtime-cash { background: rgba(124, 58, 237, 0.15) !important; color: #c4b5fd !important; box-shadow: none; }
+
+/* ============================================================
+   LEGAL / TERMS page — dark
+   ============================================================ */
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .legal-card,
+html[data-theme="dark"] .tabs,
+html[data-theme="dark"] .accept-bar {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-soft) !important;
+}
+html[data-theme="dark"] .tab-btn.active {
+  background: var(--bg-surface-2) !important;
+  color: var(--brand-green) !important;
+}
+html[data-theme="dark"] .callout {
+  background: rgba(34, 197, 94, 0.08) !important;
+}
+html[data-theme="dark"] .callout.gold {
+  background: rgba(245, 197, 66, 0.08) !important;
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+html[data-theme="dark"] .page-loader { background: var(--bg-page); }
+html[data-theme="dark"] .hidden { display: none !important; }

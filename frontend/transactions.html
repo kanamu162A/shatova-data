@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Transaction History - Shatova</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/transactions.css">
+  <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body class="tx-page">
+
+  <div id="app-header"></div>
+
+  <main class="tx-app">
+
+    <!-- HEADER -->
+    <header class="tx-header">
+      <div class="tx-header-left">
+        <span class="tx-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6h16M4 12h10M4 18h16"/>
+          </svg>
+        </span>
+        <h1 class="tx-header-title">Transaction History</h1>
+        <span class="tx-header-count" id="txCount">0</span>
+      </div>
+      <button type="button" class="tx-header-close" onclick="location.href='/home.html'" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- TYPE DROPDOWN -->
+    <div class="tx-toolbar">
+      <button type="button" class="tx-dropdown" id="typeDropdownBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="tx-dropdown-funnel">
+          <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+        </svg>
+        <span class="tx-dropdown-label" id="typeDropdownLabel">All Types</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="tx-searchbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tx-searchbar-ico">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        id="txSearchInput"
+        class="tx-searchbar-input"
+        placeholder="Search reference, amount, bank…"
+        autocomplete="off"
+      >
+      <button type="button" class="tx-searchbar-clear hidden" id="txSearchClear" aria-label="Clear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- STATUS CHIPS -->
+    <div class="tx-chips" id="txStatusChips">
+      <button type="button" class="tx-chip active" data-status="all">
+        <span class="tx-chip-dot tx-chip-dot-all"></span>
+        All
+      </button>
+      <button type="button" class="tx-chip" data-status="success">
+        <span class="tx-chip-dot tx-chip-dot-success"></span>
+        Successful
+      </button>
+      <button type="button" class="tx-chip" data-status="processing">
+        <span class="tx-chip-dot tx-chip-dot-pending"></span>
+        Pending
+      </button>
+      <button type="button" class="tx-chip" data-status="failed">
+        <span class="tx-chip-dot tx-chip-dot-failed"></span>
+        Failed
+      </button>
+    </div>
+
+    <!-- LIST -->
+    <section class="tx-list-section">
+
+      <div class="tx-list" id="txSkeleton">
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
+      </div>
+
+      <div class="tx-list hidden" id="txReal"></div>
+
+      <div class="tx-empty hidden" id="txEmpty">
+        <div class="tx-empty-emoji">📭</div>
+        <div class="tx-empty-title" id="txEmptyTitle">No transactions yet</div>
+        <div class="tx-empty-text" id="txEmptyText">Your transaction history will appear here.</div>
+      </div>
+
+    </section>
+
+    <!-- PAGINATION -->
+    <div class="tx-pagination hidden" id="txPagination">
+      <button type="button" class="pg-btn" id="pgPrev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div class="pg-numbers" id="pgNumbers"></div>
+      <button type="button" class="pg-btn" id="pgNext" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- FILTER FAB -->
+  <button type="button" class="tx-filter-fab" id="txFilterFab">
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+    </svg>
+    <span>Filter</span>
+    <span class="tx-filter-badge hidden" id="txFilterBadge">0</span>
+  </button>
+
+  <!-- FILTER BOTTOM SHEET -->
+  <div class="filter-backdrop hidden" id="filterSheet">
+    <div class="filter-sheet" role="dialog" aria-modal="true">
+      <div class="filter-grip"></div>
+
+      <div class="filter-head">
+        <div class="filter-head-left">
+          <span class="filter-head-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+            </svg>
+          </span>
+          <h2 class="filter-head-title">Filter Transactions</h2>
+        </div>
+        <button type="button" class="filter-head-close" id="filterClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="filter-body" id="filterBody">
+
+        <button type="button" class="filter-card" data-value="all">
+          <span class="filter-card-icon filter-card-icon-all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">All Transactions</span>
+            <span class="filter-card-sub">Show everything</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+
+        <button type="button" class="filter-card" data-value="deposits">
+          <span class="filter-card-icon filter-card-icon-deposit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Deposits</span>
+            <span class="filter-card-sub">Money added to wallet</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+
+        <button type="button" class="filter-card" data-value="withdrawals">
+          <span class="filter-card-icon filter-card-icon-withdraw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Withdrawals</span>
+            <span class="filter-card-sub">Money withdrawn</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+
+        <!-- ⭐ REPLACED: Refunded (was Orders) -->
+        <button type="button" class="filter-card" data-value="refunded">
+          <span class="filter-card-icon filter-card-icon-refund">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Refunded</span>
+            <span class="filter-card-sub">Money returned to wallet</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+
+        <button type="button" class="filter-card" data-value="transfers">
+          <span class="filter-card-icon filter-card-icon-transfer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8h13l-3-3M20 16H7l3 3"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Transfers</span>
+            <span class="filter-card-sub">Money transfers</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+
+      </div>
+
+      <div class="filter-foot">
+        <button type="button" class="filter-btn filter-btn-reset" id="filterReset">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          Reset
+        </button>
+        <button type="button" class="filter-btn filter-btn-apply" id="filterApply">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 13l4 4L19 7"/>
+          </svg>
+          Apply
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECEIPT MODAL -->
+  <div class="txm-backdrop hidden" id="txModal">
+    <div class="txm-sheet" role="dialog" aria-modal="true">
+      <div class="txm-grip"></div>
+
+      <div class="txm-head">
+        <div class="txm-head-title">Transaction Receipt</div>
+        <button type="button" class="txm-close" id="txmClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="txm-body">
+        <div class="txm-hero" id="txmHero">
+          <div class="txm-hero-icon" id="txmHeroIcon"></div>
+          <div class="txm-hero-title" id="txmTitle">Transaction</div>
+          <div class="txm-hero-amount" id="txmAmount">₦0.00</div>
+          <div class="txm-status" id="txmStatus">Successful</div>
+        </div>
+
+        <div class="txm-grid">
+          <div class="txm-cell">
+            <div class="txm-cell-label">Recipient</div>
+            <div class="txm-cell-value" id="txmRecipient">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Network</div>
+            <div class="txm-cell-value" id="txmNetwork">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Type</div>
+            <div class="txm-cell-value" id="txmType">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Date &amp; Time</div>
+            <div class="txm-cell-value" id="txmDate">—</div>
+          </div>
+          <div class="txm-cell txm-cell-wide">
+            <div class="txm-cell-label">Reference</div>
+            <div class="txm-cell-row">
+              <div class="txm-cell-value txm-mono" id="txmReference">—</div>
+              <button type="button" class="txm-copy" id="txmCopy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="txm-cell txm-cell-wide">
+            <div class="txm-cell-label">Remark</div>
+            <div class="txm-cell-value txm-remark" id="txmRemark">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="txm-foot">
+        <div class="txm-foot-row">
+          <button type="button" class="txm-btn txm-btn-ghost" id="txmShare">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            Share
+          </button>
+          <button type="button" class="txm-btn txm-btn-ghost" id="txmPrint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <path d="M6 14h12v8H6z"/>
+            </svg>
+            Print
+          </button>
+        </div>
+        <button type="button" class="txm-btn txm-btn-primary" id="txmDone">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ SCRIPTS — order matters ═══════════ -->
+  <!-- 1. auth-guard first: no token → /login.html, no PIN → /pin.html -->
+  <script src="/js/auth-guard.js"></script>
+
+  <!-- 2. api base -->
+  <script src="/js/api.js"></script>
+
+  <!-- 3. page logic -->
+  <script type="module" src="/js/components.js"></script>
+  <script type="module" src="/js/transactions.js"></script>
+
+  <script>
+    (function () {
+      const H = 46;
+      function freeze() {
+        const el = document.querySelector('.tx-header');
+        if (el) el.style.setProperty('top', H + 'px', 'important');
+      }
+      window.addEventListener('load', freeze);
+      window.addEventListener('resize', freeze);
+      freeze();
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes, viewport-fit=cover">
+<title>Pricing · Shatova Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     RESET + DESIGN TOKENS — ultra-slim, professional, mature
+     ═══════════════════════════════════════════════════════════ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    /* Brand */
+    --brand: #0a4534;
+    --brand-600: #0d5942;
+    --brand-500: #0f6d51;
+    --brand-tint: #e8f1ee;
+    --brand-tint-strong: #d5e8e0;
+
+    /* Semantic */
+    --success: #059669;
+    --success-tint: #ecfdf5;
+    --success-border: #a7f3d0;
+
+    --danger: #dc2626;
+    --danger-tint: #fef2f2;
+    --danger-border: #fecaca;
+
+    --warning: #d97706;
+    --warning-tint: #fffbeb;
+    --warning-border: #fde68a;
+
+    --info: #2563eb;
+    --info-tint: #eff6ff;
+    --info-border: #bfdbfe;
+
+    /* Surfaces */
+    --bg: #f8fafc;
+    --bg-elevated: #ffffff;
+    --bg-sunken: #f1f5f9;
+    --bg-overlay: rgba(15, 23, 42, 0.5);
+
+    /* Foreground */
+    --fg: #0f172a;
+    --fg-secondary: #475569;
+    --fg-muted: #94a3b8;
+    --fg-subtle: #cbd5e1;
+
+    /* Borders - Crisp and defined */
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --border-focus: #0a4534;
+    --border-subtle: #f1f5f9;
+
+    /* Shadows — professional, crisp */
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+
+    /* Motion */
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Radii - Sharper, more mature */
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-lg: 8px;
+    --r-xl: 10px;
+    --r-2xl: 12px;
+    --r-full: 999px;
+  }
+
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
+    letter-spacing: -0.011em;
+    min-height: 100vh;
+    line-height: 1.4;
+  }
+
+  button { font-family: inherit; letter-spacing: inherit; }
+  input, select { font-family: inherit; letter-spacing: inherit; }
+
+  /* ═══════════════════════════════════════════════════════════
+     APP BAR
+     ═══════════════════════════════════════════════════════════ */
+  .appbar {
+    height: 52px;
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+  }
+
+  .appbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .logo-mark {
+    width: 26px; height: 26px;
+    border-radius: var(--r-md);
+    background: var(--brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    box-shadow: 0 1px 2px rgba(10, 69, 52, 0.2);
+    flex-shrink: 0;
+  }
+
+  .appbar-titles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .appbar-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .appbar-sub {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--fg-muted);
+    line-height: 1.2;
+    margin-top: 1px;
+  }
+
+  .appbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     BUTTONS — unified system
+     ═══════════════════════════════════════════════════════════ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: var(--r-md);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--fg-secondary);
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all 0.15s var(--ease);
+    box-shadow: var(--shadow-xs);
+    font-family: inherit;
+  }
+  .btn:hover {
+    background: var(--bg-sunken);
+    border-color: var(--border-strong);
+    color: var(--fg);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn:active {
+    transform: translateY(0.5px);
+    box-shadow: var(--shadow-xs);
+  }
+  .btn i { font-size: 10px; opacity: 0.85; }
+  .btn.btn-icon-only {
+    width: 30px;
+    padding: 0;
+  }
+  .btn.primary {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(10, 69, 52, 0.2);
+  }
+  .btn.primary:hover {
+    background: var(--brand-600);
+    border-color: var(--brand-600);
+    color: #fff;
+  }
+  .btn.active {
+    background: var(--brand-tint);
+    border-color: var(--brand-tint-strong);
+    color: var(--brand);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     LAYOUT
+     ═══════════════════════════════════════════════════════════ */
+  .content {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 16px 20px 100px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     STATS — ultra-slim, bordered, shadowed
+     ═══════════════════════════════════════════════════════════ */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .stat {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 10px 12px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .stat:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+
+  .stat-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 3px;
+  }
+  .stat-label i {
+    font-size: 9px;
+    color: var(--fg-subtle);
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-value.success { color: var(--success); }
+  .stat-value.warning { color: var(--warning); }
+  .stat-value.danger  { color: var(--danger); }
+
+  /* ═══════════════════════════════════════════════════════════
+     FILTER PANEL
+     ═══════════════════════════════════════════════════════════ */
+  .filters {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 2px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .filters:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    flex-wrap: wrap;
+    min-height: 42px;
+  }
+  .filter-row + .filter-row {
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .filter-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    width: 72px;
+  }
+  .filter-label i {
+    font-size: 9px;
+    color: var(--fg-subtle);
+  }
+
+  .search-field {
+    flex: 1;
+    min-width: 180px;
+    position: relative;
+  }
+  .search-field i {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: var(--fg-muted);
+    pointer-events: none;
+    transition: color 0.15s ease;
+  }
+  .search-field input {
+    width: 100%;
+    height: 30px;
+    padding: 0 8px 0 26px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 11.5px;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.15s ease;
+  }
+  .search-field input::placeholder { color: var(--fg-muted); font-weight: 400; }
+  .search-field input:hover { border-color: var(--border-strong); }
+  .search-field input:focus {
+    background: var(--bg-elevated);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px rgba(10, 69, 52, 0.08);
+  }
+  .search-field:focus-within i { color: var(--brand); }
+
+  .select {
+    height: 30px;
+    padding: 0 24px 0 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background-color: var(--bg);
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.15s ease;
+    min-width: 140px;
+  }
+  .select:hover { border-color: var(--border-strong); color: var(--fg); }
+  .select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px rgba(10, 69, 52, 0.08);
+    background-color: var(--bg-elevated);
+  }
+
+  /* Chips */
+  .chips {
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 8px;
+    height: 24px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s var(--ease);
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+  .chip:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    box-shadow: var(--shadow-xs);
+  }
+  .chip.active {
+    background: var(--fg);
+    border-color: var(--fg);
+    color: #fff;
+  }
+
+  .chip .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+  .chip.active .dot { opacity: 1; }
+  .chip .dot.mtn    { background: #f59e0b; }
+  .chip .dot.airtel { background: #dc2626; }
+  .chip .dot.glo    { background: #16a34a; }
+  .chip .dot.t2     { background: #ea580c; }
+
+  .chip .count {
+    font-size: 9.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    padding: 1px 4px;
+    min-width: 16px;
+    text-align: center;
+    border-radius: var(--r-full);
+    background: var(--bg-sunken);
+    color: var(--fg-muted);
+    transition: all 0.15s ease;
+  }
+  .chip:hover .count { background: var(--bg-elevated); color: var(--fg-secondary); }
+  .chip.active .count {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     BULK TOOLBAR
+     ═══════════════════════════════════════════════════════════ */
+  .bulk {
+    display: none;
+    background: var(--bg-elevated);
+    border: 1px solid var(--warning-border);
+    border-radius: var(--r-md);
+    padding: 8px 10px;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+    animation: slideDown 0.2s var(--ease-out);
+  }
+  .bulk.show { display: flex; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .bulk-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    background: var(--warning-tint);
+    border: 1px solid var(--warning-border);
+    border-radius: var(--r-sm);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--warning);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .bulk-tag i { font-size: 9px; }
+
+  .bulk-sep {
+    width: 1px;
+    height: 18px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .bulk .select { min-width: 160px; height: 26px; font-size: 11px; }
+
+  .bulk-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px;
+    background: var(--bg-sunken);
+    border-radius: var(--r-md);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .bulk-input {
+    height: 22px;
+    padding: 0 6px;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    background: var(--bg-elevated);
+    color: var(--fg);
+    font-size: 11px;
+    font-weight: 600;
+    text-align: right;
+    outline: none;
+    width: 60px;
+    transition: all 0.15s ease;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+  }
+  .bulk-input::-webkit-outer-spin-button,
+  .bulk-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .bulk-input::placeholder { color: var(--fg-subtle); font-weight: 500; }
+  .bulk-input:focus {
+    border-color: var(--warning);
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.12);
+  }
+
+  .bulk-btn {
+    height: 22px;
+    padding: 0 6px;
+    border-radius: var(--r-sm);
+    border: none;
+    background: transparent;
+    color: var(--fg-secondary);
+    font-size: 10.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .bulk-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--warning);
+    box-shadow: var(--shadow-xs);
+  }
+  .bulk-btn i { font-size: 8px; }
+
+  .bulk-btn.plain {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--fg-secondary);
+  }
+  .bulk-btn.plain:hover {
+    border-color: var(--danger-border);
+    color: var(--danger);
+    background: var(--danger-tint);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     GROUP SECTIONS — ultra-slim, bordered, shadowed
+     ═══════════════════════════════════════════════════════════ */
+  .group {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    content-visibility: auto;
+    contain-intrinsic-size: 240px;
+  }
+  .group:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+
+  .group-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-elevated);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.14s ease;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .group-head:hover { background: var(--bg); }
+  .group-head::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+    height: 1px;
+    background: var(--border-subtle);
+  }
+  .group.collapsed .group-head::after { display: none; }
+
+  .group-chevron {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-muted);
+    font-size: 8px;
+    transition: transform 0.2s var(--ease);
+    flex-shrink: 0;
+  }
+  .group.collapsed .group-chevron { transform: rotate(-90deg); }
+
+  .group-accent {
+    width: 3px;
+    height: 10px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+    flex-shrink: 0;
+  }
+
+  .group-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .group-count {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  .group-spacer { flex: 1; }
+
+  .group-tools {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .quick-set {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 6px;
+    background: var(--bg-sunken);
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.15s ease;
+  }
+  .quick-set:focus-within {
+    background: var(--bg-elevated);
+    border-color: var(--brand-tint-strong);
+    box-shadow: 0 0 0 2px rgba(10, 69, 52, 0.06);
+  }
+  .quick-set-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    white-space: nowrap;
+  }
+  .quick-set input {
+    width: 48px;
+    height: 18px;
+    padding: 0 4px;
+    border: none;
+    background: transparent;
+    color: var(--fg);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-align: right;
+    outline: none;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+  }
+  .quick-set input::-webkit-outer-spin-button,
+  .quick-set input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .quick-set input::placeholder { color: var(--fg-subtle); font-weight: 500; }
+  .quick-set button {
+    height: 18px;
+    padding: 0 6px;
+    border: none;
+    border-radius: var(--r-sm);
+    background: var(--fg);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .quick-set button:hover { background: var(--brand); }
+
+  .group-body {
+    padding: 10px 12px;
+  }
+  .group.collapsed .group-body { display: none; }
+
+  /* ═══════════════════════════════════════════════════════════
+     PLAN CARDS — ultra-slim, bordered, shadowed
+     ═══════════════════════════════════════════════════════════ */
+  .plan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 6px;
+  }
+
+  .plan {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 8px 10px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    animation: fadeUp 0.2s var(--ease-out) both;
+  }
+  .plan:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+  .plan.dirty {
+    border-color: var(--warning);
+    background: linear-gradient(180deg, var(--warning-tint) 0%, var(--bg-elevated) 60%);
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.08), var(--shadow-sm);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .plan-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    gap: 6px;
+  }
+
+  .plan-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--fg-secondary);
+  }
+  .plan-brand .brand-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.5);
+  }
+  .plan-brand.mtn    .brand-dot { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .plan-brand.airtel .brand-dot { background: linear-gradient(135deg, #f87171, #dc2626); }
+  .plan-brand.glo    .brand-dot { background: linear-gradient(135deg, #4ade80, #16a34a); }
+  .plan-brand.t2     .brand-dot { background: linear-gradient(135deg, #fb923c, #ea580c); }
+
+  .plan-status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 2px var(--success-tint);
+    flex-shrink: 0;
+  }
+  .plan-status-dot.inactive {
+    background: var(--fg-subtle);
+    box-shadow: 0 0 0 2px var(--bg-sunken);
+  }
+
+  .plan-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 1px;
+  }
+
+  .plan-id {
+    font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--fg-muted);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 6px;
+  }
+
+  /* Price row */
+  .plan-prices {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 6px;
+    align-items: center;
+    padding: 4px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-sm);
+    margin-bottom: 6px;
+  }
+  .price-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .price-col.right { text-align: right; }
+  .price-label {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .price-value {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+  .price-value.cost { color: var(--fg-secondary); }
+  .price-value.sell { color: var(--brand); }
+  .price-arrow {
+    color: var(--fg-subtle);
+    font-size: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Profit pill */
+  .profit-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+    border-radius: var(--r-sm);
+    background: var(--success-tint);
+    border: 1px solid var(--success-border);
+    margin-bottom: 6px;
+    gap: 6px;
+  }
+  .profit-pill.neg {
+    background: var(--danger-tint);
+    border-color: var(--danger-border);
+  }
+  .profit-pill.zero {
+    background: var(--bg-sunken);
+    border-color: var(--border-subtle);
+  }
+  .profit-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--success);
+  }
+  .profit-pill.neg .profit-label { color: var(--danger); }
+  .profit-pill.zero .profit-label { color: var(--fg-muted); }
+  .profit-value {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--success);
+    font-variant-numeric: tabular-nums;
+  }
+  .profit-pill.neg .profit-value { color: var(--danger); }
+  .profit-pill.zero .profit-value { color: var(--fg-muted); }
+
+  /* Plan edit row */
+  .plan-edit {
+    display: flex;
+    gap: 4px;
+    align-items: stretch;
+  }
+  .plan-edit .input-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .plan-edit .input-wrap .currency {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--fg-muted);
+    pointer-events: none;
+    transition: color 0.15s ease;
+  }
+  .plan-input {
+    width: 100%;
+    height: 28px;
+    padding: 0 6px 0 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    outline: none;
+    transition: all 0.15s ease;
+    -moz-appearance: textfield;
+  }
+  .plan-input::-webkit-outer-spin-button,
+  .plan-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .plan-input:hover { border-color: var(--border-strong); }
+  .plan-input:focus {
+    background: var(--bg-elevated);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px rgba(10, 69, 52, 0.08);
+  }
+  .input-wrap:focus-within .currency { color: var(--brand); }
+  .plan.dirty .plan-input {
+    border-color: var(--warning);
+    background: var(--bg-elevated);
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.08);
+  }
+
+  .plan-save {
+    height: 28px;
+    padding: 0 10px;
+    border-radius: var(--r-sm);
+    border: none;
+    background: var(--fg);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: inherit;
+    transition: all 0.15s var(--ease);
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+  }
+  .plan-save:hover:not(:disabled) {
+    background: var(--brand);
+    box-shadow: 0 2px 6px -1px rgba(10, 69, 52, 0.3);
+  }
+  .plan-save:disabled { opacity: 0.5; cursor: not-allowed; }
+  .plan-save.saving {
+    background: var(--warning);
+  }
+  .plan-save.saved {
+    background: var(--success);
+  }
+  .plan-save i { font-size: 9px; }
+
+  /* ═══════════════════════════════════════════════════════════
+     TABLE VIEW
+     ═══════════════════════════════════════════════════════════ */
+  .table-wrap {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: none;
+    margin-bottom: 8px;
+  }
+  .table-wrap.show { display: block; }
+
+  table.tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+  }
+
+  table.tbl thead th {
+    position: sticky;
+    top: 52px;
+    background: var(--bg);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    padding: 6px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    z-index: 5;
+  }
+  table.tbl thead th.right  { text-align: right; }
+  table.tbl thead th.center { text-align: center; }
+
+  table.tbl tr.group-row td {
+    padding: 0;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 84px;
+    z-index: 4;
+  }
+  table.tbl tr.group-row .group-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    flex-wrap: wrap;
+  }
+  table.tbl tr.group-row .chev {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-muted);
+    font-size: 8px;
+    transition: transform 0.2s var(--ease);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  table.tbl tr.group-row.collapsed .chev { transform: rotate(-90deg); }
+  table.tbl tr.group-row .accent {
+    width: 3px;
+    height: 8px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+    flex-shrink: 0;
+  }
+  table.tbl tr.group-row .gname {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+  table.tbl tr.group-row .gcount {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  table.tbl tr.group-row .gspacer { flex: 1; }
+  table.tbl tr.group-row .gmini {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 6px;
+    background: var(--bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-sm);
+  }
+  table.tbl tr.group-row .gmini label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--fg-muted);
+  }
+  table.tbl tr.group-row .gmini input {
+    width: 48px;
+    height: 18px;
+    padding: 0 4px;
+    border: none;
+    background: transparent;
+    color: var(--fg);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-align: right;
+    outline: none;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+  }
+  table.tbl tr.group-row .gmini input::-webkit-outer-spin-button,
+  table.tbl tr.group-row .gmini input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  table.tbl tr.group-row .gmini button {
+    height: 18px;
+    padding: 0 6px;
+    border: none;
+    border-radius: var(--r-sm);
+    background: var(--fg);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all 0.15s ease;
+  }
+  table.tbl tr.group-row .gmini button:hover { background: var(--brand); }
+
+  table.tbl tbody tr.item {
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.14s ease;
+  }
+  table.tbl tbody tr.item:hover { background: var(--bg); }
+  table.tbl tbody tr.item.dirty { background: linear-gradient(90deg, var(--warning-tint) 0%, transparent 8%); }
+  table.tbl tbody tr.item.hidden { display: none; }
+
+  table.tbl td {
+    padding: 6px 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  table.tbl td.right  { text-align: right; }
+  table.tbl td.center { text-align: center; }
+  table.tbl td.mono {
+    font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+    font-size: 10px;
+    color: var(--fg-muted);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: var(--r-sm);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    background: var(--bg-sunken);
+    color: var(--fg-secondary);
+  }
+  .tag .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .tag.mtn    .dot { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .tag.airtel .dot { background: linear-gradient(135deg, #f87171, #dc2626); }
+  .tag.glo    .dot { background: linear-gradient(135deg, #4ade80, #16a34a); }
+  .tag.t2     .dot { background: linear-gradient(135deg, #fb923c, #ea580c); }
+
+  .money {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.005em;
+    font-size: 11.5px;
+  }
+  .money.muted { color: var(--fg-muted); }
+  .money.positive { color: var(--success); font-weight: 700; }
+  .money.negative { color: var(--danger); font-weight: 700; }
+
+  .tbl-input {
+    width: 76px;
+    height: 26px;
+    padding: 0 6px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-align: right;
+    outline: none;
+    font-variant-numeric: tabular-nums;
+    transition: all 0.15s ease;
+    -moz-appearance: textfield;
+  }
+  .tbl-input::-webkit-outer-spin-button,
+  .tbl-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .tbl-input:hover { border-color: var(--border-strong); }
+  .tbl-input:focus {
+    background: var(--bg-elevated);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px rgba(10, 69, 52, 0.08);
+  }
+  .tbl-input.dirty {
+    border-color: var(--warning);
+    background: var(--bg-elevated);
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.08);
+  }
+
+  .reset-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--fg-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    transition: all 0.15s ease;
+  }
+  .reset-btn:hover {
+    background: var(--danger-tint);
+    color: var(--danger);
+    border-color: var(--danger-border);
+  }
+  .reset-btn.hidden { visibility: hidden; }
+
+  /* ═══════════════════════════════════════════════════════════
+     FLOATING SAVE BAR
+     ═══════════════════════════════════════════════════════════ */
+  .save-dock {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translate(-50%, 160%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px 6px 14px;
+    background: var(--fg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xl);
+    color: #fff;
+    transition: transform 0.3s var(--ease-out), opacity 0.2s ease;
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+  }
+  .save-dock.show {
+    transform: translate(-50%, 0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dock-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .dock-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--r-sm);
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #fbbf24;
+    flex-shrink: 0;
+  }
+  .dock-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .dock-count {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .dock-count b { color: #fbbf24; font-weight: 800; }
+  .dock-sub {
+    font-size: 9.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .dock-btn {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+    letter-spacing: -0.005em;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .dock-btn i { font-size: 9px; }
+  .dock-btn.ghost {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .dock-btn.ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+  }
+  .dock-btn.save {
+    background: #fff;
+    color: var(--fg);
+  }
+  .dock-btn.save:hover:not(:disabled) {
+    background: var(--bg-sunken);
+  }
+  .dock-btn.save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     EMPTY / LOADING / ERROR
+     ═══════════════════════════════════════════════════════════ */
+  .state-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 40px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .state-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 12px;
+    border-radius: var(--r-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: var(--bg-sunken);
+    color: var(--fg-muted);
+  }
+  .state-icon.error {
+    background: var(--danger-tint);
+    color: var(--danger);
+  }
+  .state-icon.warn {
+    background: var(--warning-tint);
+    color: var(--warning);
+  }
+
+  .state-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .state-desc {
+    font-size: 11.5px;
+    color: var(--fg-secondary);
+    line-height: 1.5;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .state-desc code {
+    font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+    font-size: 10.5px;
+    padding: 2px 4px;
+    border-radius: var(--r-sm);
+    background: var(--bg-sunken);
+    color: var(--fg-secondary);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    border-top-color: var(--brand);
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ═══════════════════════════════════════════════════════════
+     TOASTS
+     ═══════════════════════════════════════════════════════════ */
+  .toasts {
+    position: fixed;
+    bottom: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    width: calc(100% - 32px);
+    max-width: 340px;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .toast {
+    padding: 8px 12px;
+    border-radius: var(--r-sm);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--fg);
+    box-shadow: var(--shadow-lg);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastIn 0.25s var(--ease-out);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .toast.success { background: var(--success); }
+  .toast.error   { background: var(--danger); }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     RESPONSIVE
+     ═══════════════════════════════════════════════════════════ */
+  @media (max-width: 900px) {
+    .content { padding: 12px 16px 100px; }
+    .appbar { padding: 0 16px; }
+    table.tbl thead th:nth-child(3),
+    table.tbl td:nth-child(3) { display: none; }
+    table.tbl thead th,
+    table.tbl td { padding: 6px 8px; }
+    .tbl-input { width: 68px; }
+    .plan-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    .content { padding: 10px 12px 120px; }
+    .appbar { padding: 0 12px; height: 48px; }
+    .appbar-title { font-size: 12px; }
+    .appbar-sub { font-size: 9.5px; }
+    .appbar-actions .btn .btn-label { display: none; }
+    .appbar-actions .btn { padding: 0 8px; }
+
+    .stats { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 10px; }
+    .stat { padding: 8px 10px; border-radius: var(--r-sm); }
+    .stat-value { font-size: 16px; }
+    .stat-label { font-size: 8.5px; }
+
+    .filters { padding: 1px; margin-bottom: 8px; border-radius: var(--r-sm); }
+    .filter-row { padding: 6px; gap: 6px; }
+    .filter-label { width: 100%; margin-bottom: 2px; }
+
+    .search-field { min-width: 100%; }
+    .select { width: 100%; min-width: 0; }
+
+    .bulk { padding: 6px; gap: 4px; }
+    .bulk .bulk-sep { display: none; }
+    .bulk .select { width: 100%; min-width: 0; }
+    .bulk-group { flex: 1; }
+
+    .group { border-radius: var(--r-sm); }
+    .group-head { padding: 8px 10px; gap: 6px; }
+    .group-body { padding: 8px 10px; }
+    .group-tools .quick-set-label { display: none; }
+    .plan-grid { grid-template-columns: 1fr; gap: 4px; }
+
+    .save-dock {
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      transform: translateY(160%);
+      max-width: none;
+      padding: 6px;
+      flex-wrap: wrap;
+      gap: 6px;
+      border-radius: var(--r-md);
+    }
+    .save-dock.show { transform: translateY(0); }
+    .dock-info { flex: 1; }
+    .dock-sub { display: none; }
+    .dock-btn { flex-shrink: 0; }
+    .dock-btn.ghost { padding: 0 8px; }
+    .dock-btn.save { padding: 0 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- APP BAR -->
+<header class="appbar">
+  <div class="appbar-left">
+    <div class="logo-mark"><i class="fas fa-tags"></i></div>
+    <div class="appbar-titles">
+      <div class="appbar-title">Pricing</div>
+      <div class="appbar-sub" id="appbarSub">Loading…</div>
+    </div>
+  </div>
+  <div class="appbar-actions">
+    <button class="btn" id="bulkToggle" title="Toggle bulk edit (Ctrl+B)">
+      <i class="fas fa-layer-group"></i>
+      <span class="btn-label">Bulk Edit</span>
+    </button>
+    <button class="btn btn-icon-only" id="refreshBtn" title="Refresh">
+      <i class="fas fa-rotate"></i>
+    </button>
+    <a class="btn btn-icon-only" href="/admin.html" title="Back to dashboard">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+  </div>
+</header>
+
+<main class="content">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label"><i class="fas fa-layer-group"></i> Total Plans</div>
+      <div class="stat-value" id="sTotal">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label"><i class="fas fa-circle-check"></i> Active</div>
+      <div class="stat-value success" id="sActive">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label"><i class="fas fa-folder"></i> Categories</div>
+      <div class="stat-value" id="sCategories">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label"><i class="fas fa-arrow-trend-up"></i> Avg Profit</div>
+      <div class="stat-value success" id="sAvgProfit">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label"><i class="fas fa-triangle-exclamation"></i> Loss Plans</div>
+      <div class="stat-value" id="sLoss">—</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="filter-row">
+      <div class="search-field">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search by name or plan ID…" autocomplete="off">
+      </div>
+      <select class="select" id="sortSelect">
+        <option value="provider">Default: Network → Category → Price</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="profit-desc">Profit: High → Low</option>
+        <option value="profit-asc">Profit: Low → High</option>
+        <option value="name-asc">Name: A → Z</option>
+      </select>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label"><i class="fas fa-signal"></i> Network</span>
+      <div class="chips" id="networkChips"></div>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label"><i class="fas fa-folder"></i> Category</span>
+      <div class="chips" id="categoryChips"></div>
+    </div>
+  </div>
+
+  <!-- BULK TOOLBAR -->
+  <div class="bulk" id="bulkBar">
+    <span class="bulk-tag"><i class="fas fa-bolt"></i> Bulk</span>
+
+    <select class="select" id="bulkScope">
+      <option value="visible">Visible plans</option>
+      <option value="category">Current category</option>
+      <option value="network">Current network</option>
+      <option value="all">All plans</option>
+    </select>
+
+    <div class="bulk-sep"></div>
+
+    <div class="bulk-group">
+      <input type="number" class="bulk-input" id="bulkAdd" placeholder="+0" step="0.01">
+      <button class="bulk-btn" id="applyAdd"><i class="fas fa-plus"></i> Add</button>
+    </div>
+
+    <div class="bulk-group">
+      <input type="number" class="bulk-input" id="bulkPct" placeholder="0%" step="0.01">
+      <button class="bulk-btn" id="applyPct"><i class="fas fa-percent"></i> Percent</button>
+    </div>
+
+    <div class="bulk-group">
+      <input type="number" class="bulk-input" id="bulkSet" placeholder="₦0" step="0.01">
+      <button class="bulk-btn" id="applySet"><i class="fas fa-equals"></i> Set</button>
+    </div>
+
+    <button class="bulk-btn plain" id="resetAll">
+      <i class="fas fa-rotate-left"></i> Reset
+    </button>
+  </div>
+
+  <!-- PLACEHOLDER (state) -->
+  <div id="placeholder"></div>
+
+  <!-- CARD VIEW -->
+  <div id="cardView"></div>
+
+  <!-- TABLE VIEW -->
+  <div class="table-wrap" id="tableView">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th style="width:80px">Network</th>
+          <th>Plan</th>
+          <th>Plan ID</th>
+          <th class="right" style="width:90px">Cost</th>
+          <th class="right" style="width:100px">Current Sell</th>
+          <th class="right" style="width:120px">New Sell</th>
+          <th class="right" style="width:100px">Profit</th>
+          <th class="center" style="width:40px"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- SAVE DOCK -->
+<div class="save-dock" id="saveDock">
+  <div class="dock-info">
+    <div class="dock-icon"><i class="fas fa-pen"></i></div>
+    <div class="dock-text">
+      <div class="dock-count"><b id="changeCount">0</b> change<span id="changeCountPlural">s</span> pending</div>
+      <div class="dock-sub">Review, then save all at once</div>
+    </div>
+  </div>
+  <button class="dock-btn ghost" id="discardBtn">
+    <i class="fas fa-xmark"></i> Discard
+  </button>
+  <button class="dock-btn save" id="saveAllBtn">
+    <i class="fas fa-check"></i> Save all
+  </button>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="/js/api.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  const API_BASE = window.API_BASE;
+  if (!API_BASE) {
+    document.getElementById('placeholder').innerHTML = `
+      <div class="state-card">
+        <div class="state-icon error"><i class="fas fa-plug"></i></div>
+        <div class="state-title">Configuration missing</div>
+        <div class="state-desc"><code>window.API_BASE</code> is not set. Make sure <code>/js/api.js</code> loads first.</div>
+      </div>`;
+    return;
+  }
+
+  const ENDPOINT = `${API_BASE}/admin/data-plans`;
+  const $  = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  if (!token) { window.location.href = '/login.html'; return; }
+
+  console.log('[pricing] API base =', API_BASE);
+  console.log('[pricing] endpoint =', ENDPOINT);
+
+  const state = {
+    plans: [],
+    working: new Map(),
+    network: 'all',
+    category: 'all',
+    search: '',
+    sort: 'provider',
+    bulkMode: false,
+    savingAll: false,
+    collapsed: new Set(),
+  };
+
+  /* ═══════════════════════════════════════════════
+     HELPERS
+     ═══════════════════════════════════════════════ */
+  function money(n) {
+    return '₦' + Number(n || 0).toLocaleString('en-NG', {
+      minimumFractionDigits: 0, maximumFractionDigits: 0,
+    });
+  }
+  function moneyFull(n) {
+    return '₦' + Number(n || 0).toLocaleString('en-NG', {
+      minimumFractionDigits: 0, maximumFractionDigits: 2,
+    });
+  }
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function netClass(p) {
+    const k = String(p || '').toLowerCase();
+    if (k.includes('mtn'))    return 'mtn';
+    if (k.includes('airtel')) return 'airtel';
+    if (k.includes('glo'))    return 'glo';
+    if (k.includes('9mobile') || k.includes('t2') || k.includes('etisalat')) return 't2';
+    return '';
+  }
+  function netKey(p) {
+    const k = String(p || '').toLowerCase();
+    if (k.includes('mtn'))    return 'mtn';
+    if (k.includes('airtel')) return 'airtel';
+    if (k.includes('glo'))    return 'glo';
+    if (k.includes('9mobile') || k.includes('t2') || k.includes('etisalat')) return 't2';
+    return 'other';
+  }
+  function netLabel(k) {
+    return { mtn:'MTN', airtel:'Airtel', glo:'Glo', t2:'9mobile', all:'All', other:'Other' }[k] || k;
+  }
+  function origSell(p) {
+    return Number(p.sell_price ?? p.price ?? 0);
+  }
+  function curSell(p) {
+    return state.working.has(p.plan_id) ? state.working.get(p.plan_id) : origSell(p);
+  }
+  function isFiniteNum(n) {
+    return typeof n === 'number' && isFinite(n) && n >= 0;
+  }
+
+  function toast(msg, type = 'info') {
+    const c = $('#toasts');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const ic = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info';
+    t.innerHTML = `<i class="fas ${ic}"></i> <span>${esc(msg)}</span>`;
+    c.appendChild(t);
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(12px)';
+      setTimeout(() => t.remove(), 250);
+    }, 2600);
+  }
+
+  /* ═══════════════════════════════════════════════
+     API
+     ═══════════════════════════════════════════════ */
+  async function api(path, options = {}) {
+    const url = `${API_BASE}${path}`;
+    let res;
+    try {
+      res = await fetch(url, {
+        ...options,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      });
+    } catch {
+      const err = new Error('Network error — could not reach the server');
+      err.kind = 'network'; err.url = url;
+      throw err;
+    }
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+      throw new Error('Session expired');
+    }
+    const json = await res.json().catch(() => ({}));
+    if (res.status === 404) {
+      const err = new Error(json.message || 'Route not found');
+      err.kind = 'route'; err.url = url;
+      throw err;
+    }
+    if (!res.ok || !json.success) {
+      const err = new Error(json.message || `Request failed (${res.status})`);
+      err.kind = res.status >= 500 ? 'server' : 'request'; err.url = url;
+      throw err;
+    }
+    return json;
+  }
+
+  /* ═══════════════════════════════════════════════
+     LOAD
+     ═══════════════════════════════════════════════ */
+  async function load() {
+    showPlaceholder(`
+      <div class="state-card">
+        <div class="spinner"></div>
+        <div class="state-title">Loading plans…</div>
+        <div class="state-desc">Fetching the latest catalog from your server.</div>
+      </div>`);
+
+    try {
+      const res = await api('/admin/data-plans');
+      const d = res.data || res;
+      state.plans =
+        Array.isArray(d)          ? d :
+        Array.isArray(d.plans)    ? d.plans :
+        Array.isArray(d.data)     ? d.data :
+        Array.isArray(res.plans)  ? res.plans : [];
+      state.working.clear();
+
+      console.log('[pricing] loaded', state.plans.length, 'plans');
+      hidePlaceholder();
+      renderAll();
+    } catch (err) {
+      console.error('[pricing] load failed:', err);
+      showPlaceholder(errCard(err));
+    }
+  }
+
+  function showPlaceholder(html) {
+    const p = $('#placeholder');
+    p.innerHTML = html;
+    p.style.display = '';
+    $('#cardView').style.display = 'none';
+    $('#tableView').classList.remove('show');
+  }
+  function hidePlaceholder() {
+    $('#placeholder').innerHTML = '';
+    $('#placeholder').style.display = 'none';
+  }
+
+  function errCard(err) {
+    let ic = 'fa-triangle-exclamation', cls = 'warn', title = 'Could not load plans', desc = esc(err.message);
+    if (err.kind === 'route') { ic = 'fa-map-signs'; title = 'Pricing route not registered';
+      desc = 'The backend does not have <code>/api/v1/admin/data-plans</code>. Check <code>routes/admin.routes.js</code> and restart.'; }
+    else if (err.kind === 'network') { ic = 'fa-plug'; title = 'Cannot reach the server';
+      desc = 'The browser failed to connect. Is the backend running?'; }
+    else if (err.kind === 'server') { ic = 'fa-bug'; cls = 'error'; title = 'Server error'; }
+    return `
+      <div class="state-card">
+        <div class="state-icon ${cls}"><i class="fas ${ic}"></i></div>
+        <div class="state-title">${title}</div>
+        <div class="state-desc">${desc}<br><br><code>${esc(err.url || ENDPOINT)}</code></div>
+        <button class="btn primary" style="margin-top:16px" onclick="location.reload()">
+          <i class="fas fa-rotate"></i> Retry
+        </button>
+      </div>`;
+  }
+
+  /* ═══════════════════════════════════════════════
+     STATS
+     ═══════════════════════════════════════════════ */
+  function renderStats() {
+    const plans = state.plans;
+    const active = plans.filter(p => p.is_active).length;
+    const categories = new Set(plans.map(p => p.category || 'Other')).size;
+    const loss = plans.filter(p => curSell(p) - Number(p.cost_price || 0) <= 0).length;
+    const avgProfit = plans.length
+      ? plans.reduce((s, p) => s + (curSell(p) - Number(p.cost_price || 0)), 0) / plans.length
+      : 0;
+
+    $('#sTotal').textContent = plans.length;
+    $('#sActive').textContent = active;
+    $('#sCategories').textContent = categories;
+    $('#sAvgProfit').textContent = money(Math.round(avgProfit));
+    $('#sLoss').textContent = loss;
+    $('#sLoss').className = 'stat-value' + (loss > 0 ? ' danger' : '');
+
+    $('#appbarSub').textContent = `${plans.length} plans · ${categories} categor${categories === 1 ? 'y' : 'ies'}`;
+  }
+
+  /* ═══════════════════════════════════════════════
+     FILTERING
+     ═══════════════════════════════════════════════ */
+  function inNetwork() {
+    return state.network === 'all' ? state.plans.slice()
+         : state.plans.filter(p => netKey(p.provider) === state.network);
+  }
+
+  function categoriesFor(list) {
+    const m = new Map();
+    list.forEach(p => {
+      const c = p.category || 'Other';
+      m.set(c, (m.get(c) || 0) + 1);
+    });
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }
+
+  function visible() {
+    let list = inNetwork();
+    if (state.category !== 'all') {
+      list = list.filter(p => (p.category || 'Other') === state.category);
+    }
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      list = list.filter(p =>
+        String(p.plan_id || '').toLowerCase().includes(q) ||
+        String(p.display_name || '').toLowerCase().includes(q)
+      );
+    }
+
+    switch (state.sort) {
+      case 'price-asc':   list.sort((a,b) => curSell(a) - curSell(b)); break;
+      case 'price-desc':  list.sort((a,b) => curSell(b) - curSell(a)); break;
+      case 'profit-desc': list.sort((a,b) => (curSell(b) - Number(b.cost_price||0)) - (curSell(a) - Number(a.cost_price||0))); break;
+      case 'profit-asc':  list.sort((a,b) => (curSell(a) - Number(a.cost_price||0)) - (curSell(b) - Number(b.cost_price||0))); break;
+      case 'name-asc':    list.sort((a,b) => String(a.display_name||a.plan_id).localeCompare(String(b.display_name||b.plan_id))); break;
+      default:
+        list.sort((a,b) => {
+          const pa = netKey(a.provider), pb = netKey(b.provider);
+          if (pa !== pb) return pa.localeCompare(pb);
+          const ca = String(a.category||''), cb = String(b.category||'');
+          if (ca !== cb) return ca.localeCompare(cb);
+          return curSell(a) - curSell(b);
+        });
+    }
+    return list;
+  }
+
+  function groupByCat(plans) {
+    const m = new Map();
+    plans.forEach(p => {
+      const c = p.category || 'Other';
+      if (!m.has(c)) m.set(c, []);
+      m.get(c).push(p);
+    });
+    return m;
+  }
+
+  /* ═══════════════════════════════════════════════
+     CHIPS
+     ═══════════════════════════════════════════════ */
+  function renderNetworkChips() {
+    const wrap = $('#networkChips');
+    const counts = { all: state.plans.length, mtn:0, airtel:0, glo:0, t2:0 };
+    state.plans.forEach(p => { const k = netKey(p.provider); if (k in counts) counts[k]++; });
+
+    const order = ['all', 'mtn', 'airtel', 'glo', 't2'];
+    wrap.innerHTML = order.map(k => {
+      const active = state.network === k;
+      const dot = k === 'all' ? '' : `<span class="dot ${k}"></span>`;
+      return `<button class="chip ${active ? 'active' : ''}" data-network="${k}">
+        ${dot}${esc(netLabel(k))}<span class="count">${counts[k]}</span>
+      </button>`;
+    }).join('');
+
+    wrap.querySelectorAll('.chip').forEach(b => {
+      b.addEventListener('click', () => {
+        state.network = b.dataset.network;
+        const cats = categoriesFor(inNetwork()).map(([c]) => c);
+        if (state.category !== 'all' && !cats.includes(state.category)) state.category = 'all';
+        renderAll();
+      });
+    });
+  }
+
+  function renderCategoryChips() {
+    const wrap = $('#categoryChips');
+    const list = inNetwork();
+    const cats = categoriesFor(list);
+
+    let html = `<button class="chip ${state.category === 'all' ? 'active' : ''}" data-cat="all">
+      All<span class="count">${list.length}</span></button>`;
+
+    cats.forEach(([name, count]) => {
+      const active = state.category === name;
+      html += `<button class="chip ${active ? 'active' : ''}" data-cat="${esc(name)}">
+        ${esc(name)}<span class="count">${count}</span></button>`;
+    });
+
+    wrap.innerHTML = html;
+    wrap.querySelectorAll('.chip').forEach(b => {
+      b.addEventListener('click', () => {
+        state.category = b.dataset.cat;
+        renderAll();
+      });
+    });
+  }
+
+  /* ═══════════════════════════════════════════════
+     CARD VIEW
+     ═══════════════════════════════════════════════ */
+  function renderCards() {
+    const view = $('#cardView');
+    view.style.display = '';
+    $('#tableView').classList.remove('show');
+
+    const list = visible();
+    if (!list.length) {
+      view.innerHTML = `
+        <div class="state-card">
+          <div class="state-icon warn"><i class="fas fa-inbox"></i></div>
+          <div class="state-title">No plans to show</div>
+          <div class="state-desc">Try a different network, category, or clear the search.</div>
+        </div>`;
+      return;
+    }
+
+    const groups = groupByCat(list);
+
+    view.innerHTML = [...groups.entries()].map(([cat, plans]) => {
+      const collapsed = state.collapsed.has(cat);
+      return `
+        <section class="group ${collapsed ? 'collapsed' : ''}" data-cat="${esc(cat)}">
+          <header class="group-head" data-role="head">
+            <span class="group-chevron"><i class="fas fa-chevron-down"></i></span>
+            <span class="group-accent"></span>
+            <span class="group-name">${esc(cat)}</span>
+            <span class="group-count">${plans.length} plan${plans.length === 1 ? '' : 's'}</span>
+            <span class="group-spacer"></span>
+            <div class="group-tools" onclick="event.stopPropagation()">
+              <div class="quick-set">
+                <span class="quick-set-label">Set all to ₦</span>
+                <input type="number" placeholder="0" step="0.01" data-role="set-input">
+                <button type="button" data-role="set-btn">Go</button>
+              </div>
+            </div>
+          </header>
+          <div class="group-body">
+            <div class="plan-grid">
+              ${plans.map(p => planCard(p)).join('')}
+            </div>
+          </div>
+        </section>`;
+    }).join('');
+
+    wireGroupEvents();
+    wireCardEvents();
+  }
+
+  function planCard(p) {
+    const cls = netClass(p.provider);
+    const active = p.is_active ? '' : 'inactive';
+    const cost = Number(p.cost_price || 0);
+    const sell = curSell(p);
+    const profit = Math.round((sell - cost) * 100) / 100;
+    const dirty = state.working.has(p.plan_id);
+    const profitCls = profit > 0 ? '' : profit < 0 ? ' neg' : ' zero';
+
+    return `
+      <article class="plan ${dirty ? 'dirty' : ''}" data-id="${esc(p.plan_id)}">
+        <div class="plan-top">
+          <span class="plan-brand ${cls}"><span class="brand-dot"></span>${esc(p.provider || '—')}</span>
+          <span class="plan-status-dot ${active}" title="${p.is_active ? 'Active' : 'Inactive'}"></span>
+        </div>
+
+        <div class="plan-name">${esc(p.display_name || p.plan_id)}</div>
+        <div class="plan-id" title="${esc(p.plan_id)}">${esc(p.plan_id)}</div>
+
+        <div class="plan-prices">
+          <div class="price-col">
+            <span class="price-label">Cost</span>
+            <span class="price-value cost">${money(cost)}</span>
+          </div>
+          <i class="fas fa-arrow-right price-arrow"></i>
+          <div class="price-col right">
+            <span class="price-label">Sell</span>
+            <span class="price-value sell">${money(sell)}</span>
+          </div>
+        </div>
+
+        <div class="profit-pill${profitCls}">
+          <span class="profit-label">Profit</span>
+          <span class="profit-value">${profit >= 0 ? '+' : ''}${money(profit)}</span>
+        </div>
+
+        <div class="plan-edit">
+          <div class="input-wrap">
+            <span class="currency">₦</span>
+            <input type="number" class="plan-input ${dirty ? 'dirty' : ''}"
+                   data-role="input" value="${sell}" step="1" min="0">
+          </div>
+          <button class="plan-save" data-role="save">
+            <i class="fas fa-check"></i> Save
+          </button>
+        </div>
+      </article>`;
+  }
+
+  function wireGroupEvents() {
+    $$('.group-head[data-role="head"]').forEach(head => {
+      const group = head.closest('.group');
+      const cat = group.dataset.cat;
+      head.addEventListener('click', () => {
+        if (state.collapsed.has(cat)) state.collapsed.delete(cat);
+        else state.collapsed.add(cat);
+        group.classList.toggle('collapsed');
+      });
+
+      const input = head.querySelector('[data-role="set-input"]');
+      const btn   = head.querySelector('[data-role="set-btn"]');
+      const doSet = (e) => {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        const v = Number(input.value);
+        if (!isFiniteNum(v)) { toast('Enter a valid price', 'error'); return; }
+        const plans = state.plans.filter(p => (p.category || 'Other') === cat);
+        let n = 0;
+        plans.forEach(p => {
+          const rounded = Math.round(v * 100) / 100;
+          if (rounded === origSell(p)) state.working.delete(p.plan_id);
+          else { state.working.set(p.plan_id, rounded); n++; }
+        });
+        renderAll();
+        toast(`${n} plan(s) in "${cat}" → ${money(v)}`, 'info');
+      };
+      btn?.addEventListener('click', doSet);
+      input?.addEventListener('keydown', e => { if (e.key === 'Enter') doSet(e); });
+      input?.addEventListener('click', e => e.stopPropagation());
+    });
+  }
+
+  function wireCardEvents() {
+    $$('.plan').forEach(card => {
+      const id = card.dataset.id;
+      const plan = state.plans.find(p => p.plan_id === id);
+      if (!plan) return;
+
+      const input = card.querySelector('[data-role="input"]');
+      const save  = card.querySelector('[data-role="save"]');
+      const orig = origSell(plan);
+
+      input.addEventListener('input', () => {
+        const v = Number(input.value);
+        if (!isFiniteNum(v)) return;
+        if (v === orig) state.working.delete(id);
+        else state.working.set(id, v);
+        input.classList.toggle('dirty', v !== orig);
+        card.classList.toggle('dirty', v !== orig);
+        /* Live profit update */
+        const profitPill = card.querySelector('.profit-pill');
+        const profitVal = card.querySelector('.profit-value');
+        const cost = Number(plan.cost_price || 0);
+        const profit = Math.round((v - cost) * 100) / 100;
+        profitPill.classList.remove('neg','zero');
+        if (profit < 0) profitPill.classList.add('neg');
+        else if (profit === 0) profitPill.classList.add('zero');
+        profitVal.textContent = `${profit >= 0 ? '+' : ''}${money(profit)}`;
+        renderStats();
+        updateDock();
+      });
+
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') save.click(); });
+
+      save.addEventListener('click', async () => {
+        const v = Number(input.value);
+        if (!isFiniteNum(v)) { toast('Enter a valid price', 'error'); return; }
+        if (v === orig) { toast('No change', 'info'); return; }
+
+        save.disabled = true;
+        save.classList.add('saving');
+        save.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving';
+
+        try {
+          await api(`/admin/data-plans/${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ sell_price: v }),
+          });
+          plan.sell_price = v;
+          plan.profit = Math.round((v - Number(plan.cost_price||0)) * 100) / 100;
+          state.working.delete(id);
+          save.classList.remove('saving');
+          save.classList.add('saved');
+          save.innerHTML = '<i class="fas fa-check"></i> Saved';
+          setTimeout(() => renderAll(), 400);
+        } catch (err) {
+          toast(err.message, 'error');
+          save.disabled = false;
+          save.classList.remove('saving');
+          save.innerHTML = '<i class="fas fa-check"></i> Save';
+        }
+      });
+    });
+  }
+
+  /* ═══════════════════════════════════════════════
+     TABLE VIEW
+     ═══════════════════════════════════════════════ */
+  function renderTable() {
+    $('#cardView').style.display = 'none';
+    $('#tableView').classList.add('show');
+
+    const tbody = $('#tableBody');
+    const list = visible();
+
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="8">
+        <div class="state-card" style="border:none;box-shadow:none">
+          <div class="state-icon warn"><i class="fas fa-inbox"></i></div>
+          <div class="state-title">No plans to show</div>
+          <div class="state-desc">Try a different network, category, or clear the search.</div>
+        </div></td></tr>`;
+      return;
+    }
+
+    const groups = groupByCat(list);
+    let html = '';
+
+    [...groups.entries()].forEach(([cat, plans]) => {
+      const collapsed = state.collapsed.has(cat);
+      html += `<tr class="group-row ${collapsed ? 'collapsed' : ''}" data-cat="${esc(cat)}">
+        <td colspan="8"><div class="group-cell">
+          <span class="chev"><i class="fas fa-chevron-down"></i></span>
+          <span class="accent"></span>
+          <span class="gname">${esc(cat)}</span>
+          <span class="gcount">${plans.length} plan${plans.length === 1 ? '' : 's'}</span>
+          <span class="gspacer"></span>
+          <div class="gmini" onclick="event.stopPropagation()">
+            <label>Set all to ₦</label>
+            <input type="number" placeholder="0" step="0.01" data-role="gset-input" data-cat="${esc(cat)}">
+            <button type="button" data-role="gset-btn" data-cat="${esc(cat)}">Apply</button>
+          </div>
+        </div></td></tr>`;
+
+      plans.forEach(p => {
+        const cls = netClass(p.provider);
+        const cost = Number(p.cost_price || 0);
+        const orig = origSell(p);
+        const cur  = curSell(p);
+        const profit = Math.round((cur - cost) * 100) / 100;
+        const pcls = profit > 0 ? 'positive' : profit < 0 ? 'negative' : 'muted';
+        const dirty = state.working.has(p.plan_id);
+        const isCollapsed = state.collapsed.has(cat);
+
+        html += `<tr class="item ${dirty ? 'dirty' : ''} ${isCollapsed ? 'hidden' : ''}" data-id="${esc(p.plan_id)}" data-cat="${esc(cat)}">
+          <td><span class="tag ${cls}"><span class="dot"></span>${esc(p.provider || '—')}</span></td>
+          <td>${esc(p.display_name || p.plan_id)}</td>
+          <td class="mono" title="${esc(p.plan_id)}">${esc(p.plan_id)}</td>
+          <td class="right"><span class="money muted">${money(cost)}</span></td>
+          <td class="right"><span class="money muted">${money(orig)}</span></td>
+          <td class="right">
+            <input type="number" class="tbl-input ${dirty ? 'dirty' : ''}"
+                   data-role="input" value="${cur}" step="1" min="0">
+          </td>
+          <td class="right"><span class="money ${pcls}" data-role="profit">${profit >= 0 ? '+' : ''}${money(profit)}</span></td>
+          <td class="center">
+            <button class="reset-btn ${dirty ? '' : 'hidden'}" data-role="reset" title="Reset">
+              <i class="fas fa-rotate-left"></i>
+            </button>
+          </td>
+        </tr>`;
+      });
+    });
+
+    tbody.innerHTML = html;
+    wireTableEvents();
+  }
+
+  function wireTableEvents() {
+    $$('#tableBody tr.group-row').forEach(row => {
+      const cat = row.dataset.cat;
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.gmini')) return;
+        if (state.collapsed.has(cat)) state.collapsed.delete(cat);
+        else state.collapsed.add(cat);
+        applyCollapse();
+      });
+    });
+
+    $$('#tableBody [data-role="gset-btn"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cat = btn.dataset.cat;
+        const inp = btn.parentElement.querySelector('[data-role="gset-input"]');
+        const v = Number(inp.value);
+        if (!isFiniteNum(v)) { toast('Enter a valid price', 'error'); return; }
+        const plans = state.plans.filter(p => (p.category || 'Other') === cat);
+        let n = 0;
+        plans.forEach(p => {
+          const rounded = Math.round(v * 100) / 100;
+          if (rounded === origSell(p)) state.working.delete(p.plan_id);
+          else { state.working.set(p.plan_id, rounded); n++; }
+        });
+        renderAll();
+        toast(`${n} plan(s) in "${cat}" → ${money(v)}`, 'info');
+      });
+    });
+
+    $$('#tableBody [data-role="gset-input"]').forEach(inp => {
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          inp.parentElement.querySelector('[data-role="gset-btn"]')?.click();
+        }
+      });
+      inp.addEventListener('click', e => e.stopPropagation());
+    });
+
+    $$('#tableBody tr.item').forEach(row => {
+      const id = row.dataset.id;
+      const plan = state.plans.find(p => p.plan_id === id);
+      if (!plan) return;
+
+      const input = row.querySelector('[data-role="input"]');
+      const reset = row.querySelector('[data-role="reset"]');
+      const orig = origSell(plan);
+
+      input.addEventListener('input', () => {
+        const v = Number(input.value);
+        if (!isFiniteNum(v)) return;
+        if (v === orig) {
+          state.working.delete(id);
+          row.classList.remove('dirty');
+          input.classList.remove('dirty');
+          reset?.classList.add('hidden');
+        } else {
+          state.working.set(id, v);
+          row.classList.add('dirty');
+          input.classList.add('dirty');
+          reset?.classList.remove('hidden');
+        }
+        const cost = Number(plan.cost_price || 0);
+        const profit = Math.round((v - cost) * 100) / 100;
+        const pEl = row.querySelector('[data-role="profit"]');
+        if (pEl) {
+          pEl.classList.remove('positive','negative','muted');
+          pEl.classList.add(profit > 0 ? 'positive' : profit < 0 ? 'negative' : 'muted');
+          pEl.textContent = `${profit >= 0 ? '+' : ''}${money(profit)}`;
+        }
+        renderStats();
+        updateDock();
+      });
+
+      reset?.addEventListener('click', () => {
+        state.working.delete(id);
+        renderAll();
+      });
+    });
+
+    applyCollapse();
+  }
+
+  function applyCollapse() {
+    $$('#tableBody tr.group-row').forEach(gr => {
+      const cat = gr.dataset.cat;
+      const collapsed = state.collapsed.has(cat);
+      gr.classList.toggle('collapsed', collapsed);
+      $$(`#tableBody tr.item[data-cat="${CSS.escape(cat)}"]`).forEach(r => {
+        r.classList.toggle('hidden', collapsed);
+      });
+    });
+  }
+
+  /* ═══════════════════════════════════════════════
+     RENDER ALL
+     ═══════════════════════════════════════════════ */
+  function renderAll() {
+    renderNetworkChips();
+    renderCategoryChips();
+    renderStats();
+    if (state.bulkMode) renderTable();
+    else renderCards();
+    updateDock();
+  }
+
+  /* ═══════════════════════════════════════════════
+     DOCK
+     ═══════════════════════════════════════════════ */
+  function updateDock() {
+    const n = state.working.size;
+    const show = state.bulkMode && n > 0;
+    $('#changeCount').textContent = n;
+    $('#changeCountPlural').textContent = n === 1 ? '' : 's';
+    $('#saveDock').classList.toggle('show', show);
+    $('#saveAllBtn').disabled = state.savingAll;
+  }
+
+  /* ═══════════════════════════════════════════════
+     BULK SCOPE
+     ═══════════════════════════════════════════════ */
+  function scopePlans() {
+    const s = $('#bulkScope').value;
+    if (s === 'visible')  return visible();
+    if (s === 'category') {
+      if (state.category === 'all') return visible();
+      return state.plans.filter(p => (p.category || 'Other') === state.category);
+    }
+    if (s === 'network') {
+      if (state.network === 'all') return state.plans.slice();
+      return state.plans.filter(p => netKey(p.provider) === state.network);
+    }
+    return state.plans.slice();
+  }
+
+  function applyScope(fn, label) {
+    const list = scopePlans();
+    let n = 0;
+    list.forEach(p => {
+      const next = fn(curSell(p), origSell(p), p);
+      if (!isFiniteNum(next)) return;
+      const rounded = Math.round(next * 100) / 100;
+      if (rounded === origSell(p)) state.working.delete(p.plan_id);
+      else { state.working.set(p.plan_id, rounded); n++; }
+    });
+    renderAll();
+    toast(n > 0 ? `${label} → ${n} plan(s)` : 'No plans changed', n > 0 ? 'info' : 'info');
+  }
+
+  $('#applyAdd')?.addEventListener('click', () => {
+    const v = Number($('#bulkAdd').value);
+    if (!isFiniteNum(v) || v === 0) return toast('Enter an amount', 'error');
+    applyScope(c => c + v, `+${money(v)}`);
+  });
+  $('#applyPct')?.addEventListener('click', () => {
+    const v = Number($('#bulkPct').value);
+    if (!isFiniteNum(v) || v === 0) return toast('Enter a percent', 'error');
+    applyScope(c => c + c * (v / 100), `+${v}%`);
+  });
+  $('#applySet')?.addEventListener('click', () => {
+    const v = Number($('#bulkSet').value);
+    if (!isFiniteNum(v) || v === 0) return toast('Enter a price', 'error');
+    applyScope(() => v, `Set to ${money(v)}`);
+  });
+  $('#resetAll')?.addEventListener('click', () => {
+    if (!state.working.size) return toast('Nothing to reset', 'info');
+    if (!confirm(`Discard ${state.working.size} change(s)?`)) return;
+    state.working.clear();
+    renderAll();
+    toast('All changes discarded', 'info');
+  });
+
+  $('#discardBtn')?.addEventListener('click', () => {
+    if (!confirm(`Discard ${state.working.size} change(s)?`)) return;
+    state.working.clear();
+    renderAll();
+    toast('All changes discarded', 'info');
+  });
+
+  /* ═══════════════════════════════════════════════
+     SAVE ALL
+     ═══════════════════════════════════════════════ */
+  $('#saveAllBtn')?.addEventListener('click', async () => {
+    if (state.savingAll) return;
+    const ids = [...state.working.keys()];
+    if (!ids.length) return;
+
+    state.savingAll = true;
+    const btn = $('#saveAllBtn');
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Saving ${ids.length}…`;
+
+    let saved = 0, failed = 0;
+    for (const id of ids) {
+      const v = state.working.get(id);
+      try {
+        await api(`/admin/data-plans/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ sell_price: v }),
+        });
+        const plan = state.plans.find(p => p.plan_id === id);
+        if (plan) {
+          plan.sell_price = v;
+          plan.profit = Math.round((v - Number(plan.cost_price||0)) * 100) / 100;
+        }
+        state.working.delete(id);
+        saved++;
+      } catch { failed++; }
+    }
+
+    state.savingAll = false;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-check"></i> Save all';
+
+    if (saved) toast(`${saved} plan${saved === 1 ? '' : 's'} saved`, 'success');
+    if (failed) toast(`${failed} failed — check console`, 'error');
+
+    renderAll();
+  });
+
+  /* ═══════════════════════════════════════════════
+     BULK TOGGLE
+     ═══════════════════════════════════════════════ */
+  $('#bulkToggle')?.addEventListener('click', () => {
+    state.bulkMode = !state.bulkMode;
+    $('#bulkToggle').classList.toggle('active', state.bulkMode);
+    $('#bulkBar').classList.toggle('show', state.bulkMode);
+    if (!state.bulkMode && state.working.size > 0) {
+      if (!confirm(`${state.working.size} unsaved change(s). Discard?`)) {
+        state.bulkMode = true;
+        $('#bulkToggle').classList.add('active');
+        $('#bulkBar').classList.add('show');
+        return;
+      }
+      state.working.clear();
+    }
+    renderAll();
+  });
+
+  /* ═══════════════════════════════════════════════
+     INPUTS
+     ═══════════════════════════════════════════════ */
+  let tmr = null;
+  $('#searchInput')?.addEventListener('input', e => {
+    clearTimeout(tmr);
+    const v = e.target.value;
+    tmr = setTimeout(() => { state.search = v.trim(); renderAll(); }, 140);
+  });
+  $('#sortSelect')?.addEventListener('change', e => { state.sort = e.target.value; renderAll(); });
+  $('#refreshBtn')?.addEventListener('click', () => {
+    if (state.working.size > 0 && !confirm('Discard changes and reload?')) return;
+    state.working.clear();
+    toast('Refreshing…', 'info');
+    load();
+  });
+
+  /* ═══════════════════════════════════════════════
+     KEYBOARD
+     ═══════════════════════════════════════════════ */
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault(); $('#bulkToggle')?.click();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      if (state.bulkMode && state.working.size > 0) {
+        e.preventDefault(); $('#saveAllBtn')?.click();
+      }
+    }
+  });
+
+  window.addEventListener('beforeunload', e => {
+    if (state.working.size > 0) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

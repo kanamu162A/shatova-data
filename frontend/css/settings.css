@@ -1,0 +1,347 @@
+/* frontend/css/settings.css */
+/* ============================================================
+   SHATOVA — SETTINGS PAGE
+   ============================================================ */
+
+.settings-page {
+  padding-top: 8px;
+  padding-bottom: 40px;
+}
+
+/* ---------- PAGE HEAD ---------- */
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.page-head-titles { flex: 1; min-width: 0; }
+.page-eyebrow {
+  font-size: 10px; font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.page-title {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #0a0a0a;
+  margin: 0;
+}
+.back-btn {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  color: #0a4534;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.back-btn:hover {
+  background: #f9fafb;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+.back-btn svg { width: 17px; height: 17px; }
+
+/* ---------- PROFILE CARD ---------- */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  margin-bottom: 22px;
+}
+.profile-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #0e5a41, #052b20);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px -3px rgba(10, 69, 52, 0.35);
+}
+.profile-info { flex: 1; min-width: 0; }
+.profile-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0a0a0a;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.profile-email {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.profile-edit {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #f3f6f5;
+  color: #0a4534;
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.profile-edit:hover { background: #e8eeec; }
+.profile-edit svg { width: 16px; height: 16px; }
+
+/* ---------- SECTIONS ---------- */
+.settings-section {
+  margin-bottom: 22px;
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #6b7280;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0 4px;
+  margin-bottom: 8px;
+}
+.settings-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ---------- ROWS ---------- */
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  font-family: inherit;
+  cursor: default;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row.link { cursor: pointer; }
+.settings-row.link:hover { background: #f9fafb; }
+
+.row-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: #f3f6f5;
+  color: #0a4534;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.row-icon svg { width: 17px; height: 17px; }
+.row-icon.danger { background: #fef2f2; color: #dc2626; }
+
+.row-content { flex: 1; min-width: 0; }
+.row-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0a0a0a;
+  margin-bottom: 2px;
+}
+.row-sub {
+  font-size: 11.5px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.row-arrow {
+  width: 16px;
+  height: 16px;
+  color: #cbd5d1;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.settings-row.link:hover .row-arrow {
+  color: #0a4534;
+  transform: translateX(2px);
+}
+
+/* Danger row */
+.settings-row.danger .row-title { color: #dc2626; }
+.settings-row.danger:hover { background: #fef2f2; }
+.settings-row.danger:hover .row-arrow { color: #dc2626; }
+
+/* ---------- SWITCH ---------- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 26px;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #e5e7eb;
+  border-radius: 999px;
+  transition: 0.2s;
+}
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.switch input:checked + .switch-slider {
+  background: #0a4534;
+}
+.switch input:checked + .switch-slider::before {
+  transform: translateX(18px);
+}
+
+/* ---------- SEGMENT (font size) ---------- */
+.segment {
+  display: flex;
+  gap: 2px;
+  background: #f3f6f5;
+  padding: 3px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.segment button {
+  width: 32px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  font-family: inherit;
+  font-weight: 700;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.segment button:nth-child(1) { font-size: 11px; }
+.segment button:nth-child(2) { font-size: 13px; }
+.segment button:nth-child(3) { font-size: 15px; }
+.segment button.active {
+  background: #0a4534;
+  color: #fff;
+}
+
+/* ---------- FOOTER ---------- */
+.settings-footer {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+.settings-footer p {
+  font-size: 11.5px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* ============================================================
+   DARK THEME
+   ============================================================ */
+html[data-theme="dark"] {
+  background: #0a0a0a;
+}
+html[data-theme="dark"] body {
+  background: #0a0a0a;
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .home-topbar {
+  background: rgba(15, 15, 15, 0.95);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] .brand-name {
+  background: linear-gradient(135deg, #ffffff, #d1d5db);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+html[data-theme="dark"] .icon-btn {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .bottom-nav {
+  background: rgba(15, 15, 15, 0.98);
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] .nav-item { color: #6b7280; }
+html[data-theme="dark"] .nav-item.active { color: #22c55e; }
+
+html[data-theme="dark"] .page-title,
+html[data-theme="dark"] .row-title,
+html[data-theme="dark"] .profile-name {
+  color: #f9fafb;
+}
+html[data-theme="dark"] .page-eyebrow,
+html[data-theme="dark"] .row-sub,
+html[data-theme="dark"] .profile-email,
+html[data-theme="dark"] .section-title {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .profile-card,
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .back-btn {
+  background: #141414;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] .settings-row {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+html[data-theme="dark"] .settings-row.link:hover {
+  background: #1a1a1a;
+}
+html[data-theme="dark"] .row-icon {
+  background: #1a1a1a;
+  color: #22c55e;
+}
+html[data-theme="dark"] .profile-edit {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+html[data-theme="dark"] .segment {
+  background: #1a1a1a;
+}
+html[data-theme="dark"] .segment button {
+  color: #9ca3af;
+}
+html[data-theme="dark"] .segment button.active {
+  background: #22c55e;
+  color: #0a0a0a;
+}
+html[data-theme="dark"] .switch-slider {
+  background: #333;
+}
+html[data-theme="dark"] .switch input:checked + .switch-slider {
+  background: #22c55e;
+}

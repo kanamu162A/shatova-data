@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Shatova - Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/menu.css">
+
+  <script>
+    /* ============================================================
+       SERVICE CARD — clean inline handler
+       • No text swapping → no wrapping
+       • Spinner appears where the icon is
+       • Subtitle gets animated "…" dots
+       ============================================================ */
+    window.svcGo = function (e, el) {
+      try { e.preventDefault(); } catch (_) {}
+      if (!el) return false;
+      if (el.dataset.loading === '1') return false;
+
+      el.dataset.loading = '1';
+      el.classList.add('is-loading');
+      el.style.pointerEvents = 'none';
+
+      var href = el.getAttribute('href');
+      if (href && href !== '#') {
+        setTimeout(function () { window.location.href = href; }, 700);
+      } else {
+        setTimeout(function () {
+          el.classList.remove('is-loading');
+          el.style.pointerEvents = '';
+          el.dataset.loading = '0';
+        }, 1000);
+      }
+      return false;
+    };
+
+    /* ============================================================
+       BALANCE BUTTONS — Fund Wallet / Transfer
+       ============================================================ */
+    window.btnGo = function (e, el, label) {
+      try { e.preventDefault(); } catch (_) {}
+      if (!el || el.dataset.loading === '1') return false;
+      el.dataset.loading = '1';
+      el.classList.add('btn-loading');
+      el.style.pointerEvents = 'none';
+
+      var lbl = document.createElement('span');
+      lbl.className = 'btn-loading-label';
+      lbl.textContent = label || 'Processing…';
+      el.appendChild(lbl);
+
+      var href = el.getAttribute('data-href');
+      if (href) setTimeout(function () { window.location.href = href; }, 700);
+      return false;
+    };
+  </script>
+</head>
+<body class="home">
+
+  <div id="app-header"></div>
+
+  <main class="app-container">
+
+    <!-- GREETING -->
+    <section class="greeting-section">
+      <div class="greet-line">
+        <span class="crown">♛</span>
+        <span id="greetTime">Good Morning</span>
+      </div>
+      <h1 class="greet-name" id="userName">Loading...</h1>
+    </section>
+
+    <!-- BALANCE CARD -->
+    <section class="balance-card">
+      <div class="balance-head">
+        <div class="balance-label-group">
+          <div class="balance-ico">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
+          <span class="balance-label">Wallet Balance</span>
+        </div>
+      </div>
+
+      <div class="balance-row">
+        <div class="balance-amount" id="balance">₦ 0.00</div>
+        <button class="balance-toggle-btn" id="toggleBalance" aria-label="Toggle Balance">
+          <svg id="eyeOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          <svg id="eyeClosed" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+        </button>
+      </div>
+
+      <div class="balance-actions">
+        <button class="btn-fund" data-href="/fund-wallet.html" onclick="return btnGo(event, this, 'Funding…')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+          Fund Wallet
+        </button>
+        <button class="btn-send" data-href="/transfer.html" onclick="return btnGo(event, this, 'Opening…')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          Transfer
+        </button>
+      </div>
+    </section>
+
+    <!-- SERVICES HEADER -->
+    <div class="section-head services-head">
+      <h3>Services</h3>
+    </div>
+
+    <!-- SERVICES GRID -->
+    <section class="services-grid">
+
+      <a class="svc-card" href="/data.html" onclick="return svcGo(event, this)">
+        <div class="svc-icon data"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg></div>
+        <div class="svc-info"><div class="svc-title">Data</div><div class="svc-sub">Buy data bundles</div></div>
+        <div class="svc-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a class="svc-card" href="/airtime.html" onclick="return svcGo(event, this)">
+        <div class="svc-icon airtime"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
+        <div class="svc-info"><div class="svc-title">Airtime</div><div class="svc-sub">Top up your phone</div></div>
+        <div class="svc-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a class="svc-card" href="/electricity.html" onclick="return svcGo(event, this)">
+        <div class="svc-icon bills"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
+        <div class="svc-info"><div class="svc-title">Bills</div><div class="svc-sub">Pay electricity &amp; more</div></div>
+        <div class="svc-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a class="svc-card" href="/tv.html" onclick="return svcGo(event, this)">
+        <div class="svc-icon cables"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
+        <div class="svc-info"><div class="svc-title">Cables</div><div class="svc-sub">Pay for your TV Subscription</div></div>
+        <div class="svc-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a class="svc-card" href="/exam.html" onclick="return svcGo(event, this)">
+        <div class="svc-icon exam"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m0-6l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg></div>
+        <div class="svc-info"><div class="svc-title">Exam</div><div class="svc-sub">Pay exam fees</div></div>
+        <div class="svc-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a class="svc-card" href="/airtime-to-cash.html" onclick="return svcGo(event, this)">
+        <div class="svc-icon airtime-cash"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></div>
+        <div class="svc-info"><div class="svc-title">Airtime to Cash</div><div class="svc-sub">Convert airtime to cash</div></div>
+        <div class="svc-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </section>
+
+    <!-- RECENT TRANSACTIONS -->
+    <div class="section-head">
+      <h3>Recent Transactions</h3>
+      <a href="/transactions.html">See all</a>
+    </div>
+    <div class="tx-container">
+      <div class="tx-list" id="txSkeleton">
+        <div class="tx-item"><div class="skeleton" style="width:40px;height:40px;border-radius:12px;"></div><div class="tx-body"><div class="skeleton skel-line" style="margin-bottom:6px;"></div><div class="skeleton skel-line short"></div></div></div>
+        <div class="tx-item"><div class="skeleton" style="width:40px;height:40px;border-radius:12px;"></div><div class="tx-body"><div class="skeleton skel-line" style="margin-bottom:6px;"></div><div class="skeleton skel-line short"></div></div></div>
+        <div class="tx-item"><div class="skeleton" style="width:40px;height:40px;border-radius:12px;"></div><div class="tx-body"><div class="skeleton skel-line" style="margin-bottom:6px;"></div><div class="skeleton skel-line short"></div></div></div>
+      </div>
+      <div id="txReal" class="hidden"></div>
+      <div id="txEmpty" class="hidden">
+        <div class="empty-state">
+          <div class="empty-emoji">🎯</div>
+          <div class="empty-title">No activity yet</div>
+          <div class="empty-text">Fund your wallet and buy data, airtime, or pay bills. Your transactions will appear here.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RECEIPT MODAL -->
+  <div id="txModal" class="txm-backdrop hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="txmTitle">
+    <div class="txm-sheet" id="txModalSheet">
+      <div class="txm-grip"></div>
+      <div class="txm-head">
+        <div class="txm-head-title">Receipt</div>
+        <button class="txm-close" id="txmClose" aria-label="Close receipt">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="txm-body">
+        <div class="txm-hero" id="txmHero">
+          <div class="txm-hero-icon"></div>
+          <div class="txm-hero-title" id="txmTitle">Transaction</div>
+          <div class="txm-hero-amount" id="txmAmount">₦ 0.00</div>
+          <div class="txm-status" id="txmStatus">Processing</div>
+        </div>
+        <div class="txm-grid">
+          <div class="txm-cell"><div class="txm-cell-label">Type</div><div class="txm-cell-value" id="txmType">—</div></div>
+          <div class="txm-cell"><div class="txm-cell-label">Recipient</div><div class="txm-cell-value" id="txmRecipient">—</div></div>
+          <div class="txm-cell"><div class="txm-cell-label">Network</div><div class="txm-cell-value" id="txmNetwork">—</div></div>
+          <div class="txm-cell"><div class="txm-cell-label">Date</div><div class="txm-cell-value" id="txmDate">—</div></div>
+          <div class="txm-cell txm-cell-wide">
+            <div class="txm-cell-label">Reference</div>
+            <div class="txm-cell-row">
+              <div class="txm-cell-value txm-mono" id="txmReference">—</div>
+              <button class="txm-copy" id="txmCopy" aria-label="Copy reference" title="Copy reference">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="txm-cell"><div class="txm-cell-label">Balance Before</div><div class="txm-cell-value" id="txmBalanceBefore">—</div></div>
+          <div class="txm-cell"><div class="txm-cell-label">Balance After</div><div class="txm-cell-value" id="txmBalance">—</div></div>
+          <div class="txm-cell txm-cell-wide"><div class="txm-cell-label">Remark</div><div class="txm-cell-value" id="txmRemark">—</div></div>
+        </div>
+      </div>
+      <div class="txm-foot">
+        <div class="txm-foot-row">
+          <button class="txm-btn txm-btn-ghost" id="txmShare">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342A3 3 0 106.316 10.658m2.368 2.684a3 3 0 100 2.316m0 0l6.632 3.684a3 3 0 100-2.684m0 0l-6.632-3.684"/></svg>
+            Share
+          </button>
+          <button class="txm-btn txm-btn-ghost" id="txmPrint">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v7H6z"/></svg>
+            Print
+          </button>
+        </div>
+        <button class="txm-btn txm-btn-primary" id="txmDone">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/auth-guard.js"></script>
+  <script src="/js/api.js"></script>
+  <script type="module" src="/js/components.js"></script>
+  <script type="module" src="/js/home.js"></script>
+</body>
+</html>

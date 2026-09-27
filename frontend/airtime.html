@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Buy Airtime - Shatova</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/airtime.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/instant-nav.css">
+</head>
+<body>
+
+  <div id="app-header"></div>
+
+  <main class="app-container airtime-page">
+
+    <!-- STEP 1 — CATEGORIES -->
+    <section class="step" id="step-categories">
+      <div class="page-head">
+        <button class="back-btn" onclick="location.href='/home.html'" aria-label="Back">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="page-head-titles">
+          <div class="page-eyebrow">Service</div>
+          <h1 class="page-title">Airtime</h1>
+        </div>
+      </div>
+      <div class="category-list" id="categoryList"></div>
+    </section>
+
+    <!-- STEP 2 — PRODUCTS -->
+    <section class="step hidden" id="step-bundles">
+      <div class="page-head">
+        <button class="back-btn" id="backToCategories" aria-label="Back">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="page-head-titles">
+          <h1 class="page-title" id="bundlesTitle">MTN Airtime</h1>
+          <div class="page-sub" id="bundlesSub">MTN AIRTIME · 1 product</div>
+        </div>
+      </div>
+      <div class="bundles-list" id="bundlesList"></div>
+    </section>
+
+    <!-- STEP 3 — CHECKOUT -->
+    <section class="step hidden" id="step-checkout">
+      <div class="page-head">
+        <button class="back-btn" id="backToBundles" aria-label="Back">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="page-head-titles">
+          <h1 class="page-title">Checkout</h1>
+        </div>
+        <div class="progress-dots">
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+
+      <div class="selected-bundle" id="selectedBundleCard"></div>
+
+      <div class="form-card">
+        <div class="form-label-row">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="form-ico"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span class="form-label">Purchase mode</span>
+        </div>
+        <div class="mode-switch" id="modeSwitch">
+          <button type="button" class="mode-btn active" data-mode="single">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Single
+          </button>
+          <button type="button" class="mode-btn" data-mode="bulk">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            Bulk
+          </button>
+          <button type="button" class="mode-btn" data-mode="group">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            Group
+          </button>
+        </div>
+
+        <div class="form-label-row">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="form-ico"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          <span class="form-label">Customer ID</span>
+        </div>
+
+        <div class="input-row">
+          <div class="phone-input-wrap">
+            <input type="tel"
+                   id="phoneInput"
+                   class="phone-input"
+                   placeholder="08012345678"
+                   inputmode="numeric"
+                   maxlength="11"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
+                   name="sx_customer_phone_xyz"
+                   aria-autocomplete="none">
+            <div class="phone-dropdown hidden" id="recentRecipients">
+              <div class="phone-dropdown-list" id="rrList"></div>
+            </div>
+          </div>
+          <button type="button" class="pick-btn" id="pickContact" aria-label="Pick contact">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Pick
+          </button>
+        </div>
+
+        <div class="network-badge hidden" id="networkBadge">
+          <span class="nb-dot"></span>
+          <span class="nb-text">Detecting network…</span>
+        </div>
+
+        <div class="error-hint" id="phoneError">Enter a valid 11-digit phone number</div>
+
+        <div class="form-label-row">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="form-ico"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          <span class="form-label">Amount</span>
+        </div>
+
+        <form class="input-row" autocomplete="off" onsubmit="return false;">
+          <input type="tel"
+                 id="amountInput"
+                 class="phone-input amount-input"
+                 placeholder="0.00"
+                 inputmode="numeric"
+                 maxlength="7"
+                 autocomplete="off"
+                 autocorrect="off"
+                 autocapitalize="off"
+                 spellcheck="false"
+                 name="sx_amt_field_xyz"
+                 aria-autocomplete="none"
+                 data-lpignore="true"
+                 data-form-type="other">
+        </form>
+        <div class="error-hint" id="amountError">Enter a valid amount (₦10 – ₦50,000)</div>
+
+        <div class="quick-amounts" id="quickAmounts">
+          <button type="button" class="quick-amt" data-amount="10">₦10</button>
+          <button type="button" class="quick-amt" data-amount="50">₦50</button>
+          <button type="button" class="quick-amt" data-amount="100">₦100</button>
+          <button type="button" class="quick-amt" data-amount="200">₦200</button>
+          <button type="button" class="quick-amt" data-amount="500">₦500</button>
+          <button type="button" class="quick-amt" data-amount="1000">₦1,000</button>
+        </div>
+
+        <button class="btn-primary" id="continueBtn">Continue</button>
+        <button class="btn-link" id="scheduleLink">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Schedule instead
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 4 — CONFIRM & PAY -->
+    <section class="step hidden" id="step-pay">
+      <div class="page-head">
+        <button class="back-btn" id="backToCheckout" aria-label="Back">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="page-head-titles">
+          <h1 class="page-title">Confirm &amp; Pay</h1>
+        </div>
+      </div>
+
+      <div class="selected-bundle" id="payBundleCard"></div>
+
+      <div class="info-box">
+        <div class="info-label">PURCHASING FOR</div>
+        <div class="info-value" id="payPhone">—</div>
+      </div>
+
+      <div class="form-label-row"><span class="form-label">PAYMENT METHOD</span></div>
+      <div class="payment-options">
+        <button type="button" class="pay-option active" data-method="wallet">
+          <div class="pay-option-check">✓</div>
+          <div class="pay-option-icon wallet">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
+          <div class="pay-option-name">Wallet</div>
+          <div class="pay-option-sub" id="walletBalance">₦0.00</div>
+        </button>
+        <button type="button" class="pay-option" data-method="sim">
+          <div class="pay-option-check">✓</div>
+          <div class="pay-option-icon sim">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <div class="pay-option-name">SIM</div>
+          <div class="pay-option-sub">Unavailable</div>
+        </button>
+      </div>
+
+      <div class="total-box">
+        <div class="total-label">Total Amount</div>
+        <div class="total-amount" id="totalAmount">₦0.00</div>
+      </div>
+
+      <div class="balance-warning hidden" id="balanceWarning">
+        <div class="balance-warning-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <div class="balance-warning-body">
+          <div class="balance-warning-title">Insufficient Balance</div>
+          <div class="balance-warning-text" id="balanceWarningText">
+            You need more money in your wallet to complete this purchase.
+          </div>
+          <button type="button" class="balance-warning-btn" id="fundWalletBtn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+            Fund Wallet
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="payNowBtn">Pay Now</button>
+    </section>
+
+  </main>
+
+  <!-- PURCHASE UPDATE MODAL -->
+  <div class="purchase-modal-backdrop hidden" id="purchaseModal">
+    <div class="purchase-sheet" role="dialog" aria-modal="true">
+      <div class="purchase-sheet-grip"></div>
+
+      <div class="purchase-sheet-head">
+        <div class="purchase-sheet-title">PURCHASE UPDATE</div>
+        <button type="button" class="purchase-sheet-close" id="pmClose" aria-label="Close">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="purchase-sheet-body">
+
+        <div class="pm-hero" id="pmHero">
+          <div class="pm-hero-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <div class="pm-hero-title" id="pmHeroTitle">successful</div>
+          <div class="pm-hero-sub" id="pmHeroSub">success</div>
+        </div>
+
+        <div class="pm-tracker" id="pmTracker">
+          <div class="pm-step" data-step="submitted">
+            <div class="pm-dot pm-dot-done">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="pm-step-label">Submitted</div>
+          </div>
+          <div class="pm-bar"></div>
+          <div class="pm-step" data-step="processing">
+            <div class="pm-dot pm-dot-idle">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="pm-step-label">Processing</div>
+          </div>
+          <div class="pm-bar"></div>
+          <div class="pm-step" data-step="completed">
+            <div class="pm-dot pm-dot-done">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="pm-step-label">Completed</div>
+          </div>
+        </div>
+
+        <div class="pm-grid">
+          <div class="pm-cell">
+            <div class="pm-cell-label">PRODUCT</div>
+            <div class="pm-cell-value" id="pmProduct">mtn-airtime</div>
+          </div>
+          <div class="pm-cell">
+            <div class="pm-cell-label">AMOUNT</div>
+            <div class="pm-cell-value" id="pmAmount">₦0.00</div>
+          </div>
+        </div>
+
+        <div class="pm-cell pm-cell-wide">
+          <div class="pm-cell-label">REMARK</div>
+          <div class="pm-cell-row">
+            <div class="pm-cell-value" id="pmRemark">Success</div>
+            <button type="button" class="pm-copy" id="pmCopy" aria-label="Copy remark">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="pm-grid pm-extra hidden" id="pmExtra">
+          <div class="pm-cell">
+            <div class="pm-cell-label">RECIPIENT</div>
+            <div class="pm-cell-value" id="pmRecipient">—</div>
+          </div>
+          <div class="pm-cell">
+            <div class="pm-cell-label">REFERENCE</div>
+            <div class="pm-cell-value" id="pmReference">—</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="purchase-sheet-foot">
+        <div class="pm-foot-row">
+          <button type="button" class="pm-btn pm-btn-ghost" id="pmShare">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            Share
+          </button>
+          <button type="button" class="pm-btn pm-btn-ghost" id="pmPrint">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 14h12v8H6z"/>
+            </svg>
+            Print
+          </button>
+        </div>
+
+        <button type="button" class="pm-btn pm-btn-blue" id="pmRefresh">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 3v5h5"/>
+          </svg>
+          Refresh Status
+        </button>
+
+        <button type="button" class="pm-btn pm-btn-primary" id="pmDone">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ SCRIPTS — order matters ═══════════ -->
+  <!-- 1. auth-guard first: no token → /login.html, no PIN → /pin.html -->
+  <script src="/js/auth-guard.js"></script>
+
+  <!-- 2. api base -->
+  <script src="/js/api.js"></script>
+
+  <!-- 3. page logic -->
+  <script type="module" src="/js/components.js"></script>
+  <script type="module" src="/js/airtime.js"></script>
+  <script src="/js/instant-nav.js?v=4" defer></script>
+
+  <script>
+    (function () {
+      const STEP_IDS = ['step-categories', 'step-bundles', 'step-checkout', 'step-pay'];
+      const HEADER_H = 46;
+      const GAP = 16;
+
+      function isDark() {
+        return document.body.classList.contains('dark') ||
+               document.body.classList.contains('theme-dark') ||
+               document.documentElement.dataset.theme === 'dark';
+      }
+
+      function freeze() {
+        STEP_IDS.forEach(function (id) {
+          const step = document.getElementById(id);
+          if (!step) return;
+          const head = step.querySelector(':scope > .page-head');
+          if (!head) return;
+
+          let spacer = step.querySelector(':scope > .page-head-spacer');
+          if (!spacer) {
+            spacer = document.createElement('div');
+            spacer.className = 'page-head-spacer';
+            head.parentNode.insertBefore(spacer, head.nextSibling);
+          }
+
+          if (step.classList.contains('hidden')) {
+            head.style.setProperty('display', 'none', 'important');
+            head.style.setProperty('position', 'static', 'important');
+            spacer.style.setProperty('display', 'none', 'important');
+            spacer.style.setProperty('height', '0', 'important');
+            return;
+          }
+
+          const bg   = isDark() ? '#0d0f0e' : '#f7f9f8';
+          const line = isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+
+          head.style.setProperty('display', 'flex', 'important');
+          head.style.setProperty('position', 'fixed', 'important');
+          head.style.setProperty('top', HEADER_H + 'px', 'important');
+          head.style.setProperty('left', '0', 'important');
+          head.style.setProperty('right', '0', 'important');
+          head.style.setProperty('margin', '0', 'important');
+          head.style.setProperty('padding', '10px 20px', 'important');
+          head.style.setProperty('z-index', '30', 'important');
+          head.style.setProperty('background', bg, 'important');
+          head.style.setProperty('border-bottom', '1px solid ' + line, 'important');
+          head.style.setProperty('box-shadow', '0 2px 8px -4px rgba(0,0,0,0.08)', 'important');
+          head.style.setProperty('box-sizing', 'border-box', 'important');
+          head.style.setProperty('align-items', 'center', 'important');
+          head.style.setProperty('gap', '10px', 'important');
+          head.style.setProperty('min-height', '54px', 'important');
+
+          requestAnimationFrame(function () {
+            const h = head.getBoundingClientRect().height || 54;
+            spacer.style.setProperty('display', 'block', 'important');
+            spacer.style.setProperty('height', (h + GAP) + 'px', 'important');
+            spacer.style.setProperty('width', '100%', 'important');
+            spacer.style.setProperty('pointer-events', 'none', 'important');
+          });
+        });
+      }
+
+      function schedule() {
+        requestAnimationFrame(function () {
+          freeze();
+          setTimeout(freeze, 100);
+          setTimeout(freeze, 350);
+        });
+      }
+
+      window.addEventListener('load', schedule);
+      window.addEventListener('resize', schedule);
+      window.addEventListener('orientationchange', schedule);
+      document.addEventListener('visibilitychange', schedule);
+
+      const observer = new MutationObserver(schedule);
+      STEP_IDS.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+      });
+
+      ['categoryList', 'bundlesList', 'selectedBundleCard', 'payBundleCard'].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el, { childList: true, subtree: true });
+      });
+
+      schedule();
+    })();
+  </script>
+
+</body>
+</html>

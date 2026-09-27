@@ -1,0 +1,493 @@
+/* frontend/css/pin.css */
+/* ============================================================ */
+/* SHATOVA — PIN (setup + verify + fingerprint)                 */
+/* Fluid · Professional · Slightly larger view                  */
+/* Feedback: green when positive, red when negative, slimmer    */
+/* ============================================================ */
+
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --pin-bg:        #ffffff;
+  --pin-text:      #1a2332;
+  --pin-muted:     #9aa5b4;
+  --pin-border:    #eef1f6;
+  --pin-border-hi: #d8dfe8;
+  --pin-accent:    #3b6fd9;
+  --pin-error:     #dc2626;
+  --pin-success:   #16a34a;
+  --pin-hover:     #f8fafc;
+  --pin-press:     #eef2f7;
+
+  /* ⬆ Fluid sizing — bigger & more spacious */
+  --key-size:  clamp(72px, 16vw, 96px);
+  --key-gap:   clamp(13px, 2.1vw, 22px);
+  --pad-width: calc((var(--key-size) * 3) + (var(--key-gap) * 2));
+
+  /* Soft layered shadows */
+  --key-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 2px 6px -1px rgba(15, 23, 42, 0.04),
+    0 1px 3px rgba(15, 23, 42, 0.03);
+  --key-shadow-hover:
+    0 3px 8px -1px rgba(15, 23, 42, 0.07),
+    0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  --key-shadow-press:
+    inset 0 2px 4px rgba(15, 23, 42, 0.08),
+    inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--pin-bg);
+  color: var(--pin-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body.pin-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 26px;
+}
+
+/* ============================================================
+   WRAPPER
+   ============================================================ */
+.pin-wrap {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: pinIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pinIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   LOCK ICON
+   ============================================================ */
+.pin-lock {
+  width: clamp(76px, 18vw, 96px);
+  height: clamp(76px, 18vw, 96px);
+  border-radius: 50%;
+  border: 1.5px solid var(--pin-border);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pin-accent);
+  margin-bottom: 26px;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 12px -4px rgba(15, 23, 42, 0.06);
+}
+.pin-lock svg {
+  width: 50%;
+  height: 50%;
+}
+.pin-lock.error {
+  border-color: var(--pin-error);
+  color: var(--pin-error);
+  animation: pinShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  box-shadow:
+    0 1px 2px rgba(220, 38, 38, 0.08),
+    0 4px 12px -4px rgba(220, 38, 38, 0.15);
+}
+.pin-lock.success {
+  border-color: var(--pin-success);
+  color: var(--pin-success);
+  box-shadow:
+    0 1px 2px rgba(22, 163, 74, 0.08),
+    0 4px 12px -4px rgba(22, 163, 74, 0.15);
+}
+.pin-lock.setup {
+  color: var(--pin-accent);
+  animation: pinPop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pinShake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-6px); }
+  40%, 60% { transform: translateX(6px); }
+}
+@keyframes pinPop {
+  from { transform: scale(0.9); opacity: 0.6; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ============================================================
+   TITLE / SUBTITLE
+   ============================================================ */
+.pin-title {
+  font-size: clamp(26px, 5.6vw, 33px);
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  color: var(--pin-text);
+  margin-bottom: 9px;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+.pin-subtitle {
+  font-size: clamp(14px, 3.3vw, 16.5px);
+  font-weight: 500;
+  color: var(--pin-muted);
+  margin-bottom: 36px;
+  text-align: center;
+  line-height: 1.45;
+  max-width: 340px;
+}
+
+/* ============================================================
+   DOTS
+   ============================================================ */
+.pin-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(15px, 3.6vw, 22px);
+  margin-bottom: 14px;
+  height: 20px;
+}
+.pin-dot {
+  width: clamp(14px, 3.4vw, 18px);
+  height: clamp(14px, 3.4vw, 18px);
+  border-radius: 50%;
+  background: #e6ebf2;
+  transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pin-dot.filled {
+  background: var(--pin-text);
+  transform: scale(1.05);
+}
+.pin-dots.error .pin-dot {
+  background: var(--pin-error);
+  animation: pinDotBounce 0.4s ease;
+}
+.pin-dots.success .pin-dot {
+  background: var(--pin-success);
+}
+.pin-dots.setup .pin-dot.filled {
+  background: var(--pin-accent);
+}
+@keyframes pinDotBounce {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.3); }
+}
+
+/* ============================================================
+   FEEDBACK MESSAGE — slim · green when positive · red when negative
+   ============================================================ */
+.pin-error {
+  font-size: clamp(12px, 2.7vw, 13.5px);
+  font-weight: 500;
+  letter-spacing: 0.05px;
+  color: var(--pin-error);
+  min-height: 18px;
+  margin-bottom: 8px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.25s ease, color 0.25s ease;
+  line-height: 1.4;
+  max-width: 320px;
+}
+.pin-error.show { opacity: 1; }
+
+/* Positive feedback — green */
+.pin-error.success,
+.pin-error.is-success {
+  color: var(--pin-success);
+}
+
+/* ============================================================
+   FINGERPRINT BUTTON
+   ============================================================ */
+.pin-bio {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 26px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  border: 1.5px solid var(--pin-border);
+  background: #ffffff;
+  color: var(--pin-accent);
+  font-family: inherit;
+  font-size: clamp(13.5px, 3.2vw, 15.5px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 2px 6px -1px rgba(15, 23, 42, 0.03);
+}
+.pin-bio svg {
+  width: clamp(20px, 4.4vw, 24px);
+  height: clamp(20px, 4.4vw, 24px);
+}
+.pin-bio:hover {
+  border-color: var(--pin-accent);
+  background: #f5f9ff;
+  transform: translateY(-1px);
+  box-shadow:
+    0 3px 8px -1px rgba(59, 111, 217, 0.15),
+    0 2px 4px -1px rgba(59, 111, 217, 0.1);
+}
+.pin-bio:active { transform: translateY(0) scale(0.97); }
+.pin-bio[hidden] { display: none; }
+.pin-bio.busy { pointer-events: none; opacity: 0.7; }
+.pin-bio.busy svg { animation: pinBioPulse 1s ease-in-out infinite; }
+@keyframes pinBioPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+/* ============================================================
+   KEYPAD
+   ============================================================ */
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, var(--key-size));
+  gap: var(--key-gap);
+  justify-content: center;
+  width: 100%;
+  max-width: var(--pad-width);
+  margin: 22px 0 36px;
+}
+
+.pin-key {
+  width: var(--key-size);
+  height: var(--key-size);
+  border-radius: 50%;
+  border: 1.5px solid var(--pin-border);
+  background: linear-gradient(180deg, #ffffff 0%, #fdfefe 100%);
+  color: var(--pin-text);
+  font-family: inherit;
+  font-size: clamp(24px, 5.6vw, 31px);
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.14s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: var(--key-shadow);
+}
+.pin-key:hover {
+  border-color: var(--pin-border-hi);
+  background: #ffffff;
+  box-shadow: var(--key-shadow-hover);
+  transform: translateY(-1px);
+}
+.pin-key:active,
+.pin-key.pressed {
+  background: var(--pin-press);
+  transform: scale(0.94) translateY(0);
+  border-color: var(--pin-border-hi);
+  box-shadow: var(--key-shadow-press);
+}
+
+.pin-key-text {
+  font-size: clamp(13px, 3vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  color: var(--pin-muted);
+}
+.pin-key-text:active,
+.pin-key-text.pressed { color: var(--pin-text); }
+
+.pin-key-icon svg {
+  width: clamp(24px, 5.2vw, 29px);
+  height: clamp(24px, 5.2vw, 29px);
+  color: var(--pin-text);
+}
+.pin-key-icon { color: var(--pin-text); }
+
+/* ============================================================
+   BOTTOM BUTTON
+   ============================================================ */
+.pin-bottom {
+  width: 100%;
+  max-width: var(--pad-width);
+  padding: clamp(17px, 3.8vw, 20px) 26px;
+  border-radius: 999px;
+  border: 1.5px solid var(--pin-border);
+  background: #ffffff;
+  color: var(--pin-text);
+  font-family: inherit;
+  font-size: clamp(15px, 3.4vw, 17px);
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 2px 6px -1px rgba(15, 23, 42, 0.03);
+}
+.pin-bottom:hover {
+  border-color: var(--pin-border-hi);
+  background: var(--pin-hover);
+  box-shadow:
+    0 3px 8px -1px rgba(15, 23, 42, 0.06),
+    0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  transform: translateY(-1px);
+}
+.pin-bottom:active {
+  transform: scale(0.98) translateY(0);
+  background: var(--pin-press);
+  box-shadow: var(--key-shadow-press);
+}
+.pin-bottom.primary {
+  background: var(--pin-accent);
+  border-color: var(--pin-accent);
+  color: #fff;
+}
+.pin-bottom.primary:hover {
+  background: #2f5cc0;
+  border-color: #2f5cc0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Small phones (≤ 360px) */
+@media (max-width: 360px) {
+  body.pin-page { padding: 22px 18px; }
+  .pin-wrap { max-width: 360px; }
+  .pin-title { font-size: 23px; }
+  .pin-subtitle { font-size: 13.5px; margin-bottom: 26px; }
+  .pin-lock { margin-bottom: 20px; }
+  .pin-pad { margin: 18px 0 28px; }
+}
+
+/* Short screens (≤ 700px tall) */
+@media (max-height: 700px) and (min-width: 480px) {
+  body.pin-page {
+    padding: 26px;
+    align-items: flex-start;
+  }
+  .pin-lock { margin-bottom: 18px; }
+  .pin-subtitle { margin-bottom: 26px; }
+  .pin-pad { margin: 14px 0 22px; }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  body.pin-page { padding: 16px; align-items: center; }
+  .pin-wrap {
+    max-width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+  .pin-lock { margin-bottom: 0; }
+  .pin-title,
+  .pin-subtitle,
+  .pin-dots,
+  .pin-error { width: 100%; }
+  .pin-pad { margin: 12px 0 16px; }
+}
+
+/* Tablets and up (≥ 768px) */
+@media (min-width: 768px) {
+  body.pin-page { padding: 52px; }
+  .pin-wrap { max-width: 560px; }
+  .pin-title { margin-bottom: 11px; }
+  .pin-subtitle { margin-bottom: 42px; }
+  .pin-lock { margin-bottom: 30px; }
+  .pin-pad { margin: 28px 0 44px; }
+}
+
+/* Large desktops (≥ 1200px) */
+@media (min-width: 1200px) {
+  .pin-wrap { max-width: 620px; }
+  .pin-pad { margin: 34px 0 52px; }
+}
+
+/* ============================================================
+   LOADING STATES
+   ============================================================ */
+
+.pin-spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid rgba(26, 35, 50, 0.15);
+  border-top-color: var(--pin-text);
+  animation: pinSpin 0.7s linear infinite;
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+.pin-bottom.primary .pin-spinner {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+}
+@keyframes pinSpin {
+  to { transform: rotate(360deg); }
+}
+
+.pin-lock.loading {
+  border-color: var(--pin-accent);
+  color: var(--pin-accent);
+  animation: pinLoadPulse 1.4s ease-in-out infinite;
+}
+.pin-lock.loading svg {
+  opacity: 0.65;
+}
+@keyframes pinLoadPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(59, 111, 217, 0.25),
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 4px 12px -4px rgba(15, 23, 42, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 0 0 12px rgba(59, 111, 217, 0),
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 4px 12px -4px rgba(15, 23, 42, 0.06);
+  }
+}
+
+.pin-key:disabled,
+.pin-key[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pin-bottom:disabled {
+  opacity: 0.85;
+  cursor: wait;
+  transform: none !important;
+}
+
+.pin-lock.loading ~ .pin-title {
+  color: var(--pin-accent);
+  transition: color 0.3s ease;
+}
+
+.pin-lock.success {
+  animation: pinSuccessPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes pinSuccessPop {
+  0%   { transform: scale(0.9); }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}

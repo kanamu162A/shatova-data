@@ -1,0 +1,738 @@
+/* frontend/css/airtime-to-cash.css */
+/* ============================================================
+   SHATOVA — AIRTIME TO CASH
+   Flat buttons · no shadow · no border · lightened green
+   ============================================================ */
+
+.atc-page {
+  position: relative;
+  padding-top: 0 !important;
+  padding-bottom: 32px;
+  min-height: 100vh;
+}
+
+.atc-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #f7f9f8 0%, #f2f6f4 100%);
+}
+[data-theme="dark"] .atc-page::before,
+.theme-dark .atc-page::before,
+body.dark .atc-page::before {
+  background: linear-gradient(180deg, #0d0f0e 0%, #0a0c0b 100%);
+}
+
+/* ============================================================
+   PAGE HEAD
+   ============================================================ */
+.atc-page-head {
+  position: sticky;
+  top: var(--header-h, 46px);
+  z-index: 30;
+  margin: 0 -20px 0;
+  padding: 8px 20px;
+  background: #f7f9f8;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+[data-theme="dark"] .atc-page-head,
+.theme-dark .atc-page-head,
+body.dark .atc-page-head {
+  background: #0d0f0e;
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+.atc-page-head .page-head-titles {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 0 40px;
+}
+.atc-page-head .page-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.atc-page-head .page-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #0a0a0a;
+  margin: 0;
+  line-height: 1.2;
+}
+[data-theme="dark"] .atc-page-head .page-title,
+.theme-dark .atc-page-head .page-title,
+body.dark .atc-page-head .page-title { color: #f5f7f6; }
+.atc-page-head .back-btn {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  color: #0a4534;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+.atc-page-head .back-btn svg { width: 15px; height: 15px; }
+[data-theme="dark"] .atc-page-head .back-btn,
+.theme-dark .atc-page-head .back-btn,
+body.dark .atc-page-head .back-btn {
+  background: #1a1d1c;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #22c55e;
+}
+
+/* ============================================================
+   ALERT
+   ============================================================ */
+.atc-alert {
+  display: flex;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fef3c7;
+  border: 1px solid rgba(180, 83, 9, 0.22);
+  color: #78350f;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 12px 0;
+  align-items: flex-start;
+}
+.atc-alert svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: #b45309;
+  margin-top: 1px;
+}
+.atc-alert strong {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 2px;
+  font-size: 13.5px;
+}
+[data-theme="dark"] .atc-alert,
+.theme-dark .atc-alert,
+body.dark .atc-alert {
+  background: rgba(180, 83, 9, 0.14);
+  border-color: rgba(251, 191, 36, 0.28);
+  color: #fbbf24;
+}
+[data-theme="dark"] .atc-alert svg,
+.theme-dark .atc-alert svg,
+body.dark .atc-alert svg { color: #fbbf24; }
+
+/* ============================================================
+   ADMIN CARD
+   ============================================================ */
+.atc-admin {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+[data-theme="dark"] .atc-admin,
+.theme-dark .atc-admin,
+body.dark .atc-admin {
+  background: #161918;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.atc-admin-avatar {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #dbeafe, #bfdbfe);
+  color: #1e40af;
+  display: flex; align-items: center; justify-content: center;
+}
+.atc-admin-avatar svg { width: 20px; height: 20px; }
+[data-theme="dark"] .atc-admin-avatar,
+.theme-dark .atc-admin-avatar,
+body.dark .atc-admin-avatar {
+  background: linear-gradient(145deg, rgba(34, 197, 94, 0.22), rgba(22, 163, 74, 0.15));
+  color: #22c55e;
+}
+.atc-admin-info { flex: 1; min-width: 0; }
+.atc-admin-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.atc-admin-phone {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a0a0a;
+  letter-spacing: -0.2px;
+}
+[data-theme="dark"] .atc-admin-phone,
+.theme-dark .atc-admin-phone,
+body.dark .atc-admin-phone { color: #f5f7f6; }
+
+.atc-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 4px 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.atc-live i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: atcPulse 1.6s ease-in-out infinite;
+}
+@keyframes atcPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+[data-theme="dark"] .atc-live,
+.theme-dark .atc-live,
+body.dark .atc-live { color: #22c55e; background: rgba(34, 197, 94, 0.14); }
+
+/* ============================================================
+   CONTACT BUTTONS — FLAT · no shadow · no border · lightened green
+   ============================================================ */
+.atc-contact-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.atc-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 38px;
+  overflow: hidden;
+  box-shadow: none;                    /* ⭐ no shadow */
+}
+.atc-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.atc-btn:hover { /* ⭐ no hover lift, no shadow — just slightly darker */ }
+.atc-btn:active { opacity: 0.9; }
+
+/* WhatsApp button — lightened flat green */
+.atc-btn-wa {
+  width: 48%;
+  max-width: 210px;
+  background: #4ade80;                 /* ⭐ lightened WhatsApp green */
+  color: #0a4534;
+}
+.atc-btn-wa:hover { background: #3ecd73; }    /* slightly darker on hover, no shadow */
+.atc-btn-wa svg { color: #0a4534; }
+
+/* Call button — flat, no border */
+.atc-btn-call {
+  width: 34%;
+  max-width: 150px;
+  background: #e8f0ee;                 /* ⭐ very light neutral */
+  color: #0a4534;
+  border: none;                        /* ⭐ no border */
+}
+.atc-btn-call:hover { background: #dce5e2; }
+
+[data-theme="dark"] .atc-btn-wa,
+.theme-dark .atc-btn-wa,
+body.dark .atc-btn-wa {
+  background: #22c55e;
+  color: #0a0a0a;
+}
+[data-theme="dark"] .atc-btn-wa svg,
+.theme-dark .atc-btn-wa svg,
+body.dark .atc-btn-wa svg { color: #0a0a0a; }
+[data-theme="dark"] .atc-btn-wa:hover,
+.theme-dark .atc-btn-wa:hover,
+body.dark .atc-btn-wa:hover { background: #16a34a; }
+
+[data-theme="dark"] .atc-btn-call,
+.theme-dark .atc-btn-call,
+body.dark .atc-btn-call {
+  background: #1a1d1c;
+  color: #22c55e;
+}
+[data-theme="dark"] .atc-btn-call:hover,
+.theme-dark .atc-btn-call:hover,
+body.dark .atc-btn-call:hover { background: #212524; }
+
+/* ⭐ Loading state — spinner */
+.atc-btn.loading,
+.atc-submit.loading {
+  pointer-events: none;
+  opacity: 0.85;
+}
+.atc-btn.loading > svg,
+.atc-btn.loading > span,
+.atc-submit.loading > svg,
+.atc-submit.loading > span {
+  visibility: hidden;
+}
+.atc-btn.loading::after,
+.atc-submit.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(10, 69, 52, 0.25);
+  border-top-color: #0a4534;
+  animation: atcSpin 0.7s linear infinite;
+}
+[data-theme="dark"] .atc-btn.loading::after,
+.theme-dark .atc-btn.loading::after,
+body.dark .atc-btn.loading::after,
+[data-theme="dark"] .atc-submit.loading::after,
+.theme-dark .atc-submit.loading::after,
+body.dark .atc-submit.loading::after {
+  border-color: rgba(10, 10, 10, 0.25);
+  border-top-color: #0a0a0a;
+}
+@keyframes atcSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   SECTION LABEL
+   ============================================================ */
+.atc-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #9ca3af;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin: 22px 0 10px 2px;
+}
+[data-theme="dark"] .atc-label,
+.theme-dark .atc-label,
+body.dark .atc-label { color: #6b7280; }
+
+/* ============================================================
+   RATES
+   ============================================================ */
+.atc-rates {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+[data-theme="dark"] .atc-rates,
+.theme-dark .atc-rates,
+body.dark .atc-rates {
+  background: #161918;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.atc-rate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+.atc-rate:last-child { border-bottom: none; }
+[data-theme="dark"] .atc-rate,
+.theme-dark .atc-rate,
+body.dark .atc-rate { border-bottom-color: rgba(255, 255, 255, 0.04); }
+
+.atc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+.atc-badge.mtn    { background: #ffcb05; color: #0a0a0a; }
+.atc-badge.airtel { background: #e60000; color: #fff; }
+.atc-badge.glo    { background: #00a651; color: #fff; }
+.atc-badge.t2     { background: #f26522; color: #fff; }
+
+.atc-rate-pct {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a4534;
+  letter-spacing: -0.3px;
+}
+[data-theme="dark"] .atc-rate-pct,
+.theme-dark .atc-rate-pct,
+body.dark .atc-rate-pct { color: #22c55e; }
+.atc-rate-note {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+/* ============================================================
+   STEPS
+   ============================================================ */
+.atc-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.atc-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+}
+[data-theme="dark"] .atc-step,
+.theme-dark .atc-step,
+body.dark .atc-step {
+  background: #161918;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.atc-step-num {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: #0a4534;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+[data-theme="dark"] .atc-step-num,
+.theme-dark .atc-step-num,
+body.dark .atc-step-num { background: #22c55e; color: #0a0a0a; }
+.atc-step-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0a0a0a;
+  letter-spacing: -0.15px;
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+[data-theme="dark"] .atc-step-title,
+.theme-dark .atc-step-title,
+body.dark .atc-step-title { color: #f5f7f6; }
+.atc-step-sub {
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.45;
+}
+[data-theme="dark"] .atc-step-sub,
+.theme-dark .atc-step-sub,
+body.dark .atc-step-sub { color: #9aa3a0; }
+
+/* ============================================================
+   FORM
+   ============================================================ */
+.atc-form {
+  padding: 16px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+}
+[data-theme="dark"] .atc-form,
+.theme-dark .atc-form,
+body.dark .atc-form {
+  background: #161918;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.atc-field { margin-bottom: 14px; }
+.atc-form-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0.1px;
+  margin-bottom: 7px;
+}
+[data-theme="dark"] .atc-form-label,
+.theme-dark .atc-form-label,
+body.dark .atc-form-label { color: #d1d7d4; }
+
+.atc-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 11px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f9fafb;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a0a0a;
+  outline: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.atc-input::placeholder { color: #9ca3af; font-weight: 400; font-size: 13.5px; }
+.atc-input:hover { background: #ffffff; border-color: rgba(0, 0, 0, 0.14); }
+.atc-input:focus {
+  background: #ffffff;
+  border-color: #0a4534;
+}
+[data-theme="dark"] .atc-input,
+.theme-dark .atc-input,
+body.dark .atc-input {
+  background: #0f1211;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #f5f7f6;
+}
+[data-theme="dark"] .atc-input:hover,
+.theme-dark .atc-input:hover,
+body.dark .atc-input:hover { background: #161918; border-color: rgba(255, 255, 255, 0.16); }
+[data-theme="dark"] .atc-input:focus,
+.theme-dark .atc-input:focus,
+body.dark .atc-input:focus {
+  background: #161918;
+  border-color: #22c55e;
+}
+
+/* ============================================================
+   NETWORK PICKER
+   ============================================================ */
+.atc-net-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+}
+.atc-net {
+  padding: 7px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(0, 0, 0, 0.06);
+  background: #f9fafb;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.atc-net:hover { background: #ffffff; border-color: rgba(0, 0, 0, 0.14); }
+.atc-net.active {
+  border-color: #0a4534;
+  background: rgba(10, 69, 52, 0.05);
+}
+[data-theme="dark"] .atc-net,
+.theme-dark .atc-net,
+body.dark .atc-net { background: #0f1211; border-color: rgba(255, 255, 255, 0.08); }
+[data-theme="dark"] .atc-net.active,
+.theme-dark .atc-net.active,
+body.dark .atc-net.active {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+.atc-net-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+.atc-net-chip.mtn    { background: #ffcb05; color: #0a0a0a; }
+.atc-net-chip.airtel { background: #e60000; color: #fff; }
+.atc-net-chip.glo    { background: #00a651; color: #fff; }
+.atc-net-chip.t2     { background: #f26522; color: #fff; }
+
+/* ============================================================
+   PAYOUT PREVIEW
+   ============================================================ */
+.atc-payout {
+  margin-top: 9px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f6f8f7;
+  font-size: 12.5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+}
+[data-theme="dark"] .atc-payout,
+.theme-dark .atc-payout,
+body.dark .atc-payout { background: #0f1211; }
+.atc-payout-empty { color: #9ca3af; font-weight: 500; }
+.atc-payout-rate { color: #6b7280; font-weight: 600; }
+.atc-payout-rate b { color: #16a34a; font-weight: 800; font-size: 13.5px; }
+.atc-payout-ask { color: #b45309; font-weight: 700; }
+.atc-payout-line {
+  display: inline-flex;
+  gap: 5px;
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 12.5px;
+}
+.atc-payout-line b { color: #0a0a0a; font-weight: 800; }
+.atc-payout-line.total { color: #16a34a; font-weight: 700; }
+.atc-payout-line.total b { color: #16a34a; font-size: 15px; }
+[data-theme="dark"] .atc-payout-line,
+.theme-dark .atc-payout-line,
+body.dark .atc-payout-line { color: #9aa3a0; }
+[data-theme="dark"] .atc-payout-line b,
+.theme-dark .atc-payout-line b,
+body.dark .atc-payout-line b { color: #f5f7f6; }
+[data-theme="dark"] .atc-payout-line.total,
+.theme-dark .atc-payout-line.total,
+body.dark .atc-payout-line.total { color: #22c55e; }
+[data-theme="dark"] .atc-payout-line.total b,
+.theme-dark .atc-payout-line.total b,
+body.dark .atc-payout-line.total b { color: #22c55e; }
+
+/* ============================================================
+   SUBMIT BUTTON — FLAT · no shadow · lightened green
+   ============================================================ */
+.atc-submit {
+  position: relative;
+  width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #4ade80;                 /* ⭐ lightened WhatsApp green */
+  color: #0a4534;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  margin-top: 6px;
+  min-height: 42px;
+  overflow: hidden;
+  box-shadow: none;
+}
+.atc-submit svg { width: 16px; height: 16px; color: #0a4534; }
+.atc-submit:hover { background: #3ecd73; }    /* darker on hover, no shadow */
+.atc-submit:active { opacity: 0.9; }
+
+[data-theme="dark"] .atc-submit,
+.theme-dark .atc-submit,
+body.dark .atc-submit {
+  background: #22c55e;
+  color: #0a0a0a;
+}
+[data-theme="dark"] .atc-submit svg,
+.theme-dark .atc-submit svg,
+body.dark .atc-submit svg { color: #0a0a0a; }
+[data-theme="dark"] .atc-submit:hover,
+.theme-dark .atc-submit:hover,
+body.dark .atc-submit:hover { background: #16a34a; }
+
+.atc-note {
+  font-size: 11.5px;
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.08);
+  border-radius: 8px;
+  padding: 9px 11px;
+  margin-top: 10px;
+  line-height: 1.45;
+  text-align: center;
+}
+[data-theme="dark"] .atc-note,
+.theme-dark .atc-note,
+body.dark .atc-note {
+  color: #fbbf24;
+  background: rgba(180, 83, 9, 0.14);
+}
+
+/* ============================================================
+   INFO LIST
+   ============================================================ */
+.atc-info {
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+[data-theme="dark"] .atc-info,
+.theme-dark .atc-info,
+body.dark .atc-info {
+  background: #161918;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+.atc-info li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+.atc-info li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+.atc-info li b { color: #0a0a0a; font-weight: 800; }
+[data-theme="dark"] .atc-info li,
+.theme-dark .atc-info li,
+body.dark .atc-info li { color: #9aa3a0; }
+[data-theme="dark"] .atc-info li b,
+.theme-dark .atc-info li b,
+body.dark .atc-info li b { color: #f5f7f6; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.atc-footer {
+  text-align: center;
+  font-size: 11.5px;
+  color: #9ca3af;
+  font-weight: 500;
+  margin-top: 26px;
+  padding-bottom: 8px;
+}
+[data-theme="dark"] .atc-footer,
+.theme-dark .atc-footer,
+body.dark .atc-footer { color: #6b7280; }
