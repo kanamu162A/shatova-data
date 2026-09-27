@@ -160,19 +160,33 @@ function logFatal(label, err) {
   console.error('message :', err?.message || '(empty)');
   console.error('code    :', err?.code);
   console.error('name    :', err?.name);
-  console.error('detail  :', err?.detail);
-  console.error('hint    :', err?.hint);
-  console.error('context :', err?.context);
-  console.error('status  :', err?.statusCode);
   console.error('stack   :');
   console.error(err?.stack || '(no stack)');
-  console.error('--- env snapshot ---');
-  console.error('NODE_ENV    :', process.env.NODE_ENV);
-  console.error('PORT        :', process.env.PORT);
-  console.error('DATABASE_URL:', process.env.DATABASE_URL ? '<set>' : '<MISSING>');
-  console.error('JWT_SECRET  :', process.env.JWT_SECRET ? '<set>' : '<MISSING>');
-  console.error('VTU_API_KEY :', process.env.VTU_API_KEY ? '<set>' : '<MISSING>');
   console.error('══════════════════════════════════════════════════');
+}
+
+/* ── DB URL diagnostic ──────────────────────────────────── */
+function logDbUrl() {
+  const raw = process.env.DATABASE_URL;
+  if (!raw) {
+    console.error('[start] ❌ DATABASE_URL is not set');
+    return;
+  }
+  try {
+    const u = new URL(raw);
+    console.log('[start] DB host :', u.hostname);
+    console.log('[start] DB port :', u.port || '5432');
+    console.log('[start] DB name :', u.pathname.slice(1));
+    console.log('[start] DB user :', u.username);
+    console.log('[start] DB proto:', u.protocol);
+    const isLocal = /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(u.hostname);
+    if (isLocal) {
+      console.error('[start] ⚠ DATABASE_URL points to LOCALHOST — Render cannot reach this.');
+      console.error('[start] ⚠ Set DATABASE_URL to your Render Postgres Internal URL.');
+    }
+  } catch (e) {
+    console.error('[start] ❌ DATABASE_URL is not a valid URL:', raw);
+  }
 }
 
 /* ── Start ──────────────────────────────────────────────── */
@@ -181,7 +195,8 @@ async function start() {
     console.log('[start] ▶ booting server.js');
     console.log('[start] NODE_ENV :', process.env.NODE_ENV);
     console.log('[start] PORT     :', process.env.PORT || '(default)');
-    console.log('[start] DB URL   :', process.env.DATABASE_URL ? '<set>' : '<MISSING>');
+    console.log('[start] ▶ DB config:');
+    logDbUrl();
 
     console.log('[start] ▶ testing DB connection…');
     await testConnection();
