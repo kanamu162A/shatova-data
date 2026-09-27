@@ -150,23 +150,61 @@ app.get('/admin',                page('admin.html'));
 app.use(notFound);
 app.use(errorHandler);
 
+/* ════════════════════════════════════════════════════════════
+   ERROR HELPERS
+   ════════════════════════════════════════════════════════════ */
+function logFatal(label, err) {
+  console.error('══════════════════════════════════════════════════');
+  console.error(label);
+  console.error('══════════════════════════════════════════════════');
+  console.error('message :', err?.message || '(empty)');
+  console.error('code    :', err?.code);
+  console.error('name    :', err?.name);
+  console.error('detail  :', err?.detail);
+  console.error('hint    :', err?.hint);
+  console.error('context :', err?.context);
+  console.error('status  :', err?.statusCode);
+  console.error('stack   :');
+  console.error(err?.stack || '(no stack)');
+  console.error('--- env snapshot ---');
+  console.error('NODE_ENV    :', process.env.NODE_ENV);
+  console.error('PORT        :', process.env.PORT);
+  console.error('DATABASE_URL:', process.env.DATABASE_URL ? '<set>' : '<MISSING>');
+  console.error('JWT_SECRET  :', process.env.JWT_SECRET ? '<set>' : '<MISSING>');
+  console.error('VTU_API_KEY :', process.env.VTU_API_KEY ? '<set>' : '<MISSING>');
+  console.error('══════════════════════════════════════════════════');
+}
+
 /* ── Start ──────────────────────────────────────────────── */
 async function start() {
   try {
-    await testConnection();
-    logEnvSummary();
+    console.log('[start] ▶ booting server.js');
+    console.log('[start] NODE_ENV :', process.env.NODE_ENV);
+    console.log('[start] PORT     :', process.env.PORT || '(default)');
+    console.log('[start] DB URL   :', process.env.DATABASE_URL ? '<set>' : '<MISSING>');
 
-    const server = app.listen(env.PORT, () => {
-      console.log(`Shatova API listening on http://localhost:${env.PORT}`);
-      console.log(`HTTP logs:  ${LOG_HTTP}`);
-      console.log(`CORS mode:  ${isProd ? 'PRODUCTION' : 'DEVELOPMENT'}`);
+    console.log('[start] ▶ testing DB connection…');
+    await testConnection();
+    console.log('[start] ✅ DB connected');
+
+    console.log('[start] ▶ logging env summary…');
+    logEnvSummary();
+    console.log('[start] ✅ env summary ok');
+
+    const port = env.PORT || process.env.PORT || 3000;
+    const server = app.listen(port, () => {
+      console.log(`[start] ✅ Shatova API listening on http://localhost:${port}`);
+      console.log(`[start]   HTTP logs:  ${LOG_HTTP}`);
+      console.log(`[start]   CORS mode:  ${isProd ? 'PRODUCTION' : 'DEVELOPMENT'}`);
     });
 
+    console.log('[start] ▶ starting background jobs…');
     startCatalogSyncJob();
     startAirtimeStatusJob();
     startDataStatusJob();
     startWalletReconcileJob();
     startMoneyAuditJob();
+    console.log('[start] ✅ background jobs started');
 
     const runDataReconciler = async () => {
       try { await reconcileProcessingDataTransactions(50); }
@@ -174,23 +212,31 @@ async function start() {
     };
     setInterval(runDataReconciler, 60_000);
     setTimeout(runDataReconciler, 15_000);
-    console.log('[data-reconcile] scheduled every 60s');
+    console.log('[start] ✅ data reconciler scheduled every 60s');
 
     const shutdown = (signal) => {
-      console.log(`\n${signal} received, shutting down...`);
+      console.log(`\n[shutdown] ${signal} received, shutting down...`);
       server.close(() => process.exit(0));
     };
     process.on('SIGINT',  () => shutdown('SIGINT'));
     process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+    console.log('[start] ✅ boot complete');
   } catch (err) {
-    console.error('Startup failed:', err.message);
+    logFatal('STARTUP FAILED', err);
     process.exit(1);
   }
 }
 
-process.on('unhandledRejection', (reason) => console.error('Unhandled rejection:', reason));
+/* ════════════════════════════════════════════════════════════
+   GLOBAL HANDLERS
+   ════════════════════════════════════════════════════════════ */
+process.on('unhandledRejection', (reason) => {
+  logFatal('UNHANDLED PROMISE REJECTION', reason instanceof Error ? reason : new Error(String(reason)));
+});
+
 process.on('uncaughtException', (err) => {
-  console.error('Uncaught exception:', err);
+  logFatal('UNCAUGHT EXCEPTION', err);
   process.exit(1);
 });
 
