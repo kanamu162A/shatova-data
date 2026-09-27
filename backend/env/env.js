@@ -4,19 +4,52 @@ import 'dotenv/config';
 /* ────────────────────────────────────────────────────────────
    Database URL resolution (unchanged)
    ──────────────────────────────────────────────────────────── */
-function resolveDatabaseUrl() {
-  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
-  const { PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
-  if (PGHOST && PGDATABASE && PGUSER && PGPASSWORD) {
-    const port = PGPORT || 5432;
-    return `postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${port}/${PGDATABASE}`;
+function cleanEnv(value) {
+  if (value == null) return '';
+  const v = String(value).trim();
+  // Allow values copied into .env/Render without surrounding quotes.
+  if (
+    (v.startsWith('"') && v.endsWith('"')) ||
+    (v.startsWith("'") && v.endsWith("'"))
+  ) {
+    return v.slice(1, -1).trim();
   }
+  return v;
+}
+
+function resolveDatabaseUrl() {
+  // Preferred: Render/Supabase/production connection string.
+  const databaseUrl = cleanEnv(process.env.DATABASE_URL);
+  if (databaseUrl) return databaseUrl;
+
+  // Fallback: individual PostgreSQL variables for local development.
+  const PGHOST = cleanEnv(process.env.PGHOST);
+  const PGPORT = cleanEnv(process.env.PGPORT) || '5432';
+  const PGDATABASE = cleanEnv(process.env.PGDATABASE);
+  const PGUSER = cleanEnv(process.env.PGUSER);
+  const PGPASSWORD = cleanEnv(process.env.PGPASSWORD);
+
+  if (PGHOST && PGDATABASE && PGUSER && PGPASSWORD) {
+    return `postgresql://${encodeURIComponent(PGUSER)}:${encodeURIComponent(PGPASSWORD)}@${PGHOST}:${PGPORT}/${PGDATABASE}`;
+  }
+
   return null;
 }
 
 const DATABASE_URL = resolveDatabaseUrl();
-if (!DATABASE_URL) throw new Error('Missing DATABASE_URL or PG* vars in .env');
-if (!process.env.JWT_SECRET) throw new Error('Missing JWT_SECRET in .env');
+const JWT_SECRET = cleanEnv(process.env.JWT_SECRET);
+
+if (!DATABASE_URL) {
+  throw new Error(
+    'Missing DATABASE_URL. Add DATABASE_URL to Render Environment Variables or configure PGHOST, PGDATABASE, PGUSER and PGPASSWORD.'
+  );
+}
+
+if (!JWT_SECRET) {
+  throw new Error(
+    'Missing JWT_SECRET. Add JWT_SECRET to Render Environment Variables.'
+  );
+}
 
 /* ────────────────────────────────────────────────────────────
    Main env object
@@ -28,7 +61,7 @@ export const env = Object.freeze({
 
   DATABASE_URL,
 
-  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '30d',
 
   ADMIN_EMAILS: (process.env.ADMIN_EMAILS || '')
