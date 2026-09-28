@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { authenticate, requireAdmin } from '../middleware/auth.middleware.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import * as ctrl from '../controllers/walletAdmin.controller.js';
+import * as ctrl from '../controllers/walletAdmin.Controller.js';
 
 const router = Router();
 router.use(authenticate, requireAdmin);
