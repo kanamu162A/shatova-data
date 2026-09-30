@@ -1,0 +1,51 @@
+{
+  "packageId": "com.shatova.data",
+  "host": "shatova-data.onrender.com",
+  "name": "Shatova - Buy Data & Airtime",
+  "launcherName": "Shatova",
+  "display": "standalone",
+  "themeColor": "#0A4534",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#0A4534",
+  "enableNotifications": true,
+  "startUrl": "/home.html",
+  "iconUrl": "https://shatova-data.onrender.com/icons/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "C:\\Users\\SHATOVA\\Desktop\\shatova_data\\android.keystore",
+    "alias": "shatova"
+  },
+  "appVersionName": "2",
+  "appVersionCode": 2,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://shatova-data.onrender.com/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://shatova-data.onrender.com/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [
+    {
+      "name": "android.keystore",
+      "value": "E6:93:92:C8:B9:71:E7:E2:91:0E:F1:51:75:69:3E:FC:44:EE:C1:F7:D5:E0:7B:23:DB:BC:95:1C:4B:BB:C9:20"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "2"
+}

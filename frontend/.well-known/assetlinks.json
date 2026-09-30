@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.shatova.data",
+    "sha256_cert_fingerprints": [
+      "E6:93:92:C8:B9:71:E7:E2:91:0E:F1:51:75:69:3E:FC:44:EE:C1:F7:D5:E0:7B:23:DB:BC:95:1C:4B:BB:C9:20"
+    ]
+  }
+}]

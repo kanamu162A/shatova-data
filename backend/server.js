@@ -59,7 +59,9 @@ app.use(cors({
     if (!origin) return cb(null, true);
     if (allowedOrigins.includes(origin)) return cb(null, true);
     if (!isProd && allowedPatterns.some((rx) => rx.test(origin))) return cb(null, true);
-    if (!blockedSeen.has(origin)) {
+
+    // ✅ FIXED #4: cap the set size so it can't grow unbounded on long-running servers
+    if (blockedSeen.size < 1000 && !blockedSeen.has(origin)) {
       blockedSeen.add(origin);
       console.warn(`[cors] blocked origin: ${origin}`);
     }
@@ -92,21 +94,33 @@ app.get('/health', (req, res) => {
 });
 
 /* ════════════════════════════════════════════════════════════
-   PWA FILES  ← NEW (added for APK)
+   PWA FILES
    ════════════════════════════════════════════════════════════ */
+
+// ✅ FIXED #2: cache manifest for 1 hour; keep SW uncached so updates land fast
 app.get('/manifest.webmanifest', (req, res) => {
   res.setHeader('Content-Type', 'application/manifest+json');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
   res.sendFile(path.join(FRONTEND, 'manifest.webmanifest'));
 });
 
 app.get('/service-worker.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Service-Worker-Allowed', '/');
+  res.setHeader('Cache-Control', 'no-cache'); // browser revalidates each load
   res.sendFile(path.join(FRONTEND, 'service-worker.js'));
 });
 
 app.get('/offline.html', (req, res) => {
   res.sendFile(path.join(FRONTEND, 'offline.html'));
+});
+
+// ✅ FIXED #5: explicit route for Android TWA verification (see notes below).
+// If you're NOT shipping an Android TWA, you can delete this block safely.
+app.get('/.well-known/assetlinks.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.sendFile(path.join(FRONTEND, '.well-known/assetlinks.json'));
 });
 /* ════════════════════════════════════════════════════════════ */
 
@@ -129,41 +143,12 @@ app.get('/index',      (req, res) => res.redirect('/pin.html'));
 /* ── Static assets — after redirects ────────────────────── */
 app.use(express.static(FRONTEND, { index: false }));
 
-/* ── Page routes ────────────────────────────────────────── */
-const page = (name) => (req, res) => res.sendFile(path.join(FRONTEND, name));
-
-app.get('/pin.html',             page('pin.html'));
-app.get('/pin',                  page('pin.html'));
-app.get('/login.html',           page('login.html'));
-app.get('/login',                page('login.html'));
-app.get('/register.html',        page('register.html'));
-app.get('/register',             page('register.html'));
-app.get('/home.html',            page('home.html'));
-app.get('/home',                 page('home.html'));
-app.get('/dashboard',            page('home.html'));
-app.get('/profile.html',         page('profile.html'));
-app.get('/profile',              page('profile.html'));
-app.get('/data.html',            page('data.html'));
-app.get('/airtime.html',         page('airtime.html'));
-app.get('/electricity.html',     page('electricity.html'));
-app.get('/tv.html',              page('tv.html'));
-app.get('/exam.html',            page('exam.html'));
-app.get('/airtime-to-cash.html', page('airtime-to-cash.html'));
-app.get('/transactions.html',    page('transactions.html'));
-app.get('/transactions',         page('transactions.html'));
-app.get('/wallet.html',          page('wallet.html'));
-app.get('/fund-wallet.html',     page('fund-wallet.html'));
-app.get('/transfer.html',        page('transfer.html'));
-app.get('/settings.html',        page('settings.html'));
-app.get('/settings',             page('settings.html'));
-app.get('/support.html',         page('support.html'));
-app.get('/support',              page('support.html'));
-app.get('/notifications.html',   page('notifications.html'));
-app.get('/terms.html',           page('terms.html'));
-app.get('/pricing.html',         page('pricing.html'));
-app.get('/pricing',              page('pricing.html'));
-app.get('/admin.html',           page('admin.html'));
-app.get('/admin',                page('admin.html'));
+/* ✅ FIXED #1: page() routes removed.
+   express.static above already serves every .html file in FRONTEND/.
+   The old page() handlers were dead code — this keeps the file honest.
+   If you later want clean URLs without .html, add rewrites like:
+     app.get('/login', (req, res) => res.sendFile(path.join(FRONTEND, 'login.html')));
+   BEFORE the express.static line. */
 
 /* ── Errors ─────────────────────────────────────────────── */
 app.use(notFound);
