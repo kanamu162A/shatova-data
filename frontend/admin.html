@@ -183,29 +183,17 @@ button{font-family:inherit}
 .filter-pill .pill-value{color:var(--text-muted);font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .filter-pill.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);box-shadow:var(--shadow-hover-light)}
 
-/* ============ NETWORK LOGOS (brand tiles) ============ */
-.row-avatar{
-  width:48px;height:48px;border-radius:14px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;position:relative;overflow:hidden;
-  box-shadow:0 4px 12px rgba(0,0,0,0.14),inset 0 1px 0 rgba(255,255,255,0.25);
-  transition:var(--transition);
-  border:2px solid var(--bg-card);
-  font-weight:800;font-size:15px;letter-spacing:-0.4px;color:#fff;
-}
+/* ============ NETWORK LOGOS ============ */
+.row-avatar{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.14),inset 0 1px 0 rgba(255,255,255,0.25);transition:var(--transition);border:2px solid var(--bg-card);font-weight:800;font-size:15px;letter-spacing:-0.4px;color:#fff}
 .row-item:hover .row-avatar{transform:scale(1.06) rotate(-2deg);box-shadow:0 8px 20px rgba(0,0,0,0.2)}
-
-.row-avatar.net-mtn    {background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
-.row-avatar.net-airtel {background:linear-gradient(135deg,#FF1A1A 0%,#D40000 55%,#A80000 100%)}
-.row-avatar.net-glo    {background:linear-gradient(135deg,#00C55E 0%,#00A651 55%,#008A40 100%)}
-.row-avatar.net-t2     {background:linear-gradient(135deg,#00856A 0%,#006B54 55%,#005240 100%)}
+.row-avatar.net-mtn{background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
+.row-avatar.net-airtel{background:linear-gradient(135deg,#FF1A1A 0%,#D40000 55%,#A80000 100%)}
+.row-avatar.net-glo{background:linear-gradient(135deg,#00C55E 0%,#00A651 55%,#008A40 100%)}
+.row-avatar.net-t2{background:linear-gradient(135deg,#00856A 0%,#006B54 55%,#005240 100%)}
 .row-avatar.net-generic{background:linear-gradient(135deg,#0d5a44 0%,#0a4534 45%,#062f24 100%)}
-
 .row-avatar svg.net-shape{width:100%;height:100%;display:block}
-
-.row-avatar.deposit,
-.row-avatar.withdraw{border-radius:50%;font-weight:800;font-size:15px;letter-spacing:-0.4px}
-.row-avatar.deposit {background:linear-gradient(135deg,#10b981,#098658)}
+.row-avatar.deposit,.row-avatar.withdraw{border-radius:50%;font-weight:800;font-size:15px;letter-spacing:-0.4px}
+.row-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
 .row-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
 
 .data-list{display:flex;flex-direction:column}
@@ -340,7 +328,6 @@ button{font-family:inherit}
 .modal .btns .danger{background:linear-gradient(135deg,#a12222 0%,#7a1a1a 100%);color:#fff;box-shadow:0 6px 18px -4px rgba(161,34,34,0.45),var(--shadow-inset-top)}
 .modal .btns .danger:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 26px -6px rgba(161,34,34,0.5),var(--shadow-inset-top)}
 
-.analytics-grid{display:grid;grid-template-columns:1fr;gap:22px}
 .chart{display:flex;align-items:stretch;gap:10px;height:230px;padding:14px 0 0}
 .chart .bar{flex:1;display:flex;flex-direction:column;min-width:0;cursor:pointer}
 .chart .bar .track{flex:1;display:flex;align-items:flex-end;position:relative}
@@ -430,77 +417,318 @@ button{font-family:inherit}
 .fund-empty .desc{font-size:12px;line-height:1.55;max-width:320px;margin:0 auto}
 
 .drift-explainer{font-size:12.5px;color:var(--text-muted);margin-bottom:16px;line-height:1.55}
-.drift-explainer code{background:var(--bg-input);padding:2px 7px;border-radius:5px;font-family:'SF Mono',Menlo,monospace;font-size:11.5px;color:var(--primary-dark);font-weight:700}
-
 .run-archive-btn{display:inline-flex;align-items:center;gap:8px;padding:0 15px;height:38px;border-radius:10px;border:1px solid rgba(179,115,8,.28);background:var(--warning-light);color:var(--warning-dark);font-size:11.5px;font-weight:700;cursor:pointer;transition:var(--transition);font-family:inherit}
 .run-archive-btn:hover{background:rgba(179,115,8,.16);transform:translateY(-1px);box-shadow:var(--shadow-hover-light)}
 .run-archive-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 
-/* ================= USER SEARCH ================= */
-.user-search-hero{padding:26px 26px 22px;background:linear-gradient(180deg,rgba(10,69,52,0.035) 0%,transparent 100%);border-bottom:1px solid var(--border)}
-.user-search-label{font-size:11px;font-weight:800;letter-spacing:0.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.user-search-label i{color:var(--primary)}
-.user-search-field{position:relative;display:flex;align-items:center;background:var(--bg-card);border:1.5px solid var(--border);border-radius:14px;padding:0 14px 0 18px;height:56px;box-shadow:var(--shadow-sm);transition:var(--transition)}
-.user-search-field:focus-within{border-color:var(--primary);box-shadow:var(--ring),0 8px 24px -8px rgba(10,69,52,0.18);transform:translateY(-1px)}
-.user-search-field > i.fa-search{color:var(--text-muted);font-size:14px;margin-right:14px;transition:var(--transition)}
-.user-search-field:focus-within > i.fa-search{color:var(--primary)}
-.user-search-field input{flex:1;border:none;outline:none;background:transparent;font-size:14px;font-weight:500;color:var(--text);font-family:inherit;height:100%;letter-spacing:-0.1px}
-.user-search-field input::placeholder{color:var(--text-muted);font-weight:400}
-.user-search-spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite;display:none;margin-left:10px}
-.user-search-spinner.active{display:block}
-.user-search-clear{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;margin-left:10px;transition:var(--transition)}
-.user-search-clear.visible{display:inline-flex}
-.user-search-clear:hover{background:var(--danger-light);color:var(--danger-dark)}
-.user-search-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap;min-height:20px}
-.user-search-count{font-size:12px;font-weight:600;color:var(--text-muted)}
-.user-search-count strong{color:var(--text);font-weight:800}
-.user-search-hint{font-size:11px;color:var(--text-muted);display:inline-flex;align-items:center;gap:6px}
-.user-search-hint kbd{font-family:'SF Mono',Menlo,monospace;font-size:10px;padding:2px 6px;border-radius:5px;background:var(--bg-input);border:1px solid var(--border);color:var(--text-secondary);font-weight:700;box-shadow:0 1px 0 var(--border)}
+/* ================= USER SEARCH (PREMIUM) ================= */
+.user-search-hero{
+  padding: 30px 32px 26px;
+  background: linear-gradient(160deg, rgba(10,69,52,0.055) 0%, rgba(10,69,52,0.015) 55%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.user-search-hero::before{
+  content:''; position:absolute; top:-100px; right:-80px;
+  width:280px; height:280px; border-radius:50%;
+  background: radial-gradient(circle, rgba(10,69,52,0.075) 0%, transparent 65%);
+  pointer-events:none;
+}
+.user-search-hero::after{
+  content:''; position:absolute; bottom:-120px; left:-60px;
+  width:220px; height:220px; border-radius:50%;
+  background: radial-gradient(circle, rgba(34,197,94,0.055) 0%, transparent 70%);
+  pointer-events:none;
+}
+.user-search-inner{position:relative; z-index:1; max-width:760px; margin:0 auto}
 
-.user-row{display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;padding:16px 26px;border-bottom:1px solid var(--border);transition:background 0.16s ease;cursor:pointer;position:relative}
-.user-row:last-child{border-bottom:none}
-.user-row:hover{background:var(--bg-hover)}
-.user-row:hover::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary)}
-.user-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;letter-spacing:-0.5px;flex-shrink:0;position:relative;box-shadow:0 4px 12px -2px rgba(15,23,42,0.18),inset 0 1px 0 rgba(255,255,255,0.25)}
-.user-avatar .user-avatar-status{position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-radius:50%;border:2.5px solid var(--bg-card);background:var(--success)}
-.user-avatar.status-suspended .user-avatar-status{background:var(--danger)}
-.user-avatar.status-inactive .user-avatar-status{background:var(--text-muted)}
-.user-info{min-width:0;display:flex;flex-direction:column;gap:5px}
-.user-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.user-name{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-0.15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-badge{font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:0.5px;text-transform:uppercase}
-.user-badge.active{background:var(--success-light);color:var(--success-dark)}
-.user-badge.suspended{background:var(--danger-light);color:var(--danger-dark)}
-.user-badge.pending{background:var(--warning-light);color:var(--warning-dark)}
-.user-badge.admin{background:var(--purple-light);color:var(--purple-dark)}
-.user-badge.verified{background:var(--info-light);color:var(--info-dark)}
-.user-contact{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted);font-weight:500;flex-wrap:wrap}
-.user-contact .sep{width:3px;height:3px;border-radius:50%;background:var(--text-muted);opacity:0.4}
-.user-contact .mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:0.2px}
-.user-right{display:flex;align-items:center;gap:20px;flex-shrink:0}
-.user-balance{text-align:right;display:flex;flex-direction:column;gap:2px}
-.user-balance-label{font-size:9.5px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted)}
-.user-balance-value{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-0.3px;font-variant-numeric:tabular-nums}
-.user-action-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px;transition:var(--transition);box-shadow:var(--shadow-xs)}
-.user-action-btn:hover{background:var(--primary);border-color:var(--primary);color:#fff;transform:translateX(2px);box-shadow:0 6px 16px -4px rgba(10,69,52,0.4)}
-.user-skeleton{display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;padding:16px 26px;border-bottom:1px solid var(--border)}
-.user-skel-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(90deg,var(--bg-input) 0%,var(--bg-hover) 50%,var(--bg-input) 100%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite}
-.user-skel-line{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg-input) 0%,var(--bg-hover) 50%,var(--bg-input) 100%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite}
+.user-search-headline{display:flex; align-items:center; gap:14px; margin-bottom:20px}
+.user-search-headline-icon{
+  width:48px; height:48px; border-radius:14px;
+  background: var(--primary-gradient);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:19px; flex-shrink:0;
+  box-shadow: 0 8px 22px -6px rgba(10,69,52,0.5), var(--shadow-inset-top);
+}
+.user-search-headline-text{flex:1; min-width:0}
+.user-search-headline-title{font-size:16px; font-weight:800; color:var(--text); letter-spacing:-0.35px; margin-bottom:3px; line-height:1.2}
+.user-search-headline-sub{font-size:12px; color:var(--text-muted); font-weight:500; line-height:1.4}
+
+.user-search-field{
+  position:relative; display:flex; align-items:center;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 0 12px 0 18px;
+  height: 60px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 16px -6px rgba(15,23,42,0.08);
+  transition: all 0.24s cubic-bezier(0.4,0,0.2,1);
+}
+.user-search-field:focus-within{
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(10,69,52,0.1), 0 8px 24px -8px rgba(10,69,52,0.22);
+  transform: translateY(-1px);
+}
+.user-search-field > i.fa-search{
+  color: var(--text-muted); font-size: 15px;
+  margin-right: 12px; transition: all 0.22s ease;
+}
+.user-search-field:focus-within > i.fa-search{color: var(--primary); transform: scale(1.08)}
+.user-search-field input{
+  flex:1; border:none; outline:none; background:transparent;
+  font-size:14.5px; font-weight:500; color:var(--text);
+  font-family:inherit; height:100%; letter-spacing:-0.1px; min-width:0;
+}
+.user-search-field input::placeholder{color:var(--text-muted); font-weight:400}
+.user-search-kbd{
+  display:inline-flex; align-items:center;
+  font-family:'SF Mono',Menlo,monospace;
+  font-size:10px; font-weight:700;
+  padding: 4px 8px; border-radius: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  box-shadow: 0 1px 0 var(--border-strong);
+  margin-left: 8px; flex-shrink: 0;
+}
+.user-search-spinner{
+  width:18px; height:18px; border:2.5px solid var(--border);
+  border-top-color: var(--primary); border-radius:50%;
+  animation: spin 0.7s linear infinite;
+  display:none; margin-left: 8px; flex-shrink: 0;
+}
+.user-search-spinner.active{display:block}
+.user-search-clear{
+  width:32px; height:32px; border-radius:50%; border:none;
+  background: var(--bg-input); color: var(--text-muted);
+  cursor:pointer; font-size:11px; display:none;
+  align-items:center; justify-content:center;
+  margin-left: 8px; transition: all 0.18s ease; flex-shrink: 0;
+}
+.user-search-clear.visible{display:inline-flex}
+.user-search-clear:hover{background: var(--danger-light); color: var(--danger-dark); transform: rotate(90deg)}
+
+.user-search-chips{display:flex; align-items:center; gap:6px; margin-top:16px; flex-wrap:wrap}
+.user-search-chips-label{font-size:10.5px; font-weight:800; color:var(--text-muted); letter-spacing:0.7px; text-transform:uppercase; margin-right:4px}
+.user-search-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 11.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s ease;
+  font-family: inherit;
+}
+.user-search-chip i{font-size:9.5px; color: var(--text-muted); transition: all 0.18s ease}
+.user-search-chip:hover{
+  border-color: var(--primary); color: var(--primary-dark);
+  background: var(--primary-light); transform: translateY(-1px);
+  box-shadow: 0 3px 10px -3px rgba(10,69,52,0.15);
+}
+.user-search-chip:hover i{color: var(--primary)}
+
+/* Results bar */
+.user-results-bar{
+  padding: 14px 26px;
+  background: linear-gradient(180deg, rgba(10,69,52,0.018), transparent);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; min-height: 46px;
+}
+.user-results-bar.is-empty{background: transparent}
+.user-results-count{
+  font-size: 12.5px; color: var(--text-secondary); font-weight: 600;
+  display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.user-results-count strong{color:var(--text); font-weight:800; font-size:13.5px}
+.user-results-count .search-term{
+  color: var(--primary-dark); font-weight:800;
+  background: var(--primary-light);
+  padding: 2px 8px; border-radius: 5px;
+  font-family: 'SF Mono', Menlo, monospace; font-size: 11px;
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.user-results-live{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+.user-results-live .live-dot{
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+  animation: pulseLive 1.6s ease-in-out infinite;
+}
+@keyframes pulseLive{
+  0%,100%{opacity:1; transform:scale(1)}
+  50%{opacity:0.5; transform:scale(0.8)}
+}
+
+/* User cards */
+.user-card-list{display:flex; flex-direction:column; padding:14px; gap:8px}
+.user-card{
+  display:grid; grid-template-columns: 54px 1fr auto;
+  gap:16px; align-items:center;
+  padding: 15px 17px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.user-card:hover{
+  border-color: rgba(10,69,52,0.25);
+  box-shadow: 0 8px 22px -8px rgba(10,69,52,0.14), 0 2px 6px rgba(10,69,52,0.05);
+  transform: translateY(-2px);
+}
+.user-card:active{transform: translateY(0)}
+
+.user-avatar{
+  width: 52px; height: 52px; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 18px;
+  letter-spacing: -0.5px; flex-shrink: 0; position: relative;
+  box-shadow: 0 4px 12px -2px rgba(15,23,42,0.22), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.user-avatar .user-avatar-status{
+  position: absolute; bottom: -3px; right: -3px;
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 3px solid var(--bg-card); background: var(--success);
+}
+.user-avatar.status-suspended .user-avatar-status{background: var(--danger)}
+.user-avatar.status-inactive .user-avatar-status{background: var(--text-muted)}
+
+.user-info{min-width:0; display:flex; flex-direction:column; gap: 6px}
+.user-name-row{display:flex; align-items:center; gap:7px; flex-wrap:wrap}
+.user-name{
+  font-size: 14.5px; font-weight: 700;
+  color: var(--text); letter-spacing: -0.15px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+}
+.user-badge{
+  font-size: 9.5px; font-weight: 800;
+  padding: 3px 9px; border-radius: 6px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.user-badge i{font-size: 8.5px}
+.user-badge.active{background: var(--success-light); color: var(--success-dark); border-color: rgba(9,134,88,0.14)}
+.user-badge.suspended{background: var(--danger-light); color: var(--danger-dark); border-color: rgba(161,34,34,0.14)}
+.user-badge.pending{background: var(--warning-light); color: var(--warning-dark); border-color: rgba(179,115,8,0.14)}
+.user-badge.admin{background: var(--purple-light); color: var(--purple-dark); border-color: rgba(124,58,237,0.14)}
+.user-badge.verified{background: var(--info-light); color: var(--info-dark); border-color: rgba(29,78,216,0.14)}
+
+.user-contact{
+  display:flex; align-items:center; gap: 12px;
+  font-size: 12px; color: var(--text-muted);
+  font-weight: 500; flex-wrap: wrap;
+}
+.user-contact .contact-item{
+  display:inline-flex; align-items:center; gap: 5px;
+  max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.user-contact .contact-item i{font-size: 10.5px; color: var(--text-muted); opacity: 0.7; flex-shrink: 0}
+.user-contact .contact-item.mono{
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11.5px; letter-spacing: 0.2px;
+}
+
+.user-right{display:flex; align-items:center; gap: 12px; flex-shrink: 0}
+.user-balance-pill{
+  padding: 8px 14px; border-radius: 11px;
+  background: linear-gradient(135deg, var(--primary-light), rgba(10,69,52,0.02));
+  border: 1px solid rgba(10,69,52,0.12);
+  text-align: right; display: flex; flex-direction: column; gap: 1px;
+  min-width: 100px;
+}
+.user-balance-label{
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--text-muted);
+}
+.user-balance-value{
+  font-size: 14.5px; font-weight: 800;
+  color: var(--primary-dark); letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+.user-arrow{
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg-input);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 12px;
+  transition: all 0.22s ease;
+}
+.user-card:hover .user-arrow{
+  background: var(--primary); color: #fff;
+  transform: translateX(3px);
+  box-shadow: 0 6px 16px -4px rgba(10,69,52,0.4);
+}
+
+/* Skeletons */
+.user-skeleton{
+  display:grid; grid-template-columns: 54px 1fr auto;
+  gap:16px; align-items:center;
+  padding: 15px 17px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.user-skel-avatar{
+  width:52px; height:52px; border-radius:15px;
+  background: linear-gradient(90deg, var(--bg-input) 0%, var(--bg-hover) 50%, var(--bg-input) 100%);
+  background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite;
+}
+.user-skel-line{
+  height:12px; border-radius:6px;
+  background: linear-gradient(90deg, var(--bg-input) 0%, var(--bg-hover) 50%, var(--bg-input) 100%);
+  background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite;
+}
 .user-skel-line.w60{width:60%}
 .user-skel-line.w40{width:40%}
 .user-skel-line.w80{width:80%}
 .user-skel-line.mt8{margin-top:8px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.user-empty{padding:64px 24px;text-align:center}
-.user-empty-icon{width:80px;height:80px;margin:0 auto 20px;border-radius:24px;background:linear-gradient(135deg,var(--primary-light),rgba(10,69,52,0.02));border:1px solid rgba(10,69,52,0.1);display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--primary)}
-.user-empty-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-0.2px}
-.user-empty-text{font-size:12.5px;color:var(--text-muted);line-height:1.6;max-width:360px;margin:0 auto}
-.user-empty-tips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:18px}
-.user-empty-tip{font-size:11px;font-weight:600;color:var(--text-secondary);background:var(--bg-input);border:1px solid var(--border);padding:5px 11px;border-radius:999px;cursor:pointer;transition:var(--transition);font-family:inherit}
-.user-empty-tip:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);transform:translateY(-1px)}
+
+/* Empty states */
+.user-empty{padding: 64px 24px; text-align: center}
+.user-empty-icon{
+  width: 86px; height: 86px; margin: 0 auto 22px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, rgba(10,69,52,0.08) 0%, rgba(10,69,52,0.02) 100%);
+  border: 1px solid rgba(10,69,52,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: var(--primary);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.user-empty-title{font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 8px; letter-spacing: -0.25px}
+.user-empty-text{font-size: 13px; color: var(--text-muted); line-height: 1.6; max-width: 400px; margin: 0 auto}
+.user-empty-tips{display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 20px}
+.user-empty-tip{
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 6px 13px; border-radius: 999px;
+  cursor: pointer; transition: all 0.18s ease;
+  font-family: inherit;
+}
+.user-empty-tip i{font-size: 10px; color: var(--text-muted); transition: all 0.18s ease}
+.user-empty-tip:hover{
+  border-color: var(--primary); color: var(--primary-dark);
+  background: var(--primary-light); transform: translateY(-2px);
+  box-shadow: 0 4px 12px -3px rgba(10,69,52,0.15);
+}
+.user-empty-tip:hover i{color: var(--primary)}
 #viewModal .modal{max-width:560px}
 
-/* ============ TRANSACTION DETAIL MODAL ============ */
+/* Transaction detail modal */
 .txn-hero{padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(10,69,52,0.06),rgba(10,69,52,0.02));border:1px solid rgba(10,69,52,0.14);margin-bottom:16px;display:flex;gap:16px;align-items:center}
 .txn-hero .txn-hero-logo{width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 16px -4px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;border:none}
 .txn-hero .txn-hero-logo svg.net-shape{width:100%;height:100%;display:block}
@@ -546,15 +774,74 @@ button{font-family:inherit}
   .fund-actions{flex-direction:column}
   .chart{height:190px}
   .chart-summary .big{font-size:24px}
-  .user-search-hero{padding:20px 16px 16px}
-  .user-search-field{height:50px;padding:0 12px 0 14px;border-radius:12px}
-  .user-search-field input{font-size:13px}
-  .user-row{grid-template-columns:46px 1fr;grid-template-areas:"avatar main" "right right";gap:12px;padding:14px 16px}
-  .user-avatar{grid-area:avatar;width:44px;height:44px;font-size:15px}
-  .user-info{grid-area:main}
-  .user-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
-  .user-balance{text-align:left}
 }
+
+@media (max-width:768px){
+  .toolbar{flex-direction:column;align-items:stretch;gap:10px}
+  .toolbar .search-box{width:100%;min-width:0}
+  .toolbar .filter-pill{width:100%;justify-content:space-between}
+  .toolbar .filter-pill .pill-value{flex:1;text-align:left}
+
+  .user-search-hero{padding:22px 18px 20px}
+  .user-search-headline-icon{width:44px;height:44px;border-radius:13px;font-size:17px}
+  .user-search-headline-title{font-size:15px}
+  .user-search-headline-sub{font-size:11.5px}
+  .user-search-field{height:56px;padding:0 10px 0 16px;border-radius:14px}
+  .user-search-field > i.fa-search{font-size:14px;margin-right:10px}
+  .user-search-field input{font-size:14px}
+  .user-search-kbd{display:none}
+  .user-search-chips{margin-top:14px}
+  .user-search-chips-label{display:none}
+  .user-search-chip{font-size:11px;padding:6px 11px}
+
+  .user-results-bar{padding:12px 18px}
+  .user-results-count{font-size:11.5px}
+  .user-results-count strong{font-size:12.5px}
+  .user-results-live{display:none}
+
+  .user-card-list{padding:12px;gap:8px}
+  .user-card{
+    grid-template-columns:46px 1fr;
+    grid-template-areas:"avatar main" "right right";
+    gap:12px; padding:14px;
+  }
+  .user-avatar{grid-area:avatar;width:44px;height:44px;font-size:15px;border-radius:13px}
+  .user-info{grid-area:main;gap:5px}
+  .user-name{font-size:13.5px}
+  .user-contact{font-size:11px;gap:8px}
+  .user-contact .contact-item{max-width:100%}
+  .user-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
+  .user-balance-pill{padding:7px 12px;min-width:auto}
+  .user-balance-value{font-size:13.5px}
+  .user-arrow{width:34px;height:34px}
+
+  .user-empty{padding:48px 20px}
+  .user-empty-icon{width:72px;height:72px;font-size:28px;margin-bottom:18px}
+  .user-empty-title{font-size:15px}
+  .user-empty-text{font-size:12.5px}
+
+  #viewModal .modal, #txnModal .modal, #datashopModal .modal{max-width:100%;margin:0;border-radius:18px 18px 0 0;padding:20px 18px}
+  #viewModal, #txnModal, #datashopModal, #approveModal, #rejectModal, #approveDepositModal, #rejectDepositModal{align-items:flex-end;padding:0}
+
+  .txn-hero{flex-direction:column;text-align:center;gap:12px;padding:16px}
+  .txn-hero .txn-hero-logo{width:58px;height:58px;margin:0 auto}
+  .txn-hero .txn-hero-sub{justify-content:center}
+  .txn-amount-block{padding:16px 18px}
+  .txn-amount-block .amt-value{font-size:24px}
+  .txn-amount-block .amt-meta{flex-direction:column;gap:10px}
+  .txn-amount-block .amt-meta > div{display:flex;justify-content:space-between;align-items:baseline}
+
+  .modal .btns{flex-direction:column-reverse}
+  .modal .btns button{width:100%}
+
+  .panel-footer{padding:12px 14px}
+  .pagination-controls{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px}
+  .pagination-controls::-webkit-scrollbar{display:none}
+
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+}
+
 @media (max-width:500px){
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .stat-card{padding:12px 13px}
@@ -568,102 +855,46 @@ button{font-family:inherit}
   .fund-user-card{padding:15px}
   .fund-user-card .fu-balance-row{flex-direction:column;gap:10px}
 }
+
+@media (max-width:420px){
+  .user-search-hero{padding:20px 14px 18px}
+  .user-search-field{height:52px}
+  .user-search-field input{font-size:13.5px}
+  .user-search-headline-title{font-size:14.5px}
+  .user-search-headline-sub{font-size:11px}
+  .user-search-chips{gap:5px}
+  .user-search-chip{font-size:10.5px;padding:5px 10px}
+  .user-card{padding:12px;gap:10px}
+  .user-avatar{width:42px;height:42px;font-size:14px}
+  .user-name{font-size:13px}
+  .user-badge{font-size:9px;padding:2px 7px}
+  .user-balance-value{font-size:13px}
+  .user-empty{padding:40px 16px}
+  .user-empty-icon{width:64px;height:64px;font-size:24px}
+  .user-empty-title{font-size:14px}
+}
+
 @media (min-width:1200px){.content{padding:28px 32px}.row-actions button .label{display:inline}}
 @media (min-width:900px){.row-actions button .label{display:inline}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
 
-/* ============ FULL RESPONSIVE POLISH ============ */
-@media (max-width: 768px) {
-  .toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
-  .toolbar .search-box { width: 100%; min-width: 0; }
-  .toolbar .filter-pill { width: 100%; justify-content: space-between; }
-  .toolbar .filter-pill .pill-value { flex: 1; text-align: left; }
-
-  .user-search-hero { padding: 18px 14px 14px; }
-  .user-search-field { height: 52px; padding: 0 12px 0 14px; border-radius: 12px; }
-  .user-search-field > i.fa-search { font-size: 13px; margin-right: 10px; }
-  .user-search-field input { font-size: 13.5px; }
-  .user-search-meta { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .user-search-hint { display: none; }
-
-  .row-avatar { width: 44px; height: 44px; border-radius: 12px; }
-  .user-avatar { width: 46px; height: 46px; font-size: 16px; }
-
-  #viewModal .modal,
-  #txnModal .modal,
-  #datashopModal .modal { max-width: 100%; margin: 0; border-radius: 18px 18px 0 0; padding: 20px 18px; }
-  #viewModal,
-  #txnModal,
-  #datashopModal,
-  #approveModal,
-  #rejectModal,
-  #approveDepositModal,
-  #rejectDepositModal { align-items: flex-end; padding: 0; }
-
-  .txn-hero { flex-direction: column; text-align: center; gap: 12px; padding: 16px; }
-  .txn-hero .txn-hero-logo { width: 58px; height: 58px; margin: 0 auto; }
-  .txn-hero .txn-hero-sub { justify-content: center; }
-  .txn-amount-block { padding: 16px 18px; }
-  .txn-amount-block .amt-value { font-size: 24px; }
-  .txn-amount-block .amt-meta { flex-direction: column; gap: 10px; }
-  .txn-amount-block .amt-meta > div { display: flex; justify-content: space-between; align-items: baseline; }
-
-  .modal .btns { flex-direction: column-reverse; }
-  .modal .btns button { width: 100%; }
-
-  .panel-footer { padding: 12px 14px; }
-  .pagination-controls { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding-bottom: 2px; }
-  .pagination-controls::-webkit-scrollbar { display: none; }
-
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
-
-  .user-row { padding: 14px 14px; gap: 12px; }
-  .user-contact { gap: 6px; font-size: 11.5px; }
-  .user-contact .sep { display: none; }
-  .user-contact span:not(.mono) { display: block; width: 100%; }
-  .user-right { gap: 12px; }
-  .user-balance-value { font-size: 14px; }
-}
-
-@media (max-width: 420px) {
-  .user-search-field { height: 48px; }
-  .user-search-field input { font-size: 13px; }
-  .user-search-field input::placeholder { font-size: 12.5px; }
-  .stats-grid { gap: 8px; }
-  .stat-card { padding: 12px 12px; }
-  .stat-value { font-size: 16px; }
-  .stat-label { font-size: 9.5px; }
-  .row-avatar { width: 42px; height: 42px; border-radius: 11px; }
-  .row-title { font-size: 13px; }
-  .row-sub { font-size: 11px; gap: 6px; }
-  .row-sub .ref { display: none; }
-  .user-avatar { width: 42px; height: 42px; font-size: 15px; }
-  .user-badge { font-size: 9px; padding: 2px 6px; }
-  .user-action-btn { width: 34px; height: 34px; }
-  .fund-search-row { flex-direction: column; }
-  .fund-search-row button { width: 100%; justify-content: center; }
-  .fund-actions { flex-direction: column; }
-}
-
 /* Manual fund — tighter on phones */
-@media (max-width: 500px) {
-  .fund-search-card { padding: 16px 14px; }
-  .fund-search-row { flex-direction: column; gap: 8px; }
-  .fund-search-row input { height: 48px; font-size: 15px; }
-  .fund-search-row button { height: 48px; width: 100%; justify-content: center; font-size: 13px; }
-  .fund-search-hint { font-size: 11px; margin-top: 8px; }
-  .fund-empty { padding: 28px 16px; }
-  .fund-empty .icon { width: 56px; height: 56px; font-size: 22px; margin-bottom: 12px; }
-  .fund-empty .title { font-size: 13px; }
-  .fund-empty .desc { font-size: 11.5px; }
+@media (max-width:500px){
+  .fund-search-card{padding:16px 14px}
+  .fund-search-row{flex-direction:column;gap:8px}
+  .fund-search-row input{height:48px;font-size:15px}
+  .fund-search-row button{height:48px;width:100%;justify-content:center;font-size:13px}
+  .fund-search-hint{font-size:11px;margin-top:8px}
+  .fund-empty{padding:28px 16px}
+  .fund-empty .icon{width:56px;height:56px;font-size:22px;margin-bottom:12px}
+  .fund-empty .title{font-size:13px}
+  .fund-empty .desc{font-size:11.5px}
 }
 
-/* Prevent iOS zoom on input focus */
-@media (max-width: 768px) {
-  input, textarea, select { font-size: 16px !important; }
-  .user-search-field input,
-  .search-box input { font-size: 16px !important; }
+/* Prevent iOS zoom */
+@media (max-width:768px){
+  input, textarea, select{font-size:16px !important}
+  .user-search-field input, .search-box input{font-size:16px !important}
 }
 </style>
 </head>
@@ -849,21 +1080,32 @@ button{font-family:inherit}
 
       <section id="tab-users" style="display:none;">
         <div class="panel">
-          <div class="panel-head"><h3><i class="fas fa-users"></i> User Directory</h3><span class="sub" id="usersCount">Start typing to search</span></div>
           <div class="user-search-hero">
-            <div class="user-search-label"><i class="fas fa-magnifying-glass"></i> Find an account</div>
-            <div class="user-search-field">
-              <i class="fas fa-search"></i>
-              <input type="text" id="userSearch" placeholder="Search by name, phone number, email, or user ID…" autocomplete="off" spellcheck="false" oninput="onUserSearchInput(event)">
-              <div class="user-search-spinner" id="userSearchSpinner"></div>
-              <button class="user-search-clear" id="userSearchClear" onclick="clearUserSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="user-search-meta">
-              <span class="user-search-count" id="userSearchMeta"></span>
-              <span class="user-search-hint"><kbd>Esc</kbd> to clear</span>
+            <div class="user-search-inner">
+              <div class="user-search-headline">
+                <div class="user-search-headline-icon"><i class="fas fa-user-magnifying-glass"></i></div>
+                <div class="user-search-headline-text">
+                  <div class="user-search-headline-title">Find any user instantly</div>
+                  <div class="user-search-headline-sub">Search by name, phone number, email, or account ID</div>
+                </div>
+              </div>
+              <div class="user-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="userSearch" placeholder="e.g. 08031234567, alice@example.com, or #1024" autocomplete="off" spellcheck="false" oninput="onUserSearchInput(event)">
+                <div class="user-search-spinner" id="userSearchSpinner"></div>
+                <button class="user-search-clear" id="userSearchClear" onclick="clearUserSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+                <span class="user-search-kbd">ESC</span>
+              </div>
+              <div class="user-search-chips">
+                <span class="user-search-chips-label">Quick</span>
+                <button class="user-search-chip" onclick="quickUserSearch('active')"><i class="fas fa-bolt"></i> Show all</button>
+                <button class="user-search-chip" onclick="quickUserSearch('0803')"><i class="fas fa-phone"></i> 0803…</button>
+                <button class="user-search-chip" onclick="quickUserSearch('@gmail.com')"><i class="fas fa-at"></i> @gmail.com</button>
+              </div>
             </div>
           </div>
-          <div class="panel-body no-pad"><div class="data-list" id="usersList"></div></div>
+          <div class="user-results-bar is-empty" id="userResultsBar"></div>
+          <div id="usersList"></div>
         </div>
       </section>
 
@@ -1149,7 +1391,7 @@ button{font-family:inherit}
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
 
-  /* ==================== NETWORK LOGOS (brand wordmarks) ==================== */
+  /* ==================== NETWORK LOGOS ==================== */
   const NETWORK_SVGS = {
     mtn: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
       <text x="28" y="36" text-anchor="middle"
@@ -1157,27 +1399,23 @@ button{font-family:inherit}
             font-weight="900" font-size="16" fill="#0A0A0A"
             letter-spacing="-0.8">MTN</text>
     </svg>`,
-
     airtel: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
       <text x="28" y="35" text-anchor="middle"
             font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
             font-weight="700" font-size="13.5" fill="#ffffff"
             letter-spacing="-0.3">airtel</text>
     </svg>`,
-
     glo: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
       <text x="28" y="38" text-anchor="middle"
             font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
             font-weight="900" font-style="italic" font-size="20"
             fill="#ffffff" letter-spacing="-1">glo</text>
     </svg>`,
-
     t2: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
       <text x="28" y="40" text-anchor="middle"
             font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif"
             font-weight="900" font-size="26" fill="#ffffff">9</text>
     </svg>`,
-
     generic: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
       <text x="28" y="36" text-anchor="middle"
             font-family="Inter,sans-serif" font-weight="800"
@@ -1197,12 +1435,8 @@ button{font-family:inherit}
     if (/9mobile|etisalat|\bt2\b|9mb/.test(all)) return 't2';
     return 'generic';
   }
-  function networkAvatarHtml(t) {
-    return NETWORK_SVGS[detectNetwork(t)] || NETWORK_SVGS.generic;
-  }
-  function networkAvatarClass(t) {
-    return 'net-' + detectNetwork(t);
-  }
+  function networkAvatarHtml(t) { return NETWORK_SVGS[detectNetwork(t)] || NETWORK_SVGS.generic; }
+  function networkAvatarClass(t) { return 'net-' + detectNetwork(t); }
 
   /* ==================== THEME ==================== */
   let currentTheme = localStorage.getItem('adminTheme') || 'light';
@@ -1827,69 +2061,92 @@ button{font-family:inherit}
     const el = document.getElementById('userSearchClear');
     if (el) el.classList.toggle('visible', !!on);
   }
+
   function renderUsers() {
     const c = $('#usersList'); if (!c) return;
-    const metaEl = $('#userSearchMeta');
-    const countEl = $('#usersCount');
+    const bar = $('#userResultsBar');
     const q = String(state.userQuery || '').trim();
     setUserSearchClear(q.length > 0);
+
+    const setBar = (html, isEmpty) => {
+      if (!bar) return;
+      bar.innerHTML = html;
+      bar.classList.toggle('is-empty', !!isEmpty);
+    };
+
+    /* ---- Initial state ---- */
     if (!state.userSearched || !q) {
-      if (countEl) countEl.textContent = 'Start typing to search';
-      if (metaEl) metaEl.textContent = '';
+      setBar(`<span class="user-results-count"><i class="fas fa-circle-info" style="color:var(--primary);"></i> Start typing to search the directory</span>`, true);
       c.innerHTML = `
         <div class="user-empty">
           <div class="user-empty-icon"><i class="fas fa-user-shield"></i></div>
           <div class="user-empty-title">Search the user directory</div>
           <div class="user-empty-text">Look up any account by name, phone number, email, or user ID. Results appear instantly as you type.</div>
           <div class="user-empty-tips">
-            <button class="user-empty-tip" onclick="quickUserSearch('0803')">Try: 0803…</button>
-            <button class="user-empty-tip" onclick="quickUserSearch('@gmail.com')">Try: @gmail.com</button>
-            <button class="user-empty-tip" onclick="quickUserSearch('active')">Show cached users</button>
+            <button class="user-empty-tip" onclick="quickUserSearch('active')"><i class="fas fa-bolt"></i> Show all users</button>
+            <button class="user-empty-tip" onclick="quickUserSearch('0803')"><i class="fas fa-phone"></i> Try: 0803…</button>
+            <button class="user-empty-tip" onclick="quickUserSearch('@gmail.com')"><i class="fas fa-at"></i> Try: @gmail.com</button>
           </div>
         </div>`;
       return;
     }
+
+    /* ---- Loading skeleton (only when no local matches) ---- */
     if (state.userLoading && state.userResults.length === 0) {
-      if (countEl) countEl.textContent = 'Searching…';
-      if (metaEl) metaEl.innerHTML = `<i class="fas fa-circle-notch fa-spin" style="margin-right:6px;"></i> Querying server…`;
-      c.innerHTML = Array.from({ length: 4 }).map(() => `
+      setBar(`<span class="user-results-count"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary);"></i> Searching <span class="search-term">${escapeHtml(q)}</span>…</span>`, false);
+      c.innerHTML = `<div class="user-card-list">${Array.from({ length: 5 }).map(() => `
         <div class="user-skeleton">
           <div class="user-skel-avatar"></div>
           <div><div class="user-skel-line w60"></div><div class="user-skel-line w80 mt8"></div></div>
-          <div class="user-skel-line w40" style="width:90px;"></div>
-        </div>`).join('');
+          <div class="user-skel-line w40" style="width:100px;"></div>
+        </div>`).join('')}</div>`;
       return;
     }
+
     const list = state.userResults || [];
-    if (countEl) {
-      countEl.textContent = list.length === 0
-        ? `No matches for "${q}"`
-        : `${list.length}${state.userTotal > list.length ? ' of ' + state.userTotal : ''} match${list.length === 1 ? '' : 'es'}`;
-    }
-    if (metaEl) {
-      metaEl.innerHTML = `<i class="fas fa-circle-info" style="color:var(--primary);margin-right:6px;"></i> Showing <strong>${list.length}</strong> result${list.length === 1 ? '' : 's'}`;
-    }
+
+    /* ---- No results ---- */
     if (!list.length) {
+      setBar(`<span class="user-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> No matches for <span class="search-term">${escapeHtml(q)}</span></span>`, true);
       c.innerHTML = `
         <div class="user-empty">
           <div class="user-empty-icon"><i class="fas fa-user-slash"></i></div>
           <div class="user-empty-title">No user found</div>
-          <div class="user-empty-text">We couldn't find anyone matching "<strong>${escapeHtml(q)}</strong>". Check the spelling, or try a different phone number or email.</div>
+          <div class="user-empty-text">We couldn't find anyone matching "${escapeHtml(q)}". Check the spelling, or try a different phone number or email.</div>
+          <div class="user-empty-tips">
+            <button class="user-empty-tip" onclick="clearUserSearch()"><i class="fas fa-rotate-left"></i> Clear search</button>
+            <button class="user-empty-tip" onclick="quickUserSearch('active')"><i class="fas fa-users"></i> Browse all users</button>
+          </div>
         </div>`;
       return;
     }
-    c.innerHTML = list.slice(0, 200).map(u => {
+
+    /* ---- Results bar ---- */
+    const totalLabel = state.userTotal > list.length
+      ? `<strong>${list.length}</strong> of <strong>${state.userTotal.toLocaleString()}</strong>`
+      : `<strong>${list.length}</strong>`;
+    setBar(`
+      <span class="user-results-count">
+        <i class="fas fa-user-check" style="color:var(--success);"></i>
+        ${totalLabel} user${list.length === 1 ? '' : 's'} matching
+        <span class="search-term">${escapeHtml(q)}</span>
+      </span>
+      <span class="user-results-live"><span class="live-dot"></span> Live</span>
+    `, false);
+
+    /* ---- Cards ---- */
+    c.innerHTML = `<div class="user-card-list">${list.slice(0, 200).map(u => {
       const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
       const initial = (name || '?').charAt(0).toUpperCase();
       const st = userStatus(u);
       const balance = formatMoney(u.balance ?? u.wallet_balance ?? 0);
       const txCount = u.transaction_count ?? u.transactions ?? 0;
-      const email = u.email || '—';
-      const phone = u.phone || '—';
+      const email = u.email || '';
+      const phone = u.phone || '';
       const isAdmin = /admin|super|owner/i.test(String(u.role || ''));
       const isVerified = u.is_verified || u.email_verified;
       return `
-        <div class="user-row" onclick="viewUser('${escapeHtml(u.id || u._id || '')}')">
+        <div class="user-card" onclick="viewUser('${escapeHtml(u.id || u._id || '')}')">
           <div class="user-avatar status-${st}" style="background:${hashColor(name)}">
             ${escapeHtml(initial)}
             <span class="user-avatar-status"></span>
@@ -1897,25 +2154,25 @@ button{font-family:inherit}
           <div class="user-info">
             <div class="user-name-row">
               <span class="user-name">${escapeHtml(name)}</span>
-              ${isAdmin ? `<span class="user-badge admin">${escapeHtml(String(u.role || 'admin').toUpperCase())}</span>` : ''}
+              ${isAdmin ? `<span class="user-badge admin"><i class="fas fa-shield-halved"></i> ${escapeHtml(String(u.role || 'admin').toUpperCase())}</span>` : ''}
               <span class="user-badge ${st}">${escapeHtml(st)}</span>
-              ${isVerified && !isAdmin ? `<span class="user-badge verified">Verified</span>` : ''}
+              ${isVerified && !isAdmin ? `<span class="user-badge verified"><i class="fas fa-check"></i> Verified</span>` : ''}
             </div>
             <div class="user-contact">
-              <span>${escapeHtml(email)}</span><span class="sep"></span>
-              <span class="mono">${escapeHtml(phone)}</span><span class="sep"></span>
-              <span>${txCount} txn${Number(txCount) === 1 ? '' : 's'}</span>
+              ${email ? `<span class="contact-item"><i class="fas fa-envelope"></i> ${escapeHtml(email)}</span>` : ''}
+              ${phone ? `<span class="contact-item mono"><i class="fas fa-phone"></i> ${escapeHtml(phone)}</span>` : ''}
+              <span class="contact-item"><i class="fas fa-receipt"></i> ${txCount} txn${Number(txCount) === 1 ? '' : 's'}</span>
             </div>
           </div>
           <div class="user-right">
-            <div class="user-balance">
+            <div class="user-balance-pill">
               <span class="user-balance-label">Balance</span>
               <span class="user-balance-value">${balance}</span>
             </div>
-            <button class="user-action-btn" title="View details" onclick="event.stopPropagation();viewUser('${escapeHtml(u.id || u._id || '')}')"><i class="fas fa-arrow-right"></i></button>
+            <div class="user-arrow"><i class="fas fa-arrow-right"></i></div>
           </div>
         </div>`;
-    }).join('');
+    }).join('')}</div>`;
   }
   window.renderUsers = renderUsers;
 
