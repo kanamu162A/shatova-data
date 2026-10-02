@@ -308,6 +308,9 @@ button{font-family:inherit}
 .row-avatar.deposit,.row-avatar.withdraw{border-radius:50%;font-weight:800;font-size:15px;letter-spacing:-0.4px}
 .row-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
 .row-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.row-avatar.txn-refund{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
+.row-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
+.row-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
 
 .data-list{display:flex;flex-direction:column}
 .row-item{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:15px 22px;border-bottom:1px solid var(--border);transition:background 0.18s ease,box-shadow 0.18s ease;cursor:pointer;min-width:0;position:relative}
@@ -375,14 +378,111 @@ button{font-family:inherit}
 .loading p{font-size:12px;color:var(--text-muted);font-weight:500}
 
 /* ============================================================
+   ★ PREMIUM TYPE FILTER SHEET — 2-COLUMN GRID ★
+   ============================================================ */
+.type-sheet-wrap{padding: 16px 16px 22px; overflow-y: auto; flex: 1;}
+.type-sheet-group-label{
+  font-size: 10px; font-weight: 800; letter-spacing: 1.1px; text-transform: uppercase;
+  color: var(--text-muted); padding: 6px 4px 8px; display: flex; align-items: center; gap: 7px;
+}
+.type-sheet-group-label i{color: var(--primary); font-size: 10px;}
+.type-sheet-group-label:not(:first-child){margin-top: 14px;}
+.type-sheet-grid{
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px;
+}
+.type-sheet-item{
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 14px 14px 13px; border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer; transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  text-align: left; font-family: inherit;
+  position: relative; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+}
+.type-sheet-item::before{
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--primary-light), transparent 70%);
+  opacity: 0; transition: opacity 0.22s ease; pointer-events: none;
+}
+.type-sheet-item:hover{
+  border-color: rgba(10,69,52,0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -8px rgba(10,69,52,0.15);
+}
+.type-sheet-item:hover::before{opacity: 0.5;}
+.type-sheet-item.active{
+  border-color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: 0 6px 18px -6px rgba(10,69,52,0.18);
+}
+.type-sheet-item.active::before{opacity: 1;}
+.type-sheet-item .ts-head{
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 1;
+}
+.type-sheet-item .ts-icon{
+  width: 38px; height: 38px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; background: var(--bg-input); color: var(--text-secondary);
+  transition: all 0.22s ease; flex-shrink: 0;
+}
+.type-sheet-item:hover .ts-icon{transform: scale(1.05);}
+.type-sheet-item.active .ts-icon{
+  background: var(--primary-gradient); color: #fff;
+  box-shadow: 0 5px 14px -3px rgba(10,69,52,0.4);
+  transform: scale(1.05);
+}
+.type-sheet-item .ts-icon.icon-success{background: var(--success-light); color: var(--success-dark);}
+.type-sheet-item .ts-icon.icon-danger{background: var(--danger-light); color: var(--danger-dark);}
+.type-sheet-item .ts-icon.icon-info{background: var(--info-light); color: var(--info-dark);}
+.type-sheet-item .ts-icon.icon-purple{background: var(--purple-light); color: var(--purple-dark);}
+.type-sheet-item .ts-icon.icon-warning{background: var(--warning-light); color: var(--warning-dark);}
+.type-sheet-item.active .ts-icon.icon-success,
+.type-sheet-item.active .ts-icon.icon-danger,
+.type-sheet-item.active .ts-icon.icon-info,
+.type-sheet-item.active .ts-icon.icon-purple,
+.type-sheet-item.active .ts-icon.icon-warning{
+  background: var(--primary-gradient); color: #fff;
+}
+.type-sheet-item .ts-check{
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--primary-gradient); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; opacity: 0; transform: scale(0.6);
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 3px 8px -2px rgba(10,69,52,0.4);
+}
+.type-sheet-item.active .ts-check{opacity: 1; transform: scale(1);}
+.type-sheet-item .ts-body{position: relative; z-index: 1; min-width: 0;}
+.type-sheet-item .ts-title{
+  font-size: 12.5px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.2px; line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.type-sheet-item.active .ts-title{color: var(--primary-dark);}
+.type-sheet-item .ts-meta{
+  display: flex; align-items: center; gap: 6px; margin-top: 4px;
+  font-size: 10.5px; font-weight: 600; color: var(--text-muted);
+}
+.type-sheet-item .ts-count{
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 999px;
+  background: var(--bg-input); color: var(--text-muted);
+  font-size: 10px; font-weight: 800; letter-spacing: 0.2px;
+}
+.type-sheet-item.active .ts-count{
+  background: rgba(10,69,52,0.15); color: var(--primary-dark);
+}
+.type-sheet-item .ts-count.zero{opacity: 0.45;}
+
+/* ============================================================
    ★ PREMIUM FLOATING BOTTOM NAVIGATION ★
    ============================================================ */
 .mobile-nav{
-  display: none; /* Hidden on desktop, shown at max-width:900px */
+  display: none;
   position: fixed;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
+  bottom: 16px; left: 16px; right: 16px;
   z-index: 45;
   background: var(--bg-card);
   border-radius: 24px;
@@ -395,80 +495,20 @@ button{font-family:inherit}
   box-shadow: 0 10px 32px -8px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
   border-color: rgba(255,255,255,0.08);
 }
-.mobile-nav .nav-items{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
+.mobile-nav .nav-items{display:flex;align-items:center;justify-content:space-between;width:100%;}
 .mobile-nav .nav-item{
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 0;
-  border-radius: 14px;
-  border: none;
-  background: transparent;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-  text-align: center;
-  min-width: 0;
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; padding:6px 0; border-radius:14px; border:none; background:transparent;
+  font-size:10px; font-weight:600; color:var(--text-muted); cursor:pointer;
+  position:relative; transition:all 0.2s ease; text-align:center; min-width:0;
 }
-.mobile-nav .nav-item i{
-  font-size: 18px;
-  width: auto;
-  margin-bottom: 2px;
-  color: var(--text-muted);
-  transition: all 0.22s ease;
-}
-.mobile-nav .nav-item span{
-  display: block;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: -0.1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-/* Premium active state — soft pill background + dark green icon/text */
-.mobile-nav .nav-item.active{
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  box-shadow: none;
-}
-.mobile-nav .nav-item.active i{
-  color: var(--primary-dark);
-  transform: scale(1.08);
-}
-.mobile-nav .nav-item.active span{
-  font-weight: 800;
-  color: var(--primary-dark);
-}
-/* Optional tiny indicator dot on active item */
-.mobile-nav .nav-item.active::after{
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--primary);
-  opacity: 0.9;
-}
-.mobile-nav .nav-item:active{
-  transform: scale(0.96);
-}
-/* Give content enough padding so the floating nav doesn't cover the last item */
+.mobile-nav .nav-item i{font-size:18px;width:auto;margin-bottom:2px;color:var(--text-muted);transition:all 0.22s ease;}
+.mobile-nav .nav-item span{display:block;font-size:10px;font-weight:600;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.mobile-nav .nav-item.active{background:var(--primary-light);color:var(--primary-dark);box-shadow:none;}
+.mobile-nav .nav-item.active i{color:var(--primary-dark);transform:scale(1.08);}
+.mobile-nav .nav-item.active span{font-weight:800;color:var(--primary-dark);}
+.mobile-nav .nav-item.active::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--primary);opacity:0.9;}
+.mobile-nav .nav-item:active{transform:scale(0.96);}
 @media (max-width: 900px) {
   .mobile-nav { display: block; }
   .content { padding-bottom: 110px !important; }
@@ -477,184 +517,30 @@ button{font-family:inherit}
 /* ============================================================
    ★ PREMIUM MANUAL FUND / DEBIT FORM STYLES ★
    ============================================================ */
-.fund-form-container {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 24px 22px 30px;
-}
-
-.fund-form-group {
-  margin-bottom: 22px;
-}
-
-.fund-form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-  letter-spacing: 0.2px;
-}
-
-.fund-form-input {
-  width: 100%;
-  padding: 14px 16px;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 1px 2px rgba(15,23,42,0.03);
-}
-.fund-form-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(10,69,52,0.08), 0 4px 12px -2px rgba(10,69,52,0.08);
-  transform: translateY(-1px);
-}
-.fund-form-input::placeholder {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-.fund-form-textarea {
-  resize: vertical;
-  min-height: 84px;
-  line-height: 1.55;
-}
-.fund-form-select {
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  padding-right: 44px;
-  cursor: pointer;
-}
-
-/* The Search Button inside the Fund Form */
-.fund-search-btn {
-  width: 100%;
-  padding: 15px 20px;
-  border-radius: 12px;
-  border: none;
-  background: var(--primary-gradient);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 8px 20px -6px rgba(10,69,52,0.4), var(--shadow-inset-top);
-  margin-top: 4px;
-}
-.fund-search-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px -8px rgba(10,69,52,0.5), var(--shadow-inset-top);
-}
-.fund-search-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-.fund-search-btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* The Fund / Debit Action Buttons */
-.fund-actions-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 10px;
-}
-.fund-actions-row button {
-  flex: 1;
-  padding: 15px 16px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  font-size: 13.5px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
-  font-family: inherit;
-}
-.fund-actions-row button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-.fund-actions-row .fund-btn {
-  background: var(--primary-gradient);
-  color: #fff;
-  box-shadow: 0 8px 20px -6px rgba(10,69,52,0.4), var(--shadow-inset-top);
-}
-.fund-actions-row .fund-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px -8px rgba(10,69,52,0.5), var(--shadow-inset-top);
-}
-.fund-actions-row .debit-btn {
-  background: linear-gradient(135deg, #a12222 0%, #7a1a1a 100%);
-  color: #fff;
-  box-shadow: 0 8px 20px -6px rgba(161,34,34,0.4), var(--shadow-inset-top);
-}
-.fund-actions-row .debit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px -8px rgba(161,34,34,0.5), var(--shadow-inset-top);
-}
-
-/* The Premium Empty State */
-.fund-empty-premium {
-  text-align: center;
-  padding: 50px 24px 60px;
-  max-width: 420px;
-  margin: 0 auto;
-}
-.fund-empty-icon-wrapper {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 22px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, rgba(10,69,52,0.08) 0%, rgba(10,69,52,0.02) 100%);
-  border: 1px solid rgba(10,69,52,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  color: var(--primary);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-}
-.fund-empty-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 8px;
-  letter-spacing: -0.25px;
-}
-.fund-empty-desc {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-/* Fund user preview card (when a user is found) */
-.fund-user-card{
-  padding: 20px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(10,69,52,0.05) 0%, rgba(10,69,52,0.02) 100%);
-  border: 1px solid rgba(10,69,52,0.16);
-  margin-bottom: 24px;
-  animation: fadeInUp 0.34s var(--ease-out);
-  box-shadow: var(--shadow-xs);
-}
+.fund-form-container{max-width: 640px;margin: 0 auto;padding: 24px 22px 30px;}
+.fund-form-group{margin-bottom: 22px;}
+.fund-form-label{display: block;font-size: 12px;font-weight: 700;color: var(--text-secondary);margin-bottom: 8px;letter-spacing: 0.2px;}
+.fund-form-input{width: 100%;padding: 14px 16px;background: var(--bg-card);border: 1.5px solid var(--border);border-radius: 12px;color: var(--text);font-size: 14px;font-family: inherit;outline: none;transition: all 0.22s cubic-bezier(0.4,0,0.2,1);box-shadow: 0 1px 2px rgba(15,23,42,0.03);}
+.fund-form-input:focus{border-color: var(--primary);box-shadow: 0 0 0 4px rgba(10,69,52,0.08), 0 4px 12px -2px rgba(10,69,52,0.08);transform: translateY(-1px);}
+.fund-form-input::placeholder{color: var(--text-muted);font-weight: 400;}
+.fund-form-textarea{resize: vertical;min-height: 84px;line-height: 1.55;}
+.fund-form-select{appearance: none;-webkit-appearance: none;background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat: no-repeat;background-position: right 16px center;padding-right: 44px;cursor: pointer;}
+.fund-search-btn{width: 100%;padding: 15px 20px;border-radius: 12px;border: none;background: var(--primary-gradient);color: #fff;font-size: 14px;font-weight: 700;letter-spacing: 0.2px;cursor: pointer;display: inline-flex;align-items: center;justify-content: center;gap: 10px;transition: all 0.22s cubic-bezier(0.4,0,0.2,1);box-shadow: 0 8px 20px -6px rgba(10,69,52,0.4), var(--shadow-inset-top);margin-top: 4px;}
+.fund-search-btn:hover:not(:disabled){transform: translateY(-2px);box-shadow: 0 12px 28px -8px rgba(10,69,52,0.5), var(--shadow-inset-top);}
+.fund-search-btn:active:not(:disabled){transform: translateY(0);}
+.fund-search-btn:disabled{opacity: 0.65;cursor: not-allowed;transform: none;}
+.fund-actions-row{display: flex;gap: 12px;margin-top: 10px;}
+.fund-actions-row button{flex: 1;padding: 15px 16px;border-radius: 12px;border: 1px solid transparent;font-size: 13.5px;font-weight: 700;cursor: pointer;display: inline-flex;align-items: center;justify-content: center;gap: 8px;transition: all 0.22s cubic-bezier(0.4,0,0.2,1);font-family: inherit;}
+.fund-actions-row button:disabled{opacity: 0.6;cursor: not-allowed;transform: none;}
+.fund-actions-row .fund-btn{background: var(--primary-gradient);color: #fff;box-shadow: 0 8px 20px -6px rgba(10,69,52,0.4), var(--shadow-inset-top);}
+.fund-actions-row .fund-btn:hover:not(:disabled){transform: translateY(-2px);box-shadow: 0 12px 26px -8px rgba(10,69,52,0.5), var(--shadow-inset-top);}
+.fund-actions-row .debit-btn{background: linear-gradient(135deg, #a12222 0%, #7a1a1a 100%);color: #fff;box-shadow: 0 8px 20px -6px rgba(161,34,34,0.4), var(--shadow-inset-top);}
+.fund-actions-row .debit-btn:hover:not(:disabled){transform: translateY(-2px);box-shadow: 0 12px 26px -8px rgba(161,34,34,0.5), var(--shadow-inset-top);}
+.fund-empty-premium{text-align: center;padding: 50px 24px 60px;max-width: 420px;margin: 0 auto;}
+.fund-empty-icon-wrapper{width: 80px;height: 80px;margin: 0 auto 22px;border-radius: 24px;background: linear-gradient(135deg, rgba(10,69,52,0.08) 0%, rgba(10,69,52,0.02) 100%);border: 1px solid rgba(10,69,52,0.1);display: flex;align-items: center;justify-content: center;font-size: 30px;color: var(--primary);box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);}
+.fund-empty-title{font-size: 16px;font-weight: 800;color: var(--text);margin-bottom: 8px;letter-spacing: -0.25px;}
+.fund-empty-desc{font-size: 13px;color: var(--text-muted);line-height: 1.6;}
+.fund-user-card{padding: 20px;border-radius: 16px;background: linear-gradient(135deg, rgba(10,69,52,0.05) 0%, rgba(10,69,52,0.02) 100%);border: 1px solid rgba(10,69,52,0.16);margin-bottom: 24px;animation: fadeInUp 0.34s var(--ease-out);box-shadow: var(--shadow-xs);}
 .fund-user-card .fu-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .fund-user-card .fu-avatar{width:52px;height:52px;border-radius:50%;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;flex-shrink:0;box-shadow:0 5px 14px -3px rgba(10,69,52,0.4)}
 .fund-user-card .fu-info{flex:1;min-width:0}
@@ -670,12 +556,8 @@ button{font-family:inherit}
 .fund-user-card.error .fu-error-icon{width:44px;height:44px;margin:0 auto 12px;border-radius:50%;background:var(--danger-light);color:var(--danger-dark);display:flex;align-items:center;justify-content:center;font-size:18px}
 .fund-user-card.error .fu-error-title{font-size:14px;font-weight:800;color:var(--danger-dark);margin-bottom:5px}
 .fund-user-card.error .fu-error-text{font-size:12px;color:var(--text-secondary);line-height:1.55}
-
-/* Reveal animation for the fund form */
 #fundForm{max-height:0;opacity:0;overflow:hidden;transition:max-height 0.45s cubic-bezier(0.22,1,0.36,1),opacity 0.3s ease,padding 0.3s ease;padding:0 22px}
 #fundForm.revealed{max-height:1200px;opacity:1;padding:0 0 0 0;border-top:none}
-
-/* Responsive adjustments for the fund form */
 @media (max-width: 768px) {
   .fund-form-container { padding: 20px 16px 24px; }
   .fund-actions-row { flex-direction: column; }
@@ -687,7 +569,7 @@ button{font-family:inherit}
 /* ============ MODALS & SHEETS ============ */
 .sheet-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1300;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity 0.28s ease,visibility 0.28s ease}
 .sheet-overlay.open{opacity:1;visibility:visible}
-.sheet{width:100%;max-width:480px;background:var(--bg-card);border-radius:22px 22px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,0.25);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0.24,1);max-height:88vh;display:flex;flex-direction:column;border:1px solid var(--border);border-bottom:none}
+.sheet{width:100%;max-width:520px;background:var(--bg-card);border-radius:22px 22px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,0.25);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0.24,1);max-height:88vh;display:flex;flex-direction:column;border:1px solid var(--border);border-bottom:none}
 .sheet-overlay.open .sheet{transform:translateY(0)}
 .sheet-grip{width:44px;height:4px;border-radius:4px;background:var(--border-strong);margin:10px auto 4px}
 .sheet-head{padding:8px 22px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
@@ -744,7 +626,7 @@ button{font-family:inherit}
 .modal .btns .danger{background:linear-gradient(135deg,#a12222 0%,#7a1a1a 100%);color:#fff;box-shadow:0 6px 18px -4px rgba(161,34,34,0.45),var(--shadow-inset-top)}
 .modal .btns .danger:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 26px -6px rgba(161,34,34,0.5),var(--shadow-inset-top)}
 
-/* User search / results (kept as-is) */
+/* User search / results */
 .user-search-hero{padding:30px 32px 26px;background:linear-gradient(160deg,rgba(10,69,52,0.055) 0%,rgba(10,69,52,0.015) 55%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 .user-search-hero::before{content:'';position:absolute;top:-100px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.075) 0%,transparent 65%);pointer-events:none}
 .user-search-hero::after{content:'';position:absolute;bottom:-120px;left:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,0.055) 0%,transparent 70%);pointer-events:none}
@@ -956,6 +838,12 @@ button{font-family:inherit}
   .fund-empty-icon-wrapper{width:68px;height:68px;font-size:26px;margin-bottom:18px}
   .fund-empty-title{font-size:15px}
   .fund-empty-desc{font-size:12.5px}
+
+  .type-sheet-grid{grid-template-columns: repeat(2, 1fr); gap: 8px;}
+  .type-sheet-item{padding: 12px 12px 11px;}
+  .type-sheet-item .ts-icon{width: 34px; height: 34px; font-size: 13.5px;}
+  .type-sheet-item .ts-title{font-size: 12px;}
+  .type-sheet-item .ts-count{font-size: 9.5px; padding: 2px 7px;}
 }
 
 @media (max-width:420px){
@@ -1181,7 +1069,6 @@ button{font-family:inherit}
                   <div class="user-search-headline-sub">Search by name, phone number, email, or account ID</div>
                 </div>
               </div>
-              <!-- UPDATED: The pill-shaped search bar from image 1 -->
               <div class="user-search-field" style="border-radius: 999px; padding: 0 20px; height: 56px; border-color: rgba(10,69,52,0.3);">
                 <i class="fas fa-search" style="color: var(--primary);"></i>
                 <input type="text" id="userSearch" placeholder="e.g. 08031234567, alice@example.com" autocomplete="off" spellcheck="false" oninput="onUserSearchInput(event)">
@@ -1189,7 +1076,6 @@ button{font-family:inherit}
                 <button class="user-search-clear" id="userSearchClear" onclick="clearUserSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
                 <span class="user-search-kbd" style="display: none;">ESC</span>
               </div>
-              <!-- UPDATED: The chips are now smaller and neatly aligned -->
               <div class="user-search-chips" style="margin-top: 16px; gap: 8px;">
                 <span class="user-search-chips-label" style="display: none;">Quick</span>
                 <button class="user-search-chip" onclick="quickUserSearch('active')" style="padding: 5px 14px;"><i class="fas fa-bolt"></i> Show all</button>
@@ -1286,8 +1172,6 @@ button{font-family:inherit}
       <section id="tab-fund" style="display:none;">
         <div class="panel">
           <div class="panel-head"><h3><i class="fas fa-hand-holding-dollar"></i> Manual Wallet Fund / Debit</h3><span class="sub">Search a user first</span></div>
-          
-          <!-- PREMIUM SEARCH AREA FOR FUND (MATCHING USER SEARCH) -->
           <div class="section-search-hero" style="padding: 26px 22px 22px;">
             <div style="max-width: 640px; margin: 0 auto;">
               <div class="user-search-field" style="border-radius: 999px; padding: 0 20px; height: 56px; border-color: rgba(10,69,52,0.3);">
@@ -1304,31 +1188,22 @@ button{font-family:inherit}
               </div>
             </div>
           </div>
-
-          <!-- EMPTY STATE -->
           <div id="fundEmpty" class="fund-empty-premium">
-            <div class="fund-empty-icon-wrapper">
-              <i class="fas fa-user-magnifying-glass"></i>
-            </div>
+            <div class="fund-empty-icon-wrapper"><i class="fas fa-user-magnifying-glass"></i></div>
             <div class="fund-empty-title">No user selected</div>
             <div class="fund-empty-desc">Search by phone number or email above to load the user's details and unlock the funding form.</div>
           </div>
-
-          <!-- FORM -->
           <div id="fundForm">
             <div class="fund-form-container">
               <div id="fundUserPreview"></div>
-              
               <div class="fund-form-group">
                 <label class="fund-form-label">Amount (₦)</label>
                 <input type="number" id="fundAmount" class="fund-form-input" min="1" step="0.01" placeholder="e.g. 5000">
               </div>
-              
               <div class="fund-form-group">
                 <label class="fund-form-label">Reason (visible in user's transaction history)</label>
                 <textarea id="fundReason" class="fund-form-input fund-form-textarea" placeholder="e.g. Compensation for failed MTN data on 2026-09-26 (Ref: shatova-data-…)" rows="3"></textarea>
               </div>
-              
               <div class="fund-form-group">
                 <label class="fund-form-label">Source</label>
                 <select id="fundSource" class="fund-form-input fund-form-select">
@@ -1339,7 +1214,6 @@ button{font-family:inherit}
                   <option value="refund">Refund</option>
                 </select>
               </div>
-              
               <div class="fund-actions-row">
                 <button class="fund-btn" id="fundSubmitBtn" onclick="submitManualFund()"><i class="fas fa-plus-circle"></i> Fund Wallet</button>
                 <button class="debit-btn" id="debitSubmitBtn" onclick="submitManualDebit()"><i class="fas fa-minus-circle"></i> Debit Wallet</button>
@@ -1395,31 +1269,13 @@ button{font-family:inherit}
   </div>
 </div>
 
-<!-- ============================================================
-     ★ PREMIUM FLOATING BOTTOM NAVIGATION ★
-     ============================================================ -->
 <nav class="mobile-nav" aria-label="Bottom navigation">
   <div class="nav-items">
-    <button class="nav-item active" data-tab="overview" onclick="switchTab('overview')" aria-label="Overview">
-      <i class="fas fa-chart-pie"></i>
-      <span>Overview</span>
-    </button>
-    <button class="nav-item" data-tab="users" onclick="switchTab('users')" aria-label="Users">
-      <i class="fas fa-users"></i>
-      <span>Users</span>
-    </button>
-    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')" aria-label="Transactions">
-      <i class="fas fa-exchange-alt"></i>
-      <span>Txns</span>
-    </button>
-    <button class="nav-item" data-tab="deposits" onclick="switchTab('deposits')" aria-label="Deposits">
-      <i class="fas fa-arrow-down"></i>
-      <span>Deposits</span>
-    </button>
-    <button class="nav-item" data-tab="fund" onclick="switchTab('fund')" aria-label="Manual Fund">
-      <i class="fas fa-hand-holding-dollar"></i>
-      <span>Fund</span>
-    </button>
+    <button class="nav-item active" data-tab="overview" onclick="switchTab('overview')" aria-label="Overview"><i class="fas fa-chart-pie"></i><span>Overview</span></button>
+    <button class="nav-item" data-tab="users" onclick="switchTab('users')" aria-label="Users"><i class="fas fa-users"></i><span>Users</span></button>
+    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')" aria-label="Transactions"><i class="fas fa-exchange-alt"></i><span>Txns</span></button>
+    <button class="nav-item" data-tab="deposits" onclick="switchTab('deposits')" aria-label="Deposits"><i class="fas fa-arrow-down"></i><span>Deposits</span></button>
+    <button class="nav-item" data-tab="fund" onclick="switchTab('fund')" aria-label="Manual Fund"><i class="fas fa-hand-holding-dollar"></i><span>Fund</span></button>
   </div>
 </nav>
 
@@ -1439,15 +1295,17 @@ button{font-family:inherit}
   </div>
 </div>
 
+<!-- ============================================================
+     ★ PREMIUM TYPE FILTER SHEET — dynamically rendered grid ★
+     ============================================================ -->
 <div class="sheet-overlay" id="typeSheetOverlay" onclick="closeTypeSheet(event)">
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-grip"></div>
-    <div class="sheet-head"><h3><i class="fas fa-layer-group"></i> Filter by type</h3><button class="sheet-close" onclick="closeTypeSheet()"><i class="fas fa-times"></i></button></div>
-    <div class="sheet-options" id="typeOptions">
-      <button class="sheet-option active" data-type="all" onclick="selectType('all',event)"><div class="opt-icon"><i class="fas fa-th-large"></i></div><div class="opt-info"><div class="opt-title">All types</div><div class="opt-sub">Show every transaction</div></div><i class="fas fa-check opt-check"></i></button>
-      <button class="sheet-option" data-type="airtime" onclick="selectType('airtime',event)"><div class="opt-icon"><i class="fas fa-signal"></i></div><div class="opt-info"><div class="opt-title">Airtime</div><div class="opt-sub">VTU top-ups only</div></div><i class="fas fa-check opt-check"></i></button>
-      <button class="sheet-option" data-type="data" onclick="selectType('data',event)"><div class="opt-icon"><i class="fas fa-wifi"></i></div><div class="opt-info"><div class="opt-title">Data</div><div class="opt-sub">Data bundle purchases</div></div><i class="fas fa-check opt-check"></i></button>
+    <div class="sheet-head">
+      <h3><i class="fas fa-layer-group"></i> Filter by type</h3>
+      <button class="sheet-close" onclick="closeTypeSheet()"><i class="fas fa-times"></i></button>
     </div>
+    <div class="type-sheet-wrap" id="typeSheetWrap"></div>
   </div>
 </div>
 
@@ -1596,34 +1454,11 @@ button{font-family:inherit}
 
   /* ==================== NETWORK LOGOS ==================== */
   const NETWORK_SVGS = {
-    mtn: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="36" text-anchor="middle"
-            font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif"
-            font-weight="900" font-size="16" fill="#0A0A0A"
-            letter-spacing="-0.8">MTN</text>
-    </svg>`,
-    airtel: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="35" text-anchor="middle"
-            font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
-            font-weight="700" font-size="13.5" fill="#ffffff"
-            letter-spacing="-0.3">airtel</text>
-    </svg>`,
-    glo: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="38" text-anchor="middle"
-            font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
-            font-weight="900" font-style="italic" font-size="20"
-            fill="#ffffff" letter-spacing="-1">glo</text>
-    </svg>`,
-    t2: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="40" text-anchor="middle"
-            font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif"
-            font-weight="900" font-size="26" fill="#ffffff">9</text>
-    </svg>`,
-    generic: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="36" text-anchor="middle"
-            font-family="Inter,sans-serif" font-weight="800"
-            font-size="14" fill="#ffffff">VTU</text>
-    </svg>`,
+    mtn: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><text x="28" y="36" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif" font-weight="900" font-size="16" fill="#0A0A0A" letter-spacing="-0.8">MTN</text></svg>`,
+    airtel: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><text x="28" y="35" text-anchor="middle" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-weight="700" font-size="13.5" fill="#ffffff" letter-spacing="-0.3">airtel</text></svg>`,
+    glo: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><text x="28" y="38" text-anchor="middle" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-weight="900" font-style="italic" font-size="20" fill="#ffffff" letter-spacing="-1">glo</text></svg>`,
+    t2: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><text x="28" y="40" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif" font-weight="900" font-size="26" fill="#ffffff">9</text></svg>`,
+    generic: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><text x="28" y="36" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="14" fill="#ffffff">VTU</text></svg>`,
   };
 
   function detectNetwork(t) {
@@ -1676,9 +1511,7 @@ button{font-family:inherit}
   /* ==================== LOGOUT ==================== */
   async function logout() {
     if (!confirm('Log out of admin panel?')) return;
-    try {
-      await fetch(`${API_BASE}/auth/pin-logout`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
-    } catch (e) {}
+    try { await fetch(`${API_BASE}/auth/pin-logout`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } }); } catch (e) {}
     localStorage.removeItem('token'); localStorage.removeItem('user');
     sessionStorage.removeItem('token'); sessionStorage.removeItem('pinVerified');
     window.location.href = '/login.html';
@@ -1722,11 +1555,7 @@ button{font-family:inherit}
     const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
     t.innerHTML = `${icon} <span>${escapeHtml(msg)}</span>`;
     c.appendChild(t);
-    setTimeout(() => {
-      t.style.opacity = '0';
-      t.style.transform = 'translateY(12px)';
-      setTimeout(() => t.remove(), 300);
-    }, 3500);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; setTimeout(() => t.remove(), 300); }, 3500);
   }
   function getAmount(o) {
     if (o == null) return 0;
@@ -1749,21 +1578,83 @@ button{font-family:inherit}
     const map = { success: 'Success', pending: 'Pending', failed: 'Failed', refunded: 'Refunded' };
     return map[st] || (st ? st.charAt(0).toUpperCase() + st.slice(1) : 'Pending');
   }
+
+  /* ============================================================
+     ★ ADVANCED TRANSACTION TYPE DETECTION ENGINE
+     Classifies every transaction into: airtime | data | deposit |
+     withdrawal | transfer | refund | other
+     Uses a scoring heuristic across service/type/category/keywords,
+     direction hints, and product metadata.
+     ============================================================ */
   function txnKind(t) {
+    if (!t) return 'other';
     const meta = t.metadata || {};
-    const raw = [t.service, t.type, t.category, t.product_type, t.operator_type, meta.service, meta.type].filter(Boolean).join(' ').toLowerCase();
-    const prod = [meta.product_name, meta.plan, meta.bundle, t.description, t.product].filter(Boolean).join(' ').toLowerCase();
-    if (/airtime|vtu|top[-_ ]?up|recharge/.test(raw)) return 'airtime';
-    if (/data|bundle|gig|\bgb\b|\bmb\b/.test(raw)) return 'data';
-    if (/airtime|vtu/.test(prod)) return 'airtime';
-    if (/data|\bgb\b|\bmb\b|gig/.test(prod)) return 'data';
+
+    // Aggregate all textual signals
+    const raw = [
+      t.service, t.type, t.category, t.product_type, t.operator_type,
+      t.transaction_type, t.txn_type, t.purpose,
+      meta.service, meta.type, meta.category, meta.transaction_type,
+      meta.purpose, meta.channel,
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    const prod = [
+      meta.product_name, meta.plan, meta.bundle, meta.network,
+      t.description, t.product, t.narration, t.note,
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    const dir = String(
+      t.direction || t.transaction_direction || meta.direction || meta.flow || ''
+    ).toLowerCase().trim();
+
+    const all = raw + ' ' + prod;
+
+    // 1. Refund / Reversal — highest priority (overrides everything)
+    if (/\brefund\b|\breversal\b|\breversed\b|chargeback|charge[\s_-]?back/.test(all)) return 'refund';
+
+    // 2. Airtime / VTU
+    if (/\bairtime\b|\bvtu\b|\brecharge\b|top[\s_-]?up(?!.*data)|\bawuf\b/.test(all)) return 'airtime';
+
+    // 3. Data bundles
+    if (/\bdata\b|\bbundle\b|\bgig\b|\bgb\b|\bmb\b|\btb\b/.test(all)) return 'data';
+
+    // 4. Wallet transfer (peer-to-peer)
+    if (/\btransfer\b|\bp2p\b|send[\s_-]?money|wallet[\s_-]?transfer|user[\s_-]?to[\s_-]?user/.test(all)) return 'transfer';
+
+    // 5. Withdrawal / Payout
+    if (/\bwithdraw|\bpayout\b|\bcash[\s_-]?out\b|\bcashout\b|\bdisburse/.test(all)) return 'withdrawal';
+
+    // 6. Deposit / Wallet funding
+    if (/\bdeposit\b|wallet[\s_-]?fund|\bfunding\b|bank[\s_-]?transfer|moniepoint|paystack|flutterwave|\bcredit\b(?!.*vtu)/.test(all)) return 'deposit';
+
+    // 7. Direction fallback (only when nothing else matched)
+    if (dir === 'credit' || dir === 'inflow' || dir === 'in') return 'deposit';
+    if (dir === 'debit' || dir === 'outflow' || dir === 'out') return 'other';
+
     return 'other';
   }
-  function getDate(o) { return o?.created_at || o?.createdAt || o?.date || o?.timestamp || o?.updated_at || null; }
-  function setHiddenByValue(id, hasValue) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('is-hidden', !hasValue);
+  function txnKindLabel(kind) {
+    const map = { airtime: 'Airtime', data: 'Data', deposit: 'Deposit', withdrawal: 'Withdrawal', transfer: 'Transfer', refund: 'Refund', other: 'Other' };
+    return map[kind] || 'Transaction';
   }
+  function txnKindAvatarClass(t) {
+    const k = txnKind(t);
+    if (k === 'deposit' || k === 'withdrawal' || k === 'transfer' || k === 'refund' || k === 'other') {
+      return 'txn-' + k;
+    }
+    return networkAvatarClass(t);
+  }
+  function txnKindAvatarHtml(t) {
+    const k = txnKind(t);
+    const icons = { deposit: 'fa-arrow-down', withdrawal: 'fa-arrow-up', transfer: 'fa-paper-plane', refund: 'fa-rotate-left', other: 'fa-receipt' };
+    if (icons[k]) {
+      return `<i class="fas ${icons[k]}" style="font-size:14px;color:#fff;"></i>`;
+    }
+    return networkAvatarHtml(t);
+  }
+
+  function getDate(o) { return o?.created_at || o?.createdAt || o?.date || o?.timestamp || o?.updated_at || null; }
+  function setHiddenByValue(id, hasValue) { const el = document.getElementById(id); if (el) el.classList.toggle('is-hidden', !hasValue); }
   function toggleClearButton(inputId, clearId) {
     const input = document.getElementById(inputId);
     const clear = document.getElementById(clearId);
@@ -1807,9 +1698,7 @@ button{font-family:inherit}
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...options.headers },
     });
     if (res.status === 401 || res.status === 403) {
-      localStorage.removeItem('token');
-      window.location.href = '/login.html';
-      throw new Error('Session expired');
+      localStorage.removeItem('token'); window.location.href = '/login.html'; throw new Error('Session expired');
     }
     const json = await res.json().catch(() => ({}));
     if (!res.ok || !json.success) {
@@ -1843,10 +1732,7 @@ button{font-family:inherit}
     const cutoff = rangeCutoff(key === undefined ? state.range : key);
     if (!cutoff) return list.slice();
     const c = cutoff.getTime();
-    return list.filter(i => {
-      const t = new Date(getDate(i)).getTime();
-      return !isNaN(t) && t >= c;
-    });
+    return list.filter(i => { const t = new Date(getDate(i)).getTime(); return !isNaN(t) && t >= c; });
   }
   function setRange(key) {
     if (!RANGES[key]) key = '1d';
@@ -1888,10 +1774,81 @@ button{font-family:inherit}
   function selectRange(key, ev) { if (ev) ev.stopPropagation(); setRange(key); setTimeout(() => closeRangeSheet(), 180); }
   window.openRangeSheet = openRangeSheet; window.closeRangeSheet = closeRangeSheet; window.selectRange = selectRange;
 
-  /* ==================== TXN TYPE FILTER ==================== */
-  const TXN_TYPES = { all: { label: 'All types' }, airtime: { label: 'Airtime' }, data: { label: 'Data' } };
-  function openTypeSheet() { $('#typeSheetOverlay').classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeTypeSheet(e) { if (e && e.target !== $('#typeSheetOverlay')) return; $('#typeSheetOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+  /* ============================================================
+     ★ TYPE FILTER ENGINE — 7 categories + "All types"
+     ============================================================ */
+  const TXN_TYPES = {
+    all:        { label: 'All types',  icon: 'fa-th-large',    color: 'primary', group: 'all',      sub: 'Every transaction' },
+    airtime:    { label: 'Airtime',    icon: 'fa-signal',      color: 'info',    group: 'services', sub: 'VTU top-ups' },
+    data:       { label: 'Data',       icon: 'fa-wifi',        color: 'purple',  group: 'services', sub: 'Data bundles' },
+    deposit:    { label: 'Deposits',   icon: 'fa-arrow-down',  color: 'success', group: 'wallet',   sub: 'Wallet funding' },
+    withdrawal: { label: 'Withdrawals',icon: 'fa-arrow-up',    color: 'danger',  group: 'wallet',   sub: 'Payouts' },
+    transfer:   { label: 'Transfers',  icon: 'fa-paper-plane', color: 'warning', group: 'wallet',   sub: 'P2P sends' },
+    refund:     { label: 'Refunds',    icon: 'fa-rotate-left', color: 'info',    group: 'other',    sub: 'Reversals' },
+    other:      { label: 'Others',     icon: 'fa-receipt',     color: 'muted',   group: 'other',    sub: 'Uncategorised' },
+  };
+  const TXN_TYPE_GROUPS = [
+    { key: 'all',      label: 'Overview',       icon: 'fa-globe' },
+    { key: 'services', label: 'VTU Services',   icon: 'fa-mobile-screen' },
+    { key: 'wallet',   label: 'Wallet Activity', icon: 'fa-wallet' },
+    { key: 'other',    label: 'Other Activity',  icon: 'fa-ellipsis' },
+  ];
+
+  function getTxnTypeCounts() {
+    const counts = { all: 0, airtime: 0, data: 0, deposit: 0, withdrawal: 0, transfer: 0, refund: 0, other: 0 };
+    const list = applyRange(state.transactions || [], state.range);
+    for (const t of list) {
+      const k = txnKind(t);
+      counts.all++;
+      if (counts[k] !== undefined) counts[k]++;
+    }
+    return counts;
+  }
+
+  function renderTypeSheet() {
+    const wrap = document.getElementById('typeSheetWrap');
+    if (!wrap) return;
+    const counts = getTxnTypeCounts();
+    let html = '';
+    for (const group of TXN_TYPE_GROUPS) {
+      const typesInGroup = Object.entries(TXN_TYPES).filter(([_, cfg]) => cfg.group === group.key);
+      if (!typesInGroup.length) continue;
+      html += `<div class="type-sheet-group-label"><i class="fas ${group.icon}"></i> ${group.label}</div>`;
+      html += `<div class="type-sheet-grid">`;
+      for (const [key, cfg] of typesInGroup) {
+        const active = state.txnFilter === key;
+        const count = counts[key] || 0;
+        const countClass = count === 0 ? 'ts-count zero' : 'ts-count';
+        const iconClass = key === 'all' ? '' : ('icon-' + cfg.color);
+        html += `
+          <button class="type-sheet-item${active ? ' active' : ''}" data-type="${key}" onclick="selectType('${key}', event)">
+            <div class="ts-head">
+              <div class="ts-icon ${iconClass}"><i class="fas ${cfg.icon}"></i></div>
+              <div class="ts-check"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="ts-body">
+              <div class="ts-title">${escapeHtml(cfg.label)}</div>
+              <div class="ts-meta">
+                <span class="${countClass}"><i class="fas fa-hashtag" style="font-size:8px;opacity:0.7;"></i>${count.toLocaleString()}</span>
+              </div>
+            </div>
+          </button>`;
+      }
+      html += `</div>`;
+    }
+    wrap.innerHTML = html;
+  }
+
+  function openTypeSheet() {
+    renderTypeSheet();
+    $('#typeSheetOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeTypeSheet(e) {
+    if (e && e.target !== $('#typeSheetOverlay')) return;
+    $('#typeSheetOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
   function selectType(key, ev) {
     if (ev) ev.stopPropagation();
     if (!TXN_TYPES[key]) key = 'all';
@@ -1900,11 +1857,13 @@ button{font-family:inherit}
     setTimeout(() => closeTypeSheet(), 180);
   }
   window.openTypeSheet = openTypeSheet; window.closeTypeSheet = closeTypeSheet; window.selectType = selectType;
+
   function syncTypeUI() {
     const t = TXN_TYPES[state.txnFilter] || TXN_TYPES.all;
     const lbl = $('#txnTypeLabel'); if (lbl) lbl.textContent = t.label;
     const pill = $('#txnTypePill'); if (pill) pill.classList.toggle('active', state.txnFilter !== 'all');
-    $$('#typeOptions .sheet-option').forEach(o => o.classList.toggle('active', o.dataset.type === state.txnFilter));
+    // Update active state in sheet if visible
+    $$('#typeSheetWrap .type-sheet-item').forEach(o => o.classList.toggle('active', o.dataset.type === state.txnFilter));
   }
 
   /* ==================== TABS ==================== */
@@ -1953,11 +1912,8 @@ button{font-family:inherit}
     return [];
   }
   async function fetchUsers() {
-    try {
-      const res = await apiCall('/admin/users?limit=500');
-      state.users = pickArray(res);
-      state.totalUsers = res?.meta?.total ?? res?.data?.total ?? res?.total ?? state.users.length;
-    } catch (err) { console.warn('[admin] users:', err.message); state.users = []; }
+    try { const res = await apiCall('/admin/users?limit=500'); state.users = pickArray(res); state.totalUsers = res?.meta?.total ?? res?.data?.total ?? res?.total ?? state.users.length; }
+    catch (err) { console.warn('[admin] users:', err.message); state.users = []; }
   }
   let userSearchSeq = 0;
   async function searchUsersServer(q) {
@@ -1968,16 +1924,8 @@ button{font-family:inherit}
       const found = pickArray(res);
       state.userResults = found;
       state.userTotal = res?.meta?.total ?? res?.data?.total ?? found.length;
-    } catch (err) {
-      if (seq !== userSearchSeq) return;
-      console.warn('[admin] user search:', err.message);
-    } finally {
-      if (seq === userSearchSeq) {
-        state.userLoading = false;
-        setUserSearchSpinner(false);
-        renderUsers();
-      }
-    }
+    } catch (err) { if (seq !== userSearchSeq) return; console.warn('[admin] user search:', err.message); }
+    finally { if (seq === userSearchSeq) { state.userLoading = false; setUserSearchSpinner(false); renderUsers(); } }
   }
   async function fetchTransactions() {
     try { const res = await apiCall('/admin/transactions?limit=500'); state.transactions = pickArray(res); }
@@ -1997,12 +1945,9 @@ button{font-family:inherit}
       const user = res.data?.user || res.data || null;
       if (user) {
         const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-        setText('adminName', user.name || 'Admin');
-        setText('adminEmail', user.email || '');
-        setText('drawerName', user.name || 'Admin');
-        setText('drawerEmail', user.email || '');
-        setText('adminAvatar', (user.name || 'A').charAt(0).toUpperCase());
-        setText('drawerAvatar', (user.name || 'A').charAt(0).toUpperCase());
+        setText('adminName', user.name || 'Admin'); setText('adminEmail', user.email || '');
+        setText('drawerName', user.name || 'Admin'); setText('drawerEmail', user.email || '');
+        setText('adminAvatar', (user.name || 'A').charAt(0).toUpperCase()); setText('drawerAvatar', (user.name || 'A').charAt(0).toUpperCase());
       }
     } catch (err) { console.warn('[admin] me:', err.message); }
   }
@@ -2064,10 +2009,7 @@ button{font-family:inherit}
     $('#statSuccess').textContent = `${rate}%`;
     $('#statSuccessSub').textContent = `${success.length} of ${decided} successful`;
     setHiddenByValue('cardSuccess', decided > 0);
-    const profit = txns.reduce((s, t) => {
-      const meta = t.metadata || {};
-      return s + (Number(t.profit ?? meta.profit ?? meta.commission ?? 0) || 0);
-    }, 0);
+    const profit = txns.reduce((s, t) => { const meta = t.metadata || {}; return s + (Number(t.profit ?? meta.profit ?? meta.commission ?? 0) || 0); }, 0);
     $('#statProfit').textContent = formatMoney(profit, true);
     const prSub = $('#statProfitSub');
     if (prSub) prSub.textContent = `From ${success.length} completed sale${success.length === 1 ? '' : 's'}`;
@@ -2140,8 +2082,9 @@ button{font-family:inherit}
       const meta = t.metadata || {};
       const phone = t.phone || meta.phone || t.recipient || '—';
       const st = getStatus(t);
-      const product = meta.product_name || t.description || t.product || 'Transaction';
-      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${networkAvatarClass(t)}">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span>${timeAgo(getDate(t))}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(getAmount(t))}</div></div></div>`;
+      const kind = txnKind(t);
+      const product = meta.product_name || t.description || t.product || txnKindLabel(kind) + ' Transaction';
+      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${txnKindAvatarClass(t)}">${txnKindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span>${timeAgo(getDate(t))}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(getAmount(t))}</div></div></div>`;
     }).join('');
     if (paginationEl && maxPages > 1) {
       let html = `<div class="pagination-info">Showing <strong>${startIndex + 1}–${endIndex}</strong> of <strong>${totalItems}</strong></div><div class="pagination-controls">`;
@@ -2161,10 +2104,7 @@ button{font-family:inherit}
     const decided = success.length + failed.length;
     const rate = decided > 0 ? Math.round((success.length / decided) * 100) : 0;
     const total = txns.reduce((s, t) => s + getAmount(t), 0);
-    const profit = txns.reduce((s, t) => {
-      const meta = t.metadata || {};
-      return s + (Number(t.profit ?? meta.profit ?? 0) || 0);
-    }, 0);
+    const profit = txns.reduce((s, t) => { const meta = t.metadata || {}; return s + (Number(t.profit ?? meta.profit ?? 0) || 0); }, 0);
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     set('kpiProcessed', formatMoney(total, true));
     set('kpiProcessedSub', `across ${txns.length} transaction${txns.length === 1 ? '' : 's'}`);
@@ -2210,11 +2150,7 @@ button{font-family:inherit}
     const txns = state.transactions || [];
     const values = buckets.map(b => {
       const s = b.start.getTime(), e = b.end.getTime();
-      return txns.reduce((sum, t) => {
-        const ts = new Date(getDate(t)).getTime();
-        if (isNaN(ts) || ts < s || ts >= e) return sum;
-        return sum + getAmount(t);
-      }, 0);
+      return txns.reduce((sum, t) => { const ts = new Date(getDate(t)).getTime(); if (isNaN(ts) || ts < s || ts >= e) return sum; return sum + getAmount(t); }, 0);
     });
     const max = Math.max(...values, 1);
     const grandTotal = values.reduce((a, b) => a + b, 0);
@@ -2246,14 +2182,9 @@ button{font-family:inherit}
     });
   }
   function hashColor(str) {
-    const s = String(str || '?');
-    let h = 0;
+    const s = String(str || '?'); let h = 0;
     for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-    const palettes = [
-      ['#0d5a44', '#062f24'], ['#1d4ed8', '#1e3a8a'], ['#7c3aed', '#5b21b6'],
-      ['#b45309', '#7c2d12'], ['#be185d', '#831843'], ['#0369a1', '#0c4a6e'],
-      ['#047857', '#064e3b'], ['#4338ca', '#312e81'],
-    ];
+    const palettes = [['#0d5a44', '#062f24'], ['#1d4ed8', '#1e3a8a'], ['#7c3aed', '#5b21b6'], ['#b45309', '#7c2d12'], ['#be185d', '#831843'], ['#0369a1', '#0c4a6e'], ['#047857', '#064e3b'], ['#4338ca', '#312e81']];
     const p = palettes[h % palettes.length];
     return `linear-gradient(135deg, ${p[0]}, ${p[1]})`;
   }
@@ -2264,120 +2195,44 @@ button{font-family:inherit}
     if (s === 'pending') return 'pending';
     return 'active';
   }
-  function setUserSearchSpinner(on) {
-    const el = document.getElementById('userSearchSpinner');
-    if (el) el.classList.toggle('active', !!on);
-  }
-  function setUserSearchClear(on) {
-    const el = document.getElementById('userSearchClear');
-    if (el) el.classList.toggle('visible', !!on);
-  }
+  function setUserSearchSpinner(on) { const el = document.getElementById('userSearchSpinner'); if (el) el.classList.toggle('active', !!on); }
+  function setUserSearchClear(on) { const el = document.getElementById('userSearchClear'); if (el) el.classList.toggle('visible', !!on); }
 
   function renderUsers() {
     const c = $('#usersList'); if (!c) return;
     const bar = $('#userResultsBar');
     const q = String(state.userQuery || '').trim();
     setUserSearchClear(q.length > 0);
-
-    const setBar = (html, isEmpty) => {
-      if (!bar) return;
-      bar.innerHTML = html;
-      bar.classList.toggle('is-empty', !!isEmpty);
-    };
+    const setBar = (html, isEmpty) => { if (!bar) return; bar.innerHTML = html; bar.classList.toggle('is-empty', !!isEmpty); };
 
     if (!state.userSearched || !q) {
       setBar(`<span class="user-results-count"><i class="fas fa-circle-info" style="color:var(--primary);"></i> Start typing to search the directory</span>`, true);
-      c.innerHTML = `
-        <div class="user-empty">
-          <div class="user-empty-icon"><i class="fas fa-user-shield"></i></div>
-          <div class="user-empty-title">Search the user directory</div>
-          <div class="user-empty-text">Look up any account by name, phone number, email, or user ID. Results appear instantly as you type.</div>
-          <div class="user-empty-tips">
-            <button class="user-empty-tip" onclick="quickUserSearch('active')"><i class="fas fa-bolt"></i> Show all users</button>
-            <button class="user-empty-tip" onclick="quickUserSearch('0803')"><i class="fas fa-phone"></i> Try: 0803…</button>
-            <button class="user-empty-tip" onclick="quickUserSearch('@gmail.com')"><i class="fas fa-at"></i> Try: @gmail.com</button>
-          </div>
-        </div>`;
+      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-user-shield"></i></div><div class="user-empty-title">Search the user directory</div><div class="user-empty-text">Look up any account by name, phone number, email, or user ID. Results appear instantly as you type.</div><div class="user-empty-tips"><button class="user-empty-tip" onclick="quickUserSearch('active')"><i class="fas fa-bolt"></i> Show all users</button><button class="user-empty-tip" onclick="quickUserSearch('0803')"><i class="fas fa-phone"></i> Try: 0803…</button><button class="user-empty-tip" onclick="quickUserSearch('@gmail.com')"><i class="fas fa-at"></i> Try: @gmail.com</button></div></div>`;
       return;
     }
-
     if (state.userLoading && state.userResults.length === 0) {
       setBar(`<span class="user-results-count"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary);"></i> Searching <span class="search-term">${escapeHtml(q)}</span>…</span>`, false);
-      c.innerHTML = `<div class="user-card-list">${Array.from({ length: 5 }).map(() => `
-        <div class="user-skeleton">
-          <div class="user-skel-avatar"></div>
-          <div><div class="user-skel-line w60"></div><div class="user-skel-line w80 mt8"></div></div>
-          <div class="user-skel-line w40" style="width:100px;"></div>
-        </div>`).join('')}</div>`;
+      c.innerHTML = `<div class="user-card-list">${Array.from({ length: 5 }).map(() => `<div class="user-skeleton"><div class="user-skel-avatar"></div><div><div class="user-skel-line w60"></div><div class="user-skel-line w80 mt8"></div></div><div class="user-skel-line w40" style="width:100px;"></div></div>`).join('')}</div>`;
       return;
     }
-
     const list = state.userResults || [];
-
     if (!list.length) {
       setBar(`<span class="user-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> No matches for <span class="search-term">${escapeHtml(q)}</span></span>`, true);
-      c.innerHTML = `
-        <div class="user-empty">
-          <div class="user-empty-icon"><i class="fas fa-user-slash"></i></div>
-          <div class="user-empty-title">No user found</div>
-          <div class="user-empty-text">We couldn't find anyone matching "${escapeHtml(q)}". Check the spelling, or try a different phone number or email.</div>
-          <div class="user-empty-tips">
-            <button class="user-empty-tip" onclick="clearUserSearch()"><i class="fas fa-rotate-left"></i> Clear search</button>
-            <button class="user-empty-tip" onclick="quickUserSearch('active')"><i class="fas fa-users"></i> Browse all users</button>
-          </div>
-        </div>`;
+      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-user-slash"></i></div><div class="user-empty-title">No user found</div><div class="user-empty-text">We couldn't find anyone matching "${escapeHtml(q)}". Check the spelling, or try a different phone number or email.</div><div class="user-empty-tips"><button class="user-empty-tip" onclick="clearUserSearch()"><i class="fas fa-rotate-left"></i> Clear search</button><button class="user-empty-tip" onclick="quickUserSearch('active')"><i class="fas fa-users"></i> Browse all users</button></div></div>`;
       return;
     }
-
-    const totalLabel = state.userTotal > list.length
-      ? `<strong>${list.length}</strong> of <strong>${state.userTotal.toLocaleString()}</strong>`
-      : `<strong>${list.length}</strong>`;
-    setBar(`
-      <span class="user-results-count">
-        <i class="fas fa-user-check" style="color:var(--success);"></i>
-        ${totalLabel} user${list.length === 1 ? '' : 's'} matching
-        <span class="search-term">${escapeHtml(q)}</span>
-      </span>
-      <span class="user-results-live"><span class="live-dot"></span> Live</span>
-    `, false);
-
+    const totalLabel = state.userTotal > list.length ? `<strong>${list.length}</strong> of <strong>${state.userTotal.toLocaleString()}</strong>` : `<strong>${list.length}</strong>`;
+    setBar(`<span class="user-results-count"><i class="fas fa-user-check" style="color:var(--success);"></i> ${totalLabel} user${list.length === 1 ? '' : 's'} matching <span class="search-term">${escapeHtml(q)}</span></span><span class="user-results-live"><span class="live-dot"></span> Live</span>`, false);
     c.innerHTML = `<div class="user-card-list">${list.slice(0, 200).map(u => {
       const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
       const initial = (name || '?').charAt(0).toUpperCase();
       const st = userStatus(u);
       const balance = formatMoney(u.balance ?? u.wallet_balance ?? 0);
       const txCount = u.transaction_count ?? u.transactions ?? 0;
-      const email = u.email || '';
-      const phone = u.phone || '';
+      const email = u.email || ''; const phone = u.phone || '';
       const isAdmin = /admin|super|owner/i.test(String(u.role || ''));
       const isVerified = u.is_verified || u.email_verified;
-      return `
-        <div class="user-card" onclick="viewUser('${escapeHtml(u.id || u._id || '')}')">
-          <div class="user-avatar status-${st}" style="background:${hashColor(name)}">
-            ${escapeHtml(initial)}
-            <span class="user-avatar-status"></span>
-          </div>
-          <div class="user-info">
-            <div class="user-name-row">
-              <span class="user-name">${escapeHtml(name)}</span>
-              ${isAdmin ? `<span class="user-badge admin"><i class="fas fa-shield-halved"></i> ${escapeHtml(String(u.role || 'admin').toUpperCase())}</span>` : ''}
-              <span class="user-badge ${st}">${escapeHtml(st)}</span>
-              ${isVerified && !isAdmin ? `<span class="user-badge verified"><i class="fas fa-check"></i> Verified</span>` : ''}
-            </div>
-            <div class="user-contact">
-              ${email ? `<span class="contact-item"><i class="fas fa-envelope"></i> ${escapeHtml(email)}</span>` : ''}
-              ${phone ? `<span class="contact-item mono"><i class="fas fa-phone"></i> ${escapeHtml(phone)}</span>` : ''}
-              <span class="contact-item"><i class="fas fa-receipt"></i> ${txCount} txn${Number(txCount) === 1 ? '' : 's'}</span>
-            </div>
-          </div>
-          <div class="user-right">
-            <div class="user-balance-pill">
-              <span class="user-balance-label">Balance</span>
-              <span class="user-balance-value">${balance}</span>
-            </div>
-            <div class="user-arrow"><i class="fas fa-arrow-right"></i></div>
-          </div>
-        </div>`;
+      return `<div class="user-card" onclick="viewUser('${escapeHtml(u.id || u._id || '')}')"><div class="user-avatar status-${st}" style="background:${hashColor(name)}">${escapeHtml(initial)}<span class="user-avatar-status"></span></div><div class="user-info"><div class="user-name-row"><span class="user-name">${escapeHtml(name)}</span>${isAdmin ? `<span class="user-badge admin"><i class="fas fa-shield-halved"></i> ${escapeHtml(String(u.role || 'admin').toUpperCase())}</span>` : ''}<span class="user-badge ${st}">${escapeHtml(st)}</span>${isVerified && !isAdmin ? `<span class="user-badge verified"><i class="fas fa-check"></i> Verified</span>` : ''}</div><div class="user-contact">${email ? `<span class="contact-item"><i class="fas fa-envelope"></i> ${escapeHtml(email)}</span>` : ''}${phone ? `<span class="contact-item mono"><i class="fas fa-phone"></i> ${escapeHtml(phone)}</span>` : ''}<span class="contact-item"><i class="fas fa-receipt"></i> ${txCount} txn${Number(txCount) === 1 ? '' : 's'}</span></div></div><div class="user-right"><div class="user-balance-pill"><span class="user-balance-label">Balance</span><span class="user-balance-value">${balance}</span></div><div class="user-arrow"><i class="fas fa-arrow-right"></i></div></div></div>`;
     }).join('')}</div>`;
   }
   window.renderUsers = renderUsers;
@@ -2388,14 +2243,7 @@ button{font-family:inherit}
     state.userQuery = q;
     state.userSearched = q.trim().length > 0;
     clearTimeout(userSearchTimer);
-    if (!q.trim()) {
-      state.userResults = [];
-      state.userLoading = false;
-      userSearchSeq++;
-      setUserSearchSpinner(false);
-      renderUsers();
-      return;
-    }
+    if (!q.trim()) { state.userResults = []; state.userLoading = false; userSearchSeq++; setUserSearchSpinner(false); renderUsers(); return; }
     const local = filterUsers(q);
     state.userResults = local;
     state.userLoading = local.length === 0;
@@ -2408,27 +2256,14 @@ button{font-family:inherit}
   function clearUserSearch() {
     const input = document.getElementById('userSearch');
     if (input) { input.value = ''; input.focus(); }
-    state.userQuery = '';
-    state.userSearched = false;
-    state.userResults = [];
-    state.userLoading = false;
-    userSearchSeq++;
-    setUserSearchSpinner(false);
-    renderUsers();
+    state.userQuery = ''; state.userSearched = false; state.userResults = []; state.userLoading = false;
+    userSearchSeq++; setUserSearchSpinner(false); renderUsers();
   }
   window.clearUserSearch = clearUserSearch;
 
   function quickUserSearch(term) {
-    const input = document.getElementById('userSearch');
-    if (!input) return;
-    if (term === 'active') {
-      state.userQuery = ' ';
-      state.userSearched = true;
-      state.userResults = (state.users || []).slice(0, 100);
-      state.userLoading = false;
-      renderUsers();
-      return;
-    }
+    const input = document.getElementById('userSearch'); if (!input) return;
+    if (term === 'active') { state.userQuery = ' '; state.userSearched = true; state.userResults = (state.users || []).slice(0, 100); state.userLoading = false; renderUsers(); return; }
     input.value = term;
     onUserSearchInput({ target: input });
   }
@@ -2437,8 +2272,7 @@ button{font-family:inherit}
   /* ==================== USER DETAIL ==================== */
   function findCachedUser(id) {
     const sid = String(id);
-    return (state.users || []).find(u => String(u.id || u._id) === sid)
-      || (state.userResults || []).find(u => String(u.id || u._id) === sid);
+    return (state.users || []).find(u => String(u.id || u._id) === sid) || (state.userResults || []).find(u => String(u.id || u._id) === sid);
   }
   function renderUserDetail(u) {
     const fullName = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
@@ -2487,48 +2321,49 @@ button{font-family:inherit}
     if (!id) return;
     $('#viewBody').innerHTML = '<div class="loading" style="padding:30px;"><div class="ring"></div><p>Loading user…</p></div>';
     $('#viewModal').classList.add('active');
-    try {
-      const res = await apiCall(`/admin/users/${encodeURIComponent(id)}/details`);
-      const u = res?.data?.user || res?.data;
-      if (u) return renderUserDetail(u);
-    } catch (_) {}
-    try {
-      const res = await apiCall(`/admin/users/${encodeURIComponent(id)}`);
-      const u = res?.data?.user || res?.data;
-      if (u) return renderUserDetail(u);
-    } catch (_) {}
+    try { const res = await apiCall(`/admin/users/${encodeURIComponent(id)}/details`); const u = res?.data?.user || res?.data; if (u) return renderUserDetail(u); } catch (_) {}
+    try { const res = await apiCall(`/admin/users/${encodeURIComponent(id)}`); const u = res?.data?.user || res?.data; if (u) return renderUserDetail(u); } catch (_) {}
     const cached = findCachedUser(id);
     if (cached) return renderUserDetail(cached);
-    $('#viewBody').innerHTML = `
-      <div style="padding:28px;text-align:center;">
-        <div style="font-size:40px;color:var(--danger-dark);margin-bottom:12px;"><i class="fas fa-circle-exclamation"></i></div>
-        <div style="font-weight:800;font-size:14px;color:var(--text);margin-bottom:6px;">Could not load user</div>
-        <div style="font-size:12px;color:var(--text-muted);">The server didn't return this user's details. Try refreshing.</div>
-      </div>`;
+    $('#viewBody').innerHTML = `<div style="padding:28px;text-align:center;"><div style="font-size:40px;color:var(--danger-dark);margin-bottom:12px;"><i class="fas fa-circle-exclamation"></i></div><div style="font-weight:800;font-size:14px;color:var(--text);margin-bottom:6px;">Could not load user</div><div style="font-size:12px;color:var(--text-muted);">The server didn't return this user's details. Try refreshing.</div></div>`;
   }
   window.viewUser = viewUser;
 
   /* ==================== TRANSACTIONS ==================== */
-  function renderTransactions() {
+  function filterTransactionsBySearch(list, search) {
+    if (!search) return list;
+    const s = search.toLowerCase().trim();
+    return list.filter(t => {
+      const meta = t.metadata || {};
+      const hay = `${t.phone || meta.phone || ''} ${t.reference || ''} ${t.description || ''} ${meta.product_name || ''} ${t.recipient || ''}`.toLowerCase();
+      return hay.includes(s);
+    });
+  }
+
+  function getFilteredTransactions() {
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     let list = (state.transactions || []).slice();
     if (state.txnFilter !== 'all') list = list.filter(t => txnKind(t) === state.txnFilter);
     list = applyRange(list, state.range);
-    if (search) {
-      list = list.filter(t => {
-        const meta = t.metadata || {};
-        const hay = `${t.phone || meta.phone || ''} ${t.reference || ''} ${t.description || ''} ${meta.product_name || ''}`.toLowerCase();
-        return hay.includes(search);
-      });
-    }
+    list = filterTransactionsBySearch(list, search);
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+    return list;
+  }
+
+  function renderTransactions() {
+    const list = getFilteredTransactions();
+    const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     const total = list.reduce((s, t) => s + getAmount(t), 0);
+    const typeLabel = TXN_TYPES[state.txnFilter]?.label || 'All types';
 
     const metaEl = $('#txnSearchMeta');
     if (metaEl) {
-      metaEl.innerHTML = search
-        ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> result${list.length === 1 ? '' : 's'} for <span class="search-term">${escapeHtml(search)}</span> · ${formatMoney(total, true)}`
-        : `<i class="fas fa-receipt" style="color:var(--primary);"></i> <strong>${list.length}</strong> transaction${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}`;
+      const pieces = [];
+      pieces.push(`<i class="fas fa-receipt" style="color:var(--primary);"></i> <strong>${list.length}</strong> transaction${list.length === 1 ? '' : 's'}`);
+      if (state.txnFilter !== 'all') pieces.push(`<span style="color:var(--primary-dark);font-weight:700;">${escapeHtml(typeLabel)}</span>`);
+      if (search) pieces.push(`for <span class="search-term">${escapeHtml(search)}</span>`);
+      pieces.push(`· ${formatMoney(total, true)}`);
+      metaEl.innerHTML = pieces.join(' ');
     }
 
     const c = $('#transactionsList');
@@ -2538,46 +2373,33 @@ button{font-family:inherit}
     const currentPage = Math.min(Math.max(state.txnPage, 1), totalPages);
     state.txnPage = currentPage;
     if (!totalItems) {
-      c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-receipt"></i></div><div class="title">No transactions</div><div class="desc">Nothing matches the current filter.</div></div>`;
+      const msg = state.txnFilter === 'all'
+        ? 'No transactions yet for this period.'
+        : `No ${typeLabel.toLowerCase()} found in this period.`;
+      c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-receipt"></i></div><div class="title">No transactions</div><div class="desc">${escapeHtml(msg)}</div></div>`;
       const pag = $('#transactionsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
       return;
     }
     const slice = list.slice((currentPage - 1) * perPage, currentPage * perPage);
     c.innerHTML = slice.map(t => {
       const meta = t.metadata || {};
+      const kind = txnKind(t);
       const phone = t.phone || meta.phone || t.recipient || '—';
       const amount = getAmount(t);
       const st = getStatus(t);
-      const product = meta.product_name || t.description || t.product || 'Transaction';
-      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${networkAvatarClass(t)}">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(amount)}<small>${timeAgo(getDate(t))}</small></div></div></div>`;
+      const product = meta.product_name || t.description || t.product || `${txnKindLabel(kind)} Transaction`;
+      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${txnKindAvatarClass(t)}">${txnKindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(amount)}<small>${timeAgo(getDate(t))}</small></div></div></div>`;
     }).join('');
     renderPager('transactionsPagination', currentPage, totalItems, perPage, 'goToTxnPage');
   }
   window.renderTransactions = renderTransactions;
-  function onTxnSearchInput() {
-    toggleClearButton('txnSearch', 'txnSearchClear');
-    state.txnPage = 1; renderTransactions();
-  }
+
+  function onTxnSearchInput() { toggleClearButton('txnSearch', 'txnSearchClear'); state.txnPage = 1; renderTransactions(); }
   window.onTxnSearchInput = onTxnSearchInput;
-  function clearTxnSearch() {
-    const i = document.getElementById('txnSearch');
-    if (i) { i.value = ''; i.focus(); }
-    onTxnSearchInput();
-  }
+  function clearTxnSearch() { const i = document.getElementById('txnSearch'); if (i) { i.value = ''; i.focus(); } onTxnSearchInput(); }
   window.clearTxnSearch = clearTxnSearch;
   window.goToTxnPage = (page) => {
-    const totalItems = (() => {
-      const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
-      let list = (state.transactions || []).slice();
-      if (state.txnFilter !== 'all') list = list.filter(t => txnKind(t) === state.txnFilter);
-      list = applyRange(list, state.range);
-      if (search) list = list.filter(t => {
-        const meta = t.metadata || {};
-        const hay = `${t.phone || meta.phone || ''} ${t.reference || ''} ${t.description || ''} ${meta.product_name || ''}`.toLowerCase();
-        return hay.includes(search);
-      });
-      return list.length;
-    })();
+    const totalItems = getFilteredTransactions().length;
     const totalPages = Math.max(1, Math.ceil(totalItems / state.PER_PAGE));
     const p = Math.min(Math.max(page, 1), totalPages);
     state.txnPage = p; renderTransactions();
@@ -2600,22 +2422,24 @@ button{font-family:inherit}
     const t = findTransaction(id);
     if (!t) { showToast('Transaction not found in local cache', 'error'); return; }
     const meta = t.metadata || {};
-    const netKey = detectNetwork(t);
-    const logo = NETWORK_SVGS[netKey];
     const kind = txnKind(t);
-    const product = meta.product_name || t.description || t.product || (kind === 'airtime' ? 'Airtime Purchase' : kind === 'data' ? 'Data Bundle' : 'Transaction');
+    const netKey = detectNetwork(t);
+    const logo = (kind === 'airtime' || kind === 'data') ? NETWORK_SVGS[netKey] : txnKindAvatarHtml(t);
+    const product = meta.product_name || t.description || t.product || `${txnKindLabel(kind)} Transaction`;
     const phone = t.phone || meta.phone || t.recipient || '—';
     const amount = getAmount(t);
     const st = getStatus(t);
     const ref = t.reference || t.tx_ref || t.id || t._id || '—';
-    const netLabel = { mtn: 'MTN Nigeria', airtel: 'Airtel Nigeria', glo: 'Globacom (Glo)', t2: '9mobile', generic: 'VTU Service' }[netKey];
+    const netLabel = kind === 'airtime' || kind === 'data'
+      ? ({ mtn: 'MTN Nigeria', airtel: 'Airtel Nigeria', glo: 'Globacom (Glo)', t2: '9mobile', generic: 'VTU Service' }[netKey])
+      : txnKindLabel(kind);
     const profit = Number(t.profit ?? meta.profit ?? meta.commission ?? 0) || 0;
     const balanceBefore = t.balance_before ?? meta.balance_before ?? null;
     const balanceAfter = t.balance_after ?? meta.balance_after ?? null;
 
     $('#txnBody').innerHTML = `
       <div class="txn-hero">
-        <div class="txn-hero-logo row-avatar ${networkAvatarClass(t)}" style="border:none;">${logo}</div>
+        <div class="txn-hero-logo row-avatar ${txnKindAvatarClass(t)}" style="border:none;">${logo}</div>
         <div class="txn-hero-info">
           <div class="txn-hero-title">${escapeHtml(product)}</div>
           <div class="txn-hero-sub">
@@ -2633,7 +2457,7 @@ button{font-family:inherit}
         </div>` : ''}
       </div>
       <div class="row-detail"><span class="lbl">Recipient</span><span class="val mono">${escapeHtml(phone)}</span></div>
-      <div class="row-detail"><span class="lbl">Network</span><span class="val">${escapeHtml(netLabel)}</span></div>
+      <div class="row-detail"><span class="lbl">Category</span><span class="val">${escapeHtml(txnKindLabel(kind))}</span></div>
       <div class="row-detail"><span class="lbl">Product</span><span class="val">${escapeHtml(product)}</span></div>
       <div class="row-detail"><span class="lbl">Status</span><span class="val ${st === 'success' ? 'success' : st === 'failed' ? 'danger' : ''}">${escapeHtml(statusLabel(st))}</span></div>
       <div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${escapeHtml(ref)}</span></div>
@@ -2655,21 +2479,16 @@ button{font-family:inherit}
   function renderDeposits() {
     const search = ($('#depositSearch')?.value || '').toLowerCase().trim();
     let list = applyRange(state.deposits, state.range);
-    if (search) list = list.filter(d => {
-      const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase();
-      return hay.includes(search);
-    });
+    if (search) list = list.filter(d => { const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return hay.includes(search); });
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const pendingCount = list.filter(d => getStatus(d) === 'pending').length;
     const total = list.reduce((s, d) => s + getAmount(d), 0);
-
     const metaEl = $('#depositSearchMeta');
     if (metaEl) {
       metaEl.innerHTML = search
         ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span>` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '')
         : `<i class="fas fa-arrow-down" style="color:var(--primary);"></i> <strong>${list.length}</strong> deposit${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '');
     }
-
     const c = $('#depositsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
@@ -2685,33 +2504,21 @@ button{font-family:inherit}
     c.innerHTML = slice.map(d => {
       const name = d.user_name || d.name || 'Unknown';
       const initial = name.charAt(0).toUpperCase();
-      const amount = getAmount(d);
-      const st = getStatus(d);
-      const isPending = st === 'pending';
+      const amount = getAmount(d); const st = getStatus(d); const isPending = st === 'pending';
       return `<div class="row-item static"><div class="row-avatar deposit">${escapeHtml(initial)}</div><div class="row-main"><div class="row-title">${escapeHtml(name)}</div><div class="row-sub"><span>${escapeHtml(d.user_email || d.email || '—')}</span><span class="dot"></span><span class="ref">${escapeHtml(d.reference || d.tx_ref || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount credit">+${formatMoney(amount)}<small>${timeAgo(getDate(d))}</small></div><div class="row-actions">${isPending ? `<button class="approve" onclick="openApproveDepositModal('${escapeHtml(d.id)}')"><i class="fas fa-check"></i><span class="label">Approve</span></button><button class="reject" onclick="openRejectDepositModal('${escapeHtml(d.id)}')"><i class="fas fa-times"></i><span class="label">Reject</span></button>` : ''}<button class="view" onclick="viewDeposit('${escapeHtml(d.id)}')"><i class="fas fa-eye"></i><span class="label">View</span></button></div></div></div>`;
     }).join('');
     renderPager('depositsPagination', currentPage, totalItems, perPage, 'goToDepositPage');
   }
   window.renderDeposits = renderDeposits;
-  function onDepositSearchInput() {
-    toggleClearButton('depositSearch', 'depositSearchClear');
-    state.depositPage = 1; renderDeposits();
-  }
+  function onDepositSearchInput() { toggleClearButton('depositSearch', 'depositSearchClear'); state.depositPage = 1; renderDeposits(); }
   window.onDepositSearchInput = onDepositSearchInput;
-  function clearDepositSearch() {
-    const i = document.getElementById('depositSearch');
-    if (i) { i.value = ''; i.focus(); }
-    onDepositSearchInput();
-  }
+  function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value = ''; i.focus(); } onDepositSearchInput(); }
   window.clearDepositSearch = clearDepositSearch;
   window.goToDepositPage = (page) => {
     const totalPages = Math.max(1, Math.ceil((() => {
       const search = ($('#depositSearch')?.value || '').toLowerCase().trim();
       let list = applyRange(state.deposits, state.range);
-      if (search) list = list.filter(d => {
-        const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase();
-        return hay.includes(search);
-      });
+      if (search) list = list.filter(d => { const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return hay.includes(search); });
       return list.length;
     })() / state.PER_PAGE));
     const p = Math.min(Math.max(page, 1), totalPages);
@@ -2724,21 +2531,16 @@ button{font-family:inherit}
   function renderWithdrawals() {
     const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
     let list = applyRange(state.withdrawals, state.range);
-    if (search) list = list.filter(w => {
-      const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase();
-      return hay.includes(search);
-    });
+    if (search) list = list.filter(w => { const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return hay.includes(search); });
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const pendingCount = list.filter(w => getStatus(w) === 'pending').length;
     const total = list.reduce((s, w) => s + getAmount(w), 0);
-
     const metaEl = $('#withdrawalSearchMeta');
     if (metaEl) {
       metaEl.innerHTML = search
         ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span>` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '')
         : `<i class="fas fa-arrow-up" style="color:var(--primary);"></i> <strong>${list.length}</strong> request${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '');
     }
-
     const c = $('#withdrawalsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
@@ -2754,33 +2556,21 @@ button{font-family:inherit}
     c.innerHTML = slice.map(w => {
       const name = w.user_name || 'Unknown';
       const initial = name.charAt(0).toUpperCase();
-      const amount = getAmount(w);
-      const st = getStatus(w);
-      const isPending = st === 'pending';
+      const amount = getAmount(w); const st = getStatus(w); const isPending = st === 'pending';
       return `<div class="row-item static"><div class="row-avatar withdraw">${escapeHtml(initial)}</div><div class="row-main"><div class="row-title">${escapeHtml(name)}</div><div class="row-sub"><span>${escapeHtml(w.bank_name || '—')}</span><span class="dot"></span><span class="ref">${escapeHtml(w.reference || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount debit">-${formatMoney(amount)}<small>${timeAgo(getDate(w))}</small></div><div class="row-actions">${isPending ? `<button class="approve" onclick="openApproveModal('${escapeHtml(w.id)}')"><i class="fas fa-check"></i><span class="label">Approve</span></button><button class="reject" onclick="openRejectModal('${escapeHtml(w.id)}')"><i class="fas fa-times"></i><span class="label">Reject</span></button>` : ''}<button class="view" onclick="viewWithdrawal('${escapeHtml(w.id)}')"><i class="fas fa-eye"></i><span class="label">View</span></button></div></div></div>`;
     }).join('');
     renderPager('withdrawalsPagination', currentPage, totalItems, perPage, 'goToWithdrawalPage');
   }
   window.renderWithdrawals = renderWithdrawals;
-  function onWithdrawalSearchInput() {
-    toggleClearButton('withdrawalSearch', 'withdrawalSearchClear');
-    state.withdrawalPage = 1; renderWithdrawals();
-  }
+  function onWithdrawalSearchInput() { toggleClearButton('withdrawalSearch', 'withdrawalSearchClear'); state.withdrawalPage = 1; renderWithdrawals(); }
   window.onWithdrawalSearchInput = onWithdrawalSearchInput;
-  function clearWithdrawalSearch() {
-    const i = document.getElementById('withdrawalSearch');
-    if (i) { i.value = ''; i.focus(); }
-    onWithdrawalSearchInput();
-  }
+  function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value = ''; i.focus(); } onWithdrawalSearchInput(); }
   window.clearWithdrawalSearch = clearWithdrawalSearch;
   window.goToWithdrawalPage = (page) => {
     const totalPages = Math.max(1, Math.ceil((() => {
       const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
       let list = applyRange(state.withdrawals, state.range);
-      if (search) list = list.filter(w => {
-        const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase();
-        return hay.includes(search);
-      });
+      if (search) list = list.filter(w => { const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return hay.includes(search); });
       return list.length;
     })() / state.PER_PAGE));
     const p = Math.min(Math.max(page, 1), totalPages);
@@ -2809,11 +2599,7 @@ button{font-family:inherit}
   window.closeViewModal = closeViewModal;
 
   /* ==================== DATASHOP WALLET ==================== */
-  function openDatashopWallet() {
-    renderDatashopModal();
-    $('#datashopModal').classList.add('active');
-    reloadDatashopWallet();
-  }
+  function openDatashopWallet() { renderDatashopModal(); $('#datashopModal').classList.add('active'); reloadDatashopWallet(); }
   function closeDatashopWallet() { $('#datashopModal').classList.remove('active'); }
   function renderDatashopModal() {
     const d = state.datashop || {};
@@ -2865,10 +2651,7 @@ button{font-family:inherit}
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…';
     if (cancel) cancel.disabled = true;
     try {
-      await apiCall(`/wallet/admin/withdrawal/${state.currentApprove.id}/approve`, {
-        method: 'POST',
-        body: JSON.stringify({ transaction_reference: ref, provider_reference: ref, approval_notes: notes || null }),
-      });
+      await apiCall(`/wallet/admin/withdrawal/${state.currentApprove.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, provider_reference: ref, approval_notes: notes || null }) });
       showToast('Withdrawal approved', 'success');
       state.withdrawApprovePending = false;
       $('#approveModal').classList.remove('active'); state.currentApprove = null;
@@ -3044,9 +2827,7 @@ button{font-family:inherit}
   function toggleFundClear() {
     const input = document.getElementById('fundLookupQuery');
     const clear = document.getElementById('fundSearchClear');
-    if (input && clear) {
-      clear.classList.toggle('visible', input.value.length > 0);
-    }
+    if (input && clear) clear.classList.toggle('visible', input.value.length > 0);
   }
   window.toggleFundClear = toggleFundClear;
 
@@ -3062,77 +2843,40 @@ button{font-family:inherit}
     const input = $('#fundLookupQuery');
     const q = (input?.value || '').trim();
     if (!q) { showToast('Enter a phone number, email, or user ID', 'error'); return; }
-    
     const btn = $('#fundLookupIconBtn');
     const preview = $('#fundUserPreview');
     const empty = $('#fundEmpty');
     const form = $('#fundForm');
     const originalBtnIcon = btn ? btn.innerHTML : '';
-    
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    }
-    
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
     if (form) form.classList.remove('revealed');
     if (empty) empty.style.display = 'none';
     if (preview) preview.innerHTML = '<div class="loading" style="padding:24px;"><div class="ring"></div><p>Looking up user…</p></div>';
-
     const params = new URLSearchParams();
     if (/^\d+$/.test(q) && q.length <= 6) params.set('user_id', q);
     else if (q.includes('@')) params.set('email', q);
     else params.set('phone', q);
-
     try {
       const res = await apiCall(`/admin/wallet/lookup?${params}`);
       const user = res.data.user;
       state.fundUser = user;
       const name = user.name || user.email || user.phone || `#${user.id}`;
       const initial = (name || '?').charAt(0).toUpperCase();
-      
       if (preview) {
-        preview.innerHTML = `
-          <div class="fund-user-card">
-            <div class="fu-top">
-              <div class="fu-avatar">${escapeHtml(initial)}</div>
-              <div class="fu-info">
-                <div class="fu-name">${escapeHtml(name)}</div>
-                <div class="fu-meta">
-                  <span>User #${user.id}</span><span class="dot"></span>
-                  <span>${escapeHtml(user.email || '—')}</span><span class="dot"></span>
-                  <span>${escapeHtml(user.phone || '—')}</span>
-                </div>
-              </div>
-            </div>
-            <div class="fu-balance-row">
-              <div class="fu-balance-cell"><div class="fu-balance-label">Available Balance</div><div class="fu-balance-value">${formatMoney(user.balance || 0)}</div></div>
-              ${Number(user.held_balance || 0) > 0 ? `<div class="fu-balance-cell"><div class="fu-balance-label">Held</div><div class="fu-balance-value held">${formatMoney(user.held_balance)}</div></div>` : ''}
-            </div>
-          </div>
-        `;
+        preview.innerHTML = `<div class="fund-user-card"><div class="fu-top"><div class="fu-avatar">${escapeHtml(initial)}</div><div class="fu-info"><div class="fu-name">${escapeHtml(name)}</div><div class="fu-meta"><span>User #${user.id}</span><span class="dot"></span><span>${escapeHtml(user.email || '—')}</span><span class="dot"></span><span>${escapeHtml(user.phone || '—')}</span></div></div></div><div class="fu-balance-row"><div class="fu-balance-cell"><div class="fu-balance-label">Available Balance</div><div class="fu-balance-value">${formatMoney(user.balance || 0)}</div></div>${Number(user.held_balance || 0) > 0 ? `<div class="fu-balance-cell"><div class="fu-balance-label">Held</div><div class="fu-balance-value held">${formatMoney(user.held_balance)}</div></div>` : ''}</div></div>`;
       }
-      
       if (empty) empty.style.display = 'none';
       if (form) { form.classList.add('revealed'); setTimeout(() => { $('#fundAmount')?.focus(); }, 260); }
       showToast(`Found ${name}`, 'success');
     } catch (err) {
       state.fundUser = null;
       if (preview) {
-        preview.innerHTML = `
-          <div class="fund-user-card error">
-            <div class="fu-error-icon"><i class="fas fa-user-slash"></i></div>
-            <div class="fu-error-title">User not found</div>
-            <div class="fu-error-text">${escapeHtml(err.message || 'No user matches that phone number, email, or ID.')}</div>
-          </div>
-        `;
+        preview.innerHTML = `<div class="fund-user-card error"><div class="fu-error-icon"><i class="fas fa-user-slash"></i></div><div class="fu-error-title">User not found</div><div class="fu-error-text">${escapeHtml(err.message || 'No user matches that phone number, email, or ID.')}</div></div>`;
       }
       if (empty) empty.style.display = 'none';
       if (form) form.classList.remove('revealed');
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = originalBtnIcon;
-      }
+      if (btn) { btn.disabled = false; btn.innerHTML = originalBtnIcon; }
     }
   }
   window.lookupFundUser = lookupFundUser;
@@ -3148,26 +2892,18 @@ button{font-family:inherit}
     btn.disabled = true; btn.style.pointerEvents = 'none';
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Funding…';
     try {
-      const res = await apiCall('/admin/wallet/fund', {
-        method: 'POST',
-        body: JSON.stringify({ user_id: state.fundUser.id, amount, reason, source }),
-      });
+      const res = await apiCall('/admin/wallet/fund', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id, amount, reason, source }) });
       const d = res.data;
       showToast(`✅ ${formatMoney(d.amount)} credited — new balance ${formatMoney(d.wallet_after)}`, 'success');
       state.fundUser.balance = d.wallet_after;
       const balEl = preview_balanceEl();
       if (balEl) balEl.textContent = formatMoney(d.wallet_after);
-      $('#fundAmount').value = '';
-      $('#fundReason').value = '';
+      $('#fundAmount').value = ''; $('#fundReason').value = '';
     } catch (err) { showToast(err.message, 'error'); }
     finally { btn.disabled = false; btn.style.pointerEvents = ''; btn.innerHTML = orig; }
   }
   window.submitManualFund = submitManualFund;
-  function preview_balanceEl() {
-    const preview = $('#fundUserPreview');
-    if (!preview) return null;
-    return preview.querySelector('.fu-balance-value');
-  }
+  function preview_balanceEl() { const preview = $('#fundUserPreview'); if (!preview) return null; return preview.querySelector('.fu-balance-value'); }
   async function submitManualDebit() {
     if (!state.fundUser) { showToast('Look up a user first', 'error'); return; }
     const amount = Number($('#fundAmount')?.value);
@@ -3180,17 +2916,13 @@ button{font-family:inherit}
     btn.disabled = true; btn.style.pointerEvents = 'none';
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Debiting…';
     try {
-      const res = await apiCall('/admin/wallet/debit', {
-        method: 'POST',
-        body: JSON.stringify({ user_id: state.fundUser.id, amount, reason, source }),
-      });
+      const res = await apiCall('/admin/wallet/debit', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id, amount, reason, source }) });
       const d = res.data;
       showToast(`✅ ${formatMoney(d.amount)} debited — new balance ${formatMoney(d.wallet_after)}`, 'success');
       state.fundUser.balance = d.wallet_after;
       const balEl = preview_balanceEl();
       if (balEl) balEl.textContent = formatMoney(d.wallet_after);
-      $('#fundAmount').value = '';
-      $('#fundReason').value = '';
+      $('#fundAmount').value = ''; $('#fundReason').value = '';
     } catch (err) { showToast(err.message, 'error'); }
     finally { btn.disabled = false; btn.style.pointerEvents = ''; btn.innerHTML = orig; }
   }
@@ -3203,7 +2935,6 @@ button{font-family:inherit}
     const params = new URLSearchParams({ page, limit: state.archived.perPage });
     if (q) params.set('q', q);
     if (uid) params.set('user_id', uid);
-
     const metaEl = $('#archSearchMeta');
     if (metaEl) {
       const parts = [];
@@ -3213,7 +2944,6 @@ button{font-family:inherit}
         ? `<i class="fas fa-filter" style="color:var(--primary);"></i> Filtering by ${parts.join(' · ')}`
         : `<i class="fas fa-box-archive" style="color:var(--primary);"></i> Browsing all archived transactions`;
     }
-
     const c = $('#archivedList');
     c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>';
     try {
@@ -3231,7 +2961,7 @@ button{font-family:inherit}
         const when = new Date(t.original_created_at).toLocaleString('en-NG');
         const isCredit = String(t.direction || '').toUpperCase() === 'CREDIT';
         const st = getStatus(t);
-        return `<div class="row-item static"><div class="row-avatar ${networkAvatarClass(t)}">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(t.description || t.type || 'Transaction')}</div><div class="row-sub"><span>#${t.user_id}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference)}</span><span class="dot"></span><span>${escapeHtml(when)}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '−'}${formatMoney(getAmount(t))}</div></div></div>`;
+        return `<div class="row-item static"><div class="row-avatar ${txnKindAvatarClass(t)}">${txnKindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(t.description || t.type || 'Transaction')}</div><div class="row-sub"><span>#${t.user_id}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference)}</span><span class="dot"></span><span>${escapeHtml(when)}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '−'}${formatMoney(getAmount(t))}</div></div></div>`;
       }).join('');
       renderPager('archivedPagination', state.archived.page, state.archived.total, state.archived.perPage, 'goToArchivedPage');
     } catch (err) {
@@ -3241,17 +2971,9 @@ button{font-family:inherit}
   window.loadArchived = loadArchived;
   window.goToArchivedPage = (page) => loadArchived(page);
   let archSearchTimer;
-  function onArchiveSearchInput() {
-    toggleClearButton('archSearch', 'archSearchClear');
-    clearTimeout(archSearchTimer);
-    archSearchTimer = setTimeout(() => loadArchived(1), 400);
-  }
+  function onArchiveSearchInput() { toggleClearButton('archSearch', 'archSearchClear'); clearTimeout(archSearchTimer); archSearchTimer = setTimeout(() => loadArchived(1), 400); }
   window.onArchiveSearchInput = onArchiveSearchInput;
-  function clearArchSearch() {
-    const i = document.getElementById('archSearch');
-    if (i) { i.value = ''; i.focus(); }
-    onArchiveSearchInput();
-  }
+  function clearArchSearch() { const i = document.getElementById('archSearch'); if (i) { i.value = ''; i.focus(); } onArchiveSearchInput(); }
   window.clearArchSearch = clearArchSearch;
 
   async function triggerArchiveRun() {
@@ -3276,10 +2998,8 @@ button{font-family:inherit}
       const res = await apiCall('/admin/mismatches?resolved=false&limit=100');
       const items = res.data.mismatches || [];
       $('#mismatchesCount').textContent = `${items.length} open`;
-      const badge = document.getElementById('sidebarMismatchCount');
-      if (badge) badge.textContent = items.length;
-      const drawerBadge = document.getElementById('drawerMismatchCount');
-      if (drawerBadge) drawerBadge.textContent = items.length;
+      const badge = document.getElementById('sidebarMismatchCount'); if (badge) badge.textContent = items.length;
+      const drawerBadge = document.getElementById('drawerMismatchCount'); if (drawerBadge) drawerBadge.textContent = items.length;
       if (!items.length) {
         c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">No open mismatches</div><div class="desc">Your audit is clean 🎉</div></div>`;
         return;
