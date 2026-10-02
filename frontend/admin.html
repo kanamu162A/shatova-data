@@ -183,7 +183,7 @@ button{font-family:inherit}
 .filter-pill .pill-value{color:var(--text-muted);font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .filter-pill.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);box-shadow:var(--shadow-hover-light)}
 
-/* ============ NETWORK LOGOS (hybrid: CSS bg + SVG shape) ============ */
+/* ============ NETWORK LOGOS (brand tiles) ============ */
 .row-avatar{
   width:48px;height:48px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
@@ -195,17 +195,14 @@ button{font-family:inherit}
 }
 .row-item:hover .row-avatar{transform:scale(1.06) rotate(-2deg);box-shadow:0 8px 20px rgba(0,0,0,0.2)}
 
-/* Branded backgrounds */
 .row-avatar.net-mtn    {background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
 .row-avatar.net-airtel {background:linear-gradient(135deg,#FF1A1A 0%,#D40000 55%,#A80000 100%)}
 .row-avatar.net-glo    {background:linear-gradient(135deg,#00C55E 0%,#00A651 55%,#008A40 100%)}
 .row-avatar.net-t2     {background:linear-gradient(135deg,#00856A 0%,#006B54 55%,#005240 100%)}
 .row-avatar.net-generic{background:linear-gradient(135deg,#0d5a44 0%,#0a4534 45%,#062f24 100%)}
 
-/* SVG fills the tile */
 .row-avatar svg.net-shape{width:100%;height:100%;display:block}
 
-/* Deposit / withdraw keep circular look */
 .row-avatar.deposit,
 .row-avatar.withdraw{border-radius:50%;font-weight:800;font-size:15px;letter-spacing:-0.4px}
 .row-avatar.deposit {background:linear-gradient(135deg,#10b981,#098658)}
@@ -427,10 +424,10 @@ button{font-family:inherit}
 .fund-actions .debit-btn{background:linear-gradient(135deg,#a12222 0%,#7a1a1a 100%);color:#fff;box-shadow:0 6px 18px -4px rgba(161,34,34,0.45),var(--shadow-inset-top)}
 .fund-actions .debit-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 26px -6px rgba(161,34,34,0.5),var(--shadow-inset-top)}
 
-.fund-empty{text-align:center;padding:44px 24px;color:var(--text-muted)}
-.fund-empty .icon{width:76px;height:76px;margin:0 auto 16px;border-radius:50%;background:var(--bg-hover);border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--text-muted);opacity:0.75}
-.fund-empty .title{font-size:14px;font-weight:800;color:var(--text-secondary);margin-bottom:6px}
-.fund-empty .desc{font-size:12px;line-height:1.55}
+.fund-empty{text-align:center;padding:36px 22px;color:var(--text-muted)}
+.fund-empty .icon{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:var(--bg-hover);border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--text-muted);opacity:0.75}
+.fund-empty .title{font-size:13.5px;font-weight:800;color:var(--text-secondary);margin-bottom:6px}
+.fund-empty .desc{font-size:12px;line-height:1.55;max-width:320px;margin:0 auto}
 
 .drift-explainer{font-size:12.5px;color:var(--text-muted);margin-bottom:16px;line-height:1.55}
 .drift-explainer code{background:var(--bg-input);padding:2px 7px;border-radius:5px;font-family:'SF Mono',Menlo,monospace;font-size:11.5px;color:var(--primary-dark);font-weight:700}
@@ -439,7 +436,7 @@ button{font-family:inherit}
 .run-archive-btn:hover{background:rgba(179,115,8,.16);transform:translateY(-1px);box-shadow:var(--shadow-hover-light)}
 .run-archive-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 
-/* ================= USER SEARCH (PROFESSIONAL) ================= */
+/* ================= USER SEARCH ================= */
 .user-search-hero{padding:26px 26px 22px;background:linear-gradient(180deg,rgba(10,69,52,0.035) 0%,transparent 100%);border-bottom:1px solid var(--border)}
 .user-search-label{font-size:11px;font-weight:800;letter-spacing:0.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .user-search-label i{color:var(--primary)}
@@ -505,7 +502,7 @@ button{font-family:inherit}
 
 /* ============ TRANSACTION DETAIL MODAL ============ */
 .txn-hero{padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(10,69,52,0.06),rgba(10,69,52,0.02));border:1px solid rgba(10,69,52,0.14);margin-bottom:16px;display:flex;gap:16px;align-items:center}
-.txn-hero .txn-hero-logo{width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 16px -4px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center}
+.txn-hero .txn-hero-logo{width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 16px -4px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;border:none}
 .txn-hero .txn-hero-logo svg.net-shape{width:100%;height:100%;display:block}
 .txn-hero .txn-hero-info{flex:1;min-width:0}
 .txn-hero .txn-hero-title{font-size:15.5px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.3px;margin-bottom:4px;word-break:break-word}
@@ -647,6 +644,19 @@ button{font-family:inherit}
   .fund-search-row { flex-direction: column; }
   .fund-search-row button { width: 100%; justify-content: center; }
   .fund-actions { flex-direction: column; }
+}
+
+/* Manual fund — tighter on phones */
+@media (max-width: 500px) {
+  .fund-search-card { padding: 16px 14px; }
+  .fund-search-row { flex-direction: column; gap: 8px; }
+  .fund-search-row input { height: 48px; font-size: 15px; }
+  .fund-search-row button { height: 48px; width: 100%; justify-content: center; font-size: 13px; }
+  .fund-search-hint { font-size: 11px; margin-top: 8px; }
+  .fund-empty { padding: 28px 16px; }
+  .fund-empty .icon { width: 56px; height: 56px; font-size: 22px; margin-bottom: 12px; }
+  .fund-empty .title { font-size: 13px; }
+  .fund-empty .desc { font-size: 11.5px; }
 }
 
 /* Prevent iOS zoom on input focus */
@@ -1139,32 +1149,33 @@ button{font-family:inherit}
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
 
-  /* ==================== NETWORK LOGOS (crisp brand-accurate SVGs) ==================== */
+  /* ==================== NETWORK LOGOS (brand wordmarks) ==================== */
   const NETWORK_SVGS = {
     mtn: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="37" text-anchor="middle"
-            font-family="'Arial Black','Helvetica Neue',Impact,sans-serif"
-            font-weight="900" font-size="17" fill="#0A0A0A" letter-spacing="-1">MTN</text>
+      <text x="28" y="36" text-anchor="middle"
+            font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif"
+            font-weight="900" font-size="16" fill="#0A0A0A"
+            letter-spacing="-0.8">MTN</text>
     </svg>`,
 
     airtel: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <path d="M 15 37 Q 28 12 41 37"
-            stroke="#ffffff" stroke-width="5" fill="none"
-            stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="28" cy="32" r="3.6" fill="#ffffff"/>
+      <text x="28" y="35" text-anchor="middle"
+            font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
+            font-weight="700" font-size="13.5" fill="#ffffff"
+            letter-spacing="-0.3">airtel</text>
     </svg>`,
 
     glo: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="39" text-anchor="middle"
-            font-family="'Arial Black','Helvetica Neue',Impact,sans-serif"
-            font-weight="900" font-size="22" fill="#ffffff"
-            font-style="italic" letter-spacing="-1.5">glo</text>
+      <text x="28" y="38" text-anchor="middle"
+            font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
+            font-weight="900" font-style="italic" font-size="20"
+            fill="#ffffff" letter-spacing="-1">glo</text>
     </svg>`,
 
     t2: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <text x="28" y="42" text-anchor="middle"
-            font-family="'Arial Black','Helvetica Neue',Impact,sans-serif"
-            font-weight="900" font-size="30" fill="#ffffff">9</text>
+      <text x="28" y="40" text-anchor="middle"
+            font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif"
+            font-weight="900" font-size="26" fill="#ffffff">9</text>
     </svg>`,
 
     generic: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
