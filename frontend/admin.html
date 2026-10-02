@@ -374,13 +374,105 @@ button{font-family:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading p{font-size:12px;color:var(--text-muted);font-weight:500}
 
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-card);border-top:1px solid var(--border);z-index:45;padding:8px 8px calc(env(safe-area-inset-bottom,0px) + 8px);box-shadow:0 -6px 24px rgba(0,0,0,0.08)}
-.mobile-nav .nav-items{display:flex;align-items:center;justify-content:space-around}
-.mobile-nav .nav-item{flex:1;flex-direction:column;gap:4px;padding:8px 4px;border-radius:10px;background:transparent;border:none;font-size:10px;font-weight:700;color:var(--text-muted);position:relative}
-.mobile-nav .nav-item i{font-size:16px;width:auto;margin-bottom:1px}
-.mobile-nav .nav-item.active{background:transparent;color:var(--primary-dark);box-shadow:none}
-.mobile-nav .nav-item.active i{color:var(--primary-dark)}
-.mobile-nav .nav-item.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:3px;border-radius:3px 3px 0 0;background:var(--primary)}
+/* ============================================================
+   ★ PREMIUM FLOATING BOTTOM NAVIGATION (REPLACED UGLY BAR) ★
+   ============================================================ */
+.mobile-nav{
+  display: none; /* Hidden on desktop, shown at max-width:900px */
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 45;
+  background: var(--bg-card);
+  border-radius: 24px;
+  padding: 10px 8px;
+  box-shadow: 0 10px 32px -8px rgba(15,23,42,0.12), 0 2px 6px rgba(15,23,42,0.06);
+  border: 1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
+}
+[data-theme="dark"] .mobile-nav{
+  box-shadow: 0 10px 32px -8px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.08);
+}
+.mobile-nav .nav-items{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.mobile-nav .nav-item{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 0;
+  border-radius: 14px;
+  border: none;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  text-align: center;
+  min-width: 0;
+}
+.mobile-nav .nav-item i{
+  font-size: 18px;
+  width: auto;
+  margin-bottom: 2px;
+  color: var(--text-muted);
+  transition: all 0.22s ease;
+}
+.mobile-nav .nav-item span{
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+/* Premium active state — soft pill background + dark green icon/text */
+.mobile-nav .nav-item.active{
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  box-shadow: none;
+}
+.mobile-nav .nav-item.active i{
+  color: var(--primary-dark);
+  transform: scale(1.08);
+}
+.mobile-nav .nav-item.active span{
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+/* Optional tiny indicator dot on active item */
+.mobile-nav .nav-item.active::after{
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.9;
+}
+.mobile-nav .nav-item:active{
+  transform: scale(0.96);
+}
+/* Give content enough padding so the floating nav doesn't cover the last item */
+@media (max-width: 900px) {
+  .mobile-nav { display: block; }
+  .content { padding-bottom: 110px !important; }
+}
 
 .sheet-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1300;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity 0.28s ease,visibility 0.28s ease}
 .sheet-overlay.open{opacity:1;visibility:visible}
@@ -849,7 +941,6 @@ button{font-family:inherit}
   .main-area{padding-top:56px}
   .topbar .page-title{font-size:15px}
   .content{padding:16px 14px 100px}
-  .mobile-nav{display:block}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
   .stat-card{padding:14px 16px}
   .stat-card .stat-icon{width:34px;height:34px;font-size:13.5px}
@@ -1372,13 +1463,31 @@ button{font-family:inherit}
   </div>
 </div>
 
-<nav class="mobile-nav">
+<!-- ============================================================
+     ★ PREMIUM FLOATING BOTTOM NAVIGATION ★
+     ============================================================ -->
+<nav class="mobile-nav" aria-label="Bottom navigation">
   <div class="nav-items">
-    <button class="nav-item active" data-tab="overview" onclick="switchTab('overview')"><i class="fas fa-chart-pie"></i><span>Overview</span></button>
-    <button class="nav-item" data-tab="users" onclick="switchTab('users')"><i class="fas fa-users"></i><span>Users</span></button>
-    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')"><i class="fas fa-exchange-alt"></i><span>Txns</span></button>
-    <button class="nav-item" data-tab="deposits" onclick="switchTab('deposits')"><i class="fas fa-arrow-down"></i><span>Deposits</span></button>
-    <button class="nav-item" data-tab="fund" onclick="switchTab('fund')"><i class="fas fa-hand-holding-dollar"></i><span>Fund</span></button>
+    <button class="nav-item active" data-tab="overview" onclick="switchTab('overview')" aria-label="Overview">
+      <i class="fas fa-chart-pie"></i>
+      <span>Overview</span>
+    </button>
+    <button class="nav-item" data-tab="users" onclick="switchTab('users')" aria-label="Users">
+      <i class="fas fa-users"></i>
+      <span>Users</span>
+    </button>
+    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')" aria-label="Transactions">
+      <i class="fas fa-exchange-alt"></i>
+      <span>Txns</span>
+    </button>
+    <button class="nav-item" data-tab="deposits" onclick="switchTab('deposits')" aria-label="Deposits">
+      <i class="fas fa-arrow-down"></i>
+      <span>Deposits</span>
+    </button>
+    <button class="nav-item" data-tab="fund" onclick="switchTab('fund')" aria-label="Manual Fund">
+      <i class="fas fa-hand-holding-dollar"></i>
+      <span>Fund</span>
+    </button>
   </div>
 </nav>
 
