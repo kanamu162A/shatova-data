@@ -1181,18 +1181,20 @@ button{font-family:inherit}
                   <div class="user-search-headline-sub">Search by name, phone number, email, or account ID</div>
                 </div>
               </div>
-              <div class="user-search-field">
-                <i class="fas fa-search"></i>
-                <input type="text" id="userSearch" placeholder="e.g. 08031234567, alice@example.com, or #1024" autocomplete="off" spellcheck="false" oninput="onUserSearchInput(event)">
+              <!-- UPDATED: The pill-shaped search bar from image 1 -->
+              <div class="user-search-field" style="border-radius: 999px; padding: 0 20px; height: 56px; border-color: rgba(10,69,52,0.3);">
+                <i class="fas fa-search" style="color: var(--primary);"></i>
+                <input type="text" id="userSearch" placeholder="e.g. 08031234567, alice@example.com" autocomplete="off" spellcheck="false" oninput="onUserSearchInput(event)">
                 <div class="user-search-spinner" id="userSearchSpinner"></div>
                 <button class="user-search-clear" id="userSearchClear" onclick="clearUserSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
-                <span class="user-search-kbd">ESC</span>
+                <span class="user-search-kbd" style="display: none;">ESC</span>
               </div>
-              <div class="user-search-chips">
-                <span class="user-search-chips-label">Quick</span>
-                <button class="user-search-chip" onclick="quickUserSearch('active')"><i class="fas fa-bolt"></i> Show all</button>
-                <button class="user-search-chip" onclick="quickUserSearch('0803')"><i class="fas fa-phone"></i> 0803…</button>
-                <button class="user-search-chip" onclick="quickUserSearch('@gmail.com')"><i class="fas fa-at"></i> @gmail.com</button>
+              <!-- UPDATED: The chips are now smaller and neatly aligned -->
+              <div class="user-search-chips" style="margin-top: 16px; gap: 8px;">
+                <span class="user-search-chips-label" style="display: none;">Quick</span>
+                <button class="user-search-chip" onclick="quickUserSearch('active')" style="padding: 5px 14px;"><i class="fas fa-bolt"></i> Show all</button>
+                <button class="user-search-chip" onclick="quickUserSearch('0803')" style="padding: 5px 14px;"><i class="fas fa-phone"></i> 0803...</button>
+                <button class="user-search-chip" onclick="quickUserSearch('@gmail.com')" style="padding: 5px 14px;"><i class="fas fa-at"></i> @gmail.com</button>
               </div>
             </div>
           </div>
@@ -1285,7 +1287,7 @@ button{font-family:inherit}
         <div class="panel">
           <div class="panel-head"><h3><i class="fas fa-hand-holding-dollar"></i> Manual Wallet Fund / Debit</h3><span class="sub">Search a user first</span></div>
           
-          <!-- ★ PREMIUM SEARCH AREA ★ -->
+          <!-- PREMIUM SEARCH AREA FOR FUND -->
           <div class="section-search-hero" style="padding: 26px 22px 22px;">
             <div style="max-width: 640px; margin: 0 auto;">
               <div class="section-search-inner">
@@ -1304,7 +1306,7 @@ button{font-family:inherit}
             </div>
           </div>
 
-          <!-- ★ PREMIUM EMPTY STATE ★ -->
+          <!-- EMPTY STATE -->
           <div id="fundEmpty" class="fund-empty-premium">
             <div class="fund-empty-icon-wrapper">
               <i class="fas fa-user-magnifying-glass"></i>
@@ -1313,7 +1315,7 @@ button{font-family:inherit}
             <div class="fund-empty-desc">Search by phone number or email above to load the user's details and unlock the funding form.</div>
           </div>
 
-          <!-- ★ PREMIUM FORM ★ -->
+          <!-- FORM -->
           <div id="fundForm">
             <div class="fund-form-container">
               <div id="fundUserPreview"></div>
