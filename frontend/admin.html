@@ -183,23 +183,32 @@ button{font-family:inherit}
 .filter-pill .pill-value{color:var(--text-muted);font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .filter-pill.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);box-shadow:var(--shadow-hover-light)}
 
-/* ============ NETWORK LOGOS (real brand look via inline SVG) ============ */
+/* ============ NETWORK LOGOS (hybrid: CSS bg + SVG shape) ============ */
 .row-avatar{
   width:48px;height:48px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;position:relative;overflow:hidden;
   box-shadow:0 4px 12px rgba(0,0,0,0.14),inset 0 1px 0 rgba(255,255,255,0.25);
-  transition:var(--transition);background:#fff;border:2px solid var(--bg-card);
+  transition:var(--transition);
+  border:2px solid var(--bg-card);
+  font-weight:800;font-size:15px;letter-spacing:-0.4px;color:#fff;
 }
-.row-item:hover .row-avatar{transform:scale(1.06) rotate(-2deg);box-shadow:0 8px 20px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.3)}
-.row-avatar svg.net-logo{width:100%;height:100%;display:block;border-radius:12px}
+.row-item:hover .row-avatar{transform:scale(1.06) rotate(-2deg);box-shadow:0 8px 20px rgba(0,0,0,0.2)}
 
-/* deposit / withdraw / generic avatars keep gradient */
-.row-avatar.deposit,.row-avatar.withdraw,.row-avatar.generic{
-  background:var(--primary-gradient);color:#fff;border-radius:50%;
-  font-weight:800;font-size:15px;letter-spacing:-0.4px;
-}
-.row-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
+/* Branded backgrounds */
+.row-avatar.net-mtn    {background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
+.row-avatar.net-airtel {background:linear-gradient(135deg,#FF1A1A 0%,#D40000 55%,#A80000 100%)}
+.row-avatar.net-glo    {background:linear-gradient(135deg,#00C55E 0%,#00A651 55%,#008A40 100%)}
+.row-avatar.net-t2     {background:linear-gradient(135deg,#00856A 0%,#006B54 55%,#005240 100%)}
+.row-avatar.net-generic{background:linear-gradient(135deg,#0d5a44 0%,#0a4534 45%,#062f24 100%)}
+
+/* SVG fills the tile */
+.row-avatar svg.net-shape{width:100%;height:100%;display:block}
+
+/* Deposit / withdraw keep circular look */
+.row-avatar.deposit,
+.row-avatar.withdraw{border-radius:50%;font-weight:800;font-size:15px;letter-spacing:-0.4px}
+.row-avatar.deposit {background:linear-gradient(135deg,#10b981,#098658)}
 .row-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
 
 .data-list{display:flex;flex-direction:column}
@@ -496,7 +505,8 @@ button{font-family:inherit}
 
 /* ============ TRANSACTION DETAIL MODAL ============ */
 .txn-hero{padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(10,69,52,0.06),rgba(10,69,52,0.02));border:1px solid rgba(10,69,52,0.14);margin-bottom:16px;display:flex;gap:16px;align-items:center}
-.txn-hero .txn-hero-logo{width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 16px -4px rgba(0,0,0,0.2)}
+.txn-hero .txn-hero-logo{width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 16px -4px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center}
+.txn-hero .txn-hero-logo svg.net-shape{width:100%;height:100%;display:block}
 .txn-hero .txn-hero-info{flex:1;min-width:0}
 .txn-hero .txn-hero-title{font-size:15.5px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.3px;margin-bottom:4px;word-break:break-word}
 .txn-hero .txn-hero-sub{font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -564,6 +574,87 @@ button{font-family:inherit}
 @media (min-width:1200px){.content{padding:28px 32px}.row-actions button .label{display:inline}}
 @media (min-width:900px){.row-actions button .label{display:inline}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
+
+/* ============ FULL RESPONSIVE POLISH ============ */
+@media (max-width: 768px) {
+  .toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
+  .toolbar .search-box { width: 100%; min-width: 0; }
+  .toolbar .filter-pill { width: 100%; justify-content: space-between; }
+  .toolbar .filter-pill .pill-value { flex: 1; text-align: left; }
+
+  .user-search-hero { padding: 18px 14px 14px; }
+  .user-search-field { height: 52px; padding: 0 12px 0 14px; border-radius: 12px; }
+  .user-search-field > i.fa-search { font-size: 13px; margin-right: 10px; }
+  .user-search-field input { font-size: 13.5px; }
+  .user-search-meta { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .user-search-hint { display: none; }
+
+  .row-avatar { width: 44px; height: 44px; border-radius: 12px; }
+  .user-avatar { width: 46px; height: 46px; font-size: 16px; }
+
+  #viewModal .modal,
+  #txnModal .modal,
+  #datashopModal .modal { max-width: 100%; margin: 0; border-radius: 18px 18px 0 0; padding: 20px 18px; }
+  #viewModal,
+  #txnModal,
+  #datashopModal,
+  #approveModal,
+  #rejectModal,
+  #approveDepositModal,
+  #rejectDepositModal { align-items: flex-end; padding: 0; }
+
+  .txn-hero { flex-direction: column; text-align: center; gap: 12px; padding: 16px; }
+  .txn-hero .txn-hero-logo { width: 58px; height: 58px; margin: 0 auto; }
+  .txn-hero .txn-hero-sub { justify-content: center; }
+  .txn-amount-block { padding: 16px 18px; }
+  .txn-amount-block .amt-value { font-size: 24px; }
+  .txn-amount-block .amt-meta { flex-direction: column; gap: 10px; }
+  .txn-amount-block .amt-meta > div { display: flex; justify-content: space-between; align-items: baseline; }
+
+  .modal .btns { flex-direction: column-reverse; }
+  .modal .btns button { width: 100%; }
+
+  .panel-footer { padding: 12px 14px; }
+  .pagination-controls { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding-bottom: 2px; }
+  .pagination-controls::-webkit-scrollbar { display: none; }
+
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+
+  .user-row { padding: 14px 14px; gap: 12px; }
+  .user-contact { gap: 6px; font-size: 11.5px; }
+  .user-contact .sep { display: none; }
+  .user-contact span:not(.mono) { display: block; width: 100%; }
+  .user-right { gap: 12px; }
+  .user-balance-value { font-size: 14px; }
+}
+
+@media (max-width: 420px) {
+  .user-search-field { height: 48px; }
+  .user-search-field input { font-size: 13px; }
+  .user-search-field input::placeholder { font-size: 12.5px; }
+  .stats-grid { gap: 8px; }
+  .stat-card { padding: 12px 12px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 9.5px; }
+  .row-avatar { width: 42px; height: 42px; border-radius: 11px; }
+  .row-title { font-size: 13px; }
+  .row-sub { font-size: 11px; gap: 6px; }
+  .row-sub .ref { display: none; }
+  .user-avatar { width: 42px; height: 42px; font-size: 15px; }
+  .user-badge { font-size: 9px; padding: 2px 6px; }
+  .user-action-btn { width: 34px; height: 34px; }
+  .fund-search-row { flex-direction: column; }
+  .fund-search-row button { width: 100%; justify-content: center; }
+  .fund-actions { flex-direction: column; }
+}
+
+/* Prevent iOS zoom on input focus */
+@media (max-width: 768px) {
+  input, textarea, select { font-size: 16px !important; }
+  .user-search-field input,
+  .search-box input { font-size: 16px !important; }
+}
 </style>
 </head>
 <body>
@@ -1048,43 +1139,38 @@ button{font-family:inherit}
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
 
-  /* ==================== REAL-LOOKING NETWORK LOGOS (inline SVG) ==================== */
-  const NETWORK_LOGOS = {
-    mtn: `<svg class="net-logo" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-label="MTN">
-      <defs><linearGradient id="mtnG" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#FFD633"/><stop offset="1" stop-color="#E0B100"/>
-      </linearGradient></defs>
-      <rect width="56" height="56" rx="14" fill="url(#mtnG)"/>
-      <text x="28" y="36" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="16" fill="#0A0A0A" letter-spacing="-0.8">MTN</text>
+  /* ==================== NETWORK LOGOS (crisp brand-accurate SVGs) ==================== */
+  const NETWORK_SVGS = {
+    mtn: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <text x="28" y="37" text-anchor="middle"
+            font-family="'Arial Black','Helvetica Neue',Impact,sans-serif"
+            font-weight="900" font-size="17" fill="#0A0A0A" letter-spacing="-1">MTN</text>
     </svg>`,
-    airtel: `<svg class="net-logo" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-label="Airtel">
-      <defs><linearGradient id="atlG" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#FF1A1A"/><stop offset="1" stop-color="#C40000"/>
-      </linearGradient></defs>
-      <rect width="56" height="56" rx="14" fill="url(#atlG)"/>
-      <path d="M14 40 C14 20 42 20 42 40" stroke="#fff" stroke-width="4.2" fill="none" stroke-linecap="round"/>
-      <circle cx="28" cy="31" r="3.2" fill="#fff"/>
+
+    airtel: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 15 37 Q 28 12 41 37"
+            stroke="#ffffff" stroke-width="5" fill="none"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="28" cy="32" r="3.6" fill="#ffffff"/>
     </svg>`,
-    glo: `<svg class="net-logo" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-label="Glo">
-      <defs><linearGradient id="gloG" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#00C55E"/><stop offset="1" stop-color="#009140"/>
-      </linearGradient></defs>
-      <rect width="56" height="56" rx="14" fill="url(#gloG)"/>
-      <text x="28" y="38" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="20" fill="#fff" letter-spacing="-1">glo</text>
+
+    glo: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <text x="28" y="39" text-anchor="middle"
+            font-family="'Arial Black','Helvetica Neue',Impact,sans-serif"
+            font-weight="900" font-size="22" fill="#ffffff"
+            font-style="italic" letter-spacing="-1.5">glo</text>
     </svg>`,
-    t2: `<svg class="net-logo" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-label="9mobile">
-      <defs><linearGradient id="t2G" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#007A5C"/><stop offset="1" stop-color="#005A44"/>
-      </linearGradient></defs>
-      <rect width="56" height="56" rx="14" fill="url(#t2G)"/>
-      <text x="28" y="39" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="24" fill="#fff">9</text>
+
+    t2: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <text x="28" y="42" text-anchor="middle"
+            font-family="'Arial Black','Helvetica Neue',Impact,sans-serif"
+            font-weight="900" font-size="30" fill="#ffffff">9</text>
     </svg>`,
-    generic: `<svg class="net-logo" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-label="VTU">
-      <defs><linearGradient id="genG" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#0d5a44"/><stop offset="1" stop-color="#062f24"/>
-      </linearGradient></defs>
-      <rect width="56" height="56" rx="14" fill="url(#genG)"/>
-      <text x="28" y="36" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="14" fill="#fff">VTU</text>
+
+    generic: `<svg class="net-shape" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <text x="28" y="36" text-anchor="middle"
+            font-family="Inter,sans-serif" font-weight="800"
+            font-size="14" fill="#ffffff">VTU</text>
     </svg>`,
   };
 
@@ -1100,9 +1186,11 @@ button{font-family:inherit}
     if (/9mobile|etisalat|\bt2\b|9mb/.test(all)) return 't2';
     return 'generic';
   }
-
   function networkAvatarHtml(t) {
-    return NETWORK_LOGOS[detectNetwork(t)] || NETWORK_LOGOS.generic;
+    return NETWORK_SVGS[detectNetwork(t)] || NETWORK_SVGS.generic;
+  }
+  function networkAvatarClass(t) {
+    return 'net-' + detectNetwork(t);
   }
 
   /* ==================== THEME ==================== */
@@ -1597,7 +1685,7 @@ button{font-family:inherit}
       const phone = t.phone || meta.phone || t.recipient || '—';
       const st = getStatus(t);
       const product = meta.product_name || t.description || t.product || 'Transaction';
-      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span>${timeAgo(getDate(t))}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(getAmount(t))}</div></div></div>`;
+      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${networkAvatarClass(t)}">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span>${timeAgo(getDate(t))}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(getAmount(t))}</div></div></div>`;
     }).join('');
     if (paginationEl && maxPages > 1) {
       let html = `<div class="pagination-info">Showing <strong>${startIndex + 1}–${endIndex}</strong> of <strong>${totalItems}</strong></div><div class="pagination-controls">`;
@@ -1688,7 +1776,7 @@ button{font-family:inherit}
     if (peakEl && buckets[peakIdx]) peakEl.innerHTML = `Peak: <strong style="color:var(--primary-dark)">${escapeHtml(buckets[peakIdx].label)}</strong> · ${formatMoney(values[peakIdx], true)}`;
   }
 
-  /* ==================== USERS (PROFESSIONAL SEARCH) ==================== */
+  /* ==================== USERS ==================== */
   function filterUsers(q) {
     const query = String(q || '').toLowerCase().trim();
     if (!query) return [];
@@ -1980,7 +2068,7 @@ button{font-family:inherit}
       const amount = getAmount(t);
       const st = getStatus(t);
       const product = meta.product_name || t.description || t.product || 'Transaction';
-      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(amount)}<small>${timeAgo(getDate(t))}</small></div></div></div>`;
+      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${networkAvatarClass(t)}">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(amount)}<small>${timeAgo(getDate(t))}</small></div></div></div>`;
     }).join('');
     renderPager('transactionsPagination', currentPage, totalItems, perPage, 'goToTxnPage');
   }
@@ -2023,7 +2111,7 @@ button{font-family:inherit}
     if (!t) { showToast('Transaction not found in local cache', 'error'); return; }
     const meta = t.metadata || {};
     const netKey = detectNetwork(t);
-    const logo = NETWORK_LOGOS[netKey];
+    const logo = NETWORK_SVGS[netKey];
     const kind = txnKind(t);
     const product = meta.product_name || t.description || t.product || (kind === 'airtime' ? 'Airtime Purchase' : kind === 'data' ? 'Data Bundle' : 'Transaction');
     const phone = t.phone || meta.phone || t.recipient || '—';
@@ -2037,12 +2125,11 @@ button{font-family:inherit}
 
     $('#txnBody').innerHTML = `
       <div class="txn-hero">
-        <div class="txn-hero-logo">${logo}</div>
+        <div class="txn-hero-logo row-avatar ${networkAvatarClass(t)}" style="border:none;">${logo}</div>
         <div class="txn-hero-info">
           <div class="txn-hero-title">${escapeHtml(product)}</div>
           <div class="txn-hero-sub">
             <span>${escapeHtml(netLabel)}</span>
-            <span class="dot" style="width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.5;display:inline-block;"></span>
             <span class="status ${st}">${escapeHtml(statusLabel(st))}</span>
           </div>
         </div>
@@ -2581,7 +2668,7 @@ button{font-family:inherit}
         const when = new Date(t.original_created_at).toLocaleString('en-NG');
         const isCredit = String(t.direction || '').toUpperCase() === 'CREDIT';
         const st = getStatus(t);
-        return `<div class="row-item static"><div class="row-avatar">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(t.description || t.type || 'Transaction')}</div><div class="row-sub"><span>#${t.user_id}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference)}</span><span class="dot"></span><span>${escapeHtml(when)}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '−'}${formatMoney(getAmount(t))}</div></div></div>`;
+        return `<div class="row-item static"><div class="row-avatar ${networkAvatarClass(t)}">${networkAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(t.description || t.type || 'Transaction')}</div><div class="row-sub"><span>#${t.user_id}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference)}</span><span class="dot"></span><span>${escapeHtml(when)}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '−'}${formatMoney(getAmount(t))}</div></div></div>`;
       }).join('');
       renderPager('archivedPagination', state.archived.page, state.archived.total, state.archived.perPage, 'goToArchivedPage');
     } catch (err) {
