@@ -80,12 +80,12 @@ button{font-family:inherit}
 .nav-item.nav-link{text-decoration:none}
 
 .sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
-.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--bg-hover);border:1px solid var(--border-soft);transition:var(--transition)}
-.user-card:hover{border-color:var(--border);box-shadow:var(--shadow-hover-light)}
-.user-card .avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex-shrink:0;box-shadow:0 3px 10px -2px rgba(10,69,52,0.4)}
-.user-card .info{flex:1;min-width:0}
-.user-card .name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-card .email{font-size:10.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-card-side{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--bg-hover);border:1px solid var(--border-soft);transition:var(--transition)}
+.user-card-side:hover{border-color:var(--border);box-shadow:var(--shadow-hover-light)}
+.user-card-side .avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex-shrink:0;box-shadow:0 3px 10px -2px rgba(10,69,52,0.4)}
+.user-card-side .info{flex:1;min-width:0}
+.user-card-side .name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-card-side .email{font-size:10.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);font-size:12.5px;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow-xs)}
 .icon-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);box-shadow:var(--shadow-hover-light);transform:translateY(-1px)}
@@ -168,20 +168,133 @@ button{font-family:inherit}
 .panel-body{padding:18px 22px}
 .panel-body.no-pad{padding:0}
 
-.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:16px 22px;border-bottom:1px solid var(--border);background:var(--bg-main)}
-.search-box{flex:1;min-width:200px;position:relative}
-.search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-muted);pointer-events:none;transition:var(--transition)}
-.search-box input{width:100%;padding:0 14px 0 36px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-size:12.5px;outline:none;transition:var(--transition);box-shadow:var(--shadow-xs)}
-.search-box input:hover{border-color:var(--border-strong)}
-.search-box input:focus{border-color:var(--primary);box-shadow:var(--ring),var(--shadow-hover-light)}
-.search-box input::placeholder{color:var(--text-muted)}
-.search-box:focus-within i{color:var(--primary);transform:translateY(-50%) scale(1.08)}
+/* ============ PREMIUM SECTION SEARCH HERO ============ */
+.section-search-hero{
+  padding: 22px 26px 20px;
+  background: linear-gradient(160deg, rgba(10,69,52,0.055) 0%, rgba(10,69,52,0.018) 55%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.section-search-hero::before{
+  content:''; position:absolute; top:-90px; right:-70px;
+  width:240px; height:240px; border-radius:50%;
+  background: radial-gradient(circle, rgba(10,69,52,0.07) 0%, transparent 65%);
+  pointer-events:none;
+}
+.section-search-hero::after{
+  content:''; position:absolute; bottom:-110px; left:-50px;
+  width:200px; height:200px; border-radius:50%;
+  background: radial-gradient(circle, rgba(34,197,94,0.05) 0%, transparent 70%);
+  pointer-events:none;
+}
+.section-search-inner{
+  position: relative; z-index: 1;
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.section-search-field{
+  flex: 1; min-width: 240px; position: relative;
+  display: flex; align-items: center;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 0 12px 0 16px;
+  height: 52px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 16px -6px rgba(15,23,42,0.06);
+  transition: all 0.24s cubic-bezier(0.4,0,0.2,1);
+}
+.section-search-field:focus-within{
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(10,69,52,0.1), 0 8px 24px -8px rgba(10,69,52,0.18);
+  transform: translateY(-1px);
+}
+.section-search-field > i.fa-search{
+  color: var(--text-muted); font-size: 14px;
+  margin-right: 12px; transition: all 0.22s ease; flex-shrink: 0;
+}
+.section-search-field:focus-within > i.fa-search{color: var(--primary); transform: scale(1.08)}
+.section-search-field input{
+  flex: 1; border: none; outline: none; background: transparent;
+  font-size: 14px; font-weight: 500; color: var(--text);
+  font-family: inherit; height: 100%; letter-spacing: -0.1px; min-width: 0;
+}
+.section-search-field input::placeholder{color: var(--text-muted); font-weight: 400}
+.section-search-clear{
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: var(--bg-input); color: var(--text-muted);
+  cursor: pointer; font-size: 11px;
+  display: none; align-items: center; justify-content: center;
+  margin-left: 8px; transition: all 0.18s ease; flex-shrink: 0;
+}
+.section-search-clear.visible{display: inline-flex}
+.section-search-clear:hover{background: var(--danger-light); color: var(--danger-dark); transform: rotate(90deg)}
 
-.filter-pill{display:inline-flex;align-items:center;gap:8px;padding:0 14px 0 15px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);font-size:12px;font-weight:700;cursor:pointer;transition:var(--transition);white-space:nowrap;box-shadow:var(--shadow-xs);font-family:inherit;position:relative}
-.filter-pill:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);box-shadow:var(--shadow-hover-light);transform:translateY(-1px)}
-.filter-pill .chev{font-size:9px;opacity:0.6;margin-left:2px}
-.filter-pill .pill-value{color:var(--text-muted);font-weight:700;max-width:130px;overflow:hidden;text-overflow:ellipsis}
-.filter-pill.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);box-shadow:var(--shadow-hover-light)}
+.section-search-pill{
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 0 16px; height: 52px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 12.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s ease;
+  white-space: nowrap; font-family: inherit;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 16px -6px rgba(15,23,42,0.06);
+  flex-shrink: 0;
+}
+.section-search-pill:hover{
+  border-color: var(--primary); color: var(--primary-dark);
+  background: var(--primary-light);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -8px rgba(10,69,52,0.15);
+}
+.section-search-pill.active{
+  border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark);
+}
+.section-search-pill i.lead{font-size: 12px; color: var(--text-muted); transition: all 0.2s ease}
+.section-search-pill:hover i.lead, .section-search-pill.active i.lead{color: var(--primary)}
+.section-search-pill .pill-value{color: var(--text-muted); font-weight: 700}
+.section-search-pill.active .pill-value{color: var(--primary-dark)}
+.section-search-pill .chev{font-size: 9px; opacity: 0.6; margin-left: 2px}
+
+.section-search-pill.primary{
+  background: var(--primary-gradient); color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px -4px rgba(10,69,52,0.4), var(--shadow-inset-top);
+}
+.section-search-pill.primary:hover{
+  color: #fff; transform: translateY(-1px);
+  box-shadow: 0 10px 24px -6px rgba(10,69,52,0.5), var(--shadow-inset-top);
+}
+.section-search-pill.primary i{color: #fff}
+.section-search-pill.primary:disabled{opacity: 0.6; cursor: not-allowed; transform: none}
+
+.section-search-meta{
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-top: 14px; flex-wrap: wrap; min-height: 18px;
+  position: relative; z-index: 1;
+}
+.section-search-count{
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.section-search-count strong{color: var(--text); font-weight: 800}
+.section-search-count .search-term{
+  color: var(--primary-dark); font-weight:800;
+  background: var(--primary-light);
+  padding: 2px 8px; border-radius: 5px;
+  font-family: 'SF Mono', Menlo, monospace; font-size: 11px;
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.section-search-hint{
+  font-size: 11px; color: var(--text-muted);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.section-search-hint kbd{
+  font-family: 'SF Mono', Menlo, monospace; font-size: 10px;
+  padding: 2px 6px; border-radius: 5px; background: var(--bg-input);
+  border: 1px solid var(--border); color: var(--text-secondary);
+  font-weight: 700; box-shadow: 0 1px 0 var(--border);
+}
 
 /* ============ NETWORK LOGOS ============ */
 .row-avatar{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.14),inset 0 1px 0 rgba(255,255,255,0.25);transition:var(--transition);border:2px solid var(--bg-card);font-weight:800;font-size:15px;letter-spacing:-0.4px;color:#fff}
@@ -373,16 +486,6 @@ button{font-family:inherit}
 .dw-actions button.primary-btn{background:var(--primary-gradient);color:#fff;border-color:transparent;box-shadow:0 6px 16px -4px rgba(10,69,52,0.4),var(--shadow-inset-top)}
 .dw-actions button.primary-btn:hover{color:#fff;transform:translateY(-1px);box-shadow:0 10px 22px -6px rgba(10,69,52,0.45),var(--shadow-inset-top)}
 
-.fund-search-card{padding:20px 22px;background:linear-gradient(180deg,rgba(10,69,52,0.03) 0%,transparent 100%);border-bottom:1px solid var(--border)}
-.fund-search-row{display:flex;gap:10px;align-items:stretch}
-.fund-search-row input{flex:1;padding:0 15px;height:46px;border-radius:11px;border:1.5px solid var(--border);background:var(--bg-card);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:var(--transition);box-shadow:var(--shadow-xs)}
-.fund-search-row input:focus{border-color:var(--primary);box-shadow:var(--ring)}
-.fund-search-row button{padding:0 24px;height:46px;border-radius:11px;border:1px solid transparent;background:var(--primary-gradient);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:var(--transition);box-shadow:0 6px 16px -4px rgba(10,69,52,0.4),var(--shadow-inset-top);font-family:inherit;white-space:nowrap}
-.fund-search-row button:hover{transform:translateY(-1px);box-shadow:0 10px 24px -6px rgba(10,69,52,0.5),var(--shadow-inset-top)}
-.fund-search-row button:disabled{opacity:0.6;cursor:not-allowed;transform:none}
-.fund-search-hint{font-size:11.5px;color:var(--text-muted);margin-top:10px;display:flex;align-items:center;gap:7px}
-.fund-search-hint i{color:var(--primary);font-size:11px}
-
 #fundForm{max-height:0;opacity:0;overflow:hidden;transition:max-height 0.45s cubic-bezier(0.22,1,0.36,1),opacity 0.3s ease,padding 0.3s ease;padding:0 22px}
 #fundForm.revealed{max-height:1200px;opacity:1;padding:20px 22px 22px;border-top:1px solid var(--border)}
 
@@ -529,7 +632,6 @@ button{font-family:inherit}
 }
 .user-search-chip:hover i{color: var(--primary)}
 
-/* Results bar */
 .user-results-bar{
   padding: 14px 26px;
   background: linear-gradient(180deg, rgba(10,69,52,0.018), transparent);
@@ -566,7 +668,6 @@ button{font-family:inherit}
   50%{opacity:0.5; transform:scale(0.8)}
 }
 
-/* User cards */
 .user-card-list{display:flex; flex-direction:column; padding:14px; gap:8px}
 .user-card{
   display:grid; grid-template-columns: 54px 1fr auto;
@@ -670,7 +771,6 @@ button{font-family:inherit}
   box-shadow: 0 6px 16px -4px rgba(10,69,52,0.4);
 }
 
-/* Skeletons */
 .user-skeleton{
   display:grid; grid-template-columns: 54px 1fr auto;
   gap:16px; align-items:center;
@@ -695,7 +795,6 @@ button{font-family:inherit}
 .user-skel-line.mt8{margin-top:8px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* Empty states */
 .user-empty{padding: 64px 24px; text-align: center}
 .user-empty-icon{
   width: 86px; height: 86px; margin: 0 auto 22px;
@@ -728,7 +827,6 @@ button{font-family:inherit}
 .user-empty-tip:hover i{color: var(--primary)}
 #viewModal .modal{max-width:560px}
 
-/* Transaction detail modal */
 .txn-hero{padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(10,69,52,0.06),rgba(10,69,52,0.02));border:1px solid rgba(10,69,52,0.14);margin-bottom:16px;display:flex;gap:16px;align-items:center}
 .txn-hero .txn-hero-logo{width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 16px -4px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;border:none}
 .txn-hero .txn-hero-logo svg.net-shape{width:100%;height:100%;display:block}
@@ -759,7 +857,6 @@ button{font-family:inherit}
   .panel{border-radius:12px;margin-bottom:16px}
   .panel-head{padding:15px 16px}
   .panel-body{padding:16px}
-  .toolbar{padding:13px 15px}
   .row-item{grid-template-columns:46px 1fr;grid-template-areas:"avatar main" "right right";gap:12px 12px;padding:15px 16px;align-items:start}
   .row-avatar{grid-area:avatar;width:42px;height:42px}
   .row-main{grid-area:main}
@@ -777,10 +874,14 @@ button{font-family:inherit}
 }
 
 @media (max-width:768px){
-  .toolbar{flex-direction:column;align-items:stretch;gap:10px}
-  .toolbar .search-box{width:100%;min-width:0}
-  .toolbar .filter-pill{width:100%;justify-content:space-between}
-  .toolbar .filter-pill .pill-value{flex:1;text-align:left}
+  .section-search-hero{padding:18px 16px 16px}
+  .section-search-inner{gap:8px}
+  .section-search-field{height:48px;padding:0 10px 0 14px;border-radius:12px;min-width:0}
+  .section-search-field > i.fa-search{font-size:13px;margin-right:10px}
+  .section-search-field input{font-size:14px}
+  .section-search-pill{height:48px;padding:0 13px;font-size:12px;border-radius:12px}
+  .section-search-meta{flex-direction:column;align-items:flex-start;gap:4px;margin-top:12px}
+  .section-search-hint{font-size:10.5px}
 
   .user-search-hero{padding:22px 18px 20px}
   .user-search-headline-icon{width:44px;height:44px;border-radius:13px;font-size:17px}
@@ -800,11 +901,7 @@ button{font-family:inherit}
   .user-results-live{display:none}
 
   .user-card-list{padding:12px;gap:8px}
-  .user-card{
-    grid-template-columns:46px 1fr;
-    grid-template-areas:"avatar main" "right right";
-    gap:12px; padding:14px;
-  }
+  .user-card{grid-template-columns:46px 1fr;grid-template-areas:"avatar main" "right right";gap:12px;padding:14px}
   .user-avatar{grid-area:avatar;width:44px;height:44px;font-size:15px;border-radius:13px}
   .user-info{grid-area:main;gap:5px}
   .user-name{font-size:13.5px}
@@ -843,20 +940,30 @@ button{font-family:inherit}
 }
 
 @media (max-width:500px){
+  .section-search-hero{padding:16px 14px 14px}
+  .section-search-field{height:46px;padding:0 10px 0 13px}
+  .section-search-pill{height:46px;padding:0 12px;font-size:11.5px}
+  .section-search-count{font-size:11.5px}
+
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .stat-card{padding:12px 13px}
   .stat-value{font-size:17px}
   .content{padding:12px 10px 100px}
   .panel-head{padding:13px 14px}
-  .toolbar{padding:11px 13px}
-  .fund-search-card{padding:15px}
-  .fund-search-row{flex-direction:column}
-  .fund-search-row button{width:100%;justify-content:center}
+  #fundForm.revealed{padding:16px}
   .fund-user-card{padding:15px}
   .fund-user-card .fu-balance-row{flex-direction:column;gap:10px}
+  .fund-empty{padding:28px 16px}
+  .fund-empty .icon{width:56px;height:56px;font-size:22px;margin-bottom:12px}
+  .fund-empty .title{font-size:13px}
+  .fund-empty .desc{font-size:11.5px}
 }
 
 @media (max-width:420px){
+  .section-search-inner{flex-direction:column;align-items:stretch}
+  .section-search-field{width:100%}
+  .section-search-pill{width:100%;justify-content:center;height:46px}
+
   .user-search-hero{padding:20px 14px 18px}
   .user-search-field{height:52px}
   .user-search-field input{font-size:13.5px}
@@ -878,23 +985,9 @@ button{font-family:inherit}
 @media (min-width:900px){.row-actions button .label{display:inline}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
 
-/* Manual fund — tighter on phones */
-@media (max-width:500px){
-  .fund-search-card{padding:16px 14px}
-  .fund-search-row{flex-direction:column;gap:8px}
-  .fund-search-row input{height:48px;font-size:15px}
-  .fund-search-row button{height:48px;width:100%;justify-content:center;font-size:13px}
-  .fund-search-hint{font-size:11px;margin-top:8px}
-  .fund-empty{padding:28px 16px}
-  .fund-empty .icon{width:56px;height:56px;font-size:22px;margin-bottom:12px}
-  .fund-empty .title{font-size:13px}
-  .fund-empty .desc{font-size:11.5px}
-}
-
-/* Prevent iOS zoom */
 @media (max-width:768px){
   input, textarea, select{font-size:16px !important}
-  .user-search-field input, .search-box input{font-size:16px !important}
+  .user-search-field input, .section-search-field input{font-size:16px !important}
 }
 </style>
 </head>
@@ -937,7 +1030,7 @@ button{font-family:inherit}
     <a class="nav-item nav-link" href="/pricing.html"><i class="fas fa-tags"></i><span>Pricing</span></a>
   </nav>
   <div class="sidebar-footer">
-    <div class="user-card">
+    <div class="user-card-side">
       <div class="avatar" id="drawerAvatar">A</div>
       <div class="info"><div class="name" id="drawerName">Admin</div><div class="email" id="drawerEmail">admin@shatova.com</div></div>
     </div>
@@ -982,7 +1075,7 @@ button{font-family:inherit}
       <a class="nav-item nav-link" href="/pricing.html"><i class="fas fa-tags"></i><span>Pricing</span></a>
     </nav>
     <div class="sidebar-footer">
-      <div class="user-card">
+      <div class="user-card-side">
         <div class="avatar" id="adminAvatar">A</div>
         <div class="info"><div class="name" id="adminName">Admin</div><div class="email" id="adminEmail">admin@shatova.com</div></div>
       </div>
@@ -1041,7 +1134,7 @@ button{font-family:inherit}
         </div>
 
         <div class="panel" id="panelRecentTx">
-          <div class="panel-head"><h3><i class="fas fa-receipt"></i> Recent Transactions</h3><button class="filter-pill" onclick="switchTab('transactions')">View all <i class="fas fa-arrow-right chev"></i></button></div>
+          <div class="panel-head"><h3><i class="fas fa-receipt"></i> Recent Transactions</h3><button class="section-search-pill" onclick="switchTab('transactions')">View all <i class="fas fa-arrow-right chev"></i></button></div>
           <div class="panel-body no-pad"><div class="data-list" id="recentTxList"><div class="loading"><div class="ring"></div><p>Loading…</p></div></div></div>
           <div class="panel-footer" id="recentTxPagination" style="display:none;"></div>
         </div>
@@ -1111,11 +1204,28 @@ button{font-family:inherit}
 
       <section id="tab-transactions" style="display:none;">
         <div class="panel">
-          <div class="panel-head"><h3><i class="fas fa-exchange-alt"></i> Purchase History</h3><span class="sub" id="txnCount">—</span></div>
-          <div class="toolbar">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="txnSearch" placeholder="Search by phone, reference, or product…" oninput="onTxnSearchInput()" autocomplete="off"></div>
-            <button class="filter-pill" id="txnTypePill" onclick="openTypeSheet()"><i class="fas fa-layer-group lead"></i><span class="pill-value" id="txnTypeLabel">All types</span><i class="fas fa-chevron-down chev"></i></button>
-            <button class="filter-pill" id="txnRangePill" onclick="openRangeSheet()"><i class="fas fa-calendar-alt lead"></i><span class="pill-value" id="txnRangeLabel">Today</span><i class="fas fa-chevron-down chev"></i></button>
+          <div class="section-search-hero">
+            <div class="section-search-inner">
+              <div class="section-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="txnSearch" placeholder="Search by phone, reference, or product…" oninput="onTxnSearchInput()" autocomplete="off">
+                <button class="section-search-clear" id="txnSearchClear" onclick="clearTxnSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+              </div>
+              <button class="section-search-pill" id="txnTypePill" onclick="openTypeSheet()">
+                <i class="fas fa-layer-group lead"></i>
+                <span class="pill-value" id="txnTypeLabel">All types</span>
+                <i class="fas fa-chevron-down chev"></i>
+              </button>
+              <button class="section-search-pill" id="txnRangePill" onclick="openRangeSheet()">
+                <i class="fas fa-calendar-alt lead"></i>
+                <span class="pill-value" id="txnRangeLabel">Today</span>
+                <i class="fas fa-chevron-down chev"></i>
+              </button>
+            </div>
+            <div class="section-search-meta">
+              <span class="section-search-count" id="txnSearchMeta"></span>
+              <span class="section-search-hint"><i class="fas fa-magnifying-glass"></i> Type to filter instantly</span>
+            </div>
           </div>
           <div class="panel-body no-pad"><div class="data-list" id="transactionsList"><div class="loading"><div class="ring"></div><p>Loading transactions…</p></div></div></div>
           <div class="panel-footer" id="transactionsPagination" style="display:none;"></div>
@@ -1124,8 +1234,24 @@ button{font-family:inherit}
 
       <section id="tab-deposits" style="display:none;">
         <div class="panel">
-          <div class="panel-head"><h3><i class="fas fa-arrow-down"></i> Wallet Deposits</h3><span class="sub" id="depositsCount">—</span></div>
-          <div class="toolbar"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="depositSearch" placeholder="Search by user or reference…" oninput="onDepositSearchInput()" autocomplete="off"></div></div>
+          <div class="section-search-hero">
+            <div class="section-search-inner">
+              <div class="section-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="depositSearch" placeholder="Search by user, email, or reference…" oninput="onDepositSearchInput()" autocomplete="off">
+                <button class="section-search-clear" id="depositSearchClear" onclick="clearDepositSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+              </div>
+              <button class="section-search-pill" id="depositRangePill" onclick="openRangeSheet()">
+                <i class="fas fa-calendar-alt lead"></i>
+                <span class="pill-value" id="depositRangeLabel">Today</span>
+                <i class="fas fa-chevron-down chev"></i>
+              </button>
+            </div>
+            <div class="section-search-meta">
+              <span class="section-search-count" id="depositSearchMeta"></span>
+              <span class="section-search-hint"><i class="fas fa-shield-halved"></i> Confirm bank transfers before approving</span>
+            </div>
+          </div>
           <div class="panel-body no-pad"><div class="data-list" id="depositsList"><div class="loading"><div class="ring"></div><p>Loading deposits…</p></div></div></div>
           <div class="panel-footer" id="depositsPagination" style="display:none;"></div>
         </div>
@@ -1133,8 +1259,24 @@ button{font-family:inherit}
 
       <section id="tab-withdrawals" style="display:none;">
         <div class="panel">
-          <div class="panel-head"><h3><i class="fas fa-arrow-up"></i> Withdrawal Requests</h3><span class="sub" id="withdrawalsCount">—</span></div>
-          <div class="toolbar"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="withdrawalSearch" placeholder="Search by user or reference…" oninput="onWithdrawalSearchInput()" autocomplete="off"></div></div>
+          <div class="section-search-hero">
+            <div class="section-search-inner">
+              <div class="section-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="withdrawalSearch" placeholder="Search by user, bank, or reference…" oninput="onWithdrawalSearchInput()" autocomplete="off">
+                <button class="section-search-clear" id="withdrawalSearchClear" onclick="clearWithdrawalSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+              </div>
+              <button class="section-search-pill" id="withdrawalRangePill" onclick="openRangeSheet()">
+                <i class="fas fa-calendar-alt lead"></i>
+                <span class="pill-value" id="withdrawalRangeLabel">Today</span>
+                <i class="fas fa-chevron-down chev"></i>
+              </button>
+            </div>
+            <div class="section-search-meta">
+              <span class="section-search-count" id="withdrawalSearchMeta"></span>
+              <span class="section-search-hint"><i class="fas fa-clock"></i> Approve pending payouts daily</span>
+            </div>
+          </div>
           <div class="panel-body no-pad"><div class="data-list" id="withdrawalsList"><div class="loading"><div class="ring"></div><p>Loading withdrawals…</p></div></div></div>
           <div class="panel-footer" id="withdrawalsPagination" style="display:none;"></div>
         </div>
@@ -1143,12 +1285,19 @@ button{font-family:inherit}
       <section id="tab-fund" style="display:none;">
         <div class="panel">
           <div class="panel-head"><h3><i class="fas fa-hand-holding-dollar"></i> Manual Wallet Fund / Debit</h3><span class="sub">Search a user first</span></div>
-          <div class="fund-search-card">
-            <div class="fund-search-row">
-              <input type="text" id="fundLookupQuery" placeholder="Enter phone number, email, or user ID…" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
-              <button id="fundLookupBtn" onclick="lookupFundUser()"><i class="fas fa-search"></i> Search</button>
+          <div class="section-search-hero">
+            <div class="section-search-inner">
+              <div class="section-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="fundLookupQuery" placeholder="Phone number, email, or user ID…" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
+              </div>
+              <button class="section-search-pill primary" id="fundLookupBtn" onclick="lookupFundUser()">
+                <i class="fas fa-magnifying-glass"></i> Search
+              </button>
             </div>
-            <div class="fund-search-hint"><i class="fas fa-circle-info"></i> Search by phone (e.g. 08031234567), email, or user ID. The fund form appears after a match.</div>
+            <div class="section-search-meta">
+              <span class="section-search-hint"><i class="fas fa-circle-info"></i> Search by phone (e.g. 08031234567), email, or user ID</span>
+            </div>
           </div>
           <div id="fundEmpty" class="fund-empty">
             <div class="icon"><i class="fas fa-user-magnifying-glass"></i></div>
@@ -1180,9 +1329,22 @@ button{font-family:inherit}
       <section id="tab-archived" style="display:none;">
         <div class="panel">
           <div class="panel-head"><h3><i class="fas fa-box-archive"></i> Archived Transactions</h3><button class="run-archive-btn" id="runArchiveBtn" onclick="triggerArchiveRun()"><i class="fas fa-play"></i> Run archive now</button></div>
-          <div class="toolbar">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="archSearch" placeholder="Reference or description…" oninput="onArchiveSearchInput()" autocomplete="off"></div>
-            <input type="number" id="archUserId" placeholder="User ID" style="width:130px;padding:0 12px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-size:12.5px;outline:none;font-family:inherit;box-shadow:var(--shadow-xs);" oninput="onArchiveSearchInput()">
+          <div class="section-search-hero">
+            <div class="section-search-inner">
+              <div class="section-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="archSearch" placeholder="Reference or description…" oninput="onArchiveSearchInput()" autocomplete="off">
+                <button class="section-search-clear" id="archSearchClear" onclick="clearArchSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+              </div>
+              <div class="section-search-field" style="flex: 0 0 200px; min-width: 180px;">
+                <i class="fas fa-hashtag"></i>
+                <input type="number" id="archUserId" placeholder="User ID" oninput="onArchiveSearchInput()" autocomplete="off">
+              </div>
+            </div>
+            <div class="section-search-meta">
+              <span class="section-search-count" id="archSearchMeta"></span>
+              <span class="section-search-hint"><i class="fas fa-box-archive"></i> Old transactions moved out of the active table</span>
+            </div>
           </div>
           <div class="panel-body no-pad"><div class="data-list" id="archivedList"><div class="loading"><div class="ring"></div><p>Loading…</p></div></div></div>
           <div class="panel-footer" id="archivedPagination" style="display:none;"></div>
@@ -1561,6 +1723,12 @@ button{font-family:inherit}
     const el = document.getElementById(id);
     if (el) el.classList.toggle('is-hidden', !hasValue);
   }
+  function toggleClearButton(inputId, clearId) {
+    const input = document.getElementById(inputId);
+    const clear = document.getElementById(clearId);
+    if (!input || !clear) return;
+    clear.classList.toggle('visible', input.value.length > 0);
+  }
   function buildPageList(currentPage, totalPages) {
     const delta = 1; const pages = [];
     if (totalPages <= 7) { for (let i = 1; i <= totalPages; i++) pages.push(i); return pages; }
@@ -1657,6 +1825,8 @@ button{font-family:inherit}
     });
     $$('#rangeOptions .sheet-option').forEach(o => o.classList.toggle('active', o.dataset.range === state.range));
     const lbl = $('#txnRangeLabel'); if (lbl) lbl.textContent = r.label;
+    const lbl2 = $('#depositRangeLabel'); if (lbl2) lbl2.textContent = r.label;
+    const lbl3 = $('#withdrawalRangeLabel'); if (lbl3) lbl3.textContent = r.label;
     const metaHtml = `<i class="fas fa-circle-info"></i> <strong>${escapeHtml(r.label)}</strong>`;
     const m1 = $('#rangeMeta'); if (m1) m1.innerHTML = metaHtml;
     const m2 = $('#rangeMeta2'); if (m2) m2.innerHTML = metaHtml;
@@ -2074,7 +2244,6 @@ button{font-family:inherit}
       bar.classList.toggle('is-empty', !!isEmpty);
     };
 
-    /* ---- Initial state ---- */
     if (!state.userSearched || !q) {
       setBar(`<span class="user-results-count"><i class="fas fa-circle-info" style="color:var(--primary);"></i> Start typing to search the directory</span>`, true);
       c.innerHTML = `
@@ -2091,7 +2260,6 @@ button{font-family:inherit}
       return;
     }
 
-    /* ---- Loading skeleton (only when no local matches) ---- */
     if (state.userLoading && state.userResults.length === 0) {
       setBar(`<span class="user-results-count"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary);"></i> Searching <span class="search-term">${escapeHtml(q)}</span>…</span>`, false);
       c.innerHTML = `<div class="user-card-list">${Array.from({ length: 5 }).map(() => `
@@ -2105,7 +2273,6 @@ button{font-family:inherit}
 
     const list = state.userResults || [];
 
-    /* ---- No results ---- */
     if (!list.length) {
       setBar(`<span class="user-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> No matches for <span class="search-term">${escapeHtml(q)}</span></span>`, true);
       c.innerHTML = `
@@ -2121,7 +2288,6 @@ button{font-family:inherit}
       return;
     }
 
-    /* ---- Results bar ---- */
     const totalLabel = state.userTotal > list.length
       ? `<strong>${list.length}</strong> of <strong>${state.userTotal.toLocaleString()}</strong>`
       : `<strong>${list.length}</strong>`;
@@ -2134,7 +2300,6 @@ button{font-family:inherit}
       <span class="user-results-live"><span class="live-dot"></span> Live</span>
     `, false);
 
-    /* ---- Cards ---- */
     c.innerHTML = `<div class="user-card-list">${list.slice(0, 200).map(u => {
       const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
       const initial = (name || '?').charAt(0).toUpperCase();
@@ -2317,7 +2482,14 @@ button{font-family:inherit}
     }
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const total = list.reduce((s, t) => s + getAmount(t), 0);
-    $('#txnCount').textContent = `${list.length} transaction${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}`;
+
+    const metaEl = $('#txnSearchMeta');
+    if (metaEl) {
+      metaEl.innerHTML = search
+        ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> result${list.length === 1 ? '' : 's'} for <span class="search-term">${escapeHtml(search)}</span> · ${formatMoney(total, true)}`
+        : `<i class="fas fa-receipt" style="color:var(--primary);"></i> <strong>${list.length}</strong> transaction${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}`;
+    }
+
     const c = $('#transactionsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
@@ -2341,8 +2513,17 @@ button{font-family:inherit}
     renderPager('transactionsPagination', currentPage, totalItems, perPage, 'goToTxnPage');
   }
   window.renderTransactions = renderTransactions;
-  function onTxnSearchInput() { state.txnPage = 1; renderTransactions(); }
+  function onTxnSearchInput() {
+    toggleClearButton('txnSearch', 'txnSearchClear');
+    state.txnPage = 1; renderTransactions();
+  }
   window.onTxnSearchInput = onTxnSearchInput;
+  function clearTxnSearch() {
+    const i = document.getElementById('txnSearch');
+    if (i) { i.value = ''; i.focus(); }
+    onTxnSearchInput();
+  }
+  window.clearTxnSearch = clearTxnSearch;
   window.goToTxnPage = (page) => {
     const totalItems = (() => {
       const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
@@ -2402,7 +2583,6 @@ button{font-family:inherit}
           </div>
         </div>
       </div>
-
       <div class="txn-amount-block">
         <div class="amt-label">Amount</div>
         <div class="amt-value">${formatMoney(amount)}</div>
@@ -2411,7 +2591,6 @@ button{font-family:inherit}
           <div><div class="lbl">Type</div><div class="val" style="text-transform:uppercase;font-size:12px;letter-spacing:.5px;">${escapeHtml(kind)}</div></div>
         </div>` : ''}
       </div>
-
       <div class="row-detail"><span class="lbl">Recipient</span><span class="val mono">${escapeHtml(phone)}</span></div>
       <div class="row-detail"><span class="lbl">Network</span><span class="val">${escapeHtml(netLabel)}</span></div>
       <div class="row-detail"><span class="lbl">Product</span><span class="val">${escapeHtml(product)}</span></div>
@@ -2442,7 +2621,14 @@ button{font-family:inherit}
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const pendingCount = list.filter(d => getStatus(d) === 'pending').length;
     const total = list.reduce((s, d) => s + getAmount(d), 0);
-    $('#depositsCount').textContent = `${list.length} deposit${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · ${pendingCount} pending` : '');
+
+    const metaEl = $('#depositSearchMeta');
+    if (metaEl) {
+      metaEl.innerHTML = search
+        ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span>` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '')
+        : `<i class="fas fa-arrow-down" style="color:var(--primary);"></i> <strong>${list.length}</strong> deposit${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '');
+    }
+
     const c = $('#depositsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
@@ -2466,8 +2652,17 @@ button{font-family:inherit}
     renderPager('depositsPagination', currentPage, totalItems, perPage, 'goToDepositPage');
   }
   window.renderDeposits = renderDeposits;
-  function onDepositSearchInput() { state.depositPage = 1; renderDeposits(); }
+  function onDepositSearchInput() {
+    toggleClearButton('depositSearch', 'depositSearchClear');
+    state.depositPage = 1; renderDeposits();
+  }
   window.onDepositSearchInput = onDepositSearchInput;
+  function clearDepositSearch() {
+    const i = document.getElementById('depositSearch');
+    if (i) { i.value = ''; i.focus(); }
+    onDepositSearchInput();
+  }
+  window.clearDepositSearch = clearDepositSearch;
   window.goToDepositPage = (page) => {
     const totalPages = Math.max(1, Math.ceil((() => {
       const search = ($('#depositSearch')?.value || '').toLowerCase().trim();
@@ -2489,13 +2684,20 @@ button{font-family:inherit}
     const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
     let list = applyRange(state.withdrawals, state.range);
     if (search) list = list.filter(w => {
-      const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''}`.toLowerCase();
+      const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase();
       return hay.includes(search);
     });
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const pendingCount = list.filter(w => getStatus(w) === 'pending').length;
     const total = list.reduce((s, w) => s + getAmount(w), 0);
-    $('#withdrawalsCount').textContent = `${list.length} request${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · ${pendingCount} pending` : '');
+
+    const metaEl = $('#withdrawalSearchMeta');
+    if (metaEl) {
+      metaEl.innerHTML = search
+        ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span>` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '')
+        : `<i class="fas fa-arrow-up" style="color:var(--primary);"></i> <strong>${list.length}</strong> request${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '');
+    }
+
     const c = $('#withdrawalsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
@@ -2519,14 +2721,23 @@ button{font-family:inherit}
     renderPager('withdrawalsPagination', currentPage, totalItems, perPage, 'goToWithdrawalPage');
   }
   window.renderWithdrawals = renderWithdrawals;
-  function onWithdrawalSearchInput() { state.withdrawalPage = 1; renderWithdrawals(); }
+  function onWithdrawalSearchInput() {
+    toggleClearButton('withdrawalSearch', 'withdrawalSearchClear');
+    state.withdrawalPage = 1; renderWithdrawals();
+  }
   window.onWithdrawalSearchInput = onWithdrawalSearchInput;
+  function clearWithdrawalSearch() {
+    const i = document.getElementById('withdrawalSearch');
+    if (i) { i.value = ''; i.focus(); }
+    onWithdrawalSearchInput();
+  }
+  window.clearWithdrawalSearch = clearWithdrawalSearch;
   window.goToWithdrawalPage = (page) => {
     const totalPages = Math.max(1, Math.ceil((() => {
       const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
       let list = applyRange(state.withdrawals, state.range);
       if (search) list = list.filter(w => {
-        const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''}`.toLowerCase();
+        const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase();
         return hay.includes(search);
       });
       return list.length;
@@ -2919,6 +3130,17 @@ button{font-family:inherit}
     const params = new URLSearchParams({ page, limit: state.archived.perPage });
     if (q) params.set('q', q);
     if (uid) params.set('user_id', uid);
+
+    const metaEl = $('#archSearchMeta');
+    if (metaEl) {
+      const parts = [];
+      if (q) parts.push(`<span class="search-term">${escapeHtml(q)}</span>`);
+      if (uid) parts.push(`user #<strong>${escapeHtml(uid)}</strong>`);
+      metaEl.innerHTML = parts.length
+        ? `<i class="fas fa-filter" style="color:var(--primary);"></i> Filtering by ${parts.join(' · ')}`
+        : `<i class="fas fa-box-archive" style="color:var(--primary);"></i> Browsing all archived transactions`;
+    }
+
     const c = $('#archivedList');
     c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>';
     try {
@@ -2947,10 +3169,17 @@ button{font-family:inherit}
   window.goToArchivedPage = (page) => loadArchived(page);
   let archSearchTimer;
   function onArchiveSearchInput() {
+    toggleClearButton('archSearch', 'archSearchClear');
     clearTimeout(archSearchTimer);
     archSearchTimer = setTimeout(() => loadArchived(1), 400);
   }
   window.onArchiveSearchInput = onArchiveSearchInput;
+  function clearArchSearch() {
+    const i = document.getElementById('archSearch');
+    if (i) { i.value = ''; i.focus(); }
+    onArchiveSearchInput();
+  }
+  window.clearArchSearch = clearArchSearch;
 
   async function triggerArchiveRun() {
     if (!confirm('Run the daily archive now? This moves old transactions to the archive table.')) return;
@@ -3054,11 +3283,12 @@ button{font-family:inherit}
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && state.activeTab === 'users' && (state.userQuery || '').length > 0) {
-      clearUserSearch();
-      return;
-    }
     if (e.key === 'Escape') {
+      if (state.activeTab === 'users' && (state.userQuery || '').length > 0) { clearUserSearch(); return; }
+      if (state.activeTab === 'transactions' && ($('#txnSearch')?.value || '').length > 0) { clearTxnSearch(); return; }
+      if (state.activeTab === 'deposits' && ($('#depositSearch')?.value || '').length > 0) { clearDepositSearch(); return; }
+      if (state.activeTab === 'withdrawals' && ($('#withdrawalSearch')?.value || '').length > 0) { clearWithdrawalSearch(); return; }
+      if (state.activeTab === 'archived' && ($('#archSearch')?.value || '').length > 0) { clearArchSearch(); return; }
       if (state.withdrawApprovePending || state.withdrawRejectPending || state.depositApprovePending || state.depositRejectPending) return;
       closeRangeSheet(); closeTypeSheet(); closeViewModal(); closeDatashopWallet();
       closeTxnModal();
