@@ -1287,16 +1287,15 @@ button{font-family:inherit}
         <div class="panel">
           <div class="panel-head"><h3><i class="fas fa-hand-holding-dollar"></i> Manual Wallet Fund / Debit</h3><span class="sub">Search a user first</span></div>
           
-          <!-- PREMIUM SEARCH AREA FOR FUND -->
+          <!-- PREMIUM SEARCH AREA FOR FUND (MATCHING USER SEARCH) -->
           <div class="section-search-hero" style="padding: 26px 22px 22px;">
             <div style="max-width: 640px; margin: 0 auto;">
-              <div class="section-search-inner">
-                <div class="section-search-field" style="height: 56px; border-radius: 14px;">
-                  <i class="fas fa-search" style="font-size: 15px;"></i>
-                  <input type="text" id="fundLookupQuery" placeholder="Phone number, email, or user ID…" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
-                </div>
-                <button class="fund-search-btn" id="fundLookupBtn" onclick="lookupFundUser()" style="flex: 0 0 auto; width: auto; padding: 0 28px; height: 56px; margin-top: 0;">
-                  <i class="fas fa-magnifying-glass"></i> Search
+              <div class="user-search-field" style="border-radius: 999px; padding: 0 20px; height: 56px; border-color: rgba(10,69,52,0.3);">
+                <i class="fas fa-search" style="color: var(--primary);"></i>
+                <input type="text" id="fundLookupQuery" placeholder="Phone number, email, or user ID…" autocomplete="off" oninput="toggleFundClear()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
+                <button class="user-search-clear" id="fundSearchClear" onclick="clearFundSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+                <button id="fundLookupIconBtn" onclick="lookupFundUser()" style="background:none;border:none;color:var(--primary);cursor:pointer;padding:8px;font-size:15px;transition:all 0.2s; margin-left: 4px;" title="Search">
+                  <i class="fas fa-arrow-right"></i>
                 </button>
               </div>
               <div style="margin-top: 14px; font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
@@ -3037,23 +3036,47 @@ button{font-family:inherit}
     const amountEl = $('#fundAmount'); if (amountEl) amountEl.value = '';
     const reasonEl = $('#fundReason'); if (reasonEl) reasonEl.value = '';
     const srcEl = $('#fundSource'); if (srcEl) srcEl.value = 'support';
+    const inputEl = $('#fundLookupQuery'); if (inputEl) inputEl.value = '';
+    const clearBtn = $('#fundSearchClear'); if (clearBtn) clearBtn.classList.remove('visible');
   }
   window.resetFundTab = resetFundTab;
+
+  function toggleFundClear() {
+    const input = document.getElementById('fundLookupQuery');
+    const clear = document.getElementById('fundSearchClear');
+    if (input && clear) {
+      clear.classList.toggle('visible', input.value.length > 0);
+    }
+  }
+  window.toggleFundClear = toggleFundClear;
+
+  function clearFundSearch() {
+    const input = document.getElementById('fundLookupQuery');
+    if (input) { input.value = ''; input.focus(); }
+    toggleFundClear();
+    resetFundTab();
+  }
+  window.clearFundSearch = clearFundSearch;
 
   async function lookupFundUser() {
     const input = $('#fundLookupQuery');
     const q = (input?.value || '').trim();
     if (!q) { showToast('Enter a phone number, email, or user ID', 'error'); return; }
-    const btn = $('#fundLookupBtn');
+    
+    const btn = $('#fundLookupIconBtn');
     const preview = $('#fundUserPreview');
     const empty = $('#fundEmpty');
     const form = $('#fundForm');
-    const originalBtn = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching…';
+    const originalBtnIcon = btn ? btn.innerHTML : '';
+    
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    }
+    
     if (form) form.classList.remove('revealed');
     if (empty) empty.style.display = 'none';
-    preview.innerHTML = '<div class="loading" style="padding:24px;"><div class="ring"></div><p>Looking up user…</p></div>';
+    if (preview) preview.innerHTML = '<div class="loading" style="padding:24px;"><div class="ring"></div><p>Looking up user…</p></div>';
 
     const params = new URLSearchParams();
     if (/^\d+$/.test(q) && q.length <= 6) params.set('user_id', q);
@@ -3066,42 +3089,50 @@ button{font-family:inherit}
       state.fundUser = user;
       const name = user.name || user.email || user.phone || `#${user.id}`;
       const initial = (name || '?').charAt(0).toUpperCase();
-      preview.innerHTML = `
-        <div class="fund-user-card">
-          <div class="fu-top">
-            <div class="fu-avatar">${escapeHtml(initial)}</div>
-            <div class="fu-info">
-              <div class="fu-name">${escapeHtml(name)}</div>
-              <div class="fu-meta">
-                <span>User #${user.id}</span><span class="dot"></span>
-                <span>${escapeHtml(user.email || '—')}</span><span class="dot"></span>
-                <span>${escapeHtml(user.phone || '—')}</span>
+      
+      if (preview) {
+        preview.innerHTML = `
+          <div class="fund-user-card">
+            <div class="fu-top">
+              <div class="fu-avatar">${escapeHtml(initial)}</div>
+              <div class="fu-info">
+                <div class="fu-name">${escapeHtml(name)}</div>
+                <div class="fu-meta">
+                  <span>User #${user.id}</span><span class="dot"></span>
+                  <span>${escapeHtml(user.email || '—')}</span><span class="dot"></span>
+                  <span>${escapeHtml(user.phone || '—')}</span>
+                </div>
               </div>
             </div>
+            <div class="fu-balance-row">
+              <div class="fu-balance-cell"><div class="fu-balance-label">Available Balance</div><div class="fu-balance-value">${formatMoney(user.balance || 0)}</div></div>
+              ${Number(user.held_balance || 0) > 0 ? `<div class="fu-balance-cell"><div class="fu-balance-label">Held</div><div class="fu-balance-value held">${formatMoney(user.held_balance)}</div></div>` : ''}
+            </div>
           </div>
-          <div class="fu-balance-row">
-            <div class="fu-balance-cell"><div class="fu-balance-label">Available Balance</div><div class="fu-balance-value">${formatMoney(user.balance || 0)}</div></div>
-            ${Number(user.held_balance || 0) > 0 ? `<div class="fu-balance-cell"><div class="fu-balance-label">Held</div><div class="fu-balance-value held">${formatMoney(user.held_balance)}</div></div>` : ''}
-          </div>
-        </div>
-      `;
+        `;
+      }
+      
       if (empty) empty.style.display = 'none';
       if (form) { form.classList.add('revealed'); setTimeout(() => { $('#fundAmount')?.focus(); }, 260); }
       showToast(`Found ${name}`, 'success');
     } catch (err) {
       state.fundUser = null;
-      preview.innerHTML = `
-        <div class="fund-user-card error">
-          <div class="fu-error-icon"><i class="fas fa-user-slash"></i></div>
-          <div class="fu-error-title">User not found</div>
-          <div class="fu-error-text">${escapeHtml(err.message || 'No user matches that phone number, email, or ID.')}</div>
-        </div>
-      `;
+      if (preview) {
+        preview.innerHTML = `
+          <div class="fund-user-card error">
+            <div class="fu-error-icon"><i class="fas fa-user-slash"></i></div>
+            <div class="fu-error-title">User not found</div>
+            <div class="fu-error-text">${escapeHtml(err.message || 'No user matches that phone number, email, or ID.')}</div>
+          </div>
+        `;
+      }
       if (empty) empty.style.display = 'none';
       if (form) form.classList.remove('revealed');
     } finally {
-      btn.disabled = false;
-      btn.innerHTML = originalBtn;
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnIcon;
+      }
     }
   }
   window.lookupFundUser = lookupFundUser;
@@ -3331,6 +3362,7 @@ button{font-family:inherit}
       if (state.activeTab === 'deposits' && ($('#depositSearch')?.value || '').length > 0) { clearDepositSearch(); return; }
       if (state.activeTab === 'withdrawals' && ($('#withdrawalSearch')?.value || '').length > 0) { clearWithdrawalSearch(); return; }
       if (state.activeTab === 'archived' && ($('#archSearch')?.value || '').length > 0) { clearArchSearch(); return; }
+      if (state.activeTab === 'fund' && ($('#fundLookupQuery')?.value || '').length > 0) { clearFundSearch(); return; }
       if (state.withdrawApprovePending || state.withdrawRejectPending || state.depositApprovePending || state.depositRejectPending) return;
       closeRangeSheet(); closeTypeSheet(); closeViewModal(); closeDatashopWallet();
       closeTxnModal();
