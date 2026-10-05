@@ -21,6 +21,8 @@ import adminRoutes       from './routes/admin.routes.js';
 import walletAdminRoutes from './routes/walletAdmin.routes.js';
 import webhookRoutes     from './routes/webhook.routes.js';
 import pricingRoutes     from './routes/pricing.routes.js';
+import virtualAccountRoutes from './routes/virtualAccount.routes.js';
+import monnifyWebhookRoutes from './routes/monnifyWebhook.routes.js';
 
 import { startCatalogSyncJob }     from './jobs/catalogSync.job.js';
 import { startAirtimeStatusJob }   from './jobs/airtime-status.job.js';
@@ -131,6 +133,8 @@ app.use('/api/v1/data',         dataRoutes);
 app.use('/api/v1/airtime',      airtimeRoutes);
 app.use('/api/v1/wallet/admin', walletAdminRoutes);
 app.use('/api/v1/wallet',       walletRoutes);
+app.use('/api/v1/wallet/virtual-account', virtualAccountRoutes);
+app.use('/api/v1/webhooks',     monnifyWebhookRoutes);
 app.use('/api/v1/admin',        adminRoutes);
 app.use('/api/v1/webhooks',     webhookRoutes);
 app.use('/api/v1/admin/pricing', pricingRoutes);
