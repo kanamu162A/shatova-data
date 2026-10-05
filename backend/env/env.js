@@ -97,6 +97,13 @@ export const env = Object.freeze({
 
    DATASHOP_WEBHOOK_SECRET: process.env.DATASHOP_WEBHOOK_SECRET || '',
 
+  // Monnify virtual accounts
+  MONNIFY_BASE_URL: process.env.MONNIFY_BASE_URL || 'https://sandbox.monnify.com',
+  MONNIFY_API_KEY: process.env.MONNIFY_API_KEY || '',
+  MONNIFY_SECRET_KEY: process.env.MONNIFY_SECRET_KEY || '',
+  MONNIFY_CONTRACT_CODE: process.env.MONNIFY_CONTRACT_CODE || '',
+  hasMonnify: Boolean(process.env.MONNIFY_API_KEY && process.env.MONNIFY_SECRET_KEY && process.env.MONNIFY_CONTRACT_CODE),
+
   // CORS allow-list — comma-separated. Includes Live Server defaults.
   CORS_ORIGINS: (process.env.CORS_ORIGINS ||
     'http://localhost:3000,http://localhost:5500,http://127.0.0.1:5500,http://localhost:5173'
