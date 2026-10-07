@@ -1404,7 +1404,639 @@ button{font-family:inherit}
   input, textarea, select{font-size:16px !important}
   .user-search-field input, .section-search-field input{font-size:16px !important}
 }
+
+/* ============================================================
+   SHATOVA ADMIN — PROFESSIONAL RESPONSIVE V2
+   Mobile + tablet + desktop polish, hover borders, depth,
+   premium notification center and admin alert state.
+   ============================================================ */
+
+:root{
+  --admin-glow: rgba(10,69,52,.18);
+  --admin-line: rgba(10,69,52,.16);
+  --admin-line-strong: rgba(10,69,52,.32);
+  --admin-focus: 0 0 0 4px rgba(10,69,52,.09);
+  --admin-card-radius: 16px;
+}
+
+body{
+  background:
+    radial-gradient(circle at 12% 0%, rgba(34,197,94,.035), transparent 28%),
+    radial-gradient(circle at 92% 12%, rgba(10,69,52,.035), transparent 30%),
+    var(--bg-main);
+}
+
+[data-theme="dark"] body{
+  background:
+    radial-gradient(circle at 12% 0%, rgba(34,197,94,.045), transparent 28%),
+    radial-gradient(circle at 92% 12%, rgba(10,69,52,.08), transparent 30%),
+    var(--bg-main);
+}
+
+/* Stronger premium hover line on cards/panels */
+.stat-card,.panel,.timeframe-bar,.user-card-side,.type-sheet-item,
+.section-search-field,.section-search-pill,.row-item,.page-btn,.icon-btn,
+.fund-form-input,.mobile-nav,.drawer{
+  position:relative;
+}
+
+.stat-card:hover,.panel:hover,.timeframe-bar:hover,.user-card-side:hover,
+.type-sheet-item:hover,.section-search-field:hover,.section-search-pill:hover,
+.page-btn:hover:not(:disabled),.icon-btn:hover{
+  border-color:var(--admin-line-strong);
+}
+
+.stat-card::after,.panel::after,.timeframe-bar::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .24s ease;
+  box-shadow:inset 0 0 0 1px rgba(34,197,94,.11);
+}
+.stat-card:hover::after,.panel:hover::after,.timeframe-bar:hover::after{
+  opacity:1;
+}
+
+.stat-card,.panel{
+  border-radius:var(--admin-card-radius);
+}
+
+/* Better desktop content density */
+@media (min-width:1200px){
+  :root{--sidebar-w:274px;--header-h:64px}
+  .content{max-width:1580px;padding:28px 30px 40px}
+  .topbar{padding:0 30px}
+  .stats-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+  .stat-card{padding:20px 22px}
+  .panel{margin-bottom:24px}
+  .row-item{padding:16px 24px}
+}
+
+@media (min-width:1600px){
+  .content{max-width:1680px;padding-left:38px;padding-right:38px}
+}
+
+/* Tablet */
+@media (min-width:601px) and (max-width:1100px){
+  :root{--sidebar-w:224px}
+  .sidebar{padding:18px 10px}
+  .nav-item{padding:10px 9px;font-size:12px}
+  .content{padding:20px}
+  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topbar{padding:0 18px}
+}
+
+/* Mobile: true app-like layout */
+@media (max-width:900px){
+  .app{display:block;min-height:100dvh}
+  .sidebar{display:none}
+  .main-area{padding-top:58px;min-height:100dvh}
+  .topbar{
+    left:0;right:0;height:58px;padding:0 12px;
+    border-bottom:1px solid var(--border);
+  }
+  .topbar .page-title{font-size:14px}
+  .topbar .page-sub{font-size:10px}
+  .menu-toggle{display:inline-flex;width:36px;height:36px}
+  .topbar .actions{gap:5px}
+  .topbar .actions .btn-datashop{display:none}
+  .content{padding:14px 12px 116px}
+  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+  .stat-card{padding:14px;border-radius:14px}
+  .stat-card .stat-icon{width:36px;height:36px;border-radius:10px;font-size:13px}
+  .stat-value{font-size:19px}
+  .stat-label{font-size:9px}
+  .stat-sub{font-size:10px;margin-top:6px}
+  .panel{border-radius:14px;margin-bottom:14px}
+  .panel-head{padding:14px 15px}
+  .panel-body{padding:14px 15px}
+  .panel-head h3{font-size:13px}
+  .section-search-hero{padding:15px}
+  .section-search-inner{gap:8px}
+  .section-search-field{min-width:100%;height:48px;padding:0 15px}
+  .section-search-pill{height:46px;padding:0 11px}
+  .row-item{
+    grid-template-columns:42px minmax(0,1fr);
+    gap:10px;padding:13px 14px;
+  }
+  .row-avatar{width:42px;height:42px;border-radius:12px}
+  .row-right{
+    grid-column:2;justify-content:space-between;width:100%;
+    gap:8px;min-width:0;flex-wrap:wrap;
+  }
+  .row-amount{text-align:left;font-size:13px}
+  .row-actions{margin-left:auto}
+  .row-actions button{height:34px;min-width:34px;padding:0 9px}
+  .row-actions button .label{display:inline}
+  .pagination-controls{margin-left:0}
+  .panel-footer{padding:12px 14px}
+  .sheet{max-width:none;border-radius:20px 20px 0 0}
+  .fund-form-container{padding:18px 15px 26px}
+  .fund-actions-row{flex-direction:column}
+}
+
+/* Very small phones */
+@media (max-width:390px){
+  .content{padding-left:9px;padding-right:9px}
+  .stats-grid{gap:8px}
+  .stat-card{padding:12px}
+  .stat-value{font-size:17px}
+  .mobile-nav{left:9px;right:9px;bottom:9px}
+  .mobile-nav .nav-item span{font-size:9px}
+}
+
+/* Landscape phones */
+@media (max-width:900px) and (orientation:landscape){
+  .content{padding-bottom:92px}
+  .mobile-nav{bottom:7px}
+}
+
+/* Touch feedback */
+@media (hover:none){
+  .stat-card:active,.panel:active,.row-item:active,.nav-item:active{
+    transform:scale(.995);
+  }
+}
+
+/* ============================================================
+   ADMIN ALERT CENTER
+   ============================================================ */
+.admin-alert-button{
+  position:relative;
+  width:40px;height:40px;border-radius:11px;
+  border:1px solid var(--border);
+  background:var(--bg-card);color:var(--text-secondary);
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:var(--transition);
+  box-shadow:var(--shadow-xs);
+}
+.admin-alert-button:hover{
+  color:var(--primary-dark);
+  border-color:var(--admin-line-strong);
+  background:var(--primary-light);
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-hover-light);
+}
+.admin-alert-button.has-alert{
+  color:var(--danger-dark);
+  border-color:rgba(239,68,68,.28);
+  animation:adminBellPulse 1.1s ease-in-out infinite;
+}
+.admin-alert-button i{font-size:14px}
+.admin-alert-count{
+  position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;
+  padding:0 5px;border-radius:999px;background:var(--danger);
+  color:#fff;border:2px solid var(--bg-card);
+  font-size:9px;font-weight:900;display:none;
+  align-items:center;justify-content:center;
+  box-shadow:0 4px 10px rgba(239,68,68,.3);
+}
+.admin-alert-count.visible{display:flex}
+@keyframes adminBellPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.12)}
+  50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}
+}
+
+.admin-alert-panel{
+  position:fixed;z-index:1800;
+  top:72px;right:22px;width:min(430px,calc(100vw - 24px));
+  background:var(--bg-card);border:1px solid var(--border-strong);
+  border-radius:18px;box-shadow:var(--shadow-xl);
+  overflow:hidden;opacity:0;visibility:hidden;
+  transform:translateY(-10px) scale(.98);
+  transition:opacity .2s ease,transform .2s ease,visibility .2s ease;
+}
+.admin-alert-panel.open{
+  opacity:1;visibility:visible;transform:translateY(0) scale(1);
+}
+.admin-alert-head{
+  padding:15px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.admin-alert-title{font-size:13px;font-weight:900;display:flex;align-items:center;gap:8px}
+.admin-alert-title i{color:var(--danger)}
+.admin-alert-status{
+  font-size:9px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--success-dark);background:var(--success-light);
+  padding:4px 8px;border-radius:999px;
+}
+.admin-alert-list{max-height:430px;overflow:auto}
+.admin-alert-item{
+  padding:13px 15px;border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:38px 1fr auto;gap:10px;
+  transition:background .18s ease;
+}
+.admin-alert-item:hover{background:var(--bg-hover)}
+.admin-alert-item:last-child{border-bottom:0}
+.admin-alert-icon{
+  width:38px;height:38px;border-radius:11px;display:flex;
+  align-items:center;justify-content:center;
+  background:var(--danger-light);color:var(--danger-dark);
+}
+.admin-alert-item.deposit .admin-alert-icon{background:var(--success-light);color:var(--success-dark)}
+.admin-alert-item.withdrawal .admin-alert-icon{background:var(--warning-light);color:var(--warning-dark)}
+.admin-alert-copy{min-width:0}
+.admin-alert-copy strong{
+  display:block;font-size:12px;font-weight:850;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.admin-alert-copy span{
+  display:block;font-size:10.5px;color:var(--text-muted);
+  margin-top:3px;line-height:1.45;
+}
+.admin-alert-amount{font-size:12px;font-weight:900;color:var(--text);white-space:nowrap}
+.admin-alert-actions{
+  grid-column:2 / -1;display:flex;gap:7px;margin-top:2px;
+}
+.admin-alert-actions button{
+  height:31px;padding:0 10px;border-radius:8px;
+  border:1px solid var(--border);background:var(--bg-card);
+  font:700 10.5px inherit;color:var(--text-secondary);cursor:pointer;
+  transition:var(--transition);
+}
+.admin-alert-actions button:hover{
+  border-color:var(--primary);color:var(--primary-dark);
+  background:var(--primary-light);transform:translateY(-1px);
+}
+.admin-alert-actions .primary{
+  background:var(--primary-gradient);color:#fff;border-color:transparent;
+}
+.admin-alert-empty{padding:34px 20px;text-align:center;color:var(--text-muted)}
+.admin-alert-empty i{font-size:26px;opacity:.45;margin-bottom:10px}
+.admin-alert-empty strong{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px}
+.admin-alert-empty span{font-size:10.5px}
+
+.admin-alert-backdrop{
+  position:fixed;inset:0;z-index:1799;background:rgba(3,10,8,.28);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:.2s ease;
+}
+.admin-alert-backdrop.open{opacity:1;visibility:visible}
+
+.admin-alert-setup{
+  position:fixed;left:18px;bottom:18px;z-index:1700;
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  border:1px solid var(--border);border-radius:12px;
+  background:var(--bg-card);box-shadow:var(--shadow-md);
+}
+.admin-alert-setup button{
+  border:0;background:var(--primary-gradient);color:#fff;
+  border-radius:8px;padding:8px 11px;font:800 10px inherit;cursor:pointer;
+}
+.admin-alert-setup span{font-size:9.5px;color:var(--text-muted)}
+.admin-alert-setup.hidden{display:none}
+
+.admin-alert-toast{
+  position:fixed;z-index:1900;right:18px;top:82px;
+  width:min(390px,calc(100vw - 24px));
+  background:var(--bg-card);border:1px solid rgba(239,68,68,.35);
+  border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.18);
+  padding:13px;display:grid;grid-template-columns:42px 1fr;gap:10px;
+  animation:alertToastIn .34s var(--ease-out);
+}
+.admin-alert-toast .big-icon{
+  width:42px;height:42px;border-radius:12px;background:var(--danger-light);
+  color:var(--danger-dark);display:flex;align-items:center;justify-content:center;
+  animation:adminBellPulse 1s infinite;
+}
+.admin-alert-toast strong{font-size:12px;font-weight:900;display:block}
+.admin-alert-toast p{font-size:10.5px;color:var(--text-muted);margin-top:3px;line-height:1.4}
+@keyframes alertToastIn{
+  from{opacity:0;transform:translateY(-12px) scale(.96)}
+  to{opacity:1;transform:none}
+}
+
+@media (max-width:900px){
+  .admin-alert-panel{top:64px;right:9px;width:calc(100vw - 18px)}
+  .admin-alert-toast{right:9px;top:66px;width:calc(100vw - 18px)}
+  .admin-alert-setup{left:9px;bottom:92px}
+}
+
 </style>
+
+<script>
+/* ============================================================
+   SHATOVA ADMIN — ALERT / SOUND / RESPONSIVE ENHANCEMENT
+   This layer keeps the existing dashboard APIs and actions.
+   ============================================================ */
+(function(){
+  'use strict';
+
+  const A = {
+    seen: new Set(),
+    initialized: false,
+    soundReady: false,
+    audio: null,
+    panelOpen: false,
+    alerts: [],
+    maxAlerts: 30,
+    monitorBusy: false
+  };
+
+  const $a = (s) => document.querySelector(s);
+
+  function money(v){
+    const n = Number(v || 0);
+    try { return new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:2}).format(n); }
+    catch(_) { return '₦' + n.toLocaleString(); }
+  }
+
+  function esc(v){
+    const d=document.createElement('div'); d.textContent=String(v ?? ''); return d.innerHTML;
+  }
+
+  function itemId(x,type){
+    return `${type}:${String(x?.id ?? x?.reference ?? x?.tx_ref ?? x?.created_at ?? Math.random())}`;
+  }
+
+  function isPending(x){
+    if(!x) return false;
+    const s=String(x.status ?? x.state ?? x.payment_status ?? x.transaction_status ?? '').toLowerCase().trim();
+    return ['pending','processing','initiated','awaiting','in progress','in_progress','queued','new'].includes(s);
+  }
+
+  function getName(x){
+    return x?.user_name || x?.name || x?.user_email || x?.email || 'A Shatova user';
+  }
+
+  function getAmountSafe(x){
+    if(typeof window.getAmount === 'function') return Number(window.getAmount(x) || 0);
+    return Number(x?.amount || x?.value || x?.total || 0);
+  }
+
+  function ensureAlertUI(){
+    if(document.getElementById('shatovaAdminAlertUI')) return;
+
+    const wrap=document.createElement('div');
+    wrap.id='shatovaAdminAlertUI';
+    wrap.innerHTML=`
+      <div class="admin-alert-backdrop" id="adminAlertBackdrop" onclick="window.shatovaAlerts.close()"></div>
+      <div class="admin-alert-panel" id="adminAlertPanel" role="dialog" aria-label="Admin alerts">
+        <div class="admin-alert-head">
+          <div class="admin-alert-title"><i class="fas fa-bell"></i> Admin alerts</div>
+          <div class="admin-alert-status" id="adminAlertLive">Live monitoring</div>
+        </div>
+        <div class="admin-alert-list" id="adminAlertList"></div>
+      </div>
+      <div class="admin-alert-setup" id="adminAlertSetup">
+        <span><i class="fas fa-volume-high"></i> Admin approval alerts</span>
+        <button type="button" onclick="window.shatovaAlerts.enable()">Enable sound</button>
+      </div>
+    `;
+    document.body.appendChild(wrap);
+
+    const actions=document.querySelector('.topbar .actions');
+    if(actions && !document.getElementById('adminAlertButton')){
+      const b=document.createElement('button');
+      b.id='adminAlertButton';
+      b.className='admin-alert-button';
+      b.title='Admin approval alerts';
+      b.setAttribute('aria-label','Admin approval alerts');
+      b.innerHTML='<i class="fas fa-bell"></i><span class="admin-alert-count" id="adminAlertCount">0</span>';
+      b.onclick=()=>window.shatovaAlerts.toggle();
+      actions.insertBefore(b,actions.firstChild);
+    }
+
+    renderAlerts();
+  }
+
+  function renderAlerts(){
+    const list=document.getElementById('adminAlertList');
+    const count=document.getElementById('adminAlertCount');
+    const btn=document.getElementById('adminAlertButton');
+    if(!list) return;
+
+    const total=A.alerts.length;
+    if(count){
+      count.textContent=total>99?'99+':String(total);
+      count.classList.toggle('visible',total>0);
+    }
+    if(btn) btn.classList.toggle('has-alert',total>0);
+
+    if(!total){
+      list.innerHTML=`
+        <div class="admin-alert-empty">
+          <i class="fas fa-shield-check"></i>
+          <strong>No approval required</strong>
+          <span>New deposits and withdrawals will appear here automatically.</span>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML=A.alerts.map(a=>`
+      <div class="admin-alert-item ${esc(a.type)}" data-alert-id="${esc(a.id)}">
+        <div class="admin-alert-icon"><i class="fas ${a.type==='withdrawal'?'fa-arrow-up-right-dots':'fa-arrow-down-to-line'}"></i></div>
+        <div class="admin-alert-copy">
+          <strong>${esc(a.title)}</strong>
+          <span>${esc(a.message)}</span>
+        </div>
+        <div class="admin-alert-amount">${esc(money(a.amount))}</div>
+        <div class="admin-alert-actions">
+          <button class="primary" onclick="window.shatovaAlerts.review('${esc(a.rawId)}','${esc(a.type)}')"><i class="fas fa-eye"></i> Review</button>
+          <button onclick="window.shatovaAlerts.dismiss('${esc(a.id)}')"><i class="fas fa-check"></i> Dismiss</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function pushAlert(x,type){
+    const id=itemId(x,type);
+    if(A.seen.has(id)) return;
+    A.seen.add(id);
+
+    const amount=getAmountSafe(x);
+    const name=getName(x);
+    const title=type==='withdrawal'?'Withdrawal approval required':'Deposit approval required';
+    const message=type==='withdrawal'
+      ? `${name} requested a withdrawal. Review and approve or reject it.`
+      : `${name} submitted a deposit. Review the receipt and credit or reject it.`;
+
+    A.alerts.unshift({id,rawId:String(x?.id ?? x?.reference ?? ''),type,title,message,amount,createdAt:Date.now()});
+    if(A.alerts.length>A.maxAlerts) A.alerts.length=A.maxAlerts;
+    renderAlerts();
+    attentionAlert(title,message,type);
+  }
+
+  function attentionAlert(title,message,type){
+    // Browser Notification (only after permission is granted).
+    try{
+      if('Notification' in window && Notification.permission==='granted'){
+        const n=new Notification(`Shatova Admin • ${title}`,{
+          body:message,
+          tag:'shatova-admin-approval',
+          requireInteraction:true
+        });
+        n.onclick=()=>{window.focus(); n.close();};
+      }
+    }catch(_){}
+
+    loudAdminSound();
+
+    const old=document.querySelector('.admin-alert-toast');
+    if(old) old.remove();
+    const t=document.createElement('div');
+    t.className='admin-alert-toast';
+    t.innerHTML=`
+      <div class="big-icon"><i class="fas fa-bell"></i></div>
+      <div>
+        <strong>${esc(title)}</strong>
+        <p>${esc(message)}</p>
+      </div>`;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),9000);
+  }
+
+  /*
+   * Browsers cannot force the user's physical/system volume above the OS level.
+   * We use a strong Web Audio alarm at gain 0.9 and repeat it, while respecting
+   * the browser's audio-permission rules.
+   */
+  function loudAdminSound(){
+    if(!A.soundReady) return;
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;
+      if(!C) return;
+      if(!A.audio) A.audio=new C();
+      const ctx=A.audio;
+      if(ctx.state==='suspended') ctx.resume();
+
+      const start=ctx.currentTime;
+      const tones=[
+        [880,0.00,0.20],[1175,0.22,0.20],[1568,0.44,0.28],
+        [880,1.00,0.20],[1175,1.22,0.20],[1568,1.44,0.38]
+      ];
+      tones.forEach(([freq,offset,dur])=>{
+        const o=ctx.createOscillator();
+        const g=ctx.createGain();
+        const f=ctx.createBiquadFilter();
+        f.type='lowpass'; f.frequency.value=4200;
+        o.type='sine'; o.frequency.value=freq;
+        o.connect(f); f.connect(g); g.connect(ctx.destination);
+        const t=start+offset;
+        g.gain.setValueAtTime(0.0001,t);
+        g.gain.exponentialRampToValueAtTime(0.9,t+0.025);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+        o.start(t); o.stop(t+dur+0.03);
+      });
+    }catch(e){ console.warn('[Shatova alerts] sound:',e); }
+  }
+
+  async function enable(){
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;
+      if(C){
+        A.audio=A.audio||new C();
+        await A.audio.resume();
+        // Prime the audio graph during a user gesture.
+        const o=A.audio.createOscillator(), g=A.audio.createGain();
+        g.gain.value=0.00001; o.connect(g); g.connect(A.audio.destination);
+        o.start(); o.stop(A.audio.currentTime+0.03);
+      }
+      A.soundReady=true;
+      if('Notification' in window && Notification.permission==='default'){
+        try{ await Notification.requestPermission(); }catch(_){}
+      }
+      const setup=document.getElementById('adminAlertSetup');
+      if(setup) setup.classList.add('hidden');
+      const live=document.getElementById('adminAlertLive');
+      if(live) live.textContent='Sound enabled';
+      showSmallToast('Admin sound alerts are enabled.');
+    }catch(e){
+      showSmallToast('Browser blocked sound. Click Enable sound again.');
+    }
+  }
+
+  function showSmallToast(msg){
+    if(typeof window.showToast==='function') window.showToast(msg,'info');
+  }
+
+  function toggle(){
+    const p=document.getElementById('adminAlertPanel');
+    const b=document.getElementById('adminAlertBackdrop');
+    if(!p) return;
+    A.panelOpen=!p.classList.contains('open');
+    p.classList.toggle('open',A.panelOpen);
+    b?.classList.toggle('open',A.panelOpen);
+  }
+
+  function close(){
+    A.panelOpen=false;
+    document.getElementById('adminAlertPanel')?.classList.remove('open');
+    document.getElementById('adminAlertBackdrop')?.classList.remove('open');
+  }
+
+  function dismiss(id){
+    A.alerts=A.alerts.filter(x=>x.id!==id);
+    renderAlerts();
+  }
+
+  function review(id,type){
+    close();
+    if(type==='deposit'){
+      if(typeof window.switchTab==='function') window.switchTab('deposits');
+      setTimeout(()=>{
+        const dep=(window.__shatovaAdminState?.deposits||[]).find(x=>String(x.id)===String(id));
+        if(dep && typeof window.openApproveDepositModal==='function') window.openApproveDepositModal(dep.id);
+      },180);
+    }else{
+      if(typeof window.switchTab==='function') window.switchTab('withdrawals');
+      setTimeout(()=>{
+        const w=(window.__shatovaAdminState?.withdrawals||[]).find(x=>String(x.id)===String(id));
+        if(w && typeof window.openApproveModal==='function') window.openApproveModal(w.id);
+      },180);
+    }
+  }
+
+  function scan(){
+    if(A.monitorBusy) return;
+    A.monitorBusy=true;
+    try{
+      const deposits=window.__shatovaAdminState?.deposits||[];
+      const withdrawals=window.__shatovaAdminState?.withdrawals||[];
+
+      const pendingDeposits=deposits.filter(isPending);
+      const pendingWithdrawals=withdrawals.filter(isPending);
+
+      // First scan: remember current pending records without alarming the admin.
+      if(!A.initialized){
+        pendingDeposits.forEach(x=>A.seen.add(itemId(x,'deposit')));
+        pendingWithdrawals.forEach(x=>A.seen.add(itemId(x,'withdrawal')));
+        A.initialized=true;
+      }else{
+        pendingDeposits.forEach(x=>pushAlert(x,'deposit'));
+        pendingWithdrawals.forEach(x=>pushAlert(x,'withdrawal'));
+      }
+      renderAlerts();
+    }finally{
+      A.monitorBusy=false;
+    }
+  }
+
+  function start(){
+    ensureAlertUI();
+    // Existing dashboard refreshes every 20 seconds. This watcher notices
+    // newly-loaded pending records without creating another API request.
+    setInterval(scan,3000);
+    setTimeout(scan,2500);
+
+    document.addEventListener('visibilitychange',()=>{
+      if(!document.hidden) scan();
+    });
+  }
+
+  window.shatovaAlerts={enable,toggle,close,dismiss,review,scan};
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',start,{once:true});
+  }else{
+    start();
+  }
+})();
+</script>
+
 </head>
 <body>
 
@@ -2043,6 +2675,10 @@ button{font-family:inherit}
     seenDepositIds: new Set(),
     notifInitialized: false,
   };
+
+  // Expose the live dashboard state to the optional professional alert layer.
+  // Existing dashboard functions still use the same internal state object.
+  window.__shatovaAdminState = state;
 
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
