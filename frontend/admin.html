@@ -965,10 +965,8 @@ button:not(:disabled){cursor:pointer}
  .user-search-field{height:52px}.fund-actions-row{flex-direction:column}
 }
 
-
 /* ============================================================
    SHATOVA V3 — SENIOR UI SEARCH / EMPTY STATES
-   Cleaner desktop + mobile search controls
 ============================================================ */
 .section-search-hero{padding:20px 24px 16px;background:linear-gradient(180deg,#fbfdfc 0%,#f7faf8 100%);border-bottom:1px solid rgba(10,69,52,.10)}
 .section-search-inner{gap:12px;align-items:center}
@@ -1028,6 +1026,115 @@ button:not(:disabled){cursor:pointer}
   .fund-not-found-action{align-self:center}
 }
 
+/* ============================================================
+   UNIFIED SEARCH PAGE LAYOUT (Transactions / Deposits / Withdrawals)
+============================================================ */
+.txn-search-hero{padding:30px 32px 26px;background:linear-gradient(160deg,rgba(10,69,52,0.03) 0%,rgba(10,69,52,0.008) 55%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.txn-search-hero::before{content:'';position:absolute;top:-100px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.05) 0%,transparent 65%);pointer-events:none}
+.txn-search-hero::after{content:'';position:absolute;bottom:-120px;left:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,0.035) 0%,transparent 70%);pointer-events:none}
+.txn-search-inner{position:relative;z-index:1;max-width:760px;margin:0 auto}
+.txn-search-headline{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.txn-search-headline-icon{width:48px;height:48px;border-radius:14px;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;flex-shrink:0;box-shadow:0 8px 22px -6px rgba(10,69,52,0.45),var(--shadow-inset-top)}
+.txn-search-headline-text{flex:1;min-width:0}
+.txn-search-headline-title{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-0.35px;margin-bottom:3px;line-height:1.2}
+.txn-search-headline-sub{font-size:12px;color:var(--text-muted);font-weight:500;line-height:1.4}
+.txn-search-field{position:relative;display:flex;align-items:center;background:var(--bg-card);border:1.5px solid rgba(10,69,52,0.22);border-radius:999px;padding:0 20px;height:56px;box-shadow:0 1px 2px rgba(15,23,42,0.03),0 8px 20px -10px rgba(10,69,52,0.08);transition:all 0.24s cubic-bezier(0.4,0,0.2,1)}
+.txn-search-field:hover{border-color:rgba(10,69,52,0.38)}
+.txn-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,0.08),0 10px 28px -12px rgba(10,69,52,0.22);transform:translateY(-1px)}
+.txn-search-field > i.fa-search{color:var(--primary);font-size:15px;margin-right:14px;transition:all 0.22s ease}
+.txn-search-field:focus-within > i.fa-search{color:var(--primary-dark);transform:scale(1.08)}
+.txn-search-field input{flex:1;border:none;outline:none;background:transparent;font-size:14.5px;font-weight:500;color:var(--text);font-family:inherit;height:100%;letter-spacing:-0.1px;min-width:0}
+.txn-search-field input::placeholder{color:var(--text-muted);font-weight:400}
+.txn-search-clear{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;margin-left:8px;transition:all 0.18s ease;flex-shrink:0}
+.txn-search-clear.visible{display:inline-flex}
+.txn-search-clear:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
+.txn-search-chips{display:flex;align-items:center;gap:6px;margin-top:16px;flex-wrap:wrap}
+.txn-search-chips-label{font-size:10.5px;font-weight:800;color:var(--text-muted);letter-spacing:0.7px;text-transform:uppercase;margin-right:4px}
+.txn-search-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);font-size:11.5px;font-weight:600;cursor:pointer;transition:all 0.18s ease;font-family:inherit}
+.txn-search-chip i{font-size:9.5px;color:var(--text-muted);transition:all 0.18s ease}
+.txn-search-chip:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);transform:translateY(-1px);box-shadow:0 3px 10px -3px rgba(10,69,52,0.12)}
+.txn-search-chip:hover i{color:var(--primary)}
+.txn-search-chip.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark)}
+.txn-search-chip.active i{color:var(--primary)}
+
+.txn-results-bar{padding:14px 26px;background:linear-gradient(180deg,rgba(10,69,52,0.012),transparent);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:46px}
+.txn-results-bar.is-empty{background:transparent}
+.txn-results-count{font-size:12.5px;color:var(--text-secondary);font-weight:600;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.txn-results-count strong{color:var(--text);font-weight:800;font-size:13.5px}
+.txn-results-count .search-term{color:var(--primary-dark);font-weight:800;background:var(--primary-light);padding:2px 8px;border-radius:5px;font-family:'SF Mono',Menlo,monospace;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.txn-results-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.3px}
+.txn-results-live .live-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 3px rgba(16,185,129,0.15);animation:pulseLive 1.6s ease-in-out infinite}
+
+.txn-card-list{display:flex;flex-direction:column;padding:14px;gap:8px}
+.txn-card{display:grid;grid-template-columns:54px 1fr auto;gap:16px;align-items:center;padding:15px 17px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);position:relative}
+.txn-card:hover{border-color:rgba(10,69,52,0.2);box-shadow:0 8px 22px -10px rgba(10,69,52,0.1),0 2px 6px rgba(10,69,52,0.04);transform:translateY(-2px)}
+.txn-card:active{transform:translateY(0)}
+.txn-card.static{cursor:default}
+.txn-card.static:hover{transform:none;box-shadow:var(--shadow-xs);border-color:var(--border)}
+.txn-card-avatar{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;letter-spacing:-0.5px;flex-shrink:0;position:relative;box-shadow:0 4px 12px -2px rgba(15,23,42,0.18),inset 0 1px 0 rgba(255,255,255,0.25);overflow:hidden}
+.txn-card-avatar.net-mtn{background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
+.txn-card-avatar.net-airtel{background:linear-gradient(135deg,#FF1A1A 0%,#D40000 55%,#A80000 100%)}
+.txn-card-avatar.net-glo{background:linear-gradient(135deg,#00C55E 0%,#00A651 55%,#008A40 100%)}
+.txn-card-avatar.net-t2{background:linear-gradient(135deg,#00856A 0%,#006B54 55%,#005240 100%)}
+.txn-card-avatar.net-generic{background:linear-gradient(135deg,#0d5a44 0%,#0a4534 45%,#062f24 100%)}
+.txn-card-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
+.txn-card-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.txn-card-avatar.txn-refund{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
+.txn-card-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
+.txn-card-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
+.txn-card-avatar svg.net-shape{width:100%;height:100%;display:block}
+.txn-card-info{min-width:0;display:flex;flex-direction:column;gap:6px}
+.txn-card-name-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.txn-card-name{font-size:14.5px;font-weight:700;color:var(--text);letter-spacing:-0.15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.txn-card-badge{font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:6px;letter-spacing:0.5px;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px;border:1px solid transparent;white-space:nowrap}
+.txn-card-badge.success{background:var(--success-light);color:var(--success-dark);border-color:rgba(9,134,88,0.1)}
+.txn-card-badge.pending{background:var(--warning-light);color:var(--warning-dark);border-color:rgba(179,115,8,0.1)}
+.txn-card-badge.failed{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,0.1)}
+.txn-card-badge.refunded{background:var(--purple-light);color:var(--purple-dark);border-color:rgba(124,58,237,0.1)}
+.txn-card-contact{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-muted);font-weight:500;flex-wrap:wrap}
+.txn-card-contact .contact-item{display:inline-flex;align-items:center;gap:5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.txn-card-contact .contact-item i{font-size:10.5px;color:var(--text-muted);opacity:0.7;flex-shrink:0}
+.txn-card-contact .contact-item.mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:0.2px}
+.txn-card-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.txn-card-amount-pill{padding:8px 14px;border-radius:11px;background:linear-gradient(135deg,var(--primary-light),rgba(10,69,52,0.015));border:1px solid rgba(10,69,52,0.08);text-align:right;display:flex;flex-direction:column;gap:1px;min-width:100px}
+.txn-card-amount-pill.credit{background:linear-gradient(135deg,var(--success-light),rgba(16,185,129,0.015));border-color:rgba(9,134,88,0.1)}
+.txn-card-amount-pill.debit{background:linear-gradient(135deg,rgba(100,116,139,0.06),rgba(100,116,139,0.015));border-color:var(--border)}
+.txn-card-amount-label{font-size:9px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted)}
+.txn-card-amount-value{font-size:14.5px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.3px;font-variant-numeric:tabular-nums}
+.txn-card-amount-pill.credit .txn-card-amount-value{color:var(--success-dark)}
+.txn-card-amount-pill.debit .txn-card-amount-value{color:var(--text-secondary)}
+.txn-card-actions{display:flex;gap:6px}
+.txn-card-actions button{height:36px;min-width:36px;padding:0 11px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:11px;font-weight:700;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;box-shadow:var(--shadow-xs);font-family:inherit}
+.txn-card-actions button:hover{transform:translateY(-1px);box-shadow:var(--shadow-hover-light)}
+.txn-card-actions .approve{border-color:rgba(9,134,88,0.2);color:var(--success-dark)}
+.txn-card-actions .approve:hover{background:var(--success-light);border-color:var(--success-dark)}
+.txn-card-actions .reject{border-color:rgba(161,34,34,0.2);color:var(--danger-dark)}
+.txn-card-actions .reject:hover{background:var(--danger-light);border-color:var(--danger-dark)}
+.txn-card-actions .view{border-color:var(--border);color:var(--text-secondary)}
+.txn-card-actions .view:hover{background:var(--primary-light);border-color:var(--primary-dark);color:var(--primary-dark)}
+.txn-card-arrow{width:36px;height:36px;border-radius:10px;background:var(--bg-input);display:inline-flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;transition:all 0.22s ease}
+.txn-card:hover .txn-card-arrow{background:var(--primary);color:#fff;transform:translateX(3px);box-shadow:0 6px 16px -4px rgba(10,69,52,0.35)}
+
+@media (max-width:900px){
+  .txn-search-hero{padding:22px 18px 20px}
+  .txn-search-headline-icon{width:44px;height:44px;border-radius:13px;font-size:17px}
+  .txn-search-headline-title{font-size:15px}
+  .txn-search-headline-sub{font-size:11.5px}
+  .txn-search-field{height:56px;padding:0 18px;border-radius:999px}
+  .txn-search-field input{font-size:16px}
+  .txn-search-chips{margin-top:14px}
+  .txn-search-chips-label{display:none}
+  .txn-card-list{padding:12px;gap:8px}
+  .txn-card{grid-template-columns:46px 1fr;grid-template-areas:"avatar main" "right right";gap:12px;padding:14px}
+  .txn-card-avatar{grid-area:avatar;width:44px;height:44px;font-size:15px;border-radius:13px}
+  .txn-card-info{grid-area:main;gap:5px}
+  .txn-card-name{font-size:13.5px}
+  .txn-card-contact{font-size:11px;gap:8px}
+  .txn-card-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
+  .txn-card-amount-pill{padding:7px 12px;min-width:auto}
+  .txn-card-amount-value{font-size:13.5px}
+  .txn-card-actions{margin-left:auto}
+}
 </style>
 </head>
 <body>
@@ -1251,30 +1358,31 @@ button:not(:disabled){cursor:pointer}
       <!-- TRANSACTIONS -->
       <section id="tab-transactions" style="display:none;">
         <div class="panel">
-          <div class="section-search-hero">
-            <div class="section-search-inner">
-              <div class="section-search-field">
-                <i class="fas fa-search"></i>
-                <input type="text" id="txnSearch" placeholder="Search by phone, reference, or product…" oninput="onTxnSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();onTxnSearchInput();}" autocomplete="off">
-                <button class="section-search-clear" id="txnSearchClear" onclick="clearTxnSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+          <div class="txn-search-hero">
+            <div class="txn-search-inner">
+              <div class="txn-search-headline">
+                <div class="txn-search-headline-icon"><i class="fas fa-receipt"></i></div>
+                <div class="txn-search-headline-text">
+                  <div class="txn-search-headline-title">Find any transaction instantly</div>
+                  <div class="txn-search-headline-sub">Search by phone number, reference, product, or user</div>
+                </div>
               </div>
-              <button class="section-search-pill" id="txnTypePill" onclick="openTypeSheet()">
-                <span class="lead-plate"><i class="fas fa-layer-group"></i></span>
-                <span class="pill-stack"><span class="pill-label">Type</span><span class="pill-value" id="txnTypeLabel">All types</span></span>
-                <i class="fas fa-chevron-down chev"></i>
-              </button>
-              <button class="section-search-pill" id="txnRangePill" onclick="openRangeSheet()">
-                <span class="lead-plate"><i class="fas fa-calendar-alt"></i></span>
-                <span class="pill-stack"><span class="pill-label">Period</span><span class="pill-value" id="txnRangeLabel">Today</span></span>
-                <i class="fas fa-chevron-down chev"></i>
-              </button>
-            </div>
-            <div class="section-search-meta">
-              <span class="section-search-count" id="txnSearchMeta"></span>
-              <span class="section-search-hint"><i class="fas fa-magnifying-glass"></i> Type to filter instantly</span>
+              <div class="txn-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="txnSearch" placeholder="e.g. 08031234567, shatova-data-…, MTN 1GB" autocomplete="off" spellcheck="false" oninput="onTxnSearchInput()">
+                <button class="txn-search-clear" id="txnSearchClear" onclick="clearTxnSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+              </div>
+              <div class="txn-search-chips" style="margin-top:16px;gap:8px;">
+                <button class="txn-search-chip" onclick="quickTxnSearch('all')" style="padding:5px 14px;"><i class="fas fa-layer-group"></i> All types</button>
+                <button class="txn-search-chip" onclick="quickTxnSearch('airtime')" style="padding:5px 14px;"><i class="fas fa-signal"></i> Airtime</button>
+                <button class="txn-search-chip" onclick="quickTxnSearch('data')" style="padding:5px 14px;"><i class="fas fa-wifi"></i> Data</button>
+                <button class="txn-search-chip" onclick="quickTxnSearch('deposit')" style="padding:5px 14px;"><i class="fas fa-arrow-down"></i> Deposits</button>
+                <button class="txn-search-chip" onclick="quickTxnSearch('withdrawal')" style="padding:5px 14px;"><i class="fas fa-arrow-up"></i> Withdrawals</button>
+              </div>
             </div>
           </div>
-          <div class="panel-body no-pad"><div class="data-list" id="transactionsList"><div class="loading"><div class="ring"></div><p>Loading transactions…</p></div></div></div>
+          <div class="txn-results-bar is-empty" id="txnResultsBar"></div>
+          <div id="transactionsList"></div>
           <div class="panel-footer" id="transactionsPagination" style="display:none;"></div>
         </div>
       </section>
@@ -1282,25 +1390,30 @@ button:not(:disabled){cursor:pointer}
       <!-- DEPOSITS -->
       <section id="tab-deposits" style="display:none;">
         <div class="panel">
-          <div class="section-search-hero">
-            <div class="section-search-inner">
-              <div class="section-search-field">
-                <i class="fas fa-search"></i>
-                <input type="text" id="depositSearch" placeholder="Search by user, email, or reference…" oninput="onDepositSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();onDepositSearchInput();}" autocomplete="off">
-                <button class="section-search-clear" id="depositSearchClear" onclick="clearDepositSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+          <div class="txn-search-hero">
+            <div class="txn-search-inner">
+              <div class="txn-search-headline">
+                <div class="txn-search-headline-icon"><i class="fas fa-arrow-down"></i></div>
+                <div class="txn-search-headline-text">
+                  <div class="txn-search-headline-title">Find any deposit instantly</div>
+                  <div class="txn-search-headline-sub">Search by user, email, phone, or reference</div>
+                </div>
               </div>
-              <button class="section-search-pill" id="depositRangePill" onclick="openRangeSheet()">
-                <span class="lead-plate"><i class="fas fa-calendar-alt"></i></span>
-                <span class="pill-stack"><span class="pill-label">Period</span><span class="pill-value" id="depositRangeLabel">Today</span></span>
-                <i class="fas fa-chevron-down chev"></i>
-              </button>
-            </div>
-            <div class="section-search-meta">
-              <span class="section-search-count" id="depositSearchMeta"></span>
-              <span class="section-search-hint"><i class="fas fa-shield-halved"></i> Confirm bank transfers before approving</span>
+              <div class="txn-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="depositSearch" placeholder="e.g. alice@example.com, 08031234567, shatova-…" autocomplete="off" spellcheck="false" oninput="onDepositSearchInput()">
+                <button class="txn-search-clear" id="depositSearchClear" onclick="clearDepositSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+              </div>
+              <div class="txn-search-chips" style="margin-top:16px;gap:8px;">
+                <button class="txn-search-chip" onclick="quickDepositSearch('all')" style="padding:5px 14px;"><i class="fas fa-list"></i> Show all</button>
+                <button class="txn-search-chip" onclick="quickDepositSearch('pending')" style="padding:5px 14px;"><i class="fas fa-clock"></i> Pending only</button>
+                <button class="txn-search-chip" onclick="quickDepositSearch('success')" style="padding:5px 14px;"><i class="fas fa-check"></i> Successful</button>
+                <button class="txn-search-chip" onclick="quickDepositSearch('@gmail.com')" style="padding:5px 14px;"><i class="fas fa-at"></i> @gmail.com</button>
+              </div>
             </div>
           </div>
-          <div class="panel-body no-pad"><div class="data-list" id="depositsList"><div class="loading"><div class="ring"></div><p>Loading deposits…</p></div></div></div>
+          <div class="txn-results-bar is-empty" id="depositResultsBar"></div>
+          <div id="depositsList"></div>
           <div class="panel-footer" id="depositsPagination" style="display:none;"></div>
         </div>
       </section>
@@ -1308,25 +1421,30 @@ button:not(:disabled){cursor:pointer}
       <!-- WITHDRAWALS -->
       <section id="tab-withdrawals" style="display:none;">
         <div class="panel">
-          <div class="section-search-hero">
-            <div class="section-search-inner">
-              <div class="section-search-field">
-                <i class="fas fa-search"></i>
-                <input type="text" id="withdrawalSearch" placeholder="Search by user, bank, or reference…" oninput="onWithdrawalSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();onWithdrawalSearchInput();}" autocomplete="off">
-                <button class="section-search-clear" id="withdrawalSearchClear" onclick="clearWithdrawalSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+          <div class="txn-search-hero">
+            <div class="txn-search-inner">
+              <div class="txn-search-headline">
+                <div class="txn-search-headline-icon"><i class="fas fa-arrow-up"></i></div>
+                <div class="txn-search-headline-text">
+                  <div class="txn-search-headline-title">Find any withdrawal instantly</div>
+                  <div class="txn-search-headline-sub">Search by user, bank, account number, or reference</div>
+                </div>
               </div>
-              <button class="section-search-pill" id="withdrawalRangePill" onclick="openRangeSheet()">
-                <span class="lead-plate"><i class="fas fa-calendar-alt"></i></span>
-                <span class="pill-stack"><span class="pill-label">Period</span><span class="pill-value" id="withdrawalRangeLabel">Today</span></span>
-                <i class="fas fa-chevron-down chev"></i>
-              </button>
-            </div>
-            <div class="section-search-meta">
-              <span class="section-search-count" id="withdrawalSearchMeta"></span>
-              <span class="section-search-hint"><i class="fas fa-clock"></i> Approve pending payouts daily</span>
+              <div class="txn-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="withdrawalSearch" placeholder="e.g. GTBank, 0123456789, shatova-wd-…" autocomplete="off" spellcheck="false" oninput="onWithdrawalSearchInput()">
+                <button class="txn-search-clear" id="withdrawalSearchClear" onclick="clearWithdrawalSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+              </div>
+              <div class="txn-search-chips" style="margin-top:16px;gap:8px;">
+                <button class="txn-search-chip" onclick="quickWithdrawalSearch('all')" style="padding:5px 14px;"><i class="fas fa-list"></i> Show all</button>
+                <button class="txn-search-chip" onclick="quickWithdrawalSearch('pending')" style="padding:5px 14px;"><i class="fas fa-clock"></i> Pending only</button>
+                <button class="txn-search-chip" onclick="quickWithdrawalSearch('success')" style="padding:5px 14px;"><i class="fas fa-check"></i> Approved</button>
+                <button class="txn-search-chip" onclick="quickWithdrawalSearch('failed')" style="padding:5px 14px;"><i class="fas fa-ban"></i> Rejected</button>
+              </div>
             </div>
           </div>
-          <div class="panel-body no-pad"><div class="data-list" id="withdrawalsList"><div class="loading"><div class="ring"></div><p>Loading withdrawals…</p></div></div></div>
+          <div class="txn-results-bar is-empty" id="withdrawalResultsBar"></div>
+          <div id="withdrawalsList"></div>
           <div class="panel-footer" id="withdrawalsPagination" style="display:none;"></div>
         </div>
       </section>
@@ -1335,24 +1453,30 @@ button:not(:disabled){cursor:pointer}
       <section id="tab-fund" style="display:none;">
         <div class="panel">
           <div class="panel-head"><h3><i class="fas fa-hand-holding-dollar"></i> Manual Wallet Fund / Debit</h3><span class="sub">Search a user first</span></div>
-          <div class="section-search-hero" style="padding: 26px 22px 22px;">
-            <div class="fund-search-shell">
-              <div class="fund-search-title"><i class="fas fa-user-magnifying-glass"></i> Find customer account</div>
-              <div class="fund-search-row">
-                <div class="user-search-field">
-                  <i class="fas fa-search"></i>
-                  <input type="text" id="fundLookupQuery" placeholder="Phone number, email, or user ID" autocomplete="off" oninput="toggleFundClear()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
-                  <button class="user-search-clear" id="fundSearchClear" onclick="clearFundSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+          <div class="txn-search-hero" style="padding: 26px 22px 22px;">
+            <div class="txn-search-inner">
+              <div class="txn-search-headline">
+                <div class="txn-search-headline-icon"><i class="fas fa-user-magnifying-glass"></i></div>
+                <div class="txn-search-headline-text">
+                  <div class="txn-search-headline-title">Find customer account</div>
+                  <div class="txn-search-headline-sub">Search by phone number, email, or user ID</div>
                 </div>
-                <button class="search-submit-btn" id="fundLookupIconBtn" onclick="lookupFundUser()" title="Search user"><i class="fas fa-search"></i><span>Search</span></button>
               </div>
-              <div class="fund-search-help"><i class="fas fa-circle-info"></i><span>Use the customer's phone number, email address, or user ID.</span></div>
+              <div class="txn-search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="fundLookupQuery" placeholder="e.g. 08031234567, alice@example.com, 42" autocomplete="off" spellcheck="false" oninput="toggleFundClear()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
+                <button class="txn-search-clear" id="fundSearchClear" onclick="clearFundSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+              </div>
+              <div class="txn-search-chips" style="margin-top:16px;gap:8px;">
+                <button class="txn-search-chip" onclick="document.getElementById('fundLookupQuery').value='0803';toggleFundClear();lookupFundUser();" style="padding:5px 14px;"><i class="fas fa-phone"></i> 0803...</button>
+                <button class="txn-search-chip" onclick="document.getElementById('fundLookupQuery').value='@gmail.com';toggleFundClear();lookupFundUser();" style="padding:5px 14px;"><i class="fas fa-at"></i> @gmail.com</button>
+              </div>
             </div>
           </div>
           <div id="fundEmpty" class="fund-empty-premium">
             <div class="fund-empty-icon-wrapper"><i class="fas fa-user-magnifying-glass"></i></div>
             <div class="fund-empty-title">No user selected</div>
-            <div class="fund-empty-desc">Search by phone number or email above to load the user's details and unlock the funding form.</div>
+            <div class="fund-empty-desc">Search by phone number, email, or user ID above to load the user's details and unlock the funding form.</div>
           </div>
           <div id="fundForm">
             <div class="fund-form-container">
@@ -1543,6 +1667,8 @@ button:not(:disabled){cursor:pointer}
     deposits: [], withdrawals: [], transactions: [], users: [],
     userQuery: '', userHasSearched: false, totalUsers: 0,
     userResults: [], userLoading: false, userTotal: 0, userSearched: false, userSearchError: '',
+    depositStatusFilter: 'all',
+    withdrawalStatusFilter: 'all',
     datashop: { balance: 0, totalFunded: 0, totalSpent: 0, lastFunding: null, loaded: false },
     currentApprove: null, currentReject: null,
     currentApproveDeposit: null, currentRejectDeposit: null,
@@ -1998,6 +2124,10 @@ button:not(:disabled){cursor:pointer}
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (tab === 'analytics') { renderChart(); updateAnalyticsKpis(); }
     if (tab === 'users') setTimeout(() => { const input = document.getElementById('userSearch'); if (input) input.focus(); }, 150);
+    if (tab === 'transactions') setTimeout(() => { const input = document.getElementById('txnSearch'); if (input) input.focus(); }, 150);
+    if (tab === 'deposits') setTimeout(() => { const input = document.getElementById('depositSearch'); if (input) input.focus(); }, 150);
+    if (tab === 'withdrawals') setTimeout(() => { const input = document.getElementById('withdrawalSearch'); if (input) input.focus(); }, 150);
+    if (tab === 'fund') setTimeout(() => { const input = document.getElementById('fundLookupQuery'); if (input) input.focus(); }, 150);
     if (tab === 'archived') loadArchived(1);
     if (tab === 'mismatches') loadMismatches();
     if (tab === 'drift') loadDrift();
@@ -2453,40 +2583,74 @@ button:not(:disabled){cursor:pointer}
     const total = list.reduce((s, t) => s + getAmount(t), 0);
     const typeLabel = TXN_TYPES[state.txnFilter]?.label || 'All types';
 
-    const metaEl = $('#txnSearchMeta');
-    if (metaEl) {
-      const pieces = [];
-      pieces.push(`<i class="fas fa-receipt" style="color:var(--primary);"></i> <strong>${list.length}</strong> transaction${list.length === 1 ? '' : 's'}`);
-      if (state.txnFilter !== 'all') pieces.push(`<span style="color:var(--primary-dark);font-weight:700;">${escapeHtml(typeLabel)}</span>`);
-      if (search) pieces.push(`for <span class="search-term">${escapeHtml(search)}</span>`);
-      pieces.push(`· ${formatMoney(total, true)}`);
-      metaEl.innerHTML = pieces.join(' ');
+    const bar = $('#txnResultsBar');
+    const c = $('#transactionsList');
+    const pag = $('#transactionsPagination');
+
+    if (bar) {
+      if (!state.transactions.length && !search) {
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-circle-info" style="color:var(--primary);"></i> Start typing to search transactions</span>`;
+        bar.classList.add('is-empty');
+      } else if (search) {
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> ${list.length} match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span> · ${formatMoney(total, true)}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
+        bar.classList.remove('is-empty');
+      } else {
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-receipt" style="color:var(--primary);"></i> <strong>${list.length}</strong> transaction${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
+        bar.classList.remove('is-empty');
+      }
     }
 
-    const c = $('#transactionsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
     const currentPage = Math.min(Math.max(state.txnPage, 1), totalPages);
     state.txnPage = currentPage;
+
     if (!totalItems) {
-      const msg = state.txnFilter === 'all' ? 'No transactions yet for this period.' : `No ${typeLabel.toLowerCase()} found in this period.`;
-      c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-receipt"></i></div><div class="title">No transactions</div><div class="desc">${escapeHtml(msg)}</div></div>`;
-      const pag = $('#transactionsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
+      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-receipt"></i></div><div class="user-empty-title">No transactions found</div><div class="user-empty-text">Nothing matches the current filter or search. Try a different keyword or clear the search.</div></div>`;
+      if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
       return;
     }
+
     const slice = list.slice((currentPage - 1) * perPage, currentPage * perPage);
-    c.innerHTML = slice.map(t => {
-      const meta = t.metadata || {}; const kind = txnKind(t); const phone = t.phone || meta.phone || t.recipient || '—'; const amount = getAmount(t); const st = getStatus(t); const product = meta.product_name || t.description || t.product || `${txnKindLabel(kind)} Transaction`;
-      return `<div class="row-item" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${txnKindAvatarClass(t)}">${txnKindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${escapeHtml(product)}</div><div class="row-sub"><span>${escapeHtml(phone)}</span><span class="dot"></span><span class="ref">${escapeHtml(t.reference || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${formatMoney(amount)}<small>${timeAgo(getDate(t))}</small></div></div></div>`;
-    }).join('');
+    c.innerHTML = `<div class="txn-card-list">${slice.map(t => {
+      const meta = t.metadata || {};
+      const kind = txnKind(t);
+      const phone = t.phone || meta.phone || t.recipient || '—';
+      const amount = getAmount(t);
+      const st = getStatus(t);
+      const product = meta.product_name || t.description || t.product || `${txnKindLabel(kind)} Transaction`;
+      const ref = t.reference || t.tx_ref || '—';
+      const isCredit = ['deposit', 'refund', 'manual_fund'].includes(kind);
+      return `<div class="txn-card" onclick="viewTransaction('${escapeHtml(t.id || t._id || t.reference || '')}')">
+        <div class="txn-card-avatar ${txnKindAvatarClass(t)}">${txnKindAvatarHtml(t)}</div>
+        <div class="txn-card-info">
+          <div class="txn-card-name-row">
+            <span class="txn-card-name">${escapeHtml(product)}</span>
+            <span class="txn-card-badge ${st}">${escapeHtml(statusLabel(st))}</span>
+          </div>
+          <div class="txn-card-contact">
+            <span class="contact-item mono"><i class="fas fa-phone"></i> ${escapeHtml(phone)}</span>
+            <span class="contact-item"><i class="fas fa-hashtag"></i> ${escapeHtml(ref)}</span>
+            <span class="contact-item"><i class="fas fa-clock"></i> ${timeAgo(getDate(t))}</span>
+          </div>
+        </div>
+        <div class="txn-card-right">
+          <div class="txn-card-amount-pill ${isCredit ? 'credit' : 'debit'}">
+            <span class="txn-card-amount-label">${isCredit ? 'Credit' : 'Amount'}</span>
+            <span class="txn-card-amount-value">${isCredit ? '+' : ''}${formatMoney(amount)}</span>
+          </div>
+          <div class="txn-card-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
     renderPager('transactionsPagination', currentPage, totalItems, perPage, 'goToTxnPage');
   }
   window.renderTransactions = renderTransactions;
 
   function onTxnSearchInput() { toggleClearButton('txnSearch', 'txnSearchClear'); state.txnPage = 1; renderTransactions(); }
   window.onTxnSearchInput = onTxnSearchInput;
-  function clearTxnSearch() { const i = document.getElementById('txnSearch'); if (i) { i.value = ''; i.focus(); } onTxnSearchInput(); }
+  function clearTxnSearch() { const i = document.getElementById('txnSearch'); if (i) { i.value = ''; i.focus(); } state.txnFilter = 'all'; syncTypeUI(); onTxnSearchInput(); }
   window.clearTxnSearch = clearTxnSearch;
   window.goToTxnPage = (page) => {
     const totalItems = getFilteredTransactions().length;
@@ -2558,36 +2722,76 @@ button:not(:disabled){cursor:pointer}
     const search = ($('#depositSearch')?.value || '').toLowerCase().trim();
     let list = applyRange(state.deposits, state.range);
     if (search) list = list.filter(d => { const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return hay.includes(search); });
+    if (state.depositStatusFilter && state.depositStatusFilter !== 'all') list = list.filter(d => getStatus(d) === state.depositStatusFilter);
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+
     const pendingCount = list.filter(d => getStatus(d) === 'pending').length;
     const total = list.reduce((s, d) => s + getAmount(d), 0);
-    const metaEl = $('#depositSearchMeta');
-    if (metaEl) {
-      metaEl.innerHTML = search
-        ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span>` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '')
-        : `<i class="fas fa-arrow-down" style="color:var(--primary);"></i> <strong>${list.length}</strong> deposit${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '');
+    const bar = $('#depositResultsBar');
+    if (bar) {
+      if (search) {
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> ${list.length} match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span> · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
+        bar.classList.remove('is-empty');
+      } else {
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-arrow-down" style="color:var(--primary);"></i> <strong>${list.length}</strong> deposit${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
+        bar.classList.remove('is-empty');
+      }
     }
+
     const c = $('#depositsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
     const currentPage = Math.min(Math.max(state.depositPage, 1), totalPages);
     state.depositPage = currentPage;
-    if (!totalItems) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-arrow-down"></i></div><div class="title">No deposits</div><div class="desc">Wallet top-ups will appear here.</div></div>`; const pag = $('#depositsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; } return; }
+
+    if (!totalItems) {
+      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-arrow-down"></i></div><div class="user-empty-title">No deposits found</div><div class="user-empty-text">Wallet top-ups will appear here. Try a different search or time period.</div></div>`;
+      const pag = $('#depositsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
+      return;
+    }
+
     const slice = list.slice((currentPage - 1) * perPage, currentPage * perPage);
-    c.innerHTML = slice.map(d => {
-      const name = d.user_name || d.name || 'Unknown'; const initial = name.charAt(0).toUpperCase(); const amount = getAmount(d); const st = getStatus(d); const isPending = st === 'pending';
-      return `<div class="row-item static"><div class="row-avatar deposit">${escapeHtml(initial)}</div><div class="row-main"><div class="row-title">${escapeHtml(name)}</div><div class="row-sub"><span>${escapeHtml(d.user_email || d.email || '—')}</span><span class="dot"></span><span class="ref">${escapeHtml(d.reference || d.tx_ref || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount credit">+${formatMoney(amount)}<small>${timeAgo(getDate(d))}</small></div><div class="row-actions">${isPending ? `<button class="approve" onclick="openApproveDepositModal('${escapeHtml(d.id)}')"><i class="fas fa-check"></i><span class="label">Approve</span></button><button class="reject" onclick="openRejectDepositModal('${escapeHtml(d.id)}')"><i class="fas fa-times"></i><span class="label">Reject</span></button>` : ''}<button class="view" onclick="viewDeposit('${escapeHtml(d.id)}')"><i class="fas fa-eye"></i><span class="label">View</span></button></div></div></div>`;
-    }).join('');
+    c.innerHTML = `<div class="txn-card-list">${slice.map(d => {
+      const name = d.user_name || d.name || 'Unknown';
+      const initial = name.charAt(0).toUpperCase();
+      const amount = getAmount(d);
+      const st = getStatus(d);
+      const isPending = st === 'pending';
+      return `<div class="txn-card static">
+        <div class="txn-card-avatar deposit">${escapeHtml(initial)}</div>
+        <div class="txn-card-info">
+          <div class="txn-card-name-row">
+            <span class="txn-card-name">${escapeHtml(name)}</span>
+            <span class="txn-card-badge ${st}">${escapeHtml(statusLabel(st))}</span>
+          </div>
+          <div class="txn-card-contact">
+            <span class="contact-item"><i class="fas fa-envelope"></i> ${escapeHtml(d.user_email || d.email || '—')}</span>
+            <span class="contact-item mono"><i class="fas fa-hashtag"></i> ${escapeHtml(d.reference || d.tx_ref || '—')}</span>
+            <span class="contact-item"><i class="fas fa-clock"></i> ${timeAgo(getDate(d))}</span>
+          </div>
+        </div>
+        <div class="txn-card-right">
+          <div class="txn-card-amount-pill credit">
+            <span class="txn-card-amount-label">Amount</span>
+            <span class="txn-card-amount-value">+${formatMoney(amount)}</span>
+          </div>
+          <div class="txn-card-actions">
+            ${isPending ? `<button class="approve" onclick="event.stopPropagation();openApproveDepositModal('${escapeHtml(d.id)}')" title="Approve"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectDepositModal('${escapeHtml(d.id)}')" title="Reject"><i class="fas fa-times"></i></button>` : ''}
+            <button class="view" onclick="event.stopPropagation();viewDeposit('${escapeHtml(d.id)}')" title="View"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
     renderPager('depositsPagination', currentPage, totalItems, perPage, 'goToDepositPage');
   }
   window.renderDeposits = renderDeposits;
   function onDepositSearchInput() { toggleClearButton('depositSearch', 'depositSearchClear'); state.depositPage = 1; renderDeposits(); }
   window.onDepositSearchInput = onDepositSearchInput;
-  function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value = ''; i.focus(); } onDepositSearchInput(); }
+  function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value = ''; i.focus(); } state.depositStatusFilter = 'all'; onDepositSearchInput(); }
   window.clearDepositSearch = clearDepositSearch;
   window.goToDepositPage = (page) => {
-    const totalPages = Math.max(1, Math.ceil((() => { const search = ($('#depositSearch')?.value || '').toLowerCase().trim(); let list = applyRange(state.deposits, state.range); if (search) list = list.filter(d => { const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return hay.includes(search); }); return list.length; })() / state.PER_PAGE));
+    const totalPages = Math.max(1, Math.ceil((() => { const search = ($('#depositSearch')?.value || '').toLowerCase().trim(); let list = applyRange(state.deposits, state.range); if (search) list = list.filter(d => { const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return hay.includes(search); }); if (state.depositStatusFilter !== 'all') list = list.filter(d => getStatus(d) === state.depositStatusFilter); return list.length; })() / state.PER_PAGE));
     const p = Math.min(Math.max(page, 1), totalPages);
     state.depositPage = p; renderDeposits();
     const panel = document.querySelector('#tab-deposits .panel'); if (panel && typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2598,36 +2802,76 @@ button:not(:disabled){cursor:pointer}
     const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
     let list = applyRange(state.withdrawals, state.range);
     if (search) list = list.filter(w => { const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return hay.includes(search); });
+    if (state.withdrawalStatusFilter && state.withdrawalStatusFilter !== 'all') list = list.filter(w => getStatus(w) === state.withdrawalStatusFilter);
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+
     const pendingCount = list.filter(w => getStatus(w) === 'pending').length;
     const total = list.reduce((s, w) => s + getAmount(w), 0);
-    const metaEl = $('#withdrawalSearchMeta');
-    if (metaEl) {
-      metaEl.innerHTML = search
-        ? `<i class="fas fa-filter" style="color:var(--primary);"></i> <strong>${list.length}</strong> match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span>` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '')
-        : `<i class="fas fa-arrow-up" style="color:var(--primary);"></i> <strong>${list.length}</strong> request${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}` + (pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : '');
+    const bar = $('#withdrawalResultsBar');
+    if (bar) {
+      if (search) {
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> ${list.length} match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span> · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
+        bar.classList.remove('is-empty');
+      } else {
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-arrow-up" style="color:var(--primary);"></i> <strong>${list.length}</strong> request${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
+        bar.classList.remove('is-empty');
+      }
     }
+
     const c = $('#withdrawalsList');
     const perPage = state.PER_PAGE;
     const totalItems = list.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
     const currentPage = Math.min(Math.max(state.withdrawalPage, 1), totalPages);
     state.withdrawalPage = currentPage;
-    if (!totalItems) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-arrow-up"></i></div><div class="title">No withdrawal requests</div><div class="desc">User payouts will appear here.</div></div>`; const pag = $('#withdrawalsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; } return; }
+
+    if (!totalItems) {
+      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-arrow-up"></i></div><div class="user-empty-title">No withdrawal requests</div><div class="user-empty-text">User payouts will appear here. Try a different search or time period.</div></div>`;
+      const pag = $('#withdrawalsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
+      return;
+    }
+
     const slice = list.slice((currentPage - 1) * perPage, currentPage * perPage);
-    c.innerHTML = slice.map(w => {
-      const name = w.user_name || 'Unknown'; const initial = name.charAt(0).toUpperCase(); const amount = getAmount(w); const st = getStatus(w); const isPending = st === 'pending';
-      return `<div class="row-item static"><div class="row-avatar withdraw">${escapeHtml(initial)}</div><div class="row-main"><div class="row-title">${escapeHtml(name)}</div><div class="row-sub"><span>${escapeHtml(w.bank_name || '—')}</span><span class="dot"></span><span class="ref">${escapeHtml(w.reference || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount debit">-${formatMoney(amount)}<small>${timeAgo(getDate(w))}</small></div><div class="row-actions">${isPending ? `<button class="approve" onclick="openApproveModal('${escapeHtml(w.id)}')"><i class="fas fa-check"></i><span class="label">Approve</span></button><button class="reject" onclick="openRejectModal('${escapeHtml(w.id)}')"><i class="fas fa-times"></i><span class="label">Reject</span></button>` : ''}<button class="view" onclick="viewWithdrawal('${escapeHtml(w.id)}')"><i class="fas fa-eye"></i><span class="label">View</span></button></div></div></div>`;
-    }).join('');
+    c.innerHTML = `<div class="txn-card-list">${slice.map(w => {
+      const name = w.user_name || 'Unknown';
+      const initial = name.charAt(0).toUpperCase();
+      const amount = getAmount(w);
+      const st = getStatus(w);
+      const isPending = st === 'pending';
+      return `<div class="txn-card static">
+        <div class="txn-card-avatar withdraw">${escapeHtml(initial)}</div>
+        <div class="txn-card-info">
+          <div class="txn-card-name-row">
+            <span class="txn-card-name">${escapeHtml(name)}</span>
+            <span class="txn-card-badge ${st}">${escapeHtml(statusLabel(st))}</span>
+          </div>
+          <div class="txn-card-contact">
+            <span class="contact-item"><i class="fas fa-building-columns"></i> ${escapeHtml(w.bank_name || '—')}</span>
+            <span class="contact-item mono"><i class="fas fa-hashtag"></i> ${escapeHtml(w.reference || '—')}</span>
+            <span class="contact-item"><i class="fas fa-clock"></i> ${timeAgo(getDate(w))}</span>
+          </div>
+        </div>
+        <div class="txn-card-right">
+          <div class="txn-card-amount-pill debit">
+            <span class="txn-card-amount-label">Amount</span>
+            <span class="txn-card-amount-value">−${formatMoney(amount)}</span>
+          </div>
+          <div class="txn-card-actions">
+            ${isPending ? `<button class="approve" onclick="event.stopPropagation();openApproveModal('${escapeHtml(w.id)}')" title="Approve"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectModal('${escapeHtml(w.id)}')" title="Reject"><i class="fas fa-times"></i></button>` : ''}
+            <button class="view" onclick="event.stopPropagation();viewWithdrawal('${escapeHtml(w.id)}')" title="View"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
     renderPager('withdrawalsPagination', currentPage, totalItems, perPage, 'goToWithdrawalPage');
   }
   window.renderWithdrawals = renderWithdrawals;
   function onWithdrawalSearchInput() { toggleClearButton('withdrawalSearch', 'withdrawalSearchClear'); state.withdrawalPage = 1; renderWithdrawals(); }
   window.onWithdrawalSearchInput = onWithdrawalSearchInput;
-  function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value = ''; i.focus(); } onWithdrawalSearchInput(); }
+  function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value = ''; i.focus(); } state.withdrawalStatusFilter = 'all'; onWithdrawalSearchInput(); }
   window.clearWithdrawalSearch = clearWithdrawalSearch;
   window.goToWithdrawalPage = (page) => {
-    const totalPages = Math.max(1, Math.ceil((() => { const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim(); let list = applyRange(state.withdrawals, state.range); if (search) list = list.filter(w => { const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return hay.includes(search); }); return list.length; })() / state.PER_PAGE));
+    const totalPages = Math.max(1, Math.ceil((() => { const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim(); let list = applyRange(state.withdrawals, state.range); if (search) list = list.filter(w => { const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return hay.includes(search); }); if (state.withdrawalStatusFilter !== 'all') list = list.filter(w => getStatus(w) === state.withdrawalStatusFilter); return list.length; })() / state.PER_PAGE));
     const p = Math.min(Math.max(page, 1), totalPages);
     state.withdrawalPage = p; renderWithdrawals();
     const panel = document.querySelector('#tab-withdrawals .panel'); if (panel && typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2968,6 +3212,62 @@ button:not(:disabled){cursor:pointer}
   }
   window.refreshAll = refreshAll;
 
+  /* ---------- QUICK SEARCH CHIPS ---------- */
+  function quickTxnSearch(kind) {
+    const input = document.getElementById('txnSearch');
+    if (kind === 'all') {
+      if (input) input.value = '';
+      state.txnFilter = 'all';
+      state.txnPage = 1;
+      syncTypeUI();
+      onTxnSearchInput();
+      return;
+    }
+    state.txnFilter = kind;
+    state.txnPage = 1;
+    syncTypeUI();
+    renderTransactions();
+  }
+  window.quickTxnSearch = quickTxnSearch;
+
+  function quickDepositSearch(mode) {
+    const input = document.getElementById('depositSearch');
+    if (mode === 'all') {
+      if (input) input.value = '';
+      state.depositStatusFilter = 'all';
+      state.depositPage = 1;
+      onDepositSearchInput();
+      return;
+    }
+    if (mode === 'pending' || mode === 'success') {
+      state.depositStatusFilter = mode;
+      state.depositPage = 1;
+      renderDeposits();
+      return;
+    }
+    if (input) { input.value = mode; onDepositSearchInput(); }
+  }
+  window.quickDepositSearch = quickDepositSearch;
+
+  function quickWithdrawalSearch(mode) {
+    const input = document.getElementById('withdrawalSearch');
+    if (mode === 'all') {
+      if (input) input.value = '';
+      state.withdrawalStatusFilter = 'all';
+      state.withdrawalPage = 1;
+      onWithdrawalSearchInput();
+      return;
+    }
+    if (mode === 'pending' || mode === 'success' || mode === 'failed') {
+      state.withdrawalStatusFilter = mode;
+      state.withdrawalPage = 1;
+      renderWithdrawals();
+      return;
+    }
+    if (input) { input.value = mode; onWithdrawalSearchInput(); }
+  }
+  window.quickWithdrawalSearch = quickWithdrawalSearch;
+
   /* ---------- GLOBAL EVENTS ---------- */
   $$('.modal-overlay').forEach(m => {
     m.addEventListener('click', (e) => {
@@ -3001,6 +3301,7 @@ button:not(:disabled){cursor:pointer}
   document.addEventListener('click', (e) => { if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) { const p=$('#adminAlertPanel'); if(p?.classList.contains('open')) toggleAdminAlerts(); } });
   async function init() {
     wireRangePills(); syncRangeUI(); syncTypeUI(); resetFundTab(); renderUsers();
+    renderTransactions(); renderDeposits(); renderWithdrawals();
     await refreshAll(true);
     setInterval(() => refreshAll(true), 20000);
   }
