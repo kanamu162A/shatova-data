@@ -2,7 +2,7 @@
 // ============================================================
 // Shatova — Airtime Purchase Flow
 //   • 2% user discount on ₦100+
-//   • Purchase Update modal · network-colored Done button
+//   • Real network logos (MTN / Airtel / Glo / 9mobile)
 //   • Recent recipients — NETWORK-FILTERED dropdown
 //   • Every remark sanitized — internal errors never reach users
 // ============================================================
@@ -13,6 +13,7 @@ const USER_DISCOUNT_PCT     = 2;
 const USER_DISCOUNT_MIN     = 100;
 const USER_MIN_AMOUNT       = 10;
 const USER_MAX_AMOUNT       = 50000;
+
 const POLL_INTERVAL_MS      = 5000;
 const POLL_MAX_ATTEMPTS     = 24;
 const AUTO_RETURN_DELAY_MS  = 30 * 1000;
@@ -40,11 +41,17 @@ function authHeaders(extra = {}) {
 function redirectToLogin() { window.location.href = '/login.html'; }
 
 const state = {
-  networks: [], products: [],
-  activeNetwork: null, selectedProduct: null,
-  mode: 'single', phone: '', amount: 0,
-  paymentMethod: 'wallet', walletBalance: 0,
-  prefixNetwork: null, currentReference: null,
+  networks: [],
+  products: [],
+  activeNetwork: null,
+  selectedProduct: null,
+  mode: 'single',
+  phone: '',
+  amount: 0,
+  paymentMethod: 'wallet',
+  walletBalance: 0,
+  prefixNetwork: null,
+  currentReference: null,
   allRecipients: [],
 };
 
@@ -123,7 +130,8 @@ function showStep(step) {
    ============================================================ */
 function formatNaira(n) {
   return '₦' + Number(n || 0).toLocaleString('en-NG', {
-    minimumFractionDigits: 2, maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
 }
 
@@ -134,15 +142,11 @@ function escapeHtml(s) {
 }
 
 /* ============================================================
-   ⭐ REMARK SANITIZER — defense in depth
-   The backend already sanitizes provider errors, but if anything
-   slips through, this catches it before showing the user.
+   REMARK SANITIZER
    ============================================================ */
 function sanitizeRemark(text) {
   const s = String(text || '').trim();
   if (!s) return '';
-
-  /* Never let these strings reach a user */
   const internal = [
     /insufficient wallet balance/i,
     /insufficient balance/i,
@@ -158,7 +162,6 @@ function sanitizeRemark(text) {
     /econnrefused/i,
     /enotfound/i,
   ];
-
   if (internal.some((rx) => rx.test(s))) {
     return 'Service temporarily unavailable. Please try again in a moment.';
   }
@@ -183,7 +186,7 @@ function networkShort(key = '') {
   if (k.includes('mtn')) return 'MTN';
   if (k.includes('airtel')) return 'AIRTEL';
   if (k.includes('glo')) return 'GLO';
-  if (k.includes('t2')) return 'T2';
+  if (k.includes('t2')) return '9MOBILE';
   if (k.includes('9mobile') || k.includes('etisalat')) return '9MOBILE';
   return String(key).toUpperCase().slice(0, 6);
 }
@@ -196,6 +199,12 @@ function networkDisplay(key) {
   if (k === 'glo') return 'Glo';
   if (k === '9mobile') return '9mobile';
   return k.toUpperCase();
+}
+
+/* ⭐ Real logo HTML — uses window.networkLogoHTML injected in airtime.html */
+function networkLogoFor(key, opts = {}) {
+  if (typeof window.networkLogoHTML !== 'function') return '';
+  return window.networkLogoHTML(key, opts);
 }
 
 function normalizeNgPhone(raw) {
@@ -335,7 +344,9 @@ async function fetchMe() {
 
 async function purchaseAirtime(payload) {
   const res = await fetch(`${API_BASE}/airtime/purchase`, {
-    method: 'POST', headers: authHeaders(), body: JSON.stringify(payload),
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok || !json.success) {
@@ -360,13 +371,14 @@ async function fetchTransactionStatus(reference) {
   } catch { return null; }
 }
 
-/* ⭐ Correct endpoint — recent recipients live under /wallet */
+/* ⭐ Recent recipients — /wallet/recent-recipients */
 async function fetchRecentRecipients() {
   try {
     const res = await fetch(`${API_BASE}/wallet/recent-recipients`, { headers: authHeaders() });
     if (!res.ok) return [];
     const json = await res.json().catch(() => ({}));
-    return json.data?.recipients || [];
+    const list = json.data?.recipients || json.recipients || [];
+    return Array.isArray(list) ? list : [];
   } catch { return []; }
 }
 
@@ -387,23 +399,41 @@ function updateSuggestions() {
   if (!activeNet) { hideSuggestions(); return; }
   if (typed.length >= 11) { hideSuggestions(); return; }
 
-  let matches = state.allRecipients.filter((r) =>
-    phoneBelongsToNetwork(r.phone, activeNet)
-  );
+  let matches = state.allRecipients.filter((r) => {
+    const phone = normalizeNgPhone(r.phone || r.msisdn || r.number || '');
+    if (!phone) return false;
+    return phoneBelongsToNetwork(phone, activeNet);
+  });
 
   if (typed.length >= 1) {
-    matches = matches.filter((r) => String(r.phone || '').startsWith(typed));
+    matches = matches.filter((r) =>
+      normalizeNgPhone(r.phone || r.msisdn || r.number || '').startsWith(typed)
+    );
   }
+
+  // Deduplicate by phone
+  const seen = new Set();
+  matches = matches.filter((r) => {
+    const p = normalizeNgPhone(r.phone || r.msisdn || r.number || '');
+    if (seen.has(p)) return false;
+    seen.add(p);
+    return true;
+  });
 
   matches = matches.slice(0, 5);
 
   if (!matches.length) { hideSuggestions(); return; }
 
-  rrList.innerHTML = matches.map((r) => `
-    <button type="button" class="phone-dropdown-item" data-phone="${escapeHtml(r.phone)}">
-      ${escapeHtml(r.phone)}
-    </button>
-  `).join('');
+  rrList.innerHTML = matches.map((r) => {
+    const phone = normalizeNgPhone(r.phone || r.msisdn || r.number || '');
+    const label = r.name || r.label || '';
+    return `
+      <button type="button" class="phone-dropdown-item" data-phone="${escapeHtml(phone)}">
+        <span class="rr-phone">${escapeHtml(phone)}</span>
+        ${label ? `<span class="rr-name">${escapeHtml(label)}</span>` : ''}
+      </button>
+    `;
+  }).join('');
 
   recentRecipients.classList.remove('hidden');
 
@@ -438,7 +468,6 @@ function showNetworkBadge(kind, text) {
   const label = networkBadge.querySelector('.nb-text');
   if (label) label.textContent = text;
 }
-
 function hideNetworkBadge() {
   if (!networkBadge) return;
   networkBadge.classList.add('hidden');
@@ -456,6 +485,7 @@ function detectNetworkLive() {
 
   const detected = detectNetworkFromPrefix(phone);
   state.prefixNetwork = detected;
+
   if (!detected) { hideNetworkBadge(); return; }
 
   const selected = state.activeNetwork;
@@ -500,12 +530,10 @@ function setTrackerState(active) {
     if (key === 'submitted') s = 'done';
     else if (key === 'processing') {
       if (active === 'processing') s = 'processing';
-      else if (active === 'completed') s = 'done';
-      else if (active === 'refunded') s = 'done';
+      else if (active === 'completed' || active === 'refunded') s = 'done';
       else if (active === 'failed') s = 'failed';
     } else if (key === 'completed') {
-      if (active === 'completed') s = 'done';
-      else if (active === 'refunded') s = 'done';
+      if (active === 'completed' || active === 'refunded') s = 'done';
       else if (active === 'failed') s = 'failed';
     }
     dot.classList.add(`pm-dot-${s}`);
@@ -515,15 +543,10 @@ function setTrackerState(active) {
 function applyHeroState(status) {
   if (!pmHero) return;
   pmHero.classList.remove('pm-hero-success', 'pm-hero-processing', 'pm-hero-failed', 'pm-hero-refunded');
-  if (status === 'processing' || status === 'pending') {
-    pmHero.classList.add('pm-hero-processing');
-  } else if (status === 'success') {
-    pmHero.classList.add('pm-hero-success');
-  } else if (status === 'refunded') {
-    pmHero.classList.add('pm-hero-refunded');
-  } else {
-    pmHero.classList.add('pm-hero-failed');
-  }
+  if (status === 'processing' || status === 'pending') pmHero.classList.add('pm-hero-processing');
+  else if (status === 'success') pmHero.classList.add('pm-hero-success');
+  else if (status === 'refunded') pmHero.classList.add('pm-hero-refunded');
+  else pmHero.classList.add('pm-hero-failed');
 }
 
 function applyModalNetworkColor() {
@@ -539,27 +562,27 @@ function scheduleAutoReturn() {
     countEl = document.createElement('div');
     countEl.id = 'pmCountdown';
     countEl.style.cssText = `
-      text-align: center; font-size: 11.5px;
-      color: #64748b; margin-top: 10px;
-      font-weight: 500; letter-spacing: 0.2px;
+      text-align: center;
+      font-size: 11.5px;
+      color: #64748b;
+      margin-top: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
     `;
     const foot = document.querySelector('.purchase-sheet-foot');
     if (foot) foot.appendChild(countEl);
   }
   countEl.textContent = `Returning to home in ${remaining}s…`;
-
   countdownInterval = setInterval(() => {
     remaining--;
     if (remaining <= 0) { clearInterval(countdownInterval); countdownInterval = null; return; }
     if (countEl) countEl.textContent = `Returning to home in ${remaining}s…`;
   }, 1000);
-
   autoReturnTimer = setTimeout(() => {
     try { closePurchaseModal(); } catch {}
     window.location.href = '/home.html';
   }, AUTO_RETURN_DELAY_MS);
 }
-
 function cancelAutoReturn() {
   if (autoReturnTimer) { clearTimeout(autoReturnTimer); autoReturnTimer = null; }
   if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
@@ -574,25 +597,29 @@ function scheduleQuickReturn(delayMs = QUICK_RETURN_MS) {
     window.location.href = '/home.html';
   }, delayMs);
 }
-
 function cancelQuickReturn() {
   if (quickReturnTimer) { clearTimeout(quickReturnTimer); quickReturnTimer = null; }
 }
 
 function showPurchaseUpdate(data) {
   const status = (data.status || 'success').toLowerCase();
-
   applyModalNetworkColor();
   applyHeroState(status);
 
   const heroTitleText = {
-    success: 'successful', processing: 'processing',
-    pending: 'processing', refunded: 'refunded', failed: 'failed',
+    success: 'successful',
+    processing: 'processing',
+    pending: 'processing',
+    refunded: 'refunded',
+    failed: 'failed',
   }[status] || status;
 
   const heroSubText = {
-    success: 'success', processing: 'in progress',
-    pending: 'in progress', refunded: 'money returned', failed: 'failed',
+    success: 'success',
+    processing: 'in progress',
+    pending: 'in progress',
+    refunded: 'money returned',
+    failed: 'failed',
   }[status] || status;
 
   if (pmHeroTitle) pmHeroTitle.textContent = heroTitleText;
@@ -605,10 +632,9 @@ function showPurchaseUpdate(data) {
   if (pmExtra)     pmExtra.classList.remove('hidden');
 
   setTrackerState(
-    status === 'success'  ? 'completed' :
+    status === 'success' ? 'completed' :
     status === 'refunded' ? 'refunded' :
-    status === 'failed'   ? 'failed' :
-    'processing'
+    status === 'failed' ? 'failed' : 'processing'
   );
 
   lastPurchase = { ...data, remark: sanitizeRemark(data.remark) || data.remark };
@@ -631,9 +657,7 @@ if (pmCopy) {
     } catch {}
   });
 }
-
 if (pmClose) pmClose.addEventListener('click', closePurchaseModal);
-
 if (pmDone) {
   pmDone.addEventListener('click', () => {
     cancelAutoReturn();
@@ -642,13 +666,11 @@ if (pmDone) {
     setTimeout(() => { window.location.href = '/home.html'; }, 260);
   });
 }
-
 if (purchaseModal) {
   purchaseModal.addEventListener('click', (e) => {
     if (e.target === purchaseModal) closePurchaseModal();
   });
 }
-
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && purchaseModal && !purchaseModal.classList.contains('hidden')) {
     closePurchaseModal();
@@ -661,7 +683,6 @@ if (pmRefresh) {
     const original = pmRefresh.innerHTML;
     pmRefresh.disabled = true;
     pmRefresh.innerHTML = '<span class="pm-spin"></span> Refreshing…';
-
     try {
       const data = await fetchTransactionStatus(lastPurchase.reference);
       if (data) {
@@ -753,15 +774,15 @@ if (pmPrint) {
         .remark { margin-top: 16px; padding: 12px; background: #f7f9f8; border-radius: 8px; font-size: 12px; color: #334155; line-height: 1.5; }
         .footer { margin-top: 24px; padding-top: 16px; border-top: 2px dashed #e2e8f0; text-align: center; font-size: 10px; color: #94a3b8; }
       </style></head><body>
-      <div class="head"><div class="brand">SHATOVA</div><div class="sub">Airtime Receipt</div></div>
-      <div class="amount">${formatNaira(lastPurchase.amount || 0)}</div>
-      <div class="status">${lastPurchase.status || 'success'}</div>
-      <div class="row"><span class="label">Product</span><span class="value">${lastPurchase.product || 'Airtime'}</span></div>
-      <div class="row"><span class="label">Recipient</span><span class="value">${lastPurchase.recipient || '—'}</span></div>
-      <div class="row"><span class="label">Reference</span><span class="value">${lastPurchase.reference || '—'}</span></div>
-      <div class="remark">${safeRemark || ''}</div>
-      <div class="footer">Thank you for using Shatova</div>
-      <script>window.onload = () => setTimeout(() => window.print(), 300);<\/script>
+        <div class="head"><div class="brand">SHATOVA</div><div class="sub">Airtime Receipt</div></div>
+        <div class="amount">${formatNaira(lastPurchase.amount || 0)}</div>
+        <div class="status">${lastPurchase.status || 'success'}</div>
+        <div class="row"><span class="label">Product</span><span class="value">${lastPurchase.product || 'Airtime'}</span></div>
+        <div class="row"><span class="label">Recipient</span><span class="value">${lastPurchase.recipient || '—'}</span></div>
+        <div class="row"><span class="label">Reference</span><span class="value">${lastPurchase.reference || '—'}</span></div>
+        <div class="remark">${safeRemark || ''}</div>
+        <div class="footer">Thank you for using Shatova</div>
+        <script>window.onload = () => setTimeout(() => window.print(), 300);<\/script>
       </body></html>
     `);
     w.document.close();
@@ -778,7 +799,6 @@ function stopPolling() {
 function startPolling(reference) {
   stopPolling();
   let attempts = 0;
-
   pollTimer = setInterval(async () => {
     attempts++;
     const data = await fetchTransactionStatus(reference);
@@ -786,7 +806,6 @@ function startPolling(reference) {
       if (attempts >= POLL_MAX_ATTEMPTS) stopPolling();
       return;
     }
-
     const status = String(data.status || '').toLowerCase();
     const safeRemark = sanitizeRemark(data.remark);
 
@@ -797,7 +816,6 @@ function startPolling(reference) {
       if (pmHeroSub)   pmHeroSub.textContent   = 'success';
       if (pmRemark && safeRemark) pmRemark.textContent = safeRemark;
       setTrackerState('completed');
-
       try {
         const fresh = await fetchWalletBalance();
         if (fresh !== null) {
@@ -807,7 +825,6 @@ function startPolling(reference) {
       } catch {}
       return;
     }
-
     if (status === 'refunded') {
       stopPolling();
       applyHeroState('refunded');
@@ -815,7 +832,6 @@ function startPolling(reference) {
       if (pmHeroSub)   pmHeroSub.textContent   = 'money returned';
       if (pmRemark && safeRemark) pmRemark.textContent = safeRemark;
       setTrackerState('refunded');
-
       try {
         const fresh = await fetchWalletBalance();
         if (fresh !== null) {
@@ -826,7 +842,6 @@ function startPolling(reference) {
       scheduleQuickReturn(QUICK_RETURN_MS);
       return;
     }
-
     if (status === 'failed') {
       stopPolling();
       applyHeroState('failed');
@@ -834,7 +849,6 @@ function startPolling(reference) {
       if (pmHeroSub)   pmHeroSub.textContent   = 'failed';
       if (pmRemark && safeRemark) pmRemark.textContent = safeRemark;
       setTrackerState('failed');
-
       try {
         const fresh = await fetchWalletBalance();
         if (fresh !== null) {
@@ -845,7 +859,6 @@ function startPolling(reference) {
       scheduleQuickReturn(QUICK_RETURN_MS);
       return;
     }
-
     if (attempts >= POLL_MAX_ATTEMPTS) {
       stopPolling();
       if (pmRemark) pmRemark.textContent = 'Still processing. Tap Refresh Status to check again.';
@@ -854,7 +867,7 @@ function startPolling(reference) {
 }
 
 /* ============================================================
-   STEP 1 — NETWORKS
+   STEP 1 — NETWORKS  (real logos)
    ============================================================ */
 function renderCategories() {
   if (!categoryList) return;
@@ -867,9 +880,9 @@ function renderCategories() {
     const count = n.products || 1;
     return `
       <div class="category-card" data-provider="${escapeHtml(key)}">
-        <div class="cat-logo ${networkClass(key)}">${escapeHtml(networkShort(key))}</div>
+        ${networkLogoFor(key, { alt: networkDisplay(key) })}
         <div class="cat-info">
-          <div class="cat-name">${escapeHtml(networkShort(key))}</div>
+          <div class="cat-name">${escapeHtml(networkDisplay(key))}</div>
           <div class="cat-sub">${count} product${count === 1 ? '' : 's'}</div>
         </div>
         <div class="cat-arrow">
@@ -887,8 +900,13 @@ function renderCategories() {
 
 async function selectNetwork(key) {
   state.activeNetwork = key;
-  if (bundlesTitle) bundlesTitle.textContent = `${networkShort(key)} Airtime`;
-  if (bundlesSub)   bundlesSub.textContent = `${networkShort(key)} AIRTIME · Loading…`;
+
+  if (bundlesTitle) {
+    bundlesTitle.innerHTML =
+      networkLogoFor(key, { size: 'sm', alt: networkDisplay(key) }) +
+      `<span>${escapeHtml(networkDisplay(key))} Airtime</span>`;
+  }
+  if (bundlesSub) bundlesSub.textContent = `${networkShort(key)} AIRTIME · Loading…`;
   if (bundlesList) {
     bundlesList.innerHTML = `
       <div class="bundles-empty" style="padding: 32px 20px;">
@@ -903,14 +921,18 @@ async function selectNetwork(key) {
     let products = await fetchProducts(key);
     if (!products.length) {
       products = [{
-        id: `${key}-airtime`, provider: key,
-        name: `${networkShort(key)} Airtime`,
-        description: `${networkShort(key)} Instant recharge`,
+        id: `${key}-airtime`,
+        provider: key,
+        name: `${networkDisplay(key)} Airtime`,
+        description: `${networkDisplay(key)} Instant recharge`,
         available: true,
       }];
     }
     state.products = products;
-    if (bundlesSub) bundlesSub.textContent = `${networkShort(key)} AIRTIME · ${products.length} product${products.length === 1 ? '' : 's'}`;
+    if (bundlesSub) {
+      bundlesSub.textContent =
+        `${networkShort(key)} AIRTIME · ${products.length} product${products.length === 1 ? '' : 's'}`;
+    }
     renderProducts();
   } catch (err) {
     console.error('[airtime] products:', err);
@@ -929,7 +951,7 @@ function renderProducts() {
     const cls = networkClass(key);
     return `
       <div class="bundle-card airtime-card" data-product-id="${escapeHtml(p.id)}">
-        <div class="bundle-logo ${cls}">${escapeHtml(networkShort(key))}</div>
+        ${networkLogoFor(key, { size: 'sm', alt: networkDisplay(key) })}
         <div class="bundle-info">
           <div class="bundle-name">${escapeHtml(p.name || 'Airtime')}</div>
           <div class="bundle-meta">
@@ -962,19 +984,22 @@ function selectProduct(product) {
   state.selectedProduct = product;
   const key = product.provider || state.activeNetwork;
   const cls = networkClass(key);
+
   if (selectedBundleCard) {
     selectedBundleCard.dataset.provider = cls;
     selectedBundleCard.innerHTML = `
-      <div class="sb-logo ${cls}">${escapeHtml(networkShort(key))}</div>
+      ${networkLogoFor(key, { size: 'sm', alt: networkDisplay(key) })}
       <div class="sb-info">
-        <div class="sb-name">${escapeHtml(product.name || networkShort(key) + ' Airtime')}</div>
+        <div class="sb-name">${escapeHtml(product.name || networkDisplay(key) + ' Airtime')}</div>
         <div class="sb-meta">
           <span class="sb-badge sb-${cls}">${escapeHtml(networkShort(key))}</span>
         </div>
       </div>
       <div class="sb-price">₦0.00</div>`;
   }
+
   if (continueBtn) continueBtn.dataset.provider = cls;
+
   showStep(stepCheckout);
   loadAndShowRecipients();
 }
@@ -1001,9 +1026,10 @@ if (phoneInput) {
     if (raw.length === 1 && /^[789]/.test(raw)) raw = '0' + raw;
     else if (raw.length >= 10 && /^[789]/.test(raw) && !raw.startsWith('0')) raw = '0' + raw;
     if (raw.startsWith('234') && raw.length > 10) raw = '0' + raw.slice(3);
-    e.target.value = raw.slice(0, 11);
-    clearPhoneError();
 
+    e.target.value = raw.slice(0, 11);
+
+    clearPhoneError();
     updateSuggestions();
 
     if (detectTimer) clearTimeout(detectTimer);
@@ -1015,13 +1041,8 @@ if (phoneInput) {
     }
   });
 
-  phoneInput.addEventListener('focus', () => {
-    updateSuggestions();
-  });
-
-  phoneInput.addEventListener('blur', () => {
-    setTimeout(hideSuggestions, 180);
-  });
+  phoneInput.addEventListener('focus', () => { updateSuggestions(); });
+  phoneInput.addEventListener('blur',  () => { setTimeout(hideSuggestions, 180); });
 }
 
 function showPhoneError(msg) {
@@ -1041,7 +1062,6 @@ function showPhoneError(msg) {
     { duration: 320, easing: 'ease-out' }
   );
 }
-
 function clearPhoneError() {
   if (!phoneInput || !phoneError) return;
   phoneInput.classList.remove('error');
@@ -1054,8 +1074,8 @@ if (amountInput) {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 7);
     amountInput.classList.remove('error');
     amountError?.classList.remove('show');
-    const v = Number(e.target.value) || 0;
 
+    const v = Number(e.target.value) || 0;
     if (selectedBundleCard) {
       const priceEl = selectedBundleCard.querySelector('.sb-price');
       if (priceEl) {
@@ -1110,7 +1130,6 @@ if (pickContactBtn) {
         clearPhoneError();
         phoneInput.classList.add('filled');
         setTimeout(() => phoneInput.classList.remove('filled'), 800);
-
         updateSuggestions();
         detectNetworkLive();
         amountInput?.focus();
@@ -1122,6 +1141,7 @@ if (pickContactBtn) {
       }
       return;
     }
+
     const manual = prompt('Enter phone number manually:\n(Contact picker not supported on this browser)');
     if (manual) {
       const clean = normalizeNgPhone(manual);
@@ -1150,15 +1170,16 @@ if (continueBtn) {
     if (!amount || amount < USER_MIN_AMOUNT || amount > USER_MAX_AMOUNT) {
       amountInput.classList.add('error');
       amountError?.classList.add('show');
-      amountError.textContent = `Enter a valid amount (₦${USER_MIN_AMOUNT} – ₦${USER_MAX_AMOUNT.toLocaleString()})`;
+      amountError.textContent =
+        `Enter a valid amount (₦${USER_MIN_AMOUNT} – ₦${USER_MAX_AMOUNT.toLocaleString()})`;
       return;
     }
 
     clearPhoneError();
     hideSuggestions();
-    const restore = spinButton(continueBtn, 'Loading…');
 
-    state.phone = phone;
+    const restore = spinButton(continueBtn, 'Loading…');
+    state.phone  = phone;
     state.amount = amount;
     state.prefixNetwork = detectNetworkFromPrefix(phone);
 
@@ -1177,9 +1198,9 @@ if (continueBtn) {
       if (payBundleCard) {
         payBundleCard.dataset.provider = cls;
         payBundleCard.innerHTML = `
-          <div class="sb-logo ${cls}">${escapeHtml(networkShort(state.activeNetwork))}</div>
+          ${networkLogoFor(state.activeNetwork, { size: 'sm', alt: networkDisplay(state.activeNetwork) })}
           <div class="sb-info">
-            <div class="sb-name">${escapeHtml(state.selectedProduct?.name || networkShort(state.activeNetwork) + ' Airtime')}</div>
+            <div class="sb-name">${escapeHtml(state.selectedProduct?.name || networkDisplay(state.activeNetwork) + ' Airtime')}</div>
             <div class="sb-meta">
               <span class="sb-badge sb-${cls}">${escapeHtml(networkShort(state.activeNetwork))}</span>
             </div>
@@ -1212,7 +1233,7 @@ if (fundWalletBtn) {
 
 $$('.pay-option').forEach((opt) => {
   opt.addEventListener('click', () => {
-    if (opt.classList.contains('disabled')) return;
+    if (opt.classList.contains('disabled') || opt.disabled) return;
     $$('.pay-option').forEach((o) => o.classList.remove('active'));
     opt.classList.add('active');
     state.paymentMethod = opt.dataset.method;
@@ -1237,12 +1258,7 @@ $('#backToCheckout')?.addEventListener('click', function () {
 if (payNowBtn) {
   payNowBtn.addEventListener('click', async () => {
     const userPrice = calculateUserPrice(state.amount);
-
-    if (state.walletBalance < userPrice) {
-      updatePayButtonState();
-      return;
-    }
-
+    if (state.walletBalance < userPrice) { updatePayButtonState(); return; }
     if (!state.activeNetwork) {
       alert('Please select a network first.');
       showStep(stepCategories);
@@ -1265,7 +1281,6 @@ if (payNowBtn) {
 
       const status = String(result?.status || 'success').toLowerCase();
       const saved  = calculateDiscountAmount(state.amount);
-
       state.currentReference = result?.reference || null;
 
       if (status === 'success') {
@@ -1301,7 +1316,6 @@ if (payNowBtn) {
 
       payNowBtn.textContent = 'Pay Now';
       updatePayButtonState();
-
     } catch (err) {
       console.error('[airtime] purchase:', err);
 
@@ -1321,7 +1335,8 @@ if (payNowBtn) {
           status:    'failed',
           product:   `${state.activeNetwork}-airtime`,
           amount:    userPrice,
-          remark:    sanitizeRemark(err.data?.remark || err.message) || `This number doesn't match ${networkDisplay(state.activeNetwork)}. Please select the correct network.`,
+          remark:    sanitizeRemark(err.data?.remark || err.message) ||
+                     `This number doesn't match ${networkDisplay(state.activeNetwork)}. Please select the correct network.`,
           recipient: state.phone,
           reference: '—',
         });
@@ -1330,7 +1345,6 @@ if (payNowBtn) {
 
       const wasRefunded = !!err.data?.refunded;
       const refundAmt   = Number(err.data?.refunded_amount ?? userPrice);
-
       let remark;
       if (wasRefunded) {
         remark = `${sanitizeRemark(err.message) || 'Purchase could not be completed.'} ${formatNaira(refundAmt)} refunded to your wallet.`;
@@ -1393,7 +1407,13 @@ if (payNowBtn) {
       border-top-color: #0a0a0a;
     }
     @keyframes airtimeSpin { to { transform: rotate(360deg); } }
-    #pmRemark { font-size: 13px; font-weight: 500; color: #0f172a; line-height: 1.5; word-break: break-word; }
+    #pmRemark {
+      font-size: 13px;
+      font-weight: 500;
+      color: #0f172a;
+      line-height: 1.5;
+      word-break: break-word;
+    }
   `;
   document.head.appendChild(style);
 })();
@@ -1406,24 +1426,30 @@ async function init() {
 
   try {
     const [user, networks] = await Promise.all([fetchMe(), fetchNetworks()]);
-    if (user) state.walletBalance = Number(user.balance ?? user.wallet?.balance ?? 0);
+
+    if (user) {
+      state.walletBalance = Number(user.balance ?? user.wallet?.balance ?? 0);
+    }
     try {
       const fresh = await fetchWalletBalance();
       if (fresh !== null) state.walletBalance = fresh;
     } catch {}
 
-    state.networks = networks.length ? networks : [
-      { key: 't2', products: 1 },
-      { key: 'mtn', products: 1 },
-      { key: 'glo', products: 1 },
-      { key: 'airtel', products: 1 },
-    ];
+    state.networks = networks.length
+      ? networks
+      : [
+          { key: 'mtn', products: 1 },
+          { key: 'airtel', products: 1 },
+          { key: 'glo', products: 1 },
+          { key: 't2', products: 1 },
+        ];
 
     renderCategories();
   } catch (err) {
     console.error('[airtime] init:', err);
-    if (categoryList) categoryList.innerHTML = `<div class="bundles-empty">Could not load networks</div>`;
+    if (categoryList) {
+      categoryList.innerHTML = `<div class="bundles-empty">Could not load networks</div>`;
+    }
   }
 }
-
 init();
