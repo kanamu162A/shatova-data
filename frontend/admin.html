@@ -907,6 +907,64 @@ button{font-family:inherit}
 @media (min-width:900px){.row-actions button .label{display:inline}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
 @media (max-width:768px){input,textarea,select{font-size:16px !important}.user-search-field input,.section-search-field input{font-size:16px !important}}
+
+/* ============================================================
+   SHATOVA V2 — GLOBAL PROFESSIONAL UX LAYER
+============================================================ */
+button,input,textarea,select{font-family:inherit}
+button{touch-action:manipulation}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(10,69,52,.10),0 8px 24px -12px rgba(10,69,52,.22)}
+button:not(:disabled){cursor:pointer}
+.btn-datashop,.icon-btn,.page-btn,.section-search-pill,.user-search-chip,.user-empty-tip,.row-actions button,.run-archive-btn,.drift-refresh-btn,.fund-actions-row button,.sheet-option,.type-sheet-item{position:relative;overflow:hidden}
+.btn-datashop::after,.icon-btn::after,.page-btn::after,.section-search-pill::after,.user-search-chip::after,.user-empty-tip::after,.row-actions button::after,.run-archive-btn::after,.drift-refresh-btn::after,.fund-actions-row button::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.16) 48%,transparent 76%);transform:translateX(-120%);transition:transform .55s ease;pointer-events:none}
+.btn-datashop:hover::after,.icon-btn:hover::after,.page-btn:hover::after,.section-search-pill:hover::after,.user-search-chip:hover::after,.user-empty-tip:hover::after,.row-actions button:hover::after,.run-archive-btn:hover::after,.drift-refresh-btn:hover::after,.fund-actions-row button:hover::after{transform:translateX(120%)}
+.section-search-field,.user-search-field{transition:border-color .22s ease,box-shadow .22s ease,transform .22s ease}
+.user-search-field:focus-within{border-color:var(--primary)!important;box-shadow:0 0 0 4px rgba(10,69,52,.07),0 12px 28px -14px rgba(10,69,52,.22)!important;transform:translateY(-1px)}
+.user-search-clear,.section-search-clear{border:1px solid var(--border);box-shadow:var(--shadow-xs)}
+.user-search-clear:hover,.section-search-clear:hover{border-color:var(--danger);box-shadow:0 6px 16px -8px rgba(239,68,68,.3)}
+#fundLookupIconBtn{width:42px;height:42px;border-radius:12px!important;background:var(--primary-gradient)!important;color:#fff!important;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 7px 18px -6px rgba(10,69,52,.42);flex-shrink:0}
+#fundLookupIconBtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px -7px rgba(10,69,52,.5)!important}
+#fundLookupIconBtn:disabled{opacity:.65;cursor:wait}
+/* Global top progress / action feedback */
+#shatovaPageLoader{position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:5000;pointer-events:none;opacity:0;transition:opacity .2s}
+#shatovaPageLoader.active{opacity:1}
+#shatovaPageLoader::before{content:'';display:block;width:35%;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));border-radius:0 4px 4px 0;animation:shatovaProgress 1.05s ease-in-out infinite}
+@keyframes shatovaProgress{0%{transform:translateX(-120%)}100%{transform:translateX(330%)}}
+/* Admin notification center */
+.admin-alert-btn{position:relative;width:40px!important;height:40px!important;border-radius:12px!important}
+.admin-alert-btn .alert-badge{position:absolute;right:-3px;top:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid var(--bg-card);font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;box-shadow:0 4px 12px -3px rgba(239,68,68,.55)}
+.admin-alert-btn.has-alert .alert-badge{display:flex;animation:alertBadge .9s ease-in-out infinite alternate}
+@keyframes alertBadge{from{transform:scale(1)}to{transform:scale(1.12)}}
+.admin-alert-panel{position:fixed;top:70px;right:22px;width:min(430px,calc(100vw - 28px));max-height:min(620px,calc(100vh - 95px));background:var(--bg-card);border:1px solid var(--border-strong);border-radius:18px;box-shadow:var(--shadow-xl);z-index:2100;display:flex;flex-direction:column;overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);transition:all .22s var(--ease-out)}
+.admin-alert-panel.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+.admin-alert-head{padding:16px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(180deg,rgba(10,69,52,.045),transparent)}
+.admin-alert-head h3{font-size:14px;font-weight:900;display:flex;align-items:center;gap:9px}.admin-alert-head h3 i{color:var(--primary)}
+.admin-alert-head .alert-head-actions{display:flex;gap:6px}
+.admin-alert-head button{width:30px;height:30px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-muted);border-radius:9px;cursor:pointer}
+.admin-alert-list{overflow:auto;padding:8px}.admin-alert-item{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:12px;border:1px solid transparent;border-radius:13px;transition:all .18s ease;margin-bottom:5px}.admin-alert-item:hover{background:var(--bg-hover);border-color:var(--border);box-shadow:var(--shadow-hover-light)}
+.admin-alert-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--warning-light);color:var(--warning-dark)}.admin-alert-icon.withdraw{background:var(--purple-light);color:var(--purple-dark)}
+.admin-alert-item .aa-title{font-size:12.5px;font-weight:800;color:var(--text);line-height:1.3}.admin-alert-item .aa-sub{font-size:10.5px;color:var(--text-muted);margin-top:4px;line-height:1.35}.admin-alert-item .aa-amount{font-size:12px;font-weight:900;color:var(--text);white-space:nowrap}.admin-alert-item .aa-actions{display:flex;gap:5px;margin-top:7px}.admin-alert-item .aa-actions button{height:28px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);font-size:10px;font-weight:800;padding:0 9px;color:var(--text-secondary);cursor:pointer}.admin-alert-item .aa-actions .review{color:var(--primary-dark);border-color:rgba(10,69,52,.2);background:var(--primary-light)}.admin-alert-empty{padding:50px 22px;text-align:center;color:var(--text-muted)}.admin-alert-empty .ae-icon{width:62px;height:62px;border-radius:20px;background:var(--success-light);color:var(--success-dark);display:flex;align-items:center;justify-content:center;margin:0 auto 13px;font-size:23px}.admin-alert-empty strong{display:block;color:var(--text-secondary);font-size:13px;margin-bottom:5px}.admin-alert-empty span{font-size:11px;line-height:1.5}
+.admin-sound-chip{position:fixed;right:22px;bottom:22px;z-index:1900;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);box-shadow:var(--shadow-lg);border-radius:999px;padding:9px 13px;display:none;align-items:center;gap:7px;font-size:10.5px;font-weight:800;cursor:pointer}.admin-sound-chip.show{display:inline-flex}.admin-sound-chip.on{color:var(--success-dark);border-color:rgba(9,134,88,.2);background:var(--success-light)}
+.admin-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px rgba(16,185,129,.10);animation:livePulse 1.8s ease-in-out infinite}.admin-live-label{font-size:9.5px;color:var(--text-muted);font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+@keyframes livePulse{0%,100%{opacity:.7}50%{opacity:1;transform:scale(1.12)}}
+/* Better empty/error cards everywhere */
+.empty-state,.user-empty,.fund-empty-premium{animation:fadeInUp .28s var(--ease-out)}
+.empty-state .icon{transition:transform .22s ease,box-shadow .22s ease}.empty-state:hover .icon{transform:translateY(-2px);box-shadow:0 8px 22px -10px rgba(10,69,52,.16)}
+.data-list:has(.empty-state){min-height:190px;display:flex;align-items:center;justify-content:center}
+@media (max-width:900px){
+ .admin-alert-panel{top:64px;right:10px;width:calc(100vw - 20px);max-height:calc(100vh - 85px)}
+ .admin-sound-chip{right:12px;bottom:92px}
+ .topbar .actions{gap:5px}.topbar .btn-datashop span{display:none}.topbar .btn-datashop{width:40px;padding:0;justify-content:center}
+ .section-search-inner{width:100%}.section-search-field{min-width:0!important;flex:1 1 100%!important}.section-search-pill{height:50px;flex:1}.section-search-pill .pill-value{max-width:none}
+ .row-item{grid-template-columns:44px minmax(0,1fr);gap:10px}.row-right{grid-column:2;justify-content:space-between;width:100%;padding-top:2px}.row-amount{text-align:left}.row-actions{margin-left:auto}
+ .panel-head,.panel-body{padding-left:15px;padding-right:15px}.panel-footer{padding-left:15px;padding-right:15px}
+}
+@media (max-width:560px){
+ .admin-alert-item{grid-template-columns:36px minmax(0,1fr)}.admin-alert-item>.aa-amount{grid-column:2;text-align:left}.admin-alert-item .aa-actions{flex-wrap:wrap}.admin-alert-item .aa-actions button{flex:1}
+ .content{padding-left:12px!important;padding-right:12px!important}.section-search-hero{padding-left:14px;padding-right:14px}.timeframe-bar{padding:10px}.stats-grid{grid-template-columns:1fr 1fr;gap:10px}.stat-card{padding:14px}.stat-value{font-size:20px}
+ .user-search-field{height:52px}.fund-actions-row{flex-direction:column}
+}
+
 </style>
 </head>
 <body>
@@ -1019,6 +1077,7 @@ button{font-family:inherit}
       </div>
       <div class="actions">
         <button class="btn-datashop" onclick="openDatashopWallet()" title="Datashop Wallet"><i class="fas fa-store"></i><span>Datashop Wallet</span></button>
+        <button class="icon-btn admin-alert-btn" id="adminAlertBtn" onclick="toggleAdminAlerts()" title="Admin notifications" aria-label="Admin notifications"><i class="fas fa-bell"></i><span class="alert-badge" id="adminAlertBadge">0</span></button>
         <button class="icon-btn" onclick="refreshAll()" title="Refresh"><i class="fas fa-sync-alt"></i></button>
       </div>
     </header>
@@ -1133,7 +1192,7 @@ button{font-family:inherit}
             <div class="section-search-inner">
               <div class="section-search-field">
                 <i class="fas fa-search"></i>
-                <input type="text" id="txnSearch" placeholder="Search by phone, reference, or product…" oninput="onTxnSearchInput()" autocomplete="off">
+                <input type="text" id="txnSearch" placeholder="Search by phone, reference, or product…" oninput="onTxnSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();onTxnSearchInput();}" autocomplete="off">
                 <button class="section-search-clear" id="txnSearchClear" onclick="clearTxnSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
               </div>
               <button class="section-search-pill" id="txnTypePill" onclick="openTypeSheet()">
@@ -1164,7 +1223,7 @@ button{font-family:inherit}
             <div class="section-search-inner">
               <div class="section-search-field">
                 <i class="fas fa-search"></i>
-                <input type="text" id="depositSearch" placeholder="Search by user, email, or reference…" oninput="onDepositSearchInput()" autocomplete="off">
+                <input type="text" id="depositSearch" placeholder="Search by user, email, or reference…" oninput="onDepositSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();onDepositSearchInput();}" autocomplete="off">
                 <button class="section-search-clear" id="depositSearchClear" onclick="clearDepositSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
               </div>
               <button class="section-search-pill" id="depositRangePill" onclick="openRangeSheet()">
@@ -1190,7 +1249,7 @@ button{font-family:inherit}
             <div class="section-search-inner">
               <div class="section-search-field">
                 <i class="fas fa-search"></i>
-                <input type="text" id="withdrawalSearch" placeholder="Search by user, bank, or reference…" oninput="onWithdrawalSearchInput()" autocomplete="off">
+                <input type="text" id="withdrawalSearch" placeholder="Search by user, bank, or reference…" oninput="onWithdrawalSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();onWithdrawalSearchInput();}" autocomplete="off">
                 <button class="section-search-clear" id="withdrawalSearchClear" onclick="clearWithdrawalSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
               </div>
               <button class="section-search-pill" id="withdrawalRangePill" onclick="openRangeSheet()">
@@ -1272,7 +1331,7 @@ button{font-family:inherit}
             <div class="section-search-inner">
               <div class="section-search-field">
                 <i class="fas fa-search"></i>
-                <input type="text" id="archSearch" placeholder="Reference or description…" oninput="onArchiveSearchInput()" autocomplete="off">
+                <input type="text" id="archSearch" placeholder="Reference or description…" oninput="onArchiveSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();onArchiveSearchInput();}" autocomplete="off">
                 <button class="section-search-clear" id="archSearchClear" onclick="clearArchSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
               </div>
               <div class="section-search-field" style="flex: 0 0 220px; min-width: 200px;">
@@ -1379,6 +1438,15 @@ button{font-family:inherit}
 
 <div class="modal-overlay" id="rejectDepositModal"><div class="modal"><div class="head"><h3><i class="fas fa-times-circle danger"></i> Reject Deposit</h3><button class="close" onclick="closeRejectDepositModal()"><i class="fas fa-times"></i></button></div><div id="rejectDepositBody"></div><div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--danger-light);border:1px solid rgba(161,34,34,.12);border-radius:10px;margin-bottom:14px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--danger-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;"><i class="fas fa-exclamation"></i></div><div style="font-size:11.5px;color:var(--danger-dark);font-weight:600;line-height:1.45;"><strong>Warning:</strong> The user's wallet will NOT be credited.</div></div><div class="input-group"><label>Reason for Rejection <span style="color:var(--danger-dark)">*</span></label><textarea id="rejectDepositReason" placeholder="e.g. No matching transfer found in the Moniepoint account" rows="3"></textarea><div class="hint">Minimum 5 characters. This will be shown to the user.</div></div><div class="btns"><button class="secondary" id="rejectDepositCancelBtn" onclick="closeRejectDepositModal()">Cancel</button><button class="danger" id="rejectDepositBtn" onclick="submitRejectDeposit()"><i class="fas fa-ban"></i> Reject</button></div></div></div>
 
+<div id="shatovaPageLoader"></div>
+<div class="admin-alert-panel" id="adminAlertPanel" aria-hidden="true">
+  <div class="admin-alert-head">
+    <h3><i class="fas fa-bell"></i> Admin Alerts <span class="admin-live-dot"></span></h3>
+    <div class="alert-head-actions"><button onclick="enableAdminSound()" title="Enable alert sound"><i class="fas fa-volume-high"></i></button><button onclick="clearAdminAlerts()" title="Clear alerts"><i class="fas fa-broom"></i></button><button onclick="toggleAdminAlerts()" title="Close"><i class="fas fa-times"></i></button></div>
+  </div>
+  <div class="admin-alert-list" id="adminAlertList"><div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div></div>
+</div>
+<button class="admin-sound-chip" id="adminSoundChip" onclick="enableAdminSound()"><i class="fas fa-volume-high"></i> Enable approval sound</button>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -1413,7 +1481,7 @@ button{font-family:inherit}
     range: '1d',
     deposits: [], withdrawals: [], transactions: [], users: [],
     userQuery: '', userHasSearched: false, totalUsers: 0,
-    userResults: [], userLoading: false, userTotal: 0, userSearched: false,
+    userResults: [], userLoading: false, userTotal: 0, userSearched: false, userSearchError: '',
     datashop: { balance: 0, totalFunded: 0, totalSpent: 0, lastFunding: null, loaded: false },
     currentApprove: null, currentReject: null,
     currentApproveDeposit: null, currentRejectDeposit: null,
@@ -1424,7 +1492,12 @@ button{font-family:inherit}
     fundUser: null,
     archived: { items: [], page: 1, perPage: 20, total: 0 },
     seenDepositIds: new Set(),
+    seenWithdrawalIds: new Set(),
     notifInitialized: false,
+    withdrawalNotifInitialized: false,
+    adminAlerts: [],
+    adminAlertIds: new Set(),
+    adminSoundEnabled: false,
   };
 
   window.__shatovaAdminState = state;
@@ -1525,6 +1598,88 @@ button{font-family:inherit}
     setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; setTimeout(() => t.remove(), 300); }, 3500);
   }
   window.showToast = showToast;
+
+
+  /* ============================================================
+     ADMIN ALERT CENTER — deposits + withdrawals
+  ============================================================ */
+  let adminAudioCtx = null;
+  function enableAdminSound() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { showToast('This browser does not support alert sound', 'error'); return; }
+      if (!adminAudioCtx) adminAudioCtx = new AC();
+      if (adminAudioCtx.state === 'suspended') adminAudioCtx.resume();
+      state.adminSoundEnabled = true;
+      const chip = $('#adminSoundChip'); if (chip) { chip.classList.remove('show'); chip.classList.add('on'); chip.innerHTML = '<i class="fas fa-volume-high"></i> Approval sound enabled'; setTimeout(()=>chip.classList.remove('on'),1600); }
+      playAdminAlertSound(true);
+      showToast('Approval alert sound enabled', 'success');
+    } catch (_) { showToast('Unable to enable alert sound', 'error'); }
+  }
+  window.enableAdminSound = enableAdminSound;
+
+  function playAdminAlertSound(testOnly = false) {
+    if (!state.adminSoundEnabled && !testOnly) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!adminAudioCtx) adminAudioCtx = new AC();
+      if (adminAudioCtx.state === 'suspended') adminAudioCtx.resume();
+      const now = adminAudioCtx.currentTime;
+      const master = adminAudioCtx.createGain(); master.gain.setValueAtTime(0.0001, now); master.gain.exponentialRampToValueAtTime(0.85, now + 0.025); master.gain.exponentialRampToValueAtTime(0.0001, now + 0.34); master.connect(adminAudioCtx.destination);
+      [880,1174,880,1174].forEach((freq, i) => { const osc=adminAudioCtx.createOscillator(); const g=adminAudioCtx.createGain(); const st=now+i*0.11; osc.type='sine'; osc.frequency.setValueAtTime(freq,st); g.gain.setValueAtTime(0.0001,st); g.gain.exponentialRampToValueAtTime(0.9,st+0.018); g.gain.exponentialRampToValueAtTime(0.0001,st+0.095); osc.connect(g); g.connect(master); osc.start(st); osc.stop(st+0.105); });
+    } catch (_) {}
+  }
+
+  function alertId(type, item) { return `${type}:${String(item?.id || item?.reference || item?.tx_ref || '')}`; }
+  function addAdminAlert(type, item) {
+    const id = alertId(type, item); if (!id || id.endsWith(':')) return;
+    if (state.adminAlertIds.has(id)) return;
+    state.adminAlertIds.add(id);
+    state.adminAlerts.unshift({ id, type, item, createdAt: Date.now() });
+    state.adminAlerts = state.adminAlerts.slice(0, 30);
+    renderAdminAlerts();
+    const name = item.user_name || item.name || item.user_email || 'User';
+    const amount = formatMoney(getAmount(item));
+    showToast(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} needs approval · ${name} · ${amount}`, 'info');
+    playAdminAlertSound(false);
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try { new Notification(type === 'deposit' ? 'Shatova · Deposit approval' : 'Shatova · Withdrawal approval', { body: `${name} · ${amount} is waiting for admin approval.` }); } catch (_) {}
+    }
+  }
+  function renderAdminAlerts() {
+    const list = $('#adminAlertList'); const badge = $('#adminAlertBadge'); const btn = $('#adminAlertBtn'); if (!list) return;
+    const count = state.adminAlerts.length;
+    if (badge) badge.textContent = count > 99 ? '99+' : String(count);
+    if (btn) btn.classList.toggle('has-alert', count > 0);
+    if (!count) { list.innerHTML='<div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div>'; return; }
+    list.innerHTML = state.adminAlerts.map(a => {
+      const it=a.item||{}; const name=it.user_name||it.name||it.user_email||'User'; const amount=formatMoney(getAmount(it)); const isW=a.type==='withdrawal'; const ref=it.reference||it.tx_ref||it.id||'—';
+      return `<div class="admin-alert-item"><div class="admin-alert-icon ${isW?'withdraw':''}"><i class="fas ${isW?'fa-arrow-up':'fa-arrow-down'}"></i></div><div><div class="aa-title">${isW?'Withdrawal':'Deposit'} awaiting approval</div><div class="aa-sub">${escapeHtml(name)} · Ref ${escapeHtml(String(ref))}</div><div class="aa-actions"><button class="review" onclick="reviewAdminAlert('${escapeHtml(a.id)}')"><i class="fas fa-eye"></i> Review</button><button onclick="dismissAdminAlert('${escapeHtml(a.id)}')"><i class="fas fa-check"></i> Dismiss</button></div></div><div class="aa-amount">${isW?'-':'+'}${amount}</div></div>`;
+    }).join('');
+  }
+  window.renderAdminAlerts = renderAdminAlerts;
+  function toggleAdminAlerts() { const p=$('#adminAlertPanel'); if (!p) return; const open=p.classList.toggle('open'); p.setAttribute('aria-hidden',String(!open)); if(open) renderAdminAlerts(); }
+  window.toggleAdminAlerts = toggleAdminAlerts;
+  function dismissAdminAlert(id) { state.adminAlerts=state.adminAlerts.filter(a=>a.id!==id); renderAdminAlerts(); }
+  window.dismissAdminAlert=dismissAdminAlert;
+  function clearAdminAlerts() { state.adminAlerts=[]; renderAdminAlerts(); }
+  window.clearAdminAlerts=clearAdminAlerts;
+  function reviewAdminAlert(id) { const a=state.adminAlerts.find(x=>x.id===id); if(!a) return; toggleAdminAlerts(); if(a.type==='deposit'){ switchTab('deposits'); setTimeout(()=>openApproveDepositModal(a.item.id||a.item.reference),220); } else { switchTab('withdrawals'); setTimeout(()=>openApproveModal(a.item.id||a.item.reference),220); } }
+  window.reviewAdminAlert=reviewAdminAlert;
+
+  function requestAdminNotificationPermission() {
+    if (!('Notification' in window) || Notification.permission !== 'default') return;
+    try { Notification.requestPermission().catch(()=>{}); } catch (_) {}
+  }
+  function detectNewAdminApprovals() {
+    const deposits=(state.deposits||[]).filter(isPendingDeposit);
+    const withdrawals=(state.withdrawals||[]).filter(w=>getStatus(w)==='pending');
+    if(!state.notifInitialized){ deposits.forEach(d=>state.seenDepositIds.add(String(d.id||d.reference||''))); state.notifInitialized=true; }
+    else deposits.forEach(d=>{ const id=String(d.id||d.reference||''); if(id && !state.seenDepositIds.has(id)){ state.seenDepositIds.add(id); addAdminAlert('deposit',d); } });
+    if(!state.withdrawalNotifInitialized){ withdrawals.forEach(w=>state.seenWithdrawalIds.add(String(w.id||w.reference||''))); state.withdrawalNotifInitialized=true; }
+    else withdrawals.forEach(w=>{ const id=String(w.id||w.reference||''); if(id && !state.seenWithdrawalIds.has(id)){ state.seenWithdrawalIds.add(id); addAdminAlert('withdrawal',w); } });
+  }
 
   function getAmount(o) {
     if (o == null) return 0;
@@ -1770,6 +1925,8 @@ button{font-family:inherit}
     drift: { title: 'Wallet Drift', sub: 'Balance vs ledger' },
   };
   function switchTab(tab) {
+    const loader = document.getElementById('shatovaPageLoader');
+    if (loader) { loader.classList.add('active'); clearTimeout(window.__shatovaTabLoaderTimer); window.__shatovaTabLoaderTimer=setTimeout(()=>loader.classList.remove('active'),650); }
     state.activeTab = tab;
     $$('[data-tab]').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
     ['overview', 'analytics', 'users', 'transactions', 'deposits', 'withdrawals', 'fund', 'archived', 'mismatches', 'drift'].forEach(t => { const el = document.getElementById('tab-' + t); if (el) el.style.display = t === tab ? 'block' : 'none'; });
@@ -1803,7 +1960,7 @@ button{font-family:inherit}
   async function searchUsersServer(q) {
     const seq = ++userSearchSeq;
     try { const res = await apiCall(`/admin/users?search=${encodeURIComponent(q)}&limit=50`); if (seq !== userSearchSeq) return; const found = pickArray(res); state.userResults = found; state.userTotal = res?.meta?.total ?? res?.data?.total ?? found.length; }
-    catch (err) { if (seq !== userSearchSeq) return; console.warn('[admin] user search:', err.message); }
+    catch (err) { if (seq !== userSearchSeq) return; console.warn('[admin] user search:', err.message); state.userResults=[]; state.userTotal=0; state.userSearchError=err.message || 'Search failed'; }
     finally { if (seq === userSearchSeq) { state.userLoading = false; setUserSearchSpinner(false); renderUsers(); } }
   }
   async function fetchTransactions() { try { const res = await apiCall('/admin/transactions?limit=500'); state.transactions = pickArray(res); } catch (err) { console.warn('[admin] transactions:', err.message); state.transactions = []; } }
@@ -2101,6 +2258,11 @@ button{font-family:inherit}
       return;
     }
     const list = state.userResults || [];
+    if (state.userSearchError) {
+      setBar(`<span class="user-results-count"><i class="fas fa-circle-exclamation" style="color:var(--danger-dark);"></i> Search could not be completed</span>`, true);
+      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon" style="background:var(--danger-light);color:var(--danger-dark);"><i class="fas fa-wifi"></i></div><div class="user-empty-title">Unable to search users</div><div class="user-empty-text">The directory could not be reached right now. Nothing is hidden or silently discarded.</div><div class="user-empty-tips"><button class="user-empty-tip" onclick="retryUserSearch()"><i class="fas fa-rotate"></i> Try again</button></div></div>`;
+      return;
+    }
     if (!list.length) {
       setBar(`<span class="user-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> No matches for <span class="search-term">${escapeHtml(q)}</span></span>`, true);
       c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-user-slash"></i></div><div class="user-empty-title">No user found</div><div class="user-empty-text">We couldn't find anyone matching "${escapeHtml(q)}". Check the spelling, or try a different phone number or email.</div><div class="user-empty-tips"><button class="user-empty-tip" onclick="clearUserSearch()"><i class="fas fa-rotate-left"></i> Clear search</button><button class="user-empty-tip" onclick="quickUserSearch('active')"><i class="fas fa-users"></i> Browse all users</button></div></div>`;
@@ -2125,7 +2287,7 @@ button{font-family:inherit}
   let userSearchTimer = null;
   function onUserSearchInput(e) {
     const q = e?.target?.value ?? '';
-    state.userQuery = q;
+    state.userQuery = q; state.userSearchError = '';
     state.userSearched = q.trim().length > 0;
     clearTimeout(userSearchTimer);
     if (!q.trim()) { state.userResults = []; state.userLoading = false; userSearchSeq++; setUserSearchSpinner(false); renderUsers(); return; }
@@ -2137,8 +2299,10 @@ button{font-family:inherit}
     userSearchTimer = setTimeout(() => searchUsersServer(q.trim()), 320);
   }
   window.onUserSearchInput = onUserSearchInput;
+  function retryUserSearch(){ state.userSearchError=''; const q=String(state.userQuery||'').trim(); if(!q){renderUsers();return;} state.userLoading=true; setUserSearchSpinner(true); renderUsers(); searchUsersServer(q); }
+  window.retryUserSearch = retryUserSearch;
 
-  function clearUserSearch() { const input = document.getElementById('userSearch'); if (input) { input.value = ''; input.focus(); } state.userQuery = ''; state.userSearched = false; state.userResults = []; state.userLoading = false; userSearchSeq++; setUserSearchSpinner(false); renderUsers(); }
+  function clearUserSearch() { const input = document.getElementById('userSearch'); if (input) { input.value = ''; input.focus(); } state.userQuery = ''; state.userSearchError = ''; state.userSearched = false; state.userResults = []; state.userLoading = false; userSearchSeq++; setUserSearchSpinner(false); renderUsers(); }
   window.clearUserSearch = clearUserSearch;
 
   function quickUserSearch(term) {
@@ -2591,7 +2755,7 @@ button{font-family:inherit}
       showToast(`Found ${name}`, 'success');
     } catch (err) {
       state.fundUser = null;
-      if (preview) preview.innerHTML = `<div class="fund-user-card error"><div class="fu-error-icon"><i class="fas fa-user-slash"></i></div><div class="fu-error-title">User not found</div><div class="fu-error-text">${escapeHtml(err.message || 'No user matches that phone number, email, or ID.')}</div></div>`;
+      if (preview) preview.innerHTML = `<div class="fund-user-card error"><div class="fu-error-icon"><i class="fas fa-user-slash"></i></div><div class="fu-error-title">No matching user</div><div class="fu-error-text">We couldn't find an account for <strong>${escapeHtml(q)}</strong>. Check the phone number, email, or user ID and try again.</div><div style="margin-top:14px;"><button class="user-empty-tip" onclick="document.getElementById('fundLookupQuery')?.focus()"><i class="fas fa-rotate"></i> Search again</button></div></div>`;
       if (empty) empty.style.display = 'none'; if (form) form.classList.remove('revealed');
     } finally { if (btn) { btn.disabled = false; btn.innerHTML = originalBtnIcon; } }
   }
@@ -2727,6 +2891,8 @@ button{font-family:inherit}
     await Promise.all([fetchMe(), fetchUsers(), fetchTransactions(), fetchDeposits(), fetchWithdrawals(), fetchDatashopWallet()]);
     updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); renderChart(); updateAnalyticsKpis(); syncRangeUI(); syncTypeUI();
     detectNewPendingDeposits();
+    detectNewAdminApprovals();
+    renderAdminAlerts();
     if (state.activeTab === 'mismatches') loadMismatches();
     if (state.activeTab === 'drift') loadDrift();
     if (state.activeTab === 'archived') loadArchived(state.archived.page);
@@ -2761,6 +2927,10 @@ button{font-family:inherit}
   });
 
   /* ---------- INIT ---------- */
+  requestAdminNotificationPermission();
+  renderAdminAlerts();
+  setInterval(() => { detectNewAdminApprovals(); }, 2500);
+  document.addEventListener('click', (e) => { if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) { const p=$('#adminAlertPanel'); if(p?.classList.contains('open')) toggleAdminAlerts(); } });
   async function init() {
     wireRangePills(); syncRangeUI(); syncTypeUI(); resetFundTab(); renderUsers();
     await refreshAll(true);
