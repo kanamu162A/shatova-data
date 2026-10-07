@@ -743,6 +743,23 @@ button{font-family:inherit}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* ============================================================
+   ALARM BANNER (fullscreen loud alert)
+============================================================ */
+.alarm-banner{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at center,rgba(161,34,34,.92),rgba(90,15,15,.96));display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;color:#fff;text-align:center;padding:30px;animation:alarmPulseBg 1s ease-in-out infinite alternate}
+.alarm-banner.show{display:flex}
+@keyframes alarmPulseBg{from{background-color:rgba(161,34,34,.92)}to{background-color:rgba(220,38,38,.96)}}
+.alarm-banner .alarm-icon{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:60px;animation:alarmShake 0.5s ease-in-out infinite}
+@keyframes alarmShake{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.1)}}
+.alarm-banner h2{font-size:32px;font-weight:900;letter-spacing:-1px;text-shadow:0 4px 20px rgba(0,0,0,.35)}
+.alarm-banner p{font-size:16px;opacity:.92;max-width:520px;line-height:1.55}
+.alarm-banner .alarm-actions{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+.alarm-banner button{padding:14px 26px;border-radius:12px;border:none;font-size:15px;font-weight:800;cursor:pointer;transition:transform .18s ease}
+.alarm-banner .alarm-view{background:#fff;color:#8d2424}
+.alarm-banner .alarm-view:hover{transform:translateY(-2px)}
+.alarm-banner .alarm-mute{background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.alarm-banner .alarm-mute:hover{background:rgba(0,0,0,.5)}
+
+/* ============================================================
    RESPONSIVE
 ============================================================ */
 @media (max-width:900px){
@@ -841,6 +858,8 @@ button{font-family:inherit}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
   .kpi .k-value{font-size:19px}
   .chart-summary .big{font-size:22px}
+  .alarm-banner h2{font-size:24px}
+  .alarm-banner .alarm-icon{width:90px;height:90px;font-size:44px}
 }
 
 @media (max-width:500px){
@@ -1624,6 +1643,18 @@ button:not(:disabled){cursor:pointer}
 <div class="modal-overlay" id="rejectDepositModal"><div class="modal"><div class="head"><h3><i class="fas fa-times-circle danger"></i> Reject Deposit</h3><button class="close" onclick="closeRejectDepositModal()"><i class="fas fa-times"></i></button></div><div id="rejectDepositBody"></div><div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--danger-light);border:1px solid rgba(161,34,34,.12);border-radius:10px;margin-bottom:14px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--danger-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;"><i class="fas fa-exclamation"></i></div><div style="font-size:11.5px;color:var(--danger-dark);font-weight:600;line-height:1.45;"><strong>Warning:</strong> The user's wallet will NOT be credited.</div></div><div class="input-group"><label>Reason for Rejection <span style="color:var(--danger-dark)">*</span></label><textarea id="rejectDepositReason" placeholder="e.g. No matching transfer found in the Moniepoint account" rows="3"></textarea><div class="hint">Minimum 5 characters. This will be shown to the user.</div></div><div class="btns"><button class="secondary" id="rejectDepositCancelBtn" onclick="closeRejectDepositModal()">Cancel</button><button class="danger" id="rejectDepositBtn" onclick="submitRejectDeposit()"><i class="fas fa-ban"></i> Reject</button></div></div></div>
 
 <div id="shatovaPageLoader"></div>
+
+<!-- ★ FULLSCREEN ALARM BANNER (loud alert) -->
+<div class="alarm-banner" id="alarmBanner" aria-live="assertive">
+  <div class="alarm-icon"><i class="fas fa-bell"></i></div>
+  <h2 id="alarmBannerTitle">🚨 New Approval Alert</h2>
+  <p id="alarmBannerText">A new deposit is waiting for your approval. Please review it now.</p>
+  <div class="alarm-actions">
+    <button class="alarm-view" onclick="handleAlarmView()"><i class="fas fa-eye"></i> Review Now</button>
+    <button class="alarm-mute" onclick="handleAlarmMute()"><i class="fas fa-volume-xmark"></i> Mute Alarm</button>
+  </div>
+</div>
+
 <div class="admin-alert-panel" id="adminAlertPanel" aria-hidden="true">
   <div class="admin-alert-head">
     <h3><i class="fas fa-bell"></i> Admin Alerts <span class="admin-live-dot"></span></h3>
@@ -1631,7 +1662,7 @@ button:not(:disabled){cursor:pointer}
   </div>
   <div class="admin-alert-list" id="adminAlertList"><div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div></div>
 </div>
-<button class="admin-sound-chip" id="adminSoundChip" onclick="enableAdminSound()"><i class="fas fa-volume-high"></i> Enable approval sound</button>
+<button class="admin-sound-chip show" id="adminSoundChip" onclick="enableAdminSound()"><i class="fas fa-volume-high"></i> 🔊 Enable loud alert sound</button>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -1786,86 +1817,339 @@ button:not(:disabled){cursor:pointer}
   }
   window.showToast = showToast;
 
-
   /* ============================================================
-     ADMIN ALERT CENTER — deposits + withdrawals
+     LOUD ADMIN ALARM ENGINE
+     - Two-tone siren (square wave, alternating 1200Hz / 900Hz)
+     - Deep sub-bass rumble (sine wave 70Hz → 45Hz)
+     - Rapid triangle clicks for urgency
+     - Loops every 1.55s until acknowledged (or 45s safety timeout)
   ============================================================ */
   let adminAudioCtx = null;
-  function enableAdminSound() {
+  let adminAlarmLoopTimer = null;
+  let adminAlarmStopTimer = null;
+  let adminAlarmActive = false;
+
+  function ensureAudioCtx() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!adminAudioCtx) adminAudioCtx = new AC();
+    if (adminAudioCtx.state === 'suspended') adminAudioCtx.resume().catch(()=>{});
+    return adminAudioCtx;
+  }
+
+  function unlockAdminAudio() {
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
     try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) { showToast('This browser does not support alert sound', 'error'); return; }
-      if (!adminAudioCtx) adminAudioCtx = new AC();
-      if (adminAudioCtx.state === 'suspended') adminAudioCtx.resume();
-      state.adminSoundEnabled = true;
-      const chip = $('#adminSoundChip'); if (chip) { chip.classList.remove('show'); chip.classList.add('on'); chip.innerHTML = '<i class="fas fa-volume-high"></i> Approval sound enabled'; setTimeout(()=>chip.classList.remove('on'),1600); }
-      playAdminAlertSound(true);
-      showToast('Approval alert sound enabled', 'success');
-    } catch (_) { showToast('Unable to enable alert sound', 'error'); }
+      const buf = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch (_) {}
+  }
+  window.unlockAdminAudio = unlockAdminAudio;
+
+  // Restore sound preference on load
+  try { if (localStorage.getItem('adminSoundEnabled') === '1') state.adminSoundEnabled = true; } catch (_) {}
+
+  function enableAdminSound() {
+    const ctx = ensureAudioCtx();
+    if (!ctx) { showToast('This browser does not support alert sound', 'error'); return; }
+    state.adminSoundEnabled = true;
+    try { localStorage.setItem('adminSoundEnabled', '1'); } catch (_) {}
+    const chip = $('#adminSoundChip');
+    if (chip) {
+      chip.classList.remove('show'); chip.classList.add('on');
+      chip.innerHTML = '<i class="fas fa-volume-high"></i> Approval alarm ON';
+      setTimeout(()=>{ chip.classList.remove('on'); chip.classList.add('show'); }, 1600);
+    }
+    playAdminAlertSound(true);
+    showToast('🔊 Loud approval alarm enabled', 'success');
   }
   window.enableAdminSound = enableAdminSound;
 
-  function playAdminAlertSound(testOnly = false) {
-    if (!state.adminSoundEnabled && !testOnly) return;
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      if (!adminAudioCtx) adminAudioCtx = new AC();
-      if (adminAudioCtx.state === 'suspended') adminAudioCtx.resume();
-      const now = adminAudioCtx.currentTime;
-      const master = adminAudioCtx.createGain(); master.gain.setValueAtTime(0.0001, now); master.gain.exponentialRampToValueAtTime(0.85, now + 0.025); master.gain.exponentialRampToValueAtTime(0.0001, now + 0.34); master.connect(adminAudioCtx.destination);
-      [880,1174,880,1174].forEach((freq, i) => { const osc=adminAudioCtx.createOscillator(); const g=adminAudioCtx.createGain(); const st=now+i*0.11; osc.type='sine'; osc.frequency.setValueAtTime(freq,st); g.gain.setValueAtTime(0.0001,st); g.gain.exponentialRampToValueAtTime(0.9,st+0.018); g.gain.exponentialRampToValueAtTime(0.0001,st+0.095); osc.connect(g); g.connect(master); osc.start(st); osc.stop(st+0.105); });
-    } catch (_) {}
+  function buildAlarmBurst(ctx, startAt, duration = 1.4, intensity = 1.0) {
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, startAt);
+    master.gain.exponentialRampToValueAtTime(0.9 * intensity, startAt + 0.05);
+    master.gain.setValueAtTime(0.9 * intensity, startAt + duration - 0.08);
+    master.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+    master.connect(ctx.destination);
+
+    // 1) Two-tone siren — square wave alternating 1200Hz / 900Hz
+    const toneA = ctx.createOscillator();
+    const toneB = ctx.createOscillator();
+    const gainA = ctx.createGain();
+    const gainB = ctx.createGain();
+    toneA.type = 'square';
+    toneB.type = 'square';
+    toneA.frequency.setValueAtTime(1200, startAt);
+    toneB.frequency.setValueAtTime(900, startAt);
+    gainA.gain.setValueAtTime(0.4, startAt);
+    gainB.gain.setValueAtTime(0.05, startAt);
+    toneA.connect(gainA); gainA.connect(master);
+    toneB.connect(gainB); gainB.connect(master);
+    toneA.start(startAt); toneB.start(startAt);
+    const flipStep = 0.4;
+    for (let t = startAt; t < startAt + duration; t += flipStep) {
+      const loud = (Math.round((t - startAt) / flipStep) % 2 === 0);
+      gainA.gain.setValueAtTime(loud ? 0.45 : 0.05, t);
+      gainB.gain.setValueAtTime(loud ? 0.05 : 0.45, t);
+    }
+    toneA.stop(startAt + duration);
+    toneB.stop(startAt + duration);
+
+    // 2) Deep sub-bass rumble
+    const sub = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(70, startAt);
+    sub.frequency.exponentialRampToValueAtTime(45, startAt + duration);
+    subGain.gain.setValueAtTime(0.0001, startAt);
+    subGain.gain.exponentialRampToValueAtTime(0.5 * intensity, startAt + 0.03);
+    subGain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+    sub.connect(subGain); subGain.connect(master);
+    sub.start(startAt); sub.stop(startAt + duration);
+
+    // 3) Rapid clicks
+    const clickCount = Math.floor(duration / 0.2);
+    for (let i = 0; i < clickCount; i++) {
+      const t = startAt + i * 0.2;
+      const click = ctx.createOscillator();
+      const cg = ctx.createGain();
+      click.type = 'triangle';
+      click.frequency.setValueAtTime(2200, t);
+      cg.gain.setValueAtTime(0.28 * intensity, t);
+      cg.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+      click.connect(cg); cg.connect(master);
+      click.start(t); click.stop(t + 0.05);
+    }
   }
 
+  function playAdminAlertSound(testOnly = false, options = {}) {
+    if (!state.adminSoundEnabled && !testOnly) return;
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+
+    stopAdminAlarm();
+
+    const now = ctx.currentTime + 0.02;
+    buildAlarmBurst(ctx, now, options.duration || 1.4, options.intensity || 1.0);
+
+    if (options.loop) {
+      adminAlarmActive = true;
+      const repeat = () => {
+        if (!adminAlarmActive) return;
+        try {
+          const t = ctx.currentTime + 0.02;
+          buildAlarmBurst(ctx, t, 1.4, 1.0);
+        } catch (_) {}
+        adminAlarmLoopTimer = setTimeout(repeat, 1550);
+      };
+      adminAlarmLoopTimer = setTimeout(repeat, 1550);
+      adminAlarmStopTimer = setTimeout(() => stopAdminAlarm(), 45000);
+    }
+  }
+  window.playAdminAlertSound = playAdminAlertSound;
+
+  function stopAdminAlarm() {
+    adminAlarmActive = false;
+    if (adminAlarmLoopTimer) { clearTimeout(adminAlarmLoopTimer); adminAlarmLoopTimer = null; }
+    if (adminAlarmStopTimer) { clearTimeout(adminAlarmStopTimer); adminAlarmStopTimer = null; }
+  }
+  window.stopAdminAlarm = stopAdminAlarm;
+
+  function playSoftChime() {
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime + 0.02;
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.exponentialRampToValueAtTime(0.55, now + 0.02);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+    master.connect(ctx.destination);
+    [1046, 1318, 1568].forEach((f, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      const st = now + i * 0.09;
+      o.type = 'sine';
+      o.frequency.setValueAtTime(f, st);
+      g.gain.setValueAtTime(0.0001, st);
+      g.gain.exponentialRampToValueAtTime(0.7, st + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, st + 0.22);
+      o.connect(g); g.connect(master);
+      o.start(st); o.stop(st + 0.24);
+    });
+  }
+  window.playSoftChime = playSoftChime;
+
+  /* ---------- Full-screen alarm banner ---------- */
+  function showAlarmBanner(title, text) {
+    const b = document.getElementById('alarmBanner');
+    if (!b) return;
+    const tEl = document.getElementById('alarmBannerTitle');
+    const pEl = document.getElementById('alarmBannerText');
+    if (tEl) tEl.textContent = title;
+    if (pEl) pEl.textContent = text;
+    b.classList.add('show');
+  }
+  window.showAlarmBanner = showAlarmBanner;
+
+  function hideAlarmBanner() {
+    const b = document.getElementById('alarmBanner');
+    if (b) b.classList.remove('show');
+  }
+  window.hideAlarmBanner = hideAlarmBanner;
+
+  function handleAlarmView() {
+    hideAlarmBanner();
+    stopAdminAlarm();
+    const p = document.getElementById('adminAlertPanel');
+    if (p && !p.classList.contains('open')) toggleAdminAlerts();
+  }
+  window.handleAlarmView = handleAlarmView;
+
+  function handleAlarmMute() {
+    hideAlarmBanner();
+    stopAdminAlarm();
+  }
+  window.handleAlarmMute = handleAlarmMute;
+
+  /* ============================================================
+     ADMIN ALERT CENTER
+  ============================================================ */
   function alertId(type, item) { return `${type}:${String(item?.id || item?.reference || item?.tx_ref || '')}`; }
+
   function addAdminAlert(type, item) {
-    const id = alertId(type, item); if (!id || id.endsWith(':')) return;
+    const id = alertId(type, item);
+    if (!id || id.endsWith(':')) return;
     if (state.adminAlertIds.has(id)) return;
     state.adminAlertIds.add(id);
     state.adminAlerts.unshift({ id, type, item, createdAt: Date.now() });
     state.adminAlerts = state.adminAlerts.slice(0, 30);
     renderAdminAlerts();
+
     const name = item.user_name || item.name || item.user_email || 'User';
     const amount = formatMoney(getAmount(item));
     showToast(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} needs approval · ${name} · ${amount}`, 'info');
-    playAdminAlertSound(false);
+
+    // 🔊 LOUD LOOPING ALARM + FULLSCREEN BANNER
+    playAdminAlertSound(false, { loop: true, duration: 1.4, intensity: 1.0 });
+    showAlarmBanner(
+      type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert',
+      `${name} · ${amount} is waiting for your approval. Review it now.`
+    );
+
     if ('Notification' in window && Notification.permission === 'granted') {
-      try { new Notification(type === 'deposit' ? 'Shatova · Deposit approval' : 'Shatova · Withdrawal approval', { body: `${name} · ${amount} is waiting for admin approval.` }); } catch (_) {}
+      try {
+        new Notification(type === 'deposit' ? 'Shatova · Deposit approval' : 'Shatova · Withdrawal approval', {
+          body: `${name} · ${amount} is waiting for admin approval.`,
+          requireInteraction: true,
+        });
+      } catch (_) {}
     }
   }
+
   function renderAdminAlerts() {
-    const list = $('#adminAlertList'); const badge = $('#adminAlertBadge'); const btn = $('#adminAlertBtn'); if (!list) return;
+    const list = $('#adminAlertList'); const badge = $('#adminAlertBadge'); const btn = $('#adminAlertBtn');
+    if (!list) return;
     const count = state.adminAlerts.length;
     if (badge) badge.textContent = count > 99 ? '99+' : String(count);
     if (btn) btn.classList.toggle('has-alert', count > 0);
-    if (!count) { list.innerHTML='<div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div>'; return; }
+    if (!count) {
+      list.innerHTML = '<div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div>';
+      return;
+    }
     list.innerHTML = state.adminAlerts.map(a => {
-      const it=a.item||{}; const name=it.user_name||it.name||it.user_email||'User'; const amount=formatMoney(getAmount(it)); const isW=a.type==='withdrawal'; const ref=it.reference||it.tx_ref||it.id||'—';
+      const it = a.item || {};
+      const name = it.user_name || it.name || it.user_email || 'User';
+      const amount = formatMoney(getAmount(it));
+      const isW = a.type === 'withdrawal';
+      const ref = it.reference || it.tx_ref || it.id || '—';
       return `<div class="admin-alert-item"><div class="admin-alert-icon ${isW?'withdraw':''}"><i class="fas ${isW?'fa-arrow-up':'fa-arrow-down'}"></i></div><div><div class="aa-title">${isW?'Withdrawal':'Deposit'} awaiting approval</div><div class="aa-sub">${escapeHtml(name)} · Ref ${escapeHtml(String(ref))}</div><div class="aa-actions"><button class="review" onclick="reviewAdminAlert('${escapeHtml(a.id)}')"><i class="fas fa-eye"></i> Review</button><button onclick="dismissAdminAlert('${escapeHtml(a.id)}')"><i class="fas fa-check"></i> Dismiss</button></div></div><div class="aa-amount">${isW?'-':'+'}${amount}</div></div>`;
     }).join('');
   }
   window.renderAdminAlerts = renderAdminAlerts;
-  function toggleAdminAlerts() { const p=$('#adminAlertPanel'); if (!p) return; const open=p.classList.toggle('open'); p.setAttribute('aria-hidden',String(!open)); if(open) renderAdminAlerts(); }
+
+  function toggleAdminAlerts() {
+    const p = $('#adminAlertPanel');
+    if (!p) return;
+    const open = p.classList.toggle('open');
+    p.setAttribute('aria-hidden', String(!open));
+    if (open) {
+      renderAdminAlerts();
+      stopAdminAlarm();
+      hideAlarmBanner();
+    }
+  }
   window.toggleAdminAlerts = toggleAdminAlerts;
-  function dismissAdminAlert(id) { state.adminAlerts=state.adminAlerts.filter(a=>a.id!==id); renderAdminAlerts(); }
-  window.dismissAdminAlert=dismissAdminAlert;
-  function clearAdminAlerts() { state.adminAlerts=[]; renderAdminAlerts(); }
-  window.clearAdminAlerts=clearAdminAlerts;
-  function reviewAdminAlert(id) { const a=state.adminAlerts.find(x=>x.id===id); if(!a) return; toggleAdminAlerts(); if(a.type==='deposit'){ switchTab('deposits'); setTimeout(()=>openApproveDepositModal(a.item.id||a.item.reference),220); } else { switchTab('withdrawals'); setTimeout(()=>openApproveModal(a.item.id||a.item.reference),220); } }
-  window.reviewAdminAlert=reviewAdminAlert;
+
+  function dismissAdminAlert(id) {
+    state.adminAlerts = state.adminAlerts.filter(a => a.id !== id);
+    renderAdminAlerts();
+    stopAdminAlarm();
+    if (!state.adminAlerts.length) hideAlarmBanner();
+  }
+  window.dismissAdminAlert = dismissAdminAlert;
+
+  function clearAdminAlerts() {
+    state.adminAlerts = [];
+    renderAdminAlerts();
+    stopAdminAlarm();
+    hideAlarmBanner();
+  }
+  window.clearAdminAlerts = clearAdminAlerts;
+
+  function reviewAdminAlert(id) {
+    const a = state.adminAlerts.find(x => x.id === id);
+    if (!a) return;
+    stopAdminAlarm();
+    hideAlarmBanner();
+    if (a.type === 'deposit') {
+      switchTab('deposits');
+      setTimeout(() => openApproveDepositModal(a.item.id || a.item.reference), 220);
+    } else {
+      switchTab('withdrawals');
+      setTimeout(() => openApproveModal(a.item.id || a.item.reference), 220);
+    }
+  }
+  window.reviewAdminAlert = reviewAdminAlert;
 
   function requestAdminNotificationPermission() {
     if (!('Notification' in window) || Notification.permission !== 'default') return;
     try { Notification.requestPermission().catch(()=>{}); } catch (_) {}
   }
+
   function detectNewAdminApprovals() {
-    const deposits=(state.deposits||[]).filter(isPendingDeposit);
-    const withdrawals=(state.withdrawals||[]).filter(w=>getStatus(w)==='pending');
-    if(!state.notifInitialized){ deposits.forEach(d=>state.seenDepositIds.add(String(d.id||d.reference||''))); state.notifInitialized=true; }
-    else deposits.forEach(d=>{ const id=String(d.id||d.reference||''); if(id && !state.seenDepositIds.has(id)){ state.seenDepositIds.add(id); addAdminAlert('deposit',d); } });
-    if(!state.withdrawalNotifInitialized){ withdrawals.forEach(w=>state.seenWithdrawalIds.add(String(w.id||w.reference||''))); state.withdrawalNotifInitialized=true; }
-    else withdrawals.forEach(w=>{ const id=String(w.id||w.reference||''); if(id && !state.seenWithdrawalIds.has(id)){ state.seenWithdrawalIds.add(id); addAdminAlert('withdrawal',w); } });
+    const deposits = (state.deposits || []).filter(isPendingDeposit);
+    const withdrawals = (state.withdrawals || []).filter(w => getStatus(w) === 'pending');
+
+    if (!state.notifInitialized) {
+      deposits.forEach(d => state.seenDepositIds.add(String(d.id || d.reference || '')));
+      state.notifInitialized = true;
+    } else {
+      deposits.forEach(d => {
+        const id = String(d.id || d.reference || '');
+        if (id && !state.seenDepositIds.has(id)) {
+          state.seenDepositIds.add(id);
+          addAdminAlert('deposit', d);
+        }
+      });
+    }
+
+    if (!state.withdrawalNotifInitialized) {
+      withdrawals.forEach(w => state.seenWithdrawalIds.add(String(w.id || w.reference || '')));
+      state.withdrawalNotifInitialized = true;
+    } else {
+      withdrawals.forEach(w => {
+        const id = String(w.id || w.reference || '');
+        if (id && !state.seenWithdrawalIds.has(id)) {
+          state.seenWithdrawalIds.add(id);
+          addAdminAlert('withdrawal', w);
+        }
+      });
+    }
   }
 
   function getAmount(o) {
@@ -2210,13 +2494,6 @@ button:not(:disabled){cursor:pointer}
     requestAnimationFrame(() => { requestAnimationFrame(() => el.classList.add('show')); });
     const timer = setTimeout(() => dismissNotifEl(el), 12000);
     el._dismissTimer = timer;
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination);
-      o.type = 'sine'; o.frequency.setValueAtTime(880, ctx.currentTime); o.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.12);
-      g.gain.setValueAtTime(0.0001, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
-      o.start(); o.stop(ctx.currentTime + 0.32);
-    } catch (_) { /* silent */ }
   }
   function dismissNotifEl(el) {
     if (!el || !el.parentNode) return;
@@ -2581,7 +2858,6 @@ button:not(:disabled){cursor:pointer}
     const list = getFilteredTransactions();
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     const total = list.reduce((s, t) => s + getAmount(t), 0);
-    const typeLabel = TXN_TYPES[state.txnFilter]?.label || 'All types';
 
     const bar = $('#txnResultsBar');
     const c = $('#transactionsList');
@@ -2917,6 +3193,7 @@ button:not(:disabled){cursor:pointer}
     const w = (state.withdrawals || []).find(x => String(x.id) === String(id));
     if (!w) return;
     state.currentApprove = w;
+    stopAdminAlarm();
     $('#approveBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${escapeHtml(w.user_name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${formatMoney(getAmount(w))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${escapeHtml(w.reference || '—')}</span></div>`;
     $('#approveRef').value = ''; $('#approveNotes').value = '';
     resetWithdrawApproveButton();
@@ -2928,6 +3205,7 @@ button:not(:disabled){cursor:pointer}
   window.closeApproveModal = closeApproveModal;
   async function submitApprove() {
     if (!state.currentApprove || state.withdrawApprovePending) return;
+    stopAdminAlarm();
     const ref = $('#approveRef').value.trim(); const notes = $('#approveNotes').value.trim();
     if (!ref) { showToast('Please enter a reference', 'error'); return; }
     state.withdrawApprovePending = true; const btn = $('#approveSubmitBtn'); const cancel = $('#approveCancelBtn'); const orig = btn.innerHTML;
@@ -2945,6 +3223,7 @@ button:not(:disabled){cursor:pointer}
     const w = (state.withdrawals || []).find(x => String(x.id) === String(id));
     if (!w) return;
     state.currentReject = w;
+    stopAdminAlarm();
     $('#rejectBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${escapeHtml(w.user_name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">${formatMoney(getAmount(w))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${escapeHtml(w.reference || '—')}</span></div>`;
     $('#rejectReason').value = ''; resetWithdrawRejectButton(); $('#rejectModal').classList.add('active');
   }
@@ -2954,6 +3233,7 @@ button:not(:disabled){cursor:pointer}
   window.closeRejectModal = closeRejectModal;
   async function submitReject() {
     if (!state.currentReject || state.withdrawRejectPending) return;
+    stopAdminAlarm();
     const reason = $('#rejectReason').value.trim();
     if (reason.length < 5) { showToast('Please give a reason (min 5 chars)', 'error'); return; }
     state.withdrawRejectPending = true; const btn = $('#rejectSubmitBtn'); const cancel = $('#rejectCancelBtn'); const orig = btn.innerHTML;
@@ -2972,6 +3252,7 @@ button:not(:disabled){cursor:pointer}
     const d = (state.deposits || []).find(x => String(x.id) === String(id));
     if (!d) return;
     state.currentApproveDeposit = d;
+    stopAdminAlarm();
     $('#approveDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${escapeHtml(d.user_name || d.name || '—')}</span></div><div class="row-detail"><span class="lbl">Email</span><span class="val">${escapeHtml(d.user_email || d.email || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val success">+${formatMoney(getAmount(d))}</span></div><div class="row-detail"><span class="lbl">Deposit Ref</span><span class="val mono">${escapeHtml(d.reference || d.tx_ref || '—')}</span></div>`;
     $('#approveDepositRef').value = ''; $('#approveDepositNotes').value = '';
     resetDepositApproveButton(); $('#approveDepositModal').classList.add('active');
@@ -2982,6 +3263,7 @@ button:not(:disabled){cursor:pointer}
   window.closeApproveDepositModal = closeApproveDepositModal;
   async function submitApproveDeposit() {
     if (!state.currentApproveDeposit || state.depositApprovePending) return;
+    stopAdminAlarm();
     const ref = $('#approveDepositRef').value.trim(); const notes = $('#approveDepositNotes').value.trim();
     if (ref.length < 4) { showToast('Enter the bank reference from the receipt', 'error'); return; }
     state.depositApprovePending = true; const btn = $('#approveDepositBtn'); const cancel = $('#approveDepositCancelBtn'); const orig = btn.innerHTML;
@@ -3000,6 +3282,7 @@ button:not(:disabled){cursor:pointer}
     const d = (state.deposits || []).find(x => String(x.id) === String(id));
     if (!d) return;
     state.currentRejectDeposit = d;
+    stopAdminAlarm();
     $('#rejectDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${escapeHtml(d.user_name || d.name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">+${formatMoney(getAmount(d))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${escapeHtml(d.reference || d.tx_ref || '—')}</span></div>`;
     $('#rejectDepositReason').value = ''; resetDepositRejectButton(); $('#rejectDepositModal').classList.add('active');
   }
@@ -3009,6 +3292,7 @@ button:not(:disabled){cursor:pointer}
   window.closeRejectDepositModal = closeRejectDepositModal;
   async function submitRejectDeposit() {
     if (!state.currentRejectDeposit || state.depositRejectPending) return;
+    stopAdminAlarm();
     const reason = $('#rejectDepositReason').value.trim();
     if (reason.length < 5) { showToast('Please give a reason (min 5 chars)', 'error'); return; }
     state.depositRejectPending = true; const btn = $('#rejectDepositBtn'); const cancel = $('#rejectDepositCancelBtn'); const orig = btn.innerHTML;
@@ -3291,7 +3575,17 @@ button:not(:disabled){cursor:pointer}
       if (state.activeTab === 'fund' && ($('#fundLookupQuery')?.value || '').length > 0) { clearFundSearch(); return; }
       if (state.withdrawApprovePending || state.withdrawRejectPending || state.depositApprovePending || state.depositRejectPending) return;
       closeRangeSheet(); closeTypeSheet(); closeViewModal(); closeDatashopWallet(); closeTxnModal(); closeApproveModal(); closeRejectModal(); closeApproveDepositModal(); closeRejectDepositModal(); closeDrawer();
+      hideAlarmBanner();
+      stopAdminAlarm();
     }
+  });
+
+  /* ---------- UNLOCK AUDIO ON FIRST USER GESTURE ---------- */
+  ['click','touchstart','keydown'].forEach(evt => {
+    document.addEventListener(evt, function unlockOnce() {
+      unlockAdminAudio();
+      document.removeEventListener(evt, unlockOnce);
+    }, { once: true, passive: true });
   });
 
   /* ---------- INIT ---------- */
@@ -3299,11 +3593,22 @@ button:not(:disabled){cursor:pointer}
   renderAdminAlerts();
   setInterval(() => { detectNewAdminApprovals(); }, 2500);
   document.addEventListener('click', (e) => { if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) { const p=$('#adminAlertPanel'); if(p?.classList.contains('open')) toggleAdminAlerts(); } });
+
   async function init() {
     wireRangePills(); syncRangeUI(); syncTypeUI(); resetFundTab(); renderUsers();
     renderTransactions(); renderDeposits(); renderWithdrawals();
     await refreshAll(true);
     setInterval(() => refreshAll(true), 20000);
+
+    // Show sound chip so admin always sees the option
+    const chip = document.getElementById('adminSoundChip');
+    if (chip) {
+      chip.classList.add('show');
+      if (state.adminSoundEnabled) {
+        chip.innerHTML = '<i class="fas fa-volume-high"></i> 🔊 Loud alarm active';
+        chip.classList.add('on');
+      }
+    }
   }
   init();
 })();
