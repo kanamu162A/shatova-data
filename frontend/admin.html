@@ -965,6 +965,69 @@ button:not(:disabled){cursor:pointer}
  .user-search-field{height:52px}.fund-actions-row{flex-direction:column}
 }
 
+
+/* ============================================================
+   SHATOVA V3 — SENIOR UI SEARCH / EMPTY STATES
+   Cleaner desktop + mobile search controls
+============================================================ */
+.section-search-hero{padding:20px 24px 16px;background:linear-gradient(180deg,#fbfdfc 0%,#f7faf8 100%);border-bottom:1px solid rgba(10,69,52,.10)}
+.section-search-inner{gap:12px;align-items:center}
+.section-search-field{height:50px;border:1px solid #d8e2dd;border-radius:12px;padding:0 14px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.035);}
+.section-search-field:hover{border-color:#b8cbc3;box-shadow:0 4px 14px rgba(10,69,52,.07)}
+.section-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,69,52,.08),0 6px 18px rgba(10,69,52,.08);transform:none}
+.section-search-field > i.fa-search{font-size:13px;margin-right:10px;color:#547267}
+.section-search-field:focus-within > i.fa-search{transform:none;color:var(--primary)}
+.section-search-field input{font-size:13.5px;font-weight:500}
+.section-search-field input::placeholder{font-size:13px;color:#8a9993}
+.section-search-pill{height:50px;border-radius:12px;border:1px solid #d8e2dd;padding:0 13px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.035)}
+.section-search-pill:hover{transform:none;border-color:#a9c1b7;box-shadow:0 5px 15px rgba(10,69,52,.08)}
+.section-search-pill .lead-plate{width:28px;height:28px;border-radius:8px}
+.section-search-meta{padding-top:10px}
+.user-search-field{height:52px;border:1px solid #d8e2dd;border-radius:13px;padding:0 10px 0 15px;background:#fff;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+.user-search-field:hover{border-color:#b8cbc3;box-shadow:0 5px 16px rgba(10,69,52,.07)}
+.user-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,69,52,.08),0 7px 20px rgba(10,69,52,.08);transform:none}
+.user-search-field > i.fa-search{font-size:14px;margin-right:10px;color:#547267}
+.user-search-field input{font-size:14px}
+.user-search-field input::placeholder{font-size:13.5px;color:#8a9993}
+.user-search-clear{width:28px;height:28px;margin-left:4px}
+.search-submit-btn{height:40px;min-width:88px;padding:0 14px;border:0;border-radius:9px;background:var(--primary-gradient);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:7px;font:700 12px/1 inherit;cursor:pointer;box-shadow:0 5px 14px -5px rgba(10,69,52,.38);transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}
+.search-submit-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 18px -6px rgba(10,69,52,.45)}
+.search-submit-btn:active:not(:disabled){transform:translateY(0) scale(.98)}
+.search-submit-btn:disabled{opacity:.65;cursor:not-allowed}
+.fund-search-shell{max-width:720px;margin:0 auto}
+.fund-search-title{display:flex;align-items:center;gap:9px;margin:0 0 10px 2px;font-size:11px;font-weight:800;letter-spacing:.55px;text-transform:uppercase;color:#61766d}
+.fund-search-title i{color:var(--primary)}
+.fund-search-row{display:flex;gap:9px;align-items:center}
+.fund-search-row .user-search-field{flex:1;min-width:0}
+.fund-search-help{margin:9px 2px 0;font-size:11px;color:#84938e;display:flex;align-items:center;gap:6px}
+.fund-search-help i{color:var(--primary)}
+.fund-not-found{max-width:640px;margin:18px auto 0;padding:20px;border:1px solid rgba(185,58,58,.18);border-radius:15px;background:linear-gradient(180deg,#fffafa 0%,#fff 100%);display:flex;align-items:center;gap:14px;box-shadow:0 5px 18px rgba(185,58,58,.055);animation:fadeInUp .25s ease}
+.fund-not-found-icon{width:44px;height:44px;border-radius:12px;background:#fff0f0;color:#a12222;display:flex;align-items:center;justify-content:center;flex:0 0 44px;font-size:17px}
+.fund-not-found-copy{min-width:0;flex:1}
+.fund-not-found-title{font-size:13.5px;font-weight:800;color:#8d2424;margin-bottom:3px}
+.fund-not-found-text{font-size:11.5px;line-height:1.5;color:#71807a}
+.fund-not-found-text strong{color:#4f5f59;word-break:break-word}
+.fund-not-found-action{border:1px solid #e4c4c4;background:#fff;color:#8d2424;border-radius:9px;padding:8px 10px;font:700 11px/1 inherit;cursor:pointer;white-space:nowrap}
+.fund-not-found-action:hover{background:#fff4f4;border-color:#dca8a8}
+.fund-empty-premium{padding:42px 24px 52px}
+.fund-empty-icon-wrapper{width:68px;height:68px;border-radius:19px;margin-bottom:16px;font-size:25px}
+.fund-empty-title{font-size:15px}
+.fund-empty-desc{font-size:12px;max-width:380px;margin:auto}
+@media(max-width:700px){
+  .section-search-hero{padding:14px 12px 12px}
+  .section-search-inner{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+  .section-search-field{width:100%;min-width:0;height:48px}
+  .section-search-pill{width:100%;height:46px;justify-content:flex-start}
+  .section-search-meta{padding-top:8px}
+  .fund-search-row{gap:7px}
+  .search-submit-btn{min-width:46px;width:46px;padding:0}
+  .search-submit-btn span{display:none}
+  .fund-search-help{font-size:10.5px}
+  .fund-not-found{margin:14px 12px 0;padding:15px;align-items:flex-start}
+  .fund-not-found-icon{width:40px;height:40px;flex-basis:40px}
+  .fund-not-found-action{align-self:center}
+}
+
 </style>
 </head>
 <body>
@@ -1273,19 +1336,17 @@ button:not(:disabled){cursor:pointer}
         <div class="panel">
           <div class="panel-head"><h3><i class="fas fa-hand-holding-dollar"></i> Manual Wallet Fund / Debit</h3><span class="sub">Search a user first</span></div>
           <div class="section-search-hero" style="padding: 26px 22px 22px;">
-            <div style="max-width: 640px; margin: 0 auto;">
-              <div class="user-search-field">
-                <i class="fas fa-search"></i>
-                <input type="text" id="fundLookupQuery" placeholder="Phone number, email, or user ID…" autocomplete="off" oninput="toggleFundClear()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
-                <button class="user-search-clear" id="fundSearchClear" onclick="clearFundSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
-                <button id="fundLookupIconBtn" onclick="lookupFundUser()" style="background:none;border:none;color:var(--primary);cursor:pointer;padding:8px;font-size:15px;transition:all 0.2s; margin-left: 4px;" title="Search">
-                  <i class="fas fa-arrow-right"></i>
-                </button>
+            <div class="fund-search-shell">
+              <div class="fund-search-title"><i class="fas fa-user-magnifying-glass"></i> Find customer account</div>
+              <div class="fund-search-row">
+                <div class="user-search-field">
+                  <i class="fas fa-search"></i>
+                  <input type="text" id="fundLookupQuery" placeholder="Phone number, email, or user ID" autocomplete="off" oninput="toggleFundClear()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupFundUser();}">
+                  <button class="user-search-clear" id="fundSearchClear" onclick="clearFundSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
+                </div>
+                <button class="search-submit-btn" id="fundLookupIconBtn" onclick="lookupFundUser()" title="Search user"><i class="fas fa-search"></i><span>Search</span></button>
               </div>
-              <div style="margin-top: 14px; font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                <i class="fas fa-circle-info" style="color: var(--primary);"></i>
-                Search by phone (e.g. 08031234567), email, or user ID
-              </div>
+              <div class="fund-search-help"><i class="fas fa-circle-info"></i><span>Use the customer's phone number, email address, or user ID.</span></div>
             </div>
           </div>
           <div id="fundEmpty" class="fund-empty-premium">
@@ -2748,15 +2809,22 @@ button:not(:disabled){cursor:pointer}
     if (/^\d+$/.test(q) && q.length <= 6) params.set('user_id', q); else if (q.includes('@')) params.set('email', q); else params.set('phone', q);
     try {
       const res = await apiCall(`/admin/wallet/lookup?${params}`);
-      const user = res.data.user; state.fundUser = user;
+      const user = res?.data?.user || res?.user || null;
+      if (!user || !user.id) {
+        const notFound = new Error('User not found');
+        notFound.code = 'USER_NOT_FOUND';
+        throw notFound;
+      }
+      state.fundUser = user;
       const name = user.name || user.email || user.phone || `#${user.id}`; const initial = (name || '?').charAt(0).toUpperCase();
       if (preview) preview.innerHTML = `<div class="fund-user-card"><div class="fu-top"><div class="fu-avatar">${escapeHtml(initial)}</div><div class="fu-info"><div class="fu-name">${escapeHtml(name)}</div><div class="fu-meta"><span>User #${user.id}</span><span class="dot"></span><span>${escapeHtml(user.email || '—')}</span><span class="dot"></span><span>${escapeHtml(user.phone || '—')}</span></div></div></div><div class="fu-balance-row"><div class="fu-balance-cell"><div class="fu-balance-label">Available Balance</div><div class="fu-balance-value">${formatMoney(user.balance || 0)}</div></div>${Number(user.held_balance || 0) > 0 ? `<div class="fu-balance-cell"><div class="fu-balance-label">Held</div><div class="fu-balance-value held">${formatMoney(user.held_balance)}</div></div>` : ''}</div></div>`;
       if (empty) empty.style.display = 'none'; if (form) { form.classList.add('revealed'); setTimeout(() => { $('#fundAmount')?.focus(); }, 260); }
       showToast(`Found ${name}`, 'success');
     } catch (err) {
       state.fundUser = null;
-      if (preview) preview.innerHTML = `<div class="fund-user-card error"><div class="fu-error-icon"><i class="fas fa-user-slash"></i></div><div class="fu-error-title">No matching user</div><div class="fu-error-text">We couldn't find an account for <strong>${escapeHtml(q)}</strong>. Check the phone number, email, or user ID and try again.</div><div style="margin-top:14px;"><button class="user-empty-tip" onclick="document.getElementById('fundLookupQuery')?.focus()"><i class="fas fa-rotate"></i> Search again</button></div></div>`;
+      if (preview) preview.innerHTML = `<div class="fund-not-found"><div class="fund-not-found-icon"><i class="fas fa-user-slash"></i></div><div class="fund-not-found-copy"><div class="fund-not-found-title">User not found</div><div class="fund-not-found-text">No Shatova account matches <strong>${escapeHtml(q)}</strong>. Check the details and search again.</div></div><button class="fund-not-found-action" onclick="document.getElementById('fundLookupQuery')?.focus()"><i class="fas fa-rotate"></i> Try again</button></div>`;
       if (empty) empty.style.display = 'none'; if (form) form.classList.remove('revealed');
+      showToast('User not found', 'error');
     } finally { if (btn) { btn.disabled = false; btn.innerHTML = originalBtnIcon; } }
   }
   window.lookupFundUser = lookupFundUser;
