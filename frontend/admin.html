@@ -229,44 +229,119 @@ button{font-family:inherit}
 .section-search-clear.visible{display: inline-flex}
 .section-search-clear:hover{background: var(--danger-light); color: var(--danger-dark); transform: rotate(90deg)}
 
+/* ============ PREMIUM FILTER PILLS (type & range) ============ */
 .section-search-pill{
-  display: inline-flex; align-items: center; gap: 9px;
-  padding: 0 16px; height: 52px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px 0 12px;
+  height: 52px;
   border-radius: 14px;
   border: 1.5px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-size: 12.5px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s ease;
-  white-space: nowrap; font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  white-space: nowrap;
+  font-family: inherit;
   box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 16px -6px rgba(15,23,42,0.06);
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.section-search-pill::before{
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--primary-light), transparent 70%);
+  opacity: 0; transition: opacity 0.22s ease; pointer-events: none;
 }
 .section-search-pill:hover{
-  border-color: var(--primary); color: var(--primary-dark);
-  background: var(--primary-light);
+  border-color: rgba(10,69,52,0.45);
+  color: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px -8px rgba(10,69,52,0.15);
+  box-shadow: 0 8px 22px -8px rgba(10,69,52,0.2), 0 2px 6px rgba(10,69,52,0.06);
 }
+.section-search-pill:hover::before{opacity: 0.5;}
 .section-search-pill.active{
-  border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark);
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  box-shadow: 0 6px 18px -6px rgba(10,69,52,0.18);
 }
-.section-search-pill i.lead{font-size: 12px; color: var(--text-muted); transition: all 0.2s ease}
-.section-search-pill:hover i.lead, .section-search-pill.active i.lead{color: var(--primary)}
-.section-search-pill .pill-value{color: var(--text-muted); font-weight: 700}
-.section-search-pill.active .pill-value{color: var(--primary-dark)}
-.section-search-pill .chev{font-size: 9px; opacity: 0.6; margin-left: 2px}
+.section-search-pill.active::before{opacity: 1;}
+
+.section-search-pill .lead-plate{
+  width: 28px; height: 28px;
+  border-radius: 9px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  flex-shrink: 0;
+  transition: all 0.22s ease;
+  position: relative; z-index: 1;
+}
+.section-search-pill:hover .lead-plate,
+.section-search-pill.active .lead-plate{
+  background: var(--primary-gradient);
+  color: #fff;
+  box-shadow: 0 4px 10px -2px rgba(10,69,52,0.4);
+  transform: scale(1.05);
+}
+
+.section-search-pill .pill-stack{
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 1px; min-width: 0; position: relative; z-index: 1;
+  line-height: 1.1;
+}
+.section-search-pill .pill-label{
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.22s ease;
+}
+.section-search-pill:hover .pill-label,
+.section-search-pill.active .pill-label{color: var(--primary-dark);}
+.section-search-pill .pill-value{
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.1px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.section-search-pill:hover .pill-value,
+.section-search-pill.active .pill-value{color: var(--primary-dark);}
+
+.section-search-pill .chev{
+  font-size: 9px;
+  opacity: 0.55;
+  margin-left: 2px;
+  transition: all 0.22s ease;
+  position: relative; z-index: 1;
+}
+.section-search-pill:hover .chev{opacity: 1; transform: translateY(1px);}
 
 .section-search-pill.primary{
-  background: var(--primary-gradient); color: #fff; border-color: transparent;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-color: transparent;
   box-shadow: 0 6px 16px -4px rgba(10,69,52,0.4), var(--shadow-inset-top);
 }
 .section-search-pill.primary:hover{
-  color: #fff; transform: translateY(-1px);
+  color: #fff;
+  transform: translateY(-1px);
   box-shadow: 0 10px 24px -6px rgba(10,69,52,0.5), var(--shadow-inset-top);
 }
 .section-search-pill.primary i{color: #fff}
-.section-search-pill.primary:disabled{opacity: 0.6; cursor: not-allowed; transform: none}
 
 .section-search-meta{
   display: flex; align-items: center; justify-content: space-between;
@@ -288,12 +363,6 @@ button{font-family:inherit}
 .section-search-hint{
   font-size: 11px; color: var(--text-muted);
   display: inline-flex; align-items: center; gap: 6px;
-}
-.section-search-hint kbd{
-  font-family: 'SF Mono', Menlo, monospace; font-size: 10px;
-  padding: 2px 6px; border-radius: 5px; background: var(--bg-input);
-  border: 1px solid var(--border); color: var(--text-secondary);
-  font-weight: 700; box-shadow: 0 1px 0 var(--border);
 }
 
 /* ============ NETWORK LOGOS ============ */
@@ -525,10 +594,6 @@ button{font-family:inherit}
 .fund-form-input::placeholder{color: var(--text-muted);font-weight: 400;}
 .fund-form-textarea{resize: vertical;min-height: 84px;line-height: 1.55;}
 .fund-form-select{appearance: none;-webkit-appearance: none;background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat: no-repeat;background-position: right 16px center;padding-right: 44px;cursor: pointer;}
-.fund-search-btn{width: 100%;padding: 15px 20px;border-radius: 12px;border: none;background: var(--primary-gradient);color: #fff;font-size: 14px;font-weight: 700;letter-spacing: 0.2px;cursor: pointer;display: inline-flex;align-items: center;justify-content: center;gap: 10px;transition: all 0.22s cubic-bezier(0.4,0,0.2,1);box-shadow: 0 8px 20px -6px rgba(10,69,52,0.4), var(--shadow-inset-top);margin-top: 4px;}
-.fund-search-btn:hover:not(:disabled){transform: translateY(-2px);box-shadow: 0 12px 28px -8px rgba(10,69,52,0.5), var(--shadow-inset-top);}
-.fund-search-btn:active:not(:disabled){transform: translateY(0);}
-.fund-search-btn:disabled{opacity: 0.65;cursor: not-allowed;transform: none;}
 .fund-actions-row{display: flex;gap: 12px;margin-top: 10px;}
 .fund-actions-row button{flex: 1;padding: 15px 16px;border-radius: 12px;border: 1px solid transparent;font-size: 13.5px;font-weight: 700;cursor: pointer;display: inline-flex;align-items: center;justify-content: center;gap: 8px;transition: all 0.22s cubic-bezier(0.4,0,0.2,1);font-family: inherit;}
 .fund-actions-row button:disabled{opacity: 0.6;cursor: not-allowed;transform: none;}
@@ -563,7 +628,6 @@ button{font-family:inherit}
   .fund-actions-row { flex-direction: column; }
   .fund-actions-row button { width: 100%; }
   .fund-user-card .fu-balance-row { flex-direction: column; gap: 12px; }
-  .fund-search-btn { padding: 14px 16px; font-size: 13.5px; }
 }
 
 /* ============ MODALS & SHEETS ============ */
@@ -642,7 +706,6 @@ button{font-family:inherit}
 .user-search-field:focus-within > i.fa-search{color:var(--primary);transform:scale(1.08)}
 .user-search-field input{flex:1;border:none;outline:none;background:transparent;font-size:14.5px;font-weight:500;color:var(--text);font-family:inherit;height:100%;letter-spacing:-0.1px;min-width:0}
 .user-search-field input::placeholder{color:var(--text-muted);font-weight:400}
-.user-search-kbd{display:inline-flex;align-items:center;font-family:'SF Mono',Menlo,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:6px;background:var(--bg-input);border:1px solid var(--border);color:var(--text-muted);box-shadow:0 1px 0 var(--border-strong);margin-left:8px;flex-shrink:0}
 .user-search-spinner{width:18px;height:18px;border:2.5px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite;display:none;margin-left:8px;flex-shrink:0}
 .user-search-spinner.active{display:block}
 .user-search-clear{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;margin-left:8px;transition:all 0.18s ease;flex-shrink:0}
@@ -723,7 +786,197 @@ button{font-family:inherit}
 .txn-amount-block .amt-meta .lbl{font-size:9.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.72;margin-bottom:3px}
 .txn-amount-block .amt-meta .val{font-size:14px;font-weight:800}
 
-@media (max-width:900px){
+/* ============================================================
+   ★ WALLET DRIFT — professional layout
+   ============================================================ */
+.drift-hero{
+  padding: 22px 24px;
+  background: linear-gradient(160deg, rgba(10,69,52,0.055) 0%, rgba(10,69,52,0.015) 55%, transparent 100%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+.drift-hero::before{
+  content:''; position:absolute; top:-90px; right:-70px;
+  width:240px; height:240px; border-radius:50%;
+  background: radial-gradient(circle, rgba(10,69,52,0.07) 0%, transparent 65%);
+  pointer-events:none;
+}
+.drift-hero-inner{
+  display: flex; align-items: center; gap: 16px;
+  position: relative; z-index: 1; flex-wrap: wrap;
+}
+.drift-hero-icon{
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--primary-gradient); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  box-shadow: 0 8px 22px -6px rgba(10,69,52,0.5), var(--shadow-inset-top);
+}
+.drift-hero-text{flex: 1; min-width: 220px;}
+.drift-hero-title{
+  font-size: 16px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.3px; margin-bottom: 4px;
+}
+.drift-hero-sub{
+  font-size: 12px; color: var(--text-muted); line-height: 1.5;
+}
+.drift-hero-sub strong{color: var(--primary-dark); font-weight: 800;}
+.drift-refresh-btn{
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0 16px; height: 40px;
+  border-radius: 11px; border: 1.5px solid var(--border);
+  background: var(--bg-card); color: var(--text-secondary);
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s ease; font-family: inherit;
+  box-shadow: var(--shadow-xs);
+}
+.drift-refresh-btn:hover{
+  border-color: var(--primary); color: var(--primary-dark);
+  background: var(--primary-light); transform: translateY(-1px);
+  box-shadow: 0 6px 16px -6px rgba(10,69,52,0.2);
+}
+.drift-refresh-btn i{font-size: 11.5px;}
+
+.drift-kpis{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.drift-kpi{
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-xs);
+  transition: all 0.22s var(--ease-out);
+}
+.drift-kpi:hover{
+  border-color: rgba(10,69,52,0.18);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover-card);
+}
+.drift-kpi-icon{
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(10,69,52,0.08);
+}
+.drift-kpi-icon.neutral{background: var(--bg-input); color: var(--text-secondary);}
+.drift-kpi-icon.success{background: var(--success-light); color: var(--success-dark);}
+.drift-kpi-icon.warning{background: var(--warning-light); color: var(--warning-dark);}
+.drift-kpi-icon.danger{background: var(--danger-light); color: var(--danger-dark);}
+.drift-kpi-body{min-width: 0; flex: 1;}
+.drift-kpi-label{
+  font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 3px;
+}
+.drift-kpi-value{
+  font-size: 20px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.5px; line-height: 1.1;
+  word-break: break-word;
+}
+.drift-kpi-value.success{color: var(--success-dark);}
+.drift-kpi-value.warning{color: var(--warning-dark);}
+.drift-kpi-value.danger{color: var(--danger-dark);}
+
+.drift-table-head{
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr 1.2fr 0.9fr;
+  gap: 12px;
+  padding: 12px 22px;
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border);
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.9px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.drift-row{
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr 1.2fr 0.9fr;
+  gap: 12px;
+  align-items: center;
+  padding: 15px 22px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.18s ease;
+  position: relative;
+}
+.drift-row:last-child{border-bottom: none;}
+.drift-row:hover{background: var(--bg-hover);}
+.drift-row::before{
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:3px; background: var(--warning); opacity:0;
+  transition: opacity 0.2s ease;
+}
+.drift-row:hover::before{opacity:1;}
+.drift-row.critical::before{background: var(--danger);}
+
+.drift-user{
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+}
+.drift-user-avatar{
+  width: 38px; height: 38px; border-radius: 11px;
+  background: linear-gradient(135deg, #b37308, #8a5506);
+  color: #fff; font-weight: 800; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px -2px rgba(179,115,8,0.4);
+}
+.drift-row.critical .drift-user-avatar{
+  background: linear-gradient(135deg, #a12222, #7a1a1a);
+  box-shadow: 0 4px 12px -2px rgba(161,34,34,0.4);
+}
+.drift-user-info{min-width: 0; flex: 1;}
+.drift-user-name{
+  font-size: 13px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.drift-user-id{
+  font-size: 10.5px; color: var(--text-muted); font-weight: 500;
+  font-family: 'SF Mono', Menlo, monospace;
+  margin-top: 2px;
+}
+.drift-cell{
+  font-size: 12.5px; font-weight: 700; color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.drift-cell .drift-sub{
+  display: block; font-size: 10px; font-weight: 500;
+  color: var(--text-muted); margin-top: 2px;
+}
+.drift-delta{
+  font-size: 13px; font-weight: 800;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.drift-delta.positive{color: var(--success-dark);}
+.drift-delta.negative{color: var(--danger-dark);}
+.drift-sev{
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; border-radius: 999px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.5px;
+  text-transform: uppercase; justify-self: end;
+  border: 1px solid transparent;
+}
+.drift-sev::before{
+  content:''; width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; opacity: 0.9;
+}
+.drift-sev.minor{background: var(--warning-light); color: var(--warning-dark); border-color: rgba(179,115,8,0.14);}
+.drift-sev.major{background: var(--danger-light); color: var(--danger-dark); border-color: rgba(161,34,34,0.14);}
+.drift-sev.critical{background: #7a1a1a; color: #fff; border-color: transparent;}
+
+@media (max-width: 900px){
   .app{grid-template-columns:1fr}
   .sidebar{display:none}
   .menu-toggle{display:inline-flex}
@@ -748,10 +1001,19 @@ button{font-family:inherit}
   .panel-footer{flex-direction:column;gap:10px;align-items:stretch;text-align:center;padding:13px 16px}
   .pagination-controls{justify-content:center;margin-left:0}
   .page-btn{min-width:34px;height:34px;font-size:11.5px;padding:0 9px}
-  .chart{height:190px}
-  .chart-summary .big{font-size:24px}
   .fund-form-container{padding:20px 16px 24px}
   .fund-actions-row{flex-direction:column}
+
+  .drift-table-head{display: none;}
+  .drift-row{
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px;
+  }
+  .drift-row::before{width: 4px; opacity: 1;}
+  .drift-cell{text-align: left;}
+  .drift-delta{text-align: left;}
+  .drift-sev{justify-self: start;}
 }
 
 @media (max-width:768px){
@@ -760,7 +1022,16 @@ button{font-family:inherit}
   .section-search-field{height:48px;padding:0 10px 0 14px;border-radius:12px;min-width:0}
   .section-search-field > i.fa-search{font-size:13px;margin-right:10px}
   .section-search-field input{font-size:14px}
-  .section-search-pill{height:48px;padding:0 13px;font-size:12px;border-radius:12px}
+  .section-search-pill{
+    height: 48px;
+    padding: 0 12px 0 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    gap: 8px;
+  }
+  .section-search-pill .lead-plate{width: 24px; height: 24px; font-size: 10px; border-radius: 8px;}
+  .section-search-pill .pill-label{font-size: 9px;}
+  .section-search-pill .pill-value{font-size: 11.5px; max-width: 110px;}
   .section-search-meta{flex-direction:column;align-items:flex-start;gap:4px;margin-top:12px}
   .section-search-hint{font-size:10.5px}
 
@@ -817,13 +1088,14 @@ button{font-family:inherit}
   .pagination-controls::-webkit-scrollbar{display:none}
 
   .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .kpi-strip{grid-template-columns:repeat(2,1fr)}
 }
 
 @media (max-width:500px){
   .section-search-hero{padding:16px 14px 14px}
   .section-search-field{height:46px;padding:0 10px 0 13px}
-  .section-search-pill{height:46px;padding:0 12px;font-size:11.5px}
+  .section-search-pill{height:46px;padding:0 12px 0 10px;font-size:11.5px}
+  .section-search-pill .lead-plate{width: 22px; height: 22px; font-size: 9.5px; border-radius: 7px;}
+  .section-search-pill .pill-value{font-size: 11px;}
   .section-search-count{font-size:11.5px}
 
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
@@ -844,12 +1116,21 @@ button{font-family:inherit}
   .type-sheet-item .ts-icon{width: 34px; height: 34px; font-size: 13.5px;}
   .type-sheet-item .ts-title{font-size: 12px;}
   .type-sheet-item .ts-count{font-size: 9.5px; padding: 2px 7px;}
+
+  .drift-hero{padding: 18px;}
+  .drift-hero-icon{width: 44px; height: 44px; font-size: 17px;}
+  .drift-hero-title{font-size: 15px;}
+  .drift-hero-sub{font-size: 11.5px;}
+  .drift-refresh-btn{width: 100%; justify-content: center; height: 42px;}
+  .drift-kpi{padding: 13px 14px;}
+  .drift-kpi-icon{width: 36px; height: 36px; font-size: 13.5px;}
+  .drift-kpi-value{font-size: 17px;}
 }
 
 @media (max-width:420px){
   .section-search-inner{flex-direction:column;align-items:stretch}
   .section-search-field{width:100%}
-  .section-search-pill{width:100%;justify-content:center;height:46px}
+  .section-search-pill{width:100%;justify-content:flex-start;height:46px}
 
   .user-search-hero{padding:20px 14px 18px}
   .user-search-field{height:52px}
@@ -1074,10 +1355,8 @@ button{font-family:inherit}
                 <input type="text" id="userSearch" placeholder="e.g. 08031234567, alice@example.com" autocomplete="off" spellcheck="false" oninput="onUserSearchInput(event)">
                 <div class="user-search-spinner" id="userSearchSpinner"></div>
                 <button class="user-search-clear" id="userSearchClear" onclick="clearUserSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
-                <span class="user-search-kbd" style="display: none;">ESC</span>
               </div>
               <div class="user-search-chips" style="margin-top: 16px; gap: 8px;">
-                <span class="user-search-chips-label" style="display: none;">Quick</span>
                 <button class="user-search-chip" onclick="quickUserSearch('active')" style="padding: 5px 14px;"><i class="fas fa-bolt"></i> Show all</button>
                 <button class="user-search-chip" onclick="quickUserSearch('0803')" style="padding: 5px 14px;"><i class="fas fa-phone"></i> 0803...</button>
                 <button class="user-search-chip" onclick="quickUserSearch('@gmail.com')" style="padding: 5px 14px;"><i class="fas fa-at"></i> @gmail.com</button>
@@ -1099,13 +1378,19 @@ button{font-family:inherit}
                 <button class="section-search-clear" id="txnSearchClear" onclick="clearTxnSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
               </div>
               <button class="section-search-pill" id="txnTypePill" onclick="openTypeSheet()">
-                <i class="fas fa-layer-group lead"></i>
-                <span class="pill-value" id="txnTypeLabel">All types</span>
+                <span class="lead-plate"><i class="fas fa-layer-group"></i></span>
+                <span class="pill-stack">
+                  <span class="pill-label">Type</span>
+                  <span class="pill-value" id="txnTypeLabel">All types</span>
+                </span>
                 <i class="fas fa-chevron-down chev"></i>
               </button>
               <button class="section-search-pill" id="txnRangePill" onclick="openRangeSheet()">
-                <i class="fas fa-calendar-alt lead"></i>
-                <span class="pill-value" id="txnRangeLabel">Today</span>
+                <span class="lead-plate"><i class="fas fa-calendar-alt"></i></span>
+                <span class="pill-stack">
+                  <span class="pill-label">Period</span>
+                  <span class="pill-value" id="txnRangeLabel">Today</span>
+                </span>
                 <i class="fas fa-chevron-down chev"></i>
               </button>
             </div>
@@ -1129,8 +1414,11 @@ button{font-family:inherit}
                 <button class="section-search-clear" id="depositSearchClear" onclick="clearDepositSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
               </div>
               <button class="section-search-pill" id="depositRangePill" onclick="openRangeSheet()">
-                <i class="fas fa-calendar-alt lead"></i>
-                <span class="pill-value" id="depositRangeLabel">Today</span>
+                <span class="lead-plate"><i class="fas fa-calendar-alt"></i></span>
+                <span class="pill-stack">
+                  <span class="pill-label">Period</span>
+                  <span class="pill-value" id="depositRangeLabel">Today</span>
+                </span>
                 <i class="fas fa-chevron-down chev"></i>
               </button>
             </div>
@@ -1154,8 +1442,11 @@ button{font-family:inherit}
                 <button class="section-search-clear" id="withdrawalSearchClear" onclick="clearWithdrawalSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
               </div>
               <button class="section-search-pill" id="withdrawalRangePill" onclick="openRangeSheet()">
-                <i class="fas fa-calendar-alt lead"></i>
-                <span class="pill-value" id="withdrawalRangeLabel">Today</span>
+                <span class="lead-plate"><i class="fas fa-calendar-alt"></i></span>
+                <span class="pill-stack">
+                  <span class="pill-label">Period</span>
+                  <span class="pill-value" id="withdrawalRangeLabel">Today</span>
+                </span>
                 <i class="fas fa-chevron-down chev"></i>
               </button>
             </div>
@@ -1183,7 +1474,7 @@ button{font-family:inherit}
                 </button>
               </div>
               <div style="margin-top: 14px; font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                <i class="fas fa-circle-info" style="color: var(--primary);"></i> 
+                <i class="fas fa-circle-info" style="color: var(--primary);"></i>
                 Search by phone (e.g. 08031234567), email, or user ID
               </div>
             </div>
@@ -1256,11 +1547,65 @@ button{font-family:inherit}
       </section>
 
       <section id="tab-drift" style="display:none;">
+        <div class="drift-hero">
+          <div class="drift-hero-inner">
+            <div class="drift-hero-icon">
+              <i class="fas fa-scale-balanced"></i>
+            </div>
+            <div class="drift-hero-text">
+              <div class="drift-hero-title">Wallet Reconciliation</div>
+              <div class="drift-hero-sub">
+                Compares each wallet's stored balance against its ledger. The reconciler
+                auto-corrects real drift every <strong>2 minutes</strong>.
+              </div>
+            </div>
+            <button class="drift-refresh-btn" onclick="loadDrift()">
+              <i class="fas fa-rotate"></i>
+              <span>Re-check now</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="drift-kpis" id="driftKpis">
+          <div class="drift-kpi">
+            <div class="drift-kpi-icon neutral"><i class="fas fa-wallet"></i></div>
+            <div class="drift-kpi-body">
+              <div class="drift-kpi-label">Wallets Checked</div>
+              <div class="drift-kpi-value" id="driftTotal">—</div>
+            </div>
+          </div>
+          <div class="drift-kpi">
+            <div class="drift-kpi-icon success"><i class="fas fa-circle-check"></i></div>
+            <div class="drift-kpi-body">
+              <div class="drift-kpi-label">In Sync</div>
+              <div class="drift-kpi-value success" id="driftInSync">—</div>
+            </div>
+          </div>
+          <div class="drift-kpi">
+            <div class="drift-kpi-icon warning"><i class="fas fa-triangle-exclamation"></i></div>
+            <div class="drift-kpi-body">
+              <div class="drift-kpi-label">Out of Sync</div>
+              <div class="drift-kpi-value warning" id="driftOutOfSync">—</div>
+            </div>
+          </div>
+          <div class="drift-kpi">
+            <div class="drift-kpi-icon danger"><i class="fas fa-naira-sign"></i></div>
+            <div class="drift-kpi-body">
+              <div class="drift-kpi-label">Total Drift</div>
+              <div class="drift-kpi-value danger" id="driftTotalAmount">—</div>
+            </div>
+          </div>
+        </div>
+
         <div class="panel">
-          <div class="panel-head"><h3><i class="fas fa-scale-unbalanced"></i> Wallet Drift</h3><span class="sub" id="driftCount">—</span></div>
-          <div class="panel-body">
-            <p class="drift-explainer">Wallets whose stored balance doesn't match the last ledger entry. The reconciler auto-fixes real drift every 2 minutes.</p>
-            <div id="driftList"></div>
+          <div class="panel-head">
+            <h3><i class="fas fa-scale-unbalanced"></i> Out-of-Sync Wallets</h3>
+            <span class="sub" id="driftCount">—</span>
+          </div>
+          <div class="panel-body no-pad">
+            <div id="driftList">
+              <div class="loading"><div class="ring"></div><p>Loading…</p></div>
+            </div>
           </div>
         </div>
       </section>
@@ -1295,9 +1640,6 @@ button{font-family:inherit}
   </div>
 </div>
 
-<!-- ============================================================
-     ★ PREMIUM TYPE FILTER SHEET — dynamically rendered grid ★
-     ============================================================ -->
 <div class="sheet-overlay" id="typeSheetOverlay" onclick="closeTypeSheet(event)">
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-grip"></div>
@@ -1581,16 +1923,11 @@ button{font-family:inherit}
 
   /* ============================================================
      ★ ADVANCED TRANSACTION TYPE DETECTION ENGINE
-     Classifies every transaction into: airtime | data | deposit |
-     withdrawal | transfer | refund | other
-     Uses a scoring heuristic across service/type/category/keywords,
-     direction hints, and product metadata.
      ============================================================ */
   function txnKind(t) {
     if (!t) return 'other';
     const meta = t.metadata || {};
 
-    // Aggregate all textual signals
     const raw = [
       t.service, t.type, t.category, t.product_type, t.operator_type,
       t.transaction_type, t.txn_type, t.purpose,
@@ -1609,36 +1946,52 @@ button{font-family:inherit}
 
     const all = raw + ' ' + prod;
 
-    // 1. Refund / Reversal — highest priority (overrides everything)
+    // 1. Admin manual adjustments — highest priority so they show clearly
+    if (/manual[\s_-]?fund|manual[\s_-]?credit|admin[\s_-]?credit|admin[\s_-]?fund/.test(all)) return 'manual_fund';
+    if (/manual[\s_-]?debit|manual[\s_-]?deduct|admin[\s_-]?debit|admin[\s_-]?deduct/.test(all)) return 'manual_debit';
+
+    // 2. Refund / Reversal
     if (/\brefund\b|\breversal\b|\breversed\b|chargeback|charge[\s_-]?back/.test(all)) return 'refund';
 
-    // 2. Airtime / VTU
+    // 3. Airtime / VTU
     if (/\bairtime\b|\bvtu\b|\brecharge\b|top[\s_-]?up(?!.*data)|\bawuf\b/.test(all)) return 'airtime';
 
-    // 3. Data bundles
+    // 4. Data bundles
     if (/\bdata\b|\bbundle\b|\bgig\b|\bgb\b|\bmb\b|\btb\b/.test(all)) return 'data';
 
-    // 4. Wallet transfer (peer-to-peer)
+    // 5. Wallet transfer (peer-to-peer)
     if (/\btransfer\b|\bp2p\b|send[\s_-]?money|wallet[\s_-]?transfer|user[\s_-]?to[\s_-]?user/.test(all)) return 'transfer';
 
-    // 5. Withdrawal / Payout
+    // 6. Withdrawal / Payout
     if (/\bwithdraw|\bpayout\b|\bcash[\s_-]?out\b|\bcashout\b|\bdisburse/.test(all)) return 'withdrawal';
 
-    // 6. Deposit / Wallet funding
+    // 7. Deposit / Wallet funding
     if (/\bdeposit\b|wallet[\s_-]?fund|\bfunding\b|bank[\s_-]?transfer|moniepoint|paystack|flutterwave|\bcredit\b(?!.*vtu)/.test(all)) return 'deposit';
 
-    // 7. Direction fallback (only when nothing else matched)
+    // 8. Direction fallback
     if (dir === 'credit' || dir === 'inflow' || dir === 'in') return 'deposit';
     if (dir === 'debit' || dir === 'outflow' || dir === 'out') return 'other';
 
     return 'other';
   }
   function txnKindLabel(kind) {
-    const map = { airtime: 'Airtime', data: 'Data', deposit: 'Deposit', withdrawal: 'Withdrawal', transfer: 'Transfer', refund: 'Refund', other: 'Other' };
+    const map = {
+      airtime: 'Airtime',
+      data: 'Data',
+      deposit: 'Deposit',
+      withdrawal: 'Withdrawal',
+      transfer: 'Transfer',
+      refund: 'Refund',
+      other: 'Other',
+      manual_fund: 'Manual Credit',
+      manual_debit: 'Manual Debit',
+    };
     return map[kind] || 'Transaction';
   }
   function txnKindAvatarClass(t) {
     const k = txnKind(t);
+    if (k === 'manual_fund') return 'deposit';
+    if (k === 'manual_debit') return 'withdraw';
     if (k === 'deposit' || k === 'withdrawal' || k === 'transfer' || k === 'refund' || k === 'other') {
       return 'txn-' + k;
     }
@@ -1646,7 +1999,15 @@ button{font-family:inherit}
   }
   function txnKindAvatarHtml(t) {
     const k = txnKind(t);
-    const icons = { deposit: 'fa-arrow-down', withdrawal: 'fa-arrow-up', transfer: 'fa-paper-plane', refund: 'fa-rotate-left', other: 'fa-receipt' };
+    const icons = {
+      deposit: 'fa-arrow-down',
+      withdrawal: 'fa-arrow-up',
+      transfer: 'fa-paper-plane',
+      refund: 'fa-rotate-left',
+      other: 'fa-receipt',
+      manual_fund: 'fa-plus-circle',
+      manual_debit: 'fa-minus-circle',
+    };
     if (icons[k]) {
       return `<i class="fas ${icons[k]}" style="font-size:14px;color:#fff;"></i>`;
     }
@@ -1775,27 +2136,33 @@ button{font-family:inherit}
   window.openRangeSheet = openRangeSheet; window.closeRangeSheet = closeRangeSheet; window.selectRange = selectRange;
 
   /* ============================================================
-     ★ TYPE FILTER ENGINE — 7 categories + "All types"
+     ★ TYPE FILTER ENGINE — with admin adjustments group
      ============================================================ */
   const TXN_TYPES = {
-    all:        { label: 'All types',  icon: 'fa-th-large',    color: 'primary', group: 'all',      sub: 'Every transaction' },
-    airtime:    { label: 'Airtime',    icon: 'fa-signal',      color: 'info',    group: 'services', sub: 'VTU top-ups' },
-    data:       { label: 'Data',       icon: 'fa-wifi',        color: 'purple',  group: 'services', sub: 'Data bundles' },
-    deposit:    { label: 'Deposits',   icon: 'fa-arrow-down',  color: 'success', group: 'wallet',   sub: 'Wallet funding' },
-    withdrawal: { label: 'Withdrawals',icon: 'fa-arrow-up',    color: 'danger',  group: 'wallet',   sub: 'Payouts' },
-    transfer:   { label: 'Transfers',  icon: 'fa-paper-plane', color: 'warning', group: 'wallet',   sub: 'P2P sends' },
-    refund:     { label: 'Refunds',    icon: 'fa-rotate-left', color: 'info',    group: 'other',    sub: 'Reversals' },
-    other:      { label: 'Others',     icon: 'fa-receipt',     color: 'muted',   group: 'other',    sub: 'Uncategorised' },
+    all:         { label: 'All types',     icon: 'fa-th-large',    color: 'primary', group: 'all',      sub: 'Every transaction' },
+    airtime:     { label: 'Airtime',       icon: 'fa-signal',      color: 'info',    group: 'services', sub: 'VTU top-ups' },
+    data:        { label: 'Data',          icon: 'fa-wifi',        color: 'purple',  group: 'services', sub: 'Data bundles' },
+    deposit:     { label: 'Deposits',      icon: 'fa-arrow-down',  color: 'success', group: 'wallet',   sub: 'Wallet funding' },
+    withdrawal:  { label: 'Withdrawals',   icon: 'fa-arrow-up',    color: 'danger',  group: 'wallet',   sub: 'Payouts' },
+    transfer:    { label: 'Transfers',     icon: 'fa-paper-plane', color: 'warning', group: 'wallet',   sub: 'P2P sends' },
+    manual_fund: { label: 'Manual Credit', icon: 'fa-plus-circle', color: 'success', group: 'admin',    sub: 'Admin funding' },
+    manual_debit:{ label: 'Manual Debit',  icon: 'fa-minus-circle',color: 'danger',  group: 'admin',    sub: 'Admin debit' },
+    refund:      { label: 'Refunds',       icon: 'fa-rotate-left', color: 'info',    group: 'other',    sub: 'Reversals' },
+    other:       { label: 'Others',        icon: 'fa-receipt',     color: 'muted',   group: 'other',    sub: 'Uncategorised' },
   };
   const TXN_TYPE_GROUPS = [
-    { key: 'all',      label: 'Overview',       icon: 'fa-globe' },
-    { key: 'services', label: 'VTU Services',   icon: 'fa-mobile-screen' },
-    { key: 'wallet',   label: 'Wallet Activity', icon: 'fa-wallet' },
-    { key: 'other',    label: 'Other Activity',  icon: 'fa-ellipsis' },
+    { key: 'all',      label: 'Overview',          icon: 'fa-globe' },
+    { key: 'services', label: 'VTU Services',      icon: 'fa-mobile-screen' },
+    { key: 'wallet',   label: 'Wallet Activity',   icon: 'fa-wallet' },
+    { key: 'admin',    label: 'Admin Adjustments', icon: 'fa-user-shield' },
+    { key: 'other',    label: 'Other Activity',    icon: 'fa-ellipsis' },
   ];
 
   function getTxnTypeCounts() {
-    const counts = { all: 0, airtime: 0, data: 0, deposit: 0, withdrawal: 0, transfer: 0, refund: 0, other: 0 };
+    const counts = {
+      all: 0, airtime: 0, data: 0, deposit: 0, withdrawal: 0,
+      transfer: 0, manual_fund: 0, manual_debit: 0, refund: 0, other: 0
+    };
     const list = applyRange(state.transactions || [], state.range);
     for (const t of list) {
       const k = txnKind(t);
@@ -1862,7 +2229,6 @@ button{font-family:inherit}
     const t = TXN_TYPES[state.txnFilter] || TXN_TYPES.all;
     const lbl = $('#txnTypeLabel'); if (lbl) lbl.textContent = t.label;
     const pill = $('#txnTypePill'); if (pill) pill.classList.toggle('active', state.txnFilter !== 'all');
-    // Update active state in sheet if visible
     $$('#typeSheetWrap .type-sheet-item').forEach(o => o.classList.toggle('active', o.dataset.type === state.txnFilter));
   }
 
@@ -2990,7 +3356,7 @@ button{font-family:inherit}
   }
   window.triggerArchiveRun = triggerArchiveRun;
 
-  /* ==================== MISMATCHES / DRIFT ==================== */
+  /* ==================== MISMATCHES ==================== */
   async function loadMismatches() {
     const c = $('#mismatchesList');
     c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>';
@@ -3024,20 +3390,111 @@ button{font-family:inherit}
   }
   window.resolveMismatch = resolveMismatch;
 
+  /* ==================== WALLET DRIFT ==================== */
   async function loadDrift() {
     const c = $('#driftList');
+    const totalEl = $('#driftTotal');
+    const inSyncEl = $('#driftInSync');
+    const outEl = $('#driftOutOfSync');
+    const amtEl = $('#driftTotalAmount');
+    const countEl = $('#driftCount');
+
     c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>';
+
     try {
       const res = await apiCall('/admin/wallet/drift');
       const items = res.data.drift || [];
-      $('#driftCount').textContent = `${items.length} wallet${items.length === 1 ? '' : 's'} out of sync`;
+      const totalWallets = res.data.total_wallets ?? res.data.totalWallets ?? null;
+      const totalDrift = items.reduce((s, d) => s + Math.abs(Number(d.drift) || 0), 0);
+
+      if (totalEl) totalEl.textContent = totalWallets != null
+        ? Number(totalWallets).toLocaleString()
+        : '—';
+      if (inSyncEl) {
+        inSyncEl.textContent = totalWallets != null
+          ? Math.max(0, Number(totalWallets) - items.length).toLocaleString()
+          : '—';
+      }
+      if (outEl) outEl.textContent = items.length.toLocaleString();
+      if (amtEl) amtEl.textContent = formatMoney(totalDrift, true);
+      if (countEl) countEl.textContent = items.length
+        ? `${items.length} wallet${items.length === 1 ? '' : 's'} out of sync`
+        : 'All wallets balanced';
+
       if (!items.length) {
-        c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">All wallets are in sync</div><div class="desc">Every wallet matches its ledger balance.</div></div>`;
+        c.innerHTML = `
+          <div class="empty-state">
+            <div class="icon"><i class="fas fa-circle-check"></i></div>
+            <div class="title">Every wallet is in sync</div>
+            <div class="desc">Stored balances match the ledger across all accounts.</div>
+          </div>`;
         return;
       }
-      c.innerHTML = `<div class="data-list" style="margin:-16px -22px;">${items.map(d => `<div class="row-item static"><div class="row-avatar deposit">${escapeHtml((d.user_email || '#' + d.user_id).charAt(0).toUpperCase())}</div><div class="row-main"><div class="row-title">${escapeHtml(d.user_email || d.user_phone || '#' + d.user_id)}</div><div class="row-sub"><span>Wallet: ${formatMoney(d.wallet_balance)}</span><span class="dot"></span><span>Expected: ${formatMoney(d.expected_balance)}</span><span class="dot"></span><span>Ledger: ${formatMoney(d.ledger_balance)} · Held: ${formatMoney(d.active_held_sum)}</span></div></div><div class="row-right"><div class="row-amount ${Number(d.drift) > 0 ? 'credit' : 'debit'}">Drift: ${formatMoney(d.drift)}</div></div></div>`).join('')}</div>`;
+
+      function severityOf(absDrift) {
+        if (absDrift >= 10000) return 'critical';
+        if (absDrift >= 1000) return 'major';
+        return 'minor';
+      }
+
+      const rows = items
+        .slice()
+        .sort((a, b) => Math.abs(Number(b.drift) || 0) - Math.abs(Number(a.drift) || 0))
+        .map(d => {
+          const drift = Number(d.drift) || 0;
+          const absDrift = Math.abs(drift);
+          const sev = severityOf(absDrift);
+          const email = d.user_email || d.user_phone || `User #${d.user_id}`;
+          const initial = String(email).charAt(0).toUpperCase();
+          const deltaClass = drift >= 0 ? 'positive' : 'negative';
+          const deltaSign = drift >= 0 ? '+' : '−';
+
+          return `
+            <div class="drift-row ${sev}">
+              <div class="drift-user">
+                <div class="drift-user-avatar">${escapeHtml(initial)}</div>
+                <div class="drift-user-info">
+                  <div class="drift-user-name">${escapeHtml(email)}</div>
+                  <div class="drift-user-id">ID #${escapeHtml(String(d.user_id))}</div>
+                </div>
+              </div>
+              <div class="drift-cell">
+                ${formatMoney(d.wallet_balance)}
+                <span class="drift-sub">Wallet</span>
+              </div>
+              <div class="drift-cell">
+                ${formatMoney(d.expected_balance)}
+                <span class="drift-sub">Expected</span>
+              </div>
+              <div class="drift-cell">
+                ${formatMoney(d.ledger_balance)}
+                <span class="drift-sub">Ledger</span>
+              </div>
+              <div class="drift-delta ${deltaClass}">
+                ${deltaSign}${formatMoney(absDrift)}
+              </div>
+              <span class="drift-sev ${sev}">${sev}</span>
+            </div>`;
+        })
+        .join('');
+
+      c.innerHTML = `
+        <div class="drift-table-head">
+          <div>User</div>
+          <div style="text-align:right;">Wallet</div>
+          <div style="text-align:right;">Expected</div>
+          <div style="text-align:right;">Ledger</div>
+          <div style="text-align:right;">Drift</div>
+          <div style="text-align:right;">Severity</div>
+        </div>
+        ${rows}`;
     } catch (err) {
-      c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-exclamation"></i></div><div class="title">Could not load</div><div class="desc">${escapeHtml(err.message)}</div></div>`;
+      c.innerHTML = `
+        <div class="empty-state">
+          <div class="icon"><i class="fas fa-circle-exclamation"></i></div>
+          <div class="title">Could not load drift data</div>
+          <div class="desc">${escapeHtml(err.message)}</div>
+        </div>`;
     }
   }
   window.loadDrift = loadDrift;
