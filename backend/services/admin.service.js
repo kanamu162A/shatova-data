@@ -2,6 +2,8 @@
 // ============================================================
 // Shatova — Admin Service
 //   • Manual wallet funding / debiting with full audit trail
+//   • Manual fund/debit ALSO writes to transactions so the
+//     entry appears in admin + user transaction history.
 //   • Dashboard stats, mismatches, wallet drift
 //   • User details with fresh wallet balance
 //   • Users table uses single `name` column (no first_name/last_name)
@@ -96,6 +98,11 @@ export async function getUserFullDetails({ userId, email, phone }) {
 
 /* ============================================================
    MANUAL FUND
+   ------------------------------------------------------------
+   1. Writes wallet_ledger entry (via wallet.creditWallet)
+   2. Writes a matching `transactions` row so it shows in
+      history + admin panels
+   3. Logs the admin action
    ============================================================ */
 export async function manualFund({
   adminId, adminEmail, userId, amount, reason,
@@ -119,6 +126,7 @@ export async function manualFund({
 
   const reference = wallet.generateUniqueReference('MANUAL-FUND');
 
+  // 1) Ledger + wallet balance (existing behavior)
   const result = await wallet.creditWallet({
     userId,
     amount:      numAmount,
@@ -131,6 +139,45 @@ export async function manualFund({
   const walletBefore = money(result.before);
   const walletAfter  = money(result.after);
 
+  // 2) Write to `transactions` so it appears in history everywhere.
+  //    Uses the same reference so ledger & txn can be linked.
+  let txnRow = null;
+  try {
+    const { rows: txnRows } = await query(
+      `INSERT INTO transactions
+         (user_id, reference, type, service, direction,
+          amount, final_amount, status,
+          description, metadata, created_at, updated_at)
+       VALUES ($1,$2,'MANUAL_CREDIT','manual_fund','CREDIT',
+          $3,$3,'SUCCESS',
+          $4,$5::jsonb,NOW(),NOW())
+       RETURNING *`,
+      [
+        userId,
+        reference,
+        numAmount,
+        `Manual funding — ${cleanReason}`,
+        JSON.stringify({
+          source,
+          admin_id:      adminId,
+          admin_email:   adminEmail || null,
+          reason:        cleanReason,
+          wallet_before: walletBefore,
+          wallet_after:  walletAfter,
+          direction:     'credit',
+          kind:          'manual_fund',
+          ...metadata,
+        }),
+      ]
+    );
+    txnRow = txnRows[0] || null;
+  } catch (txnErr) {
+    // Don't fail the whole fund if the txn insert hiccups — the ledger
+    // entry already landed. Log loudly for ops.
+    console.error('[admin.fund] ⚠️ transactions insert failed:', txnErr.message);
+  }
+
+  // 3) Admin audit log
   await query(
     `INSERT INTO admin_actions
        (admin_id, admin_email, action_type, target_user_id,
@@ -143,6 +190,7 @@ export async function manualFund({
         wallet_before: walletBefore,
         wallet_after:  walletAfter,
         idempotent:    !!result.idempotent,
+        transaction_id: txnRow?.id || null,
         ...metadata,
       }),
     ]
@@ -168,12 +216,18 @@ export async function manualFund({
     reason:        cleanReason,
     source,
     idempotent:    !!result.idempotent,
+    transaction:   txnRow, // ⭐ returned to controller → SSE payload
     created_at:    new Date().toISOString(),
   };
 }
 
 /* ============================================================
    MANUAL DEBIT
+   ------------------------------------------------------------
+   1. Writes wallet_ledger entry (via wallet.debitWallet)
+   2. Writes a matching `transactions` row so it shows in
+      history + admin panels
+   3. Logs the admin action
    ============================================================ */
 export async function manualDebit({
   adminId, adminEmail, userId, amount, reason,
@@ -197,6 +251,7 @@ export async function manualDebit({
 
   const reference = wallet.generateUniqueReference('MANUAL-DEBIT');
 
+  // 1) Ledger + wallet balance
   const result = await wallet.debitWallet({
     userId,
     amount:      numAmount,
@@ -209,6 +264,42 @@ export async function manualDebit({
   const walletBefore = money(result.before);
   const walletAfter  = money(result.after);
 
+  // 2) Mirror into `transactions` for history
+  let txnRow = null;
+  try {
+    const { rows: txnRows } = await query(
+      `INSERT INTO transactions
+         (user_id, reference, type, service, direction,
+          amount, final_amount, status,
+          description, metadata, created_at, updated_at)
+       VALUES ($1,$2,'MANUAL_DEBIT','manual_debit','DEBIT',
+          $3,$3,'SUCCESS',
+          $4,$5::jsonb,NOW(),NOW())
+       RETURNING *`,
+      [
+        userId,
+        reference,
+        numAmount,
+        `Manual debit — ${cleanReason}`,
+        JSON.stringify({
+          source,
+          admin_id:      adminId,
+          admin_email:   adminEmail || null,
+          reason:        cleanReason,
+          wallet_before: walletBefore,
+          wallet_after:  walletAfter,
+          direction:     'debit',
+          kind:          'manual_debit',
+          ...metadata,
+        }),
+      ]
+    );
+    txnRow = txnRows[0] || null;
+  } catch (txnErr) {
+    console.error('[admin.debit] ⚠️ transactions insert failed:', txnErr.message);
+  }
+
+  // 3) Admin audit log
   await query(
     `INSERT INTO admin_actions
        (admin_id, admin_email, action_type, target_user_id,
@@ -221,6 +312,7 @@ export async function manualDebit({
         wallet_before: walletBefore,
         wallet_after:  walletAfter,
         idempotent:    !!result.idempotent,
+        transaction_id: txnRow?.id || null,
         ...metadata,
       }),
     ]
@@ -246,6 +338,7 @@ export async function manualDebit({
     reason:        cleanReason,
     source,
     idempotent:    !!result.idempotent,
+    transaction:   txnRow, // ⭐ returned to controller → SSE payload
     created_at:    new Date().toISOString(),
   };
 }
