@@ -1,366 +1,346 @@
-// models/transaction.model.js
+// controllers/transaction.controller.js
 // ============================================================
-// Shatova — Transaction Model
-//   • listForUser / countForUser      (user-scoped history)
-//   • listForAdmin / countForAdmin    (admin dashboard list)
-//   • findById                        (single txn, optional owner scope)
-//   • stats                           (aggregate stats)
-//   • create                          (generic insert helper)
-//
-// ⭐ Admin listings include MANUAL_CREDIT / MANUAL_DEBIT so
-//    manual fund/debit entries appear in the admin dashboard.
+// Transaction reads — user and admin
 // ============================================================
 
+import crypto from 'crypto';
 import { query } from '../config/database.js';
+import Transaction from '../models/transaction.model.js';
 
 /* ============================================================
-   INTERNAL — Build shared WHERE clauses
+   USER — GET /transactions/me
+   Paginated list of the current user's transactions.
    ============================================================ */
-function buildFilters({
-  userId,
-  search,
-  service,
-  status,
-  from,
-  to,
-  type,
-  direction,
-} = {}) {
-  const params = [];
-  const where  = [];
+export async function getMyTransactions(req, res) {
+  try {
+    const limit  = Math.min(Math.max(Number(req.query.limit) || 30, 1), 100);
+    const offset = Math.max(Number(req.query.offset) || 0, 0);
 
-  if (userId) {
-    params.push(Number(userId));
-    where.push(`t.user_id = $${params.length}`);
+    const filters = {
+      userId:  req.user.id,
+      limit,
+      offset,
+      service: req.query.service ? String(req.query.service).trim() : null,
+      status:  req.query.status  ? String(req.query.status).trim()  : null,
+      from:    req.query.from    || null,
+      to:      req.query.to      || null,
+      search:  String(req.query.search || '').trim(),
+    };
+
+    const [transactions, total] = await Promise.all([
+      Transaction.listForUser(filters),
+      Transaction.countForUser(filters),
+    ]);
+
+    return res.json({
+      success: true,
+      data: { transactions, total, limit, offset },
+      meta: { total, limit, offset, hasMore: offset + transactions.length < total },
+    });
+  } catch (err) {
+    console.error('[transaction] getMyTransactions:', err);
+    return res.status(500).json({ success: false, message: 'Could not fetch transactions.' });
   }
+}
 
-  if (type) {
-    // Accepts a string or array of type values
-    const list = Array.isArray(type) ? type : [type];
-    params.push(list);
-    where.push(`t.type = ANY($${params.length}::text[])`);
+/* ============================================================
+   USER — GET /transactions/me/:id
+   Single transaction, scoped to the owner.
+   ============================================================ */
+export async function getMyTransaction(req, res) {
+  try {
+    const tx = await Transaction.findById(req.params.id, req.user.id);
+    if (!tx) return res.status(404).json({ success: false, message: 'Transaction not found' });
+    return res.json({ success: true, data: { transaction: tx } });
+  } catch (err) {
+    console.error('[transaction] getMyTransaction:', err);
+    return res.status(500).json({ success: false, message: 'Could not fetch transaction.' });
   }
+}
 
-  if (direction) {
-    params.push(String(direction).toUpperCase());
-    where.push(`UPPER(COALESCE(t.direction, '')) = $${params.length}`);
-  }
-
-  if (service) {
-    // Matches either service OR type column (manual_fund appears in both)
-    params.push(String(service).toLowerCase());
-    where.push(
-      `(LOWER(COALESCE(t.service, '')) = $${params.length}
-        OR LOWER(COALESCE(t.type, ''))    = $${params.length})`
+/* ============================================================
+   USER — GET /transactions/recent-recipients
+   Recent phone numbers the user has sent airtime/data to.
+   ============================================================ */
+export async function getRecentRecipients(req, res) {
+  try {
+    const { rows } = await query(
+      `SELECT DISTINCT ON (metadata->>'phone')
+              metadata->>'phone'                       AS phone,
+              COALESCE(metadata->>'network', '')       AS network,
+              COALESCE(metadata->>'network_name', '')  AS network_name,
+              created_at
+         FROM transactions
+        WHERE user_id = $1
+          AND type = 'VTU'
+          AND metadata->>'phone' IS NOT NULL
+        ORDER BY metadata->>'phone', created_at DESC
+        LIMIT 20`,
+      [req.user.id]
     );
-  }
 
-  if (status) {
-    params.push(String(status).toLowerCase());
-    where.push(`LOWER(COALESCE(t.status, '')) = $${params.length}`);
-  }
+    const sorted = rows
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 8);
 
-  if (from) {
-    params.push(from);
-    where.push(`t.created_at >= $${params.length}::timestamptz`);
+    return res.json({
+      success: true,
+      data: {
+        recipients: sorted.map((r) => ({
+          phone:     r.phone,
+          network:   r.network,
+          last_used: r.created_at,
+        })),
+      },
+    });
+  } catch (err) {
+    console.error('[transaction] getRecentRecipients:', err);
+    return res.status(500).json({ success: false, message: 'Could not fetch recipients.' });
   }
-
-  if (to) {
-    params.push(to);
-    where.push(`t.created_at <= $${params.length}::timestamptz`);
-  }
-
-  if (search) {
-    const like = `%${String(search).trim()}%`;
-    params.push(like);
-    const i = params.length;
-    where.push(`(
-      t.reference            ILIKE $${i}
-      OR t.provider_reference ILIKE $${i}
-      OR t.provider_ref       ILIKE $${i}
-      OR t.description        ILIKE $${i}
-      OR t.remark             ILIKE $${i}
-      OR t.metadata->>'phone'        ILIKE $${i}
-      OR t.metadata->>'product_name' ILIKE $${i}
-      OR u.name              ILIKE $${i}
-      OR u.email             ILIKE $${i}
-      OR u.phone             ILIKE $${i}
-    )`);
-  }
-
-  return { where, params };
 }
 
-const BASE_COLUMNS = `
-  t.id, t.user_id, t.reference, t.type, t.service, t.direction,
-  t.amount, t.final_amount, t.cost_price, t.profit, t.discount,
-  t.status, t.provider_reference, t.provider_ref,
-  t.network, t.metadata, t.description, t.remark,
-  t.created_at, t.updated_at,
-  u.name  AS user_name,
-  u.email AS user_email,
-  u.phone AS user_phone
-`;
-
 /* ============================================================
-   USER LIST — paginated transactions for one user
+   ADMIN — GET /admin/transactions
    ============================================================ */
-export async function listForUser({
-  userId,
-  limit  = 30,
-  offset = 0,
-  service,
-  status,
-  from,
-  to,
-  search,
-} = {}) {
-  const { where, params } = buildFilters({
-    userId, service, status, from, to, search,
-  });
+export async function adminList(req, res) {
+  try {
+    const limit  = Math.min(Math.max(Number(req.query.limit) || 200, 1), 500);
+    const offset = Math.max(Number(req.query.offset) || 0, 0);
 
-  params.push(limit, offset);
+    const filters = {
+      limit,
+      offset,
+      search:  String(req.query.search || '').trim(),
+      service: req.query.service ? String(req.query.service).trim() : null,
+      status:  req.query.status  ? String(req.query.status).trim()  : null,
+      from:    req.query.from    || null,
+      to:      req.query.to      || null,
+      userId:  req.query.userId  || null,
+    };
 
-  const sql = `
-    SELECT ${BASE_COLUMNS}
-      FROM transactions t
-      LEFT JOIN users u ON u.id = t.user_id
-     ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
-     ORDER BY t.created_at DESC
-     LIMIT $${params.length - 1} OFFSET $${params.length}
-  `;
+    const [transactions, total] = await Promise.all([
+      Transaction.listForAdmin(filters),
+      Transaction.countForAdmin(filters),
+    ]);
 
-  const { rows } = await query(sql, params);
-  return rows.map(normalize);
-}
-
-export async function countForUser({
-  userId,
-  service,
-  status,
-  from,
-  to,
-  search,
-} = {}) {
-  const { where, params } = buildFilters({
-    userId, service, status, from, to, search,
-  });
-
-  const { rows } = await query(
-    `SELECT COUNT(*)::int AS total
-       FROM transactions t
-       LEFT JOIN users u ON u.id = t.user_id
-      ${where.length ? 'WHERE ' + where.join(' AND ') : ''}`,
-    params
-  );
-
-  return rows[0]?.total || 0;
+    return res.json({
+      success: true,
+      data: { transactions, total, limit, offset },
+      meta: { total, limit, offset, hasMore: offset + transactions.length < total },
+    });
+  } catch (err) {
+    console.error('[transaction] adminList:', err);
+    return res.status(500).json({ success: false, message: 'Could not fetch transactions.' });
+  }
 }
 
 /* ============================================================
-   ADMIN LIST — paginated transactions across all users
+   ADMIN — GET /admin/transaction/:id
+   ============================================================ */
+export async function adminGet(req, res) {
+  try {
+    const tx = await Transaction.findById(req.params.id);
+    if (!tx) return res.status(404).json({ success: false, message: 'Transaction not found' });
+    return res.json({ success: true, data: { transaction: tx } });
+  } catch (err) {
+    console.error('[transaction] adminGet:', err);
+    return res.status(500).json({ success: false, message: 'Could not fetch transaction.' });
+  }
+}
+
+/* ============================================================
+   ADMIN — GET /admin/transactions/stats
+   ============================================================ */
+export async function adminStats(req, res) {
+  try {
+    const stats = await Transaction.stats({
+      from: req.query.from || null,
+      to:   req.query.to   || null,
+    });
+    return res.json({ success: true, data: stats });
+  } catch (err) {
+    console.error('[transaction] adminStats:', err);
+    return res.status(500).json({ success: false, message: 'Could not fetch stats.' });
+  }
+}
+
+/* ============================================================
+   WEBHOOK — POST /webhooks/transactions
+   Provider callback → updates transaction status.
+   ============================================================ */
+
+const WEBHOOK_SECRET = process.env.TRANSACTION_WEBHOOK_SECRET;
+
+/* Verify the request really came from the provider */
+function verifyWebhookSignature(req) {
+  if (!WEBHOOK_SECRET) {
+    if (process.env.NODE_ENV === 'production') return false;
+    console.warn('[webhook] TRANSACTION_WEBHOOK_SECRET not set; skipping signature check (dev only)');
+    return true;
+  }
+
+  const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body || {}));
+  const signature =
+    req.get('x-paystack-signature') ||
+    req.get('x-webhook-signature') ||
+    req.get('verif-hash') ||
+    '';
+
+  if (!signature) return false;
+
+  const expected = crypto
+    .createHmac('sha512', WEBHOOK_SECRET)
+    .update(rawBody)
+    .digest('hex');
+
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+/* Extract status from any provider payload shape */
+function pickWebhookStatus(payload) {
+  const raw =
+    payload.status ||
+    payload.event ||
+    payload.data?.status ||
+    payload.transaction?.status ||
+    '';
+
+  const s = String(raw).toLowerCase();
+
+  if (['success', 'successful', 'completed', 'complete', 'delivered', 'charge.success'].some((v) => s.includes(v))) {
+    return 'success';
+  }
+  if (['failed', 'failure', 'error', 'cancelled', 'canceled', 'reversed', 'declined'].some((v) => s.includes(v))) {
+    return 'failed';
+  }
+  if (['pending', 'processing', 'initiated', 'queued'].some((v) => s.includes(v))) {
+    return 'pending';
+  }
+  return null;
+}
+
+/* Extract the transaction reference from any provider payload shape */
+function pickWebhookReference(payload) {
+  return (
+    payload.reference ||
+    payload.tx_ref ||
+    payload.transaction_reference ||
+    payload.transactionReference ||
+    payload.data?.reference ||
+    payload.data?.tx_ref ||
+    payload.data?.transactionReference ||
+    payload.transaction?.reference ||
+    null
+  );
+}
+
+/* ============================================================
+   POST /webhooks/transactions
+   Receives provider callback → updates transaction status.
+   ============================================================ */
+export async function transactionWebhook(req, res) {
+  try {
+    /* 1. Verify signature (proves it came from the provider) */
+    if (!verifyWebhookSignature(req)) {
+      return res.status(401).json({ success: false, message: 'Invalid webhook signature' });
+    }
+
+    /* 2. Parse payload */
+    const payload   = req.body || {};
+    const reference = pickWebhookReference(payload);
+    const status    = pickWebhookStatus(payload);
+
+    /* 3. Ignore events we don't care about — but return 200 so provider stops retrying */
+    if (!reference || !status) {
+      return res.status(200).json({ success: true, message: 'Ignored (no reference or status)' });
+    }
+
+    /* 4. Update the transaction in the DB */
+    const { rows, rowCount } = await query(
+      `UPDATE transactions
+          SET status     = $1,
+              metadata   = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+              updated_at = NOW()
+        WHERE reference = $3
+           OR metadata->>'provider_reference' = $3
+        RETURNING id, user_id, status, amount, type`,
+      [
+        status,
+        JSON.stringify({ webhook: payload, webhook_at: new Date().toISOString() }),
+        reference,
+      ]
+    );
+
+    if (rowCount === 0) {
+      console.warn('[webhook] reference not found:', reference);
+      return res.status(200).json({ success: true, message: 'Reference not found, ignored' });
+    }
+
+    const tx = rows[0];
+    console.log(`[webhook] tx=${tx.id} ref=${reference} status=${status}`);
+
+    /* 5. If FAILED → refund the user's wallet (only if not already refunded) */
+    if (status === 'failed') {
+      try {
+        await query(
+          `UPDATE wallets
+              SET balance = balance + $1,
+                  version = version + 1,
+                  updated_at = NOW()
+            WHERE user_id = $2
+              AND NOT EXISTS (
+                SELECT 1 FROM wallet_ledger
+                 WHERE transaction_id = $3
+                   AND type = 'refund'
+              )`,
+          [tx.amount, tx.user_id, tx.id]
+        );
+
+        await query(
+          `INSERT INTO wallet_ledger
+             (wallet_id, user_id, transaction_id, type, amount, balance_after, status, description)
+           SELECT w.id, $1, $2, 'refund', $3, w.balance, 'successful', $4
+             FROM wallets w
+            WHERE w.user_id = $1
+              AND NOT EXISTS (
+                SELECT 1 FROM wallet_ledger
+                 WHERE transaction_id = $2
+                   AND type = 'refund'
+              )`,
+          [tx.user_id, tx.id, tx.amount, `Auto refund for failed tx ${reference}`]
+        );
+
+        console.log(`[webhook] refunded ₦${tx.amount} to user ${tx.user_id}`);
+      } catch (refundErr) {
+        console.error('[webhook] refund failed:', refundErr.message);
+      }
+    }
+
+    /* 6. Always respond 200 so the provider knows we got it */
+    return res.status(200).json({ success: true, received: true });
+  } catch (err) {
+    console.error('[webhook] transactionWebhook:', err);
+    return res.status(500).json({ success: false, message: 'Webhook failed' });
+  }
+}
+
+/* ============================================================
+   ⭐ DEFAULT EXPORT
    ------------------------------------------------------------
-   ⭐ Includes MANUAL_CREDIT / MANUAL_DEBIT by default so the
-      admin dashboard shows manual fund/debit entries.
-   ============================================================ */
-export async function listForAdmin({
-  limit  = 200,
-  offset = 0,
-  search,
-  service,
-  status,
-  from,
-  to,
-  userId,
-} = {}) {
-  const { where, params } = buildFilters({
-    userId, service, status, from, to, search,
-  });
-
-  // Always include manual fund/debit rows unless the caller has
-  // explicitly filtered them out via `service`/`type`.
-  const noServiceFilter = !service;
-  if (noServiceFilter) {
-    where.push(`(
-      t.type    IN ('VTU','DATA','AIRTIME','DEPOSIT','WITHDRAWAL',
-                    'MANUAL_CREDIT','MANUAL_DEBIT','TRANSFER','REFUND')
-      OR t.service IN ('manual_fund','manual_debit','deposit','withdrawal',
-                       'airtime','data','transfer','refund')
-      OR t.metadata->>'kind' IN ('manual_fund','manual_debit')
-    )`);
-  }
-
-  params.push(limit, offset);
-
-  const sql = `
-    SELECT ${BASE_COLUMNS}
-      FROM transactions t
-      LEFT JOIN users u ON u.id = t.user_id
-     ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
-     ORDER BY t.created_at DESC
-     LIMIT $${params.length - 1} OFFSET $${params.length}
-  `;
-
-  const { rows } = await query(sql, params);
-  return rows.map(normalize);
-}
-
-export async function countForAdmin({
-  search,
-  service,
-  status,
-  from,
-  to,
-  userId,
-} = {}) {
-  const { where, params } = buildFilters({
-    userId, service, status, from, to, search,
-  });
-
-  const noServiceFilter = !service;
-  if (noServiceFilter) {
-    where.push(`(
-      t.type    IN ('VTU','DATA','AIRTIME','DEPOSIT','WITHDRAWAL',
-                    'MANUAL_CREDIT','MANUAL_DEBIT','TRANSFER','REFUND')
-      OR t.service IN ('manual_fund','manual_debit','deposit','withdrawal',
-                       'airtime','data','transfer','refund')
-      OR t.metadata->>'kind' IN ('manual_fund','manual_debit')
-    )`);
-  }
-
-  const { rows } = await query(
-    `SELECT COUNT(*)::int AS total
-       FROM transactions t
-       LEFT JOIN users u ON u.id = t.user_id
-      ${where.length ? 'WHERE ' + where.join(' AND ') : ''}`,
-    params
-  );
-
-  return rows[0]?.total || 0;
-}
-
-/* ============================================================
-   FIND BY ID — optionally scoped to a user
-   ============================================================ */
-export async function findById(id, userId = null) {
-  const params = [id];
-  let whereUser = '';
-  if (userId) {
-    params.push(Number(userId));
-    whereUser = ` AND t.user_id = $${params.length}`;
-  }
-
-  const { rows } = await query(
-    `SELECT ${BASE_COLUMNS}
-       FROM transactions t
-       LEFT JOIN users u ON u.id = t.user_id
-      WHERE t.id = $1${whereUser}
-      LIMIT 1`,
-    params
-  );
-
-  return rows[0] ? normalize(rows[0]) : null;
-}
-
-/* ============================================================
-   STATS — aggregate metrics (admin stats endpoint)
-   ============================================================ */
-export async function stats({ from = null, to = null } = {}) {
-  const params = [];
-  const where  = [];
-
-  if (from) { params.push(from); where.push(`created_at >= $${params.length}::timestamptz`); }
-  if (to)   { params.push(to);   where.push(`created_at <= $${params.length}::timestamptz`); }
-
-  const whereSql = where.length ? 'WHERE ' + where.join(' AND ') : '';
-
-  const { rows } = await query(
-    `SELECT
-       COUNT(*)::int AS total,
-       COUNT(*) FILTER (WHERE UPPER(status) = 'SUCCESS')::int AS successful,
-       COUNT(*) FILTER (WHERE UPPER(status) = 'FAILED')::int  AS failed,
-       COUNT(*) FILTER (WHERE UPPER(status) IN ('PENDING','PROCESSING'))::int AS pending,
-       COALESCE(SUM(amount) FILTER (WHERE UPPER(status) = 'SUCCESS'), 0)::numeric AS volume,
-       COALESCE(SUM(profit) FILTER (WHERE UPPER(status) = 'SUCCESS'), 0)::numeric AS profit
-     FROM transactions
-     ${whereSql}`,
-    params
-  );
-
-  return normalize(rows[0] || {});
-}
-
-/* ============================================================
-   CREATE — generic insert helper
-   ------------------------------------------------------------
-   Kept for callers that need a low-level insert. Most flows
-   (VTU, data, wallet, admin fund) do their own INSERTs.
-   ============================================================ */
-export async function create(tx = {}) {
-  const {
-    userId,
-    reference,
-    type = 'VTU',
-    service = null,
-    direction = 'DEBIT',
-    amount = 0,
-    finalAmount = null,
-    costPrice = null,
-    profit = null,
-    discount = null,
-    status = 'PENDING',
-    providerReference = null,
-    providerRef = null,
-    network = null,
-    metadata = {},
-    description = null,
-    remark = null,
-  } = tx;
-
-  const { rows } = await query(
-    `INSERT INTO transactions
-       (user_id, reference, type, service, direction,
-        amount, final_amount, cost_price, profit, discount,
-        status, provider_reference, provider_ref, network,
-        metadata, description, remark, created_at, updated_at)
-     VALUES ($1,$2,$3,$4,$5,
-             $6,$7,$8,$9,$10,
-             $11,$12,$13,$14,
-             $15::jsonb,$16,$17,NOW(),NOW())
-     RETURNING *`,
-    [
-      userId, reference, type, service, direction,
-      amount, finalAmount, costPrice, profit, discount,
-      status, providerReference, providerRef, network,
-      JSON.stringify(metadata || {}),
-      description, remark,
-    ]
-  );
-
-  return rows[0] ? normalize(rows[0]) : null;
-}
-
-/* ============================================================
-   NORMALIZE — coerce numeric strings to numbers
-   ============================================================ */
-function normalize(row) {
-  if (!row || typeof row !== 'object') return row;
-  const out = { ...row };
-  for (const key of ['amount', 'final_amount', 'cost_price', 'profit', 'discount']) {
-    if (out[key] != null) out[key] = Number(out[key]);
-  }
-  return out;
-}
-
-/* ============================================================
-   DEFAULT EXPORT
+   Required so that routes doing:
+     import transactionController from '../controllers/transaction.controller.js'
+   ...and then calling `transactionController.getMyTransactions(...)`
+   will not receive `undefined`. Fixes:
+     TypeError: asyncHandler expected a function, got undefined
    ============================================================ */
 export default {
-  listForUser,
-  countForUser,
-  listForAdmin,
-  countForAdmin,
-  findById,
-  stats,
-  create,
+  getMyTransactions,
+  getMyTransaction,
+  getRecentRecipients,
+  adminList,
+  adminGet,
+  adminStats,
+  transactionWebhook,
 };
