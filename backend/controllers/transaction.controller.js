@@ -7,10 +7,8 @@ import crypto from 'crypto';
 import { query } from '../config/database.js';
 import Transaction from '../models/transaction.model.js';
 
-/* ============================================================
-   USER — GET /transactions/me
-   Paginated list of the current user's transactions.
-   ============================================================ */
+/* ---------- USER ---------- */
+
 export async function getMyTransactions(req, res) {
   try {
     const limit  = Math.min(Math.max(Number(req.query.limit) || 30, 1), 100);
@@ -43,10 +41,6 @@ export async function getMyTransactions(req, res) {
   }
 }
 
-/* ============================================================
-   USER — GET /transactions/me/:id
-   Single transaction, scoped to the owner.
-   ============================================================ */
 export async function getMyTransaction(req, res) {
   try {
     const tx = await Transaction.findById(req.params.id, req.user.id);
@@ -58,10 +52,6 @@ export async function getMyTransaction(req, res) {
   }
 }
 
-/* ============================================================
-   USER — GET /transactions/recent-recipients
-   Recent phone numbers the user has sent airtime/data to.
-   ============================================================ */
 export async function getRecentRecipients(req, res) {
   try {
     const { rows } = await query(
@@ -99,9 +89,8 @@ export async function getRecentRecipients(req, res) {
   }
 }
 
-/* ============================================================
-   ADMIN — GET /admin/transactions
-   ============================================================ */
+/* ---------- ADMIN ---------- */
+
 export async function adminList(req, res) {
   try {
     const limit  = Math.min(Math.max(Number(req.query.limit) || 200, 1), 500);
@@ -134,9 +123,6 @@ export async function adminList(req, res) {
   }
 }
 
-/* ============================================================
-   ADMIN — GET /admin/transaction/:id
-   ============================================================ */
 export async function adminGet(req, res) {
   try {
     const tx = await Transaction.findById(req.params.id);
@@ -148,9 +134,6 @@ export async function adminGet(req, res) {
   }
 }
 
-/* ============================================================
-   ADMIN — GET /admin/transactions/stats
-   ============================================================ */
 export async function adminStats(req, res) {
   try {
     const stats = await Transaction.stats({
@@ -164,14 +147,10 @@ export async function adminStats(req, res) {
   }
 }
 
-/* ============================================================
-   WEBHOOK — POST /webhooks/transactions
-   Provider callback → updates transaction status.
-   ============================================================ */
+/* ---------- WEBHOOK ---------- */
 
 const WEBHOOK_SECRET = process.env.TRANSACTION_WEBHOOK_SECRET;
 
-/* Verify the request really came from the provider */
 function verifyWebhookSignature(req) {
   if (!WEBHOOK_SECRET) {
     if (process.env.NODE_ENV === 'production') return false;
@@ -198,7 +177,6 @@ function verifyWebhookSignature(req) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-/* Extract status from any provider payload shape */
 function pickWebhookStatus(payload) {
   const raw =
     payload.status ||
@@ -221,7 +199,6 @@ function pickWebhookStatus(payload) {
   return null;
 }
 
-/* Extract the transaction reference from any provider payload shape */
 function pickWebhookReference(payload) {
   return (
     payload.reference ||
@@ -236,28 +213,20 @@ function pickWebhookReference(payload) {
   );
 }
 
-/* ============================================================
-   POST /webhooks/transactions
-   Receives provider callback → updates transaction status.
-   ============================================================ */
 export async function transactionWebhook(req, res) {
   try {
-    /* 1. Verify signature (proves it came from the provider) */
     if (!verifyWebhookSignature(req)) {
       return res.status(401).json({ success: false, message: 'Invalid webhook signature' });
     }
 
-    /* 2. Parse payload */
     const payload   = req.body || {};
     const reference = pickWebhookReference(payload);
     const status    = pickWebhookStatus(payload);
 
-    /* 3. Ignore events we don't care about — but return 200 so provider stops retrying */
     if (!reference || !status) {
       return res.status(200).json({ success: true, message: 'Ignored (no reference or status)' });
     }
 
-    /* 4. Update the transaction in the DB */
     const { rows, rowCount } = await query(
       `UPDATE transactions
           SET status     = $1,
@@ -281,7 +250,6 @@ export async function transactionWebhook(req, res) {
     const tx = rows[0];
     console.log(`[webhook] tx=${tx.id} ref=${reference} status=${status}`);
 
-    /* 5. If FAILED → refund the user's wallet (only if not already refunded) */
     if (status === 'failed') {
       try {
         await query(
@@ -318,29 +286,9 @@ export async function transactionWebhook(req, res) {
       }
     }
 
-    /* 6. Always respond 200 so the provider knows we got it */
     return res.status(200).json({ success: true, received: true });
   } catch (err) {
     console.error('[webhook] transactionWebhook:', err);
     return res.status(500).json({ success: false, message: 'Webhook failed' });
   }
 }
-
-/* ============================================================
-   ⭐ DEFAULT EXPORT
-   ------------------------------------------------------------
-   Required so that routes doing:
-     import transactionController from '../controllers/transaction.controller.js'
-   ...and then calling `transactionController.getMyTransactions(...)`
-   will not receive `undefined`. Fixes:
-     TypeError: asyncHandler expected a function, got undefined
-   ============================================================ */
-export default {
-  getMyTransactions,
-  getMyTransaction,
-  getRecentRecipients,
-  adminList,
-  adminGet,
-  adminStats,
-  transactionWebhook,
-};
