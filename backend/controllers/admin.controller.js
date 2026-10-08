@@ -2,14 +2,17 @@
 // ============================================================
 // Shatova — Admin Controller
 //   • Existing: users, transactions, stats, datashop wallet
-//   • New: dashboard, manual fund/debit, archived transactions,
-//     archive trigger, mismatches, wallet drift
+//   • Manual fund/debit now writes to BOTH wallet_ledger AND
+//     the transactions table so it appears in history.
+//   • Manual fund/debit also broadcasts an SSE event so the
+//     admin dashboard updates instantly.
 // ============================================================
 
 import User from '../models/user.model.js';
 import { query } from '../config/database.js';
 import * as adminService from '../services/admin.service.js';
 import { archiveAndTrimTransactions } from '../jobs/daily-transaction-archive.job.js';
+import { adminEventBus } from '../events/adminEventBus.js';
 
 const MAX_LIMIT = 500;
 const paging = (req) => ({
@@ -19,7 +22,6 @@ const paging = (req) => ({
 
 /* ============================================================
    GET /api/v1/admin/users
-   Query: ?limit=100&offset=0&search=&role=&status=
    ============================================================ */
 export async function getUsers(req, res) {
   try {
@@ -46,7 +48,6 @@ export async function getUsers(req, res) {
 
 /* ============================================================
    GET /api/v1/admin/users/:id
-   Full profile: user + wallet + stats + recent activity
    ============================================================ */
 export async function getUser(req, res) {
   try {
@@ -63,7 +64,6 @@ export async function getUser(req, res) {
 
 /* ============================================================
    PATCH /api/v1/admin/users/:id/role
-   Body: { role: 'user' | 'admin' | 'super_admin' }
    ============================================================ */
 export async function updateUserRole(req, res) {
   try {
@@ -293,7 +293,7 @@ export async function getDatashopWallet(req, res) {
 }
 
 /* ============================================================
-   ⭐ NEW — Dashboard (aggregate stats + drift + mismatches)
+   ⭐ Dashboard
    ============================================================ */
 export async function getDashboard(req, res) {
   try {
@@ -310,12 +310,13 @@ export async function getDashboard(req, res) {
 }
 
 /* ============================================================
-   ⭐ NEW — Manual Fund / Debit / Lookup
+   ⭐ Manual Fund — writes BOTH ledger + transactions
    ============================================================ */
 export async function manualFund(req, res) {
   const admin = {
     id:    req.user?._id || req.user?.id || req.user?.userId,
     email: req.user?.email || null,
+    name:  req.user?.name  || null,
   };
   if (!admin.id) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
@@ -338,11 +339,24 @@ export async function manualFund(req, res) {
     const result = await adminService.manualFund({
       adminId:    admin.id,
       adminEmail: admin.email,
+      adminName:  admin.name,
       userId:     user.id,
       amount:     Number(amount),
       reason,
       source,
     });
+
+    // ⚡ Notify every connected admin dashboard in real-time
+    try {
+      adminEventBus.emitAdmin('admin-funded', {
+        kind:   'manual_fund',
+        userId: user.id,
+        amount: Number(amount),
+        reason,
+        source,
+        transaction: result.transaction || null,
+      });
+    } catch (_) {}
 
     res.json({ success: true, data: result });
   } catch (err) {
@@ -351,10 +365,14 @@ export async function manualFund(req, res) {
   }
 }
 
+/* ============================================================
+   ⭐ Manual Debit — writes BOTH ledger + transactions
+   ============================================================ */
 export async function manualDebit(req, res) {
   const admin = {
     id:    req.user?._id || req.user?.id || req.user?.userId,
     email: req.user?.email || null,
+    name:  req.user?.name  || null,
   };
   if (!admin.id) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
@@ -377,11 +395,23 @@ export async function manualDebit(req, res) {
     const result = await adminService.manualDebit({
       adminId:    admin.id,
       adminEmail: admin.email,
+      adminName:  admin.name,
       userId:     user.id,
       amount:     Number(amount),
       reason,
       source,
     });
+
+    try {
+      adminEventBus.emitAdmin('admin-debited', {
+        kind:   'manual_debit',
+        userId: user.id,
+        amount: Number(amount),
+        reason,
+        source,
+        transaction: result.transaction || null,
+      });
+    } catch (_) {}
 
     res.json({ success: true, data: result });
   } catch (err) {
@@ -396,6 +426,9 @@ export async function manualDebit(req, res) {
   }
 }
 
+/* ============================================================
+   Lookup user for Manual Fund
+   ============================================================ */
 export async function lookupUser(req, res) {
   const { user_id, email, phone } = req.query || {};
   if (!user_id && !email && !phone) {
@@ -429,7 +462,7 @@ export async function lookupUser(req, res) {
 }
 
 /* ============================================================
-   ⭐ NEW — Admin Actions Log
+   Admin Actions Log
    ============================================================ */
 export async function listActions(req, res) {
   try {
@@ -455,7 +488,7 @@ export async function fundingStats(req, res) {
 }
 
 /* ============================================================
-   ⭐ NEW — Archived transactions
+   Archived transactions
    ============================================================ */
 export async function listArchivedTransactions(req, res) {
   try {
@@ -473,7 +506,7 @@ export async function listArchivedTransactions(req, res) {
 }
 
 /* ============================================================
-   ⭐ NEW — Archive trigger
+   Archive trigger
    ============================================================ */
 export async function triggerArchive(req, res) {
   try {
@@ -486,7 +519,7 @@ export async function triggerArchive(req, res) {
 }
 
 /* ============================================================
-   ⭐ NEW — Mismatches
+   Mismatches
    ============================================================ */
 export async function listMismatches(req, res) {
   try {
@@ -519,7 +552,7 @@ export async function resolveMismatch(req, res) {
 }
 
 /* ============================================================
-   ⭐ NEW — Wallet drift
+   Wallet drift
    ============================================================ */
 export async function listWalletDrift(req, res) {
   try {
@@ -535,7 +568,6 @@ export async function listWalletDrift(req, res) {
    Default export
    ============================================================ */
 export default {
-  /* Existing */
   getUsers,
   getUser,
   updateUserRole,
@@ -543,8 +575,6 @@ export default {
   getTransaction,
   getStats,
   getDatashopWallet,
-
-  /* New */
   getDashboard,
   manualFund,
   manualDebit,
