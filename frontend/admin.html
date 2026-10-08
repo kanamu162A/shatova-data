@@ -234,7 +234,7 @@ button{font-family:inherit}
 .section-search-hint{font-size:11px;color:var(--text-muted);display:inline-flex;align-items:center;gap:6px}
 
 /* ============================================================
-   ANALYTICS GRID (FIX)
+   ANALYTICS
 ============================================================ */
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
 .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow-xs);transition:var(--transition);position:relative;overflow:hidden}
@@ -743,7 +743,7 @@ button{font-family:inherit}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* ============================================================
-   ALARM BANNER (fullscreen loud alert)
+   ALARM BANNER
 ============================================================ */
 .alarm-banner{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at center,rgba(161,34,34,.92),rgba(90,15,15,.96));display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;color:#fff;text-align:center;padding:30px;animation:alarmPulseBg 1s ease-in-out infinite alternate}
 .alarm-banner.show{display:flex}
@@ -944,12 +944,10 @@ button:not(:disabled){cursor:pointer}
 #fundLookupIconBtn{width:42px;height:42px;border-radius:12px!important;background:var(--primary-gradient)!important;color:#fff!important;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 7px 18px -6px rgba(10,69,52,.42);flex-shrink:0}
 #fundLookupIconBtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px -7px rgba(10,69,52,.5)!important}
 #fundLookupIconBtn:disabled{opacity:.65;cursor:wait}
-/* Global top progress / action feedback */
 #shatovaPageLoader{position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:5000;pointer-events:none;opacity:0;transition:opacity .2s}
 #shatovaPageLoader.active{opacity:1}
 #shatovaPageLoader::before{content:'';display:block;width:35%;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));border-radius:0 4px 4px 0;animation:shatovaProgress 1.05s ease-in-out infinite}
 @keyframes shatovaProgress{0%{transform:translateX(-120%)}100%{transform:translateX(330%)}}
-/* Admin notification center */
 .admin-alert-btn{position:relative;width:40px!important;height:40px!important;border-radius:12px!important}
 .admin-alert-btn .alert-badge{position:absolute;right:-3px;top:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid var(--bg-card);font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;box-shadow:0 4px 12px -3px rgba(239,68,68,.55)}
 .admin-alert-btn.has-alert .alert-badge{display:flex;animation:alertBadge .9s ease-in-out infinite alternate}
@@ -966,7 +964,6 @@ button:not(:disabled){cursor:pointer}
 .admin-sound-chip{position:fixed;right:22px;bottom:22px;z-index:1900;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);box-shadow:var(--shadow-lg);border-radius:999px;padding:9px 13px;display:none;align-items:center;gap:7px;font-size:10.5px;font-weight:800;cursor:pointer}.admin-sound-chip.show{display:inline-flex}.admin-sound-chip.on{color:var(--success-dark);border-color:rgba(9,134,88,.2);background:var(--success-light)}
 .admin-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px rgba(16,185,129,.10);animation:livePulse 1.8s ease-in-out infinite}.admin-live-label{font-size:9.5px;color:var(--text-muted);font-weight:800;letter-spacing:.5px;text-transform:uppercase}
 @keyframes livePulse{0%,100%{opacity:.7}50%{opacity:1;transform:scale(1.12)}}
-/* Better empty/error cards everywhere */
 .empty-state,.user-empty,.fund-empty-premium{animation:fadeInUp .28s var(--ease-out)}
 .empty-state .icon{transition:transform .22s ease,box-shadow .22s ease}.empty-state:hover .icon{transform:translateY(-2px);box-shadow:0 8px 22px -10px rgba(10,69,52,.16)}
 .data-list:has(.empty-state){min-height:190px;display:flex;align-items:center;justify-content:center}
@@ -1644,7 +1641,7 @@ button:not(:disabled){cursor:pointer}
 
 <div id="shatovaPageLoader"></div>
 
-<!-- ★ FULLSCREEN ALARM BANNER (loud alert) -->
+<!-- ★ FULLSCREEN ALARM BANNER -->
 <div class="alarm-banner" id="alarmBanner" aria-live="assertive">
   <div class="alarm-icon"><i class="fas fa-bell"></i></div>
   <h2 id="alarmBannerTitle">🚨 New Approval Alert</h2>
@@ -1819,10 +1816,6 @@ button:not(:disabled){cursor:pointer}
 
   /* ============================================================
      LOUD ADMIN ALARM ENGINE
-     - Two-tone siren (square wave, alternating 1200Hz / 900Hz)
-     - Deep sub-bass rumble (sine wave 70Hz → 45Hz)
-     - Rapid triangle clicks for urgency
-     - Loops every 1.55s until acknowledged (or 45s safety timeout)
   ============================================================ */
   let adminAudioCtx = null;
   let adminAlarmLoopTimer = null;
@@ -1850,7 +1843,6 @@ button:not(:disabled){cursor:pointer}
   }
   window.unlockAdminAudio = unlockAdminAudio;
 
-  // Restore sound preference on load
   try { if (localStorage.getItem('adminSoundEnabled') === '1') state.adminSoundEnabled = true; } catch (_) {}
 
   function enableAdminSound() {
@@ -1860,9 +1852,11 @@ button:not(:disabled){cursor:pointer}
     try { localStorage.setItem('adminSoundEnabled', '1'); } catch (_) {}
     const chip = $('#adminSoundChip');
     if (chip) {
-      chip.classList.remove('show'); chip.classList.add('on');
-      chip.innerHTML = '<i class="fas fa-volume-high"></i> Approval alarm ON';
-      setTimeout(()=>{ chip.classList.remove('on'); chip.classList.add('show'); }, 1600);
+      chip.classList.remove('show');
+      chip.classList.add('on');
+      chip.style.animation = 'none';
+      chip.innerHTML = '<i class="fas fa-volume-high"></i> 🔔 Loud alarm ON';
+      setTimeout(()=>{ chip.classList.remove('on'); chip.classList.add('show'); }, 2200);
     }
     playAdminAlertSound(true);
     showToast('🔊 Loud approval alarm enabled', 'success');
@@ -1877,7 +1871,6 @@ button:not(:disabled){cursor:pointer}
     master.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
     master.connect(ctx.destination);
 
-    // 1) Two-tone siren — square wave alternating 1200Hz / 900Hz
     const toneA = ctx.createOscillator();
     const toneB = ctx.createOscillator();
     const gainA = ctx.createGain();
@@ -1900,7 +1893,6 @@ button:not(:disabled){cursor:pointer}
     toneA.stop(startAt + duration);
     toneB.stop(startAt + duration);
 
-    // 2) Deep sub-bass rumble
     const sub = ctx.createOscillator();
     const subGain = ctx.createGain();
     sub.type = 'sine';
@@ -1912,7 +1904,6 @@ button:not(:disabled){cursor:pointer}
     sub.connect(subGain); subGain.connect(master);
     sub.start(startAt); sub.stop(startAt + duration);
 
-    // 3) Rapid clicks
     const clickCount = Math.floor(duration / 0.2);
     for (let i = 0; i < clickCount; i++) {
       const t = startAt + i * 0.2;
@@ -2034,7 +2025,6 @@ button:not(:disabled){cursor:pointer}
     const amount = formatMoney(getAmount(item));
     showToast(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} needs approval · ${name} · ${amount}`, 'info');
 
-    // 🔊 LOUD LOOPING ALARM + FULLSCREEN BANNER
     playAdminAlertSound(false, { loop: true, duration: 1.4, intensity: 1.0 });
     showAlarmBanner(
       type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert',
@@ -2125,31 +2115,27 @@ button:not(:disabled){cursor:pointer}
     const deposits = (state.deposits || []).filter(isPendingDeposit);
     const withdrawals = (state.withdrawals || []).filter(w => getStatus(w) === 'pending');
 
-    if (!state.notifInitialized) {
-      deposits.forEach(d => state.seenDepositIds.add(String(d.id || d.reference || '')));
-      state.notifInitialized = true;
-    } else {
-      deposits.forEach(d => {
-        const id = String(d.id || d.reference || '');
-        if (id && !state.seenDepositIds.has(id)) {
-          state.seenDepositIds.add(id);
-          addAdminAlert('deposit', d);
-        }
-      });
-    }
+    // First load: fire alerts for every currently-pending item so admin never misses one.
+    // Only mark as "seen" AFTER we alert.
+    deposits.forEach(d => {
+      const id = String(d.id || d.reference || '');
+      if (!id) return;
+      if (!state.seenDepositIds.has(id)) {
+        state.seenDepositIds.add(id);
+        addAdminAlert('deposit', d);
+      }
+    });
+    state.notifInitialized = true;
 
-    if (!state.withdrawalNotifInitialized) {
-      withdrawals.forEach(w => state.seenWithdrawalIds.add(String(w.id || w.reference || '')));
-      state.withdrawalNotifInitialized = true;
-    } else {
-      withdrawals.forEach(w => {
-        const id = String(w.id || w.reference || '');
-        if (id && !state.seenWithdrawalIds.has(id)) {
-          state.seenWithdrawalIds.add(id);
-          addAdminAlert('withdrawal', w);
-        }
-      });
-    }
+    withdrawals.forEach(w => {
+      const id = String(w.id || w.reference || '');
+      if (!id) return;
+      if (!state.seenWithdrawalIds.has(id)) {
+        state.seenWithdrawalIds.add(id);
+        addAdminAlert('withdrawal', w);
+      }
+    });
+    state.withdrawalNotifInitialized = true;
   }
 
   function getAmount(o) {
@@ -2509,7 +2495,12 @@ button:not(:disabled){cursor:pointer}
   function detectNewPendingDeposits() {
     const list = state.deposits || [];
     const pending = list.filter(isPendingDeposit);
-    if (!state.notifInitialized) { pending.forEach(d => { const id = String(d.id || d.reference || ''); if (id) state.seenDepositIds.add(id); }); state.notifInitialized = true; return; }
+    if (!state.notifInitialized) {
+      // First load: show notification for every pending item (admin never misses one)
+      pending.forEach(d => showDepositNotification(d));
+      state.notifInitialized = true;
+      return;
+    }
     pending.forEach(d => { const id = String(d.id || d.reference || ''); if (id && !state.seenDepositIds.has(id)) { showDepositNotification(d); } });
   }
 
@@ -3598,15 +3589,38 @@ button:not(:disabled){cursor:pointer}
     wireRangePills(); syncRangeUI(); syncTypeUI(); resetFundTab(); renderUsers();
     renderTransactions(); renderDeposits(); renderWithdrawals();
     await refreshAll(true);
-    setInterval(() => refreshAll(true), 20000);
 
-    // Show sound chip so admin always sees the option
+    // ── ⚡ LIGHTNING-FAST APPROVAL DETECTION ────────────────────
+    // Poll every 3 seconds — alerts fire in the blink of an eye.
+    setInterval(() => refreshAll(true), 3000);
+
+    // Real-time push via SSE (if backend exposes /admin/events).
+    // Silently no-ops if the endpoint doesn't exist — polling still covers it.
+    try {
+      const es = new EventSource(`${API_BASE}/admin/events?token=${encodeURIComponent(token)}`);
+      es.addEventListener('new-approval', (e) => {
+        try {
+          const payload = JSON.parse(e.data || '{}');
+          if (payload.type === 'deposit' || payload.type === 'withdrawal') {
+            addAdminAlert(payload.type, payload.item || {});
+            refreshAll(true);
+          }
+        } catch (_) {}
+      });
+      es.onerror = () => { /* silently fall back to 3s polling */ };
+    } catch (_) { /* EventSource unsupported — polling still works */ }
+
+    // Pulse the sound chip until the admin clicks it (one-tap enable)
     const chip = document.getElementById('adminSoundChip');
     if (chip) {
-      chip.classList.add('show');
       if (state.adminSoundEnabled) {
-        chip.innerHTML = '<i class="fas fa-volume-high"></i> 🔊 Loud alarm active';
-        chip.classList.add('on');
+        chip.classList.add('show', 'on');
+        chip.innerHTML = '<i class="fas fa-volume-high"></i> 🔊 Loud alarm ON';
+        setTimeout(() => chip.classList.remove('show', 'on'), 4000);
+      } else {
+        chip.classList.add('show');
+        chip.innerHTML = '<i class="fas fa-volume-high"></i> Tap to enable loud alarm';
+        chip.style.animation = 'adminBellPulse 1.2s ease-in-out infinite';
       }
     }
   }
