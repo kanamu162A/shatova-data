@@ -60,9 +60,7 @@ a{color:inherit;text-decoration:none}
 button{font-family:inherit}
 .app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh}
 
-/* ============================================================
-   SIDEBAR
-============================================================ */
+/* SIDEBAR */
 .sidebar{background:var(--bg-card);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;overflow-y:auto;transition:var(--transition)}
 .sidebar::-webkit-scrollbar{width:6px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
@@ -98,18 +96,14 @@ button{font-family:inherit}
 .icon-btn:active{transform:translateY(0);box-shadow:var(--shadow-xs)}
 .icon-btn.danger:hover{background:var(--danger-light);border-color:var(--danger-dark);color:var(--danger-dark)}
 
-/* ============================================================
-   DRAWER
-============================================================ */
+/* DRAWER */
 .drawer-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:500;opacity:0;visibility:hidden;transition:opacity 0.28s ease,visibility 0.28s ease}
 .drawer-overlay.open{opacity:1;visibility:visible}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:82vw;max-width:300px;background:var(--bg-card);border-right:1px solid var(--border);z-index:501;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0.24,1);box-shadow:12px 0 40px rgba(0,0,0,0.14);overflow-y:auto;padding:18px 14px calc(env(safe-area-inset-bottom,0px) + 18px);gap:20px}
 .drawer.open{transform:translateX(0)}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 18px;border-bottom:1px solid var(--border)}
 
-/* ============================================================
-   TOPBAR / MAIN
-============================================================ */
+/* TOPBAR / MAIN */
 .main-area{min-width:0;display:flex;flex-direction:column;padding-top:var(--header-h)}
 .topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--header-h);background:rgba(255,255,255,0.85);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:45;backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);box-shadow:0 1px 3px rgba(15,23,42,0.03)}
 [data-theme="dark"] .topbar{background:rgba(15,20,33,0.85);box-shadow:0 1px 3px rgba(0,0,0,0.4)}
@@ -128,9 +122,7 @@ button{font-family:inherit}
 
 .content{padding:24px;max-width:1400px;width:100%;margin:0 auto;flex:1}
 
-/* ============================================================
-   TIMEFRAME BAR
-============================================================ */
+/* TIMEFRAME BAR */
 .timeframe-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px;padding:12px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-xs);transition:var(--transition)}
 .timeframe-bar:hover{border-color:rgba(10,69,52,0.14);box-shadow:var(--shadow-hover-light)}
 .timeframe-bar .tf-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
@@ -146,9 +138,7 @@ button{font-family:inherit}
 .tf-pills button:hover:not(.active){color:var(--text);background:var(--bg-hover)}
 .tf-pills button.active{background:var(--bg-card);color:var(--primary-dark);box-shadow:0 1px 2px rgba(15,23,42,0.06),0 3px 8px rgba(15,23,42,0.04);font-weight:800}
 
-/* ============================================================
-   STAT CARDS
-============================================================ */
+/* STAT CARDS */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px}
 .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;transition:transform 0.26s var(--ease-out),box-shadow 0.26s var(--ease-out),border-color 0.26s var(--ease-out);animation:fadeInUp 0.45s var(--ease-out) both;min-width:0;position:relative;overflow:hidden;box-shadow:var(--shadow-xs)}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--primary-gradient);opacity:0;transition:opacity 0.28s ease;pointer-events:none}
@@ -177,9 +167,7 @@ button{font-family:inherit}
 .stat-card.is-hidden,.panel.is-hidden,.hidden{display:none !important}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* ============================================================
-   PANELS
-============================================================ */
+/* PANELS */
 .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:22px;transition:box-shadow 0.28s var(--ease-out),border-color 0.28s var(--ease-out),transform 0.28s var(--ease-out);box-shadow:var(--shadow-xs)}
 .panel:hover{border-color:rgba(10,69,52,0.12);box-shadow:var(--shadow-hover-card);transform:translateY(-1px)}
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(10,69,52,0.015) 0%,transparent 100%)}
@@ -189,53 +177,7 @@ button{font-family:inherit}
 .panel-body{padding:18px 22px}
 .panel-body.no-pad{padding:0}
 
-/* ============================================================
-   PREMIUM SEARCH
-============================================================ */
-.section-search-hero{padding:22px 26px 20px;background:linear-gradient(160deg,rgba(10,69,52,0.03) 0%,rgba(10,69,52,0.008) 55%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
-.section-search-hero::before{content:'';position:absolute;top:-90px;right:-70px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.045) 0%,transparent 65%);pointer-events:none}
-.section-search-hero::after{content:'';position:absolute;bottom:-110px;left:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,0.035) 0%,transparent 70%);pointer-events:none}
-.section-search-inner{position:relative;z-index:1;display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
-
-.section-search-field{flex:1;min-width:240px;position:relative;display:flex;align-items:center;background:var(--bg-card);border:1.5px solid rgba(10,69,52,0.22);border-radius:999px;padding:0 20px;height:56px;box-shadow:0 1px 2px rgba(15,23,42,0.03),0 8px 20px -10px rgba(10,69,52,0.08);transition:all 0.24s cubic-bezier(0.4,0,0.2,1)}
-.section-search-field:hover{border-color:rgba(10,69,52,0.38);box-shadow:0 1px 2px rgba(15,23,42,0.04),0 10px 24px -10px rgba(10,69,52,0.12)}
-.section-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,0.08),0 10px 28px -12px rgba(10,69,52,0.22);transform:translateY(-1px)}
-.section-search-field > i.fa-search{color:var(--primary);font-size:15px;margin-right:14px;transition:all 0.22s ease;flex-shrink:0}
-.section-search-field:focus-within > i.fa-search{color:var(--primary-dark);transform:scale(1.08)}
-.section-search-field input{flex:1;border:none;outline:none;background:transparent;font-size:14.5px;font-weight:500;color:var(--text);font-family:inherit;height:100%;letter-spacing:-0.1px;min-width:0}
-.section-search-field input::placeholder{color:var(--text-muted);font-weight:400}
-.section-search-clear{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;margin-left:8px;transition:all 0.18s ease;flex-shrink:0}
-.section-search-clear.visible{display:inline-flex}
-.section-search-clear:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
-
-.section-search-pill{display:inline-flex;align-items:center;gap:10px;padding:0 14px 0 12px;height:56px;border-radius:999px;border:1.5px solid rgba(10,69,52,0.22);background:var(--bg-card);color:var(--text-secondary);font-size:12.5px;font-weight:700;cursor:pointer;transition:all 0.22s cubic-bezier(0.4,0,0.2,1);white-space:nowrap;font-family:inherit;box-shadow:0 1px 2px rgba(15,23,42,0.03),0 8px 20px -10px rgba(10,69,52,0.08);flex-shrink:0;position:relative;overflow:hidden}
-.section-search-pill::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--primary-light),transparent 70%);opacity:0;transition:opacity 0.22s ease;pointer-events:none}
-.section-search-pill:hover{border-color:rgba(10,69,52,0.4);color:var(--primary-dark);transform:translateY(-1px);box-shadow:0 8px 22px -10px rgba(10,69,52,0.18),0 2px 6px rgba(10,69,52,0.05)}
-.section-search-pill:hover::before{opacity:0.5}
-.section-search-pill.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);box-shadow:0 6px 18px -8px rgba(10,69,52,0.16)}
-.section-search-pill.active::before{opacity:1}
-.section-search-pill .lead-plate{width:28px;height:28px;border-radius:9px;background:var(--bg-input);color:var(--text-muted);display:inline-flex;align-items:center;justify-content:center;font-size:11.5px;flex-shrink:0;transition:all 0.22s ease;position:relative;z-index:1}
-.section-search-pill:hover .lead-plate,
-.section-search-pill.active .lead-plate{background:var(--primary-gradient);color:#fff;box-shadow:0 4px 10px -2px rgba(10,69,52,0.35);transform:scale(1.05)}
-.section-search-pill .pill-stack{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;position:relative;z-index:1;line-height:1.1}
-.section-search-pill .pill-label{font-size:9.5px;font-weight:800;letter-spacing:0.9px;text-transform:uppercase;color:var(--text-muted);transition:color 0.22s ease}
-.section-search-pill:hover .pill-label,
-.section-search-pill.active .pill-label{color:var(--primary-dark)}
-.section-search-pill .pill-value{font-size:12.5px;font-weight:800;color:var(--text);letter-spacing:-0.1px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.section-search-pill:hover .pill-value,
-.section-search-pill.active .pill-value{color:var(--primary-dark)}
-.section-search-pill .chev{font-size:9px;opacity:0.55;margin-left:2px;transition:all 0.22s ease;position:relative;z-index:1}
-.section-search-pill:hover .chev{opacity:1;transform:translateY(1px)}
-
-.section-search-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap;min-height:18px;position:relative;z-index:1}
-.section-search-count{font-size:12px;font-weight:600;color:var(--text-muted);display:inline-flex;align-items:center;gap:6px}
-.section-search-count strong{color:var(--text);font-weight:800}
-.section-search-count .search-term{color:var(--primary-dark);font-weight:800;background:var(--primary-light);padding:2px 8px;border-radius:5px;font-family:'SF Mono',Menlo,monospace;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.section-search-hint{font-size:11px;color:var(--text-muted);display:inline-flex;align-items:center;gap:6px}
-
-/* ============================================================
-   ANALYTICS
-============================================================ */
+/* ANALYTICS */
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
 .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow-xs);transition:var(--transition);position:relative;overflow:hidden}
 .kpi:hover{border-color:rgba(10,69,52,0.14);transform:translateY(-2px);box-shadow:var(--shadow-hover-card)}
@@ -262,9 +204,7 @@ button{font-family:inherit}
 .chart-legend .lg{display:inline-flex;align-items:center;gap:7px}
 .chart-legend .sw{width:14px;height:8px;border-radius:3px;display:inline-block}
 
-/* ============================================================
-   AVATARS
-============================================================ */
+/* AVATARS */
 .row-avatar{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.10),inset 0 1px 0 rgba(255,255,255,0.25);transition:var(--transition);border:2px solid var(--bg-card);font-weight:800;font-size:15px;letter-spacing:-0.4px;color:#fff}
 .row-item:hover .row-avatar{transform:scale(1.06) rotate(-2deg);box-shadow:0 8px 20px rgba(0,0,0,0.14)}
 .row-avatar.net-mtn{background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
@@ -280,9 +220,7 @@ button{font-family:inherit}
 .row-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
 .row-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
 
-/* ============================================================
-   DATA ROWS
-============================================================ */
+/* DATA ROWS */
 .data-list{display:flex;flex-direction:column}
 .row-item{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:15px 22px;border-bottom:1px solid var(--border);transition:background 0.18s ease,box-shadow 0.18s ease;cursor:pointer;min-width:0;position:relative}
 .row-item:last-child{border-bottom:none}
@@ -324,9 +262,7 @@ button{font-family:inherit}
 .status.active{background:var(--success-light);color:var(--success-dark);border-color:rgba(9,134,88,0.1)}
 .status.suspended{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,0.1)}
 
-/* ============================================================
-   PAGINATION / EMPTY / LOADING
-============================================================ */
+/* PAGINATION / EMPTY / LOADING */
 .panel-footer{display:flex;align-items:center;justify-content:space-between;padding:15px 22px;border-top:1px solid var(--border);background:var(--bg-main);gap:14px;flex-wrap:wrap}
 .pagination-info{font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.1px}
 .pagination-info strong{color:var(--text);font-weight:800}
@@ -348,9 +284,7 @@ button{font-family:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading p{font-size:12px;color:var(--text-muted);font-weight:500}
 
-/* ============================================================
-   TYPE SHEET
-============================================================ */
+/* TYPE SHEET */
 .type-sheet-wrap{padding:16px 16px 22px;overflow-y:auto;flex:1}
 .type-sheet-group-label{font-size:10px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--text-muted);padding:6px 4px 8px;display:flex;align-items:center;gap:7px}
 .type-sheet-group-label i{color:var(--primary);font-size:10px}
@@ -379,9 +313,7 @@ button{font-family:inherit}
 .type-sheet-item.active .ts-count{background:rgba(10,69,52,0.15);color:var(--primary-dark)}
 .type-sheet-item .ts-count.zero{opacity:0.45}
 
-/* ============================================================
-   MOBILE NAV
-============================================================ */
+/* MOBILE NAV */
 .mobile-nav{display:none;position:fixed;bottom:16px;left:16px;right:16px;z-index:45;background:var(--bg-card);border-radius:24px;padding:10px 8px;box-shadow:0 10px 32px -8px rgba(15,23,42,0.10),0 2px 6px rgba(15,23,42,0.04);border:1px solid var(--border);transition:background 0.3s,border-color 0.3s}
 [data-theme="dark"] .mobile-nav{box-shadow:0 10px 32px -8px rgba(0,0,0,0.5),0 2px 6px rgba(0,0,0,0.3)}
 .mobile-nav .nav-items{display:flex;align-items:center;justify-content:space-between;width:100%}
@@ -395,9 +327,7 @@ button{font-family:inherit}
 .mobile-nav .nav-item:active{transform:scale(0.96)}
 @media (max-width:900px){.mobile-nav{display:block}.content{padding-bottom:110px !important}}
 
-/* ============================================================
-   FUND FORM
-============================================================ */
+/* FUND FORM */
 .fund-form-container{max-width:640px;margin:0 auto;padding:24px 22px 30px}
 .fund-form-group{margin-bottom:22px}
 .fund-form-label{display:block;font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
@@ -429,16 +359,10 @@ button{font-family:inherit}
 .fund-user-card .fu-balance-label{font-size:9.5px;font-weight:800;letter-spacing:0.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
 .fund-user-card .fu-balance-value{font-size:16px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.35px}
 .fund-user-card .fu-balance-value.held{color:var(--warning-dark)}
-.fund-user-card.error{background:linear-gradient(135deg,rgba(239,68,68,0.05) 0%,rgba(239,68,68,0.015) 100%);border-color:rgba(161,34,34,0.2);text-align:center;padding:24px 20px}
-.fund-user-card.error .fu-error-icon{width:44px;height:44px;margin:0 auto 12px;border-radius:50%;background:var(--danger-light);color:var(--danger-dark);display:flex;align-items:center;justify-content:center;font-size:18px}
-.fund-user-card.error .fu-error-title{font-size:14px;font-weight:800;color:var(--danger-dark);margin-bottom:5px}
-.fund-user-card.error .fu-error-text{font-size:12px;color:var(--text-secondary);line-height:1.55}
 #fundForm{max-height:0;opacity:0;overflow:hidden;transition:max-height 0.45s cubic-bezier(0.22,1,0.36,1),opacity 0.3s ease,padding 0.3s ease;padding:0 22px}
 #fundForm.revealed{max-height:1200px;opacity:1;padding:0 0 0 0;border-top:none}
 
-/* ============================================================
-   MODALS / SHEETS
-============================================================ */
+/* MODALS / SHEETS */
 .sheet-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1300;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity 0.28s ease,visibility 0.28s ease}
 .sheet-overlay.open{opacity:1;visibility:visible}
 .sheet{width:100%;max-width:520px;background:var(--bg-card);border-radius:22px 22px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,0.18);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0.24,1);max-height:88vh;display:flex;flex-direction:column;border:1px solid var(--border);border-bottom:none}
@@ -496,9 +420,7 @@ button{font-family:inherit}
 .modal .btns .danger{background:linear-gradient(135deg,#a12222 0%,#7a1a1a 100%);color:#fff;box-shadow:0 6px 18px -4px rgba(161,34,34,0.4),var(--shadow-inset-top)}
 .modal .btns .danger:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 26px -6px rgba(161,34,34,0.45),var(--shadow-inset-top)}
 
-/* ============================================================
-   USER SEARCH
-============================================================ */
+/* USER SEARCH */
 .user-search-hero{padding:30px 32px 26px;background:linear-gradient(160deg,rgba(10,69,52,0.03) 0%,rgba(10,69,52,0.008) 55%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 .user-search-hero::before{content:'';position:absolute;top:-100px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.05) 0%,transparent 65%);pointer-events:none}
 .user-search-hero::after{content:'';position:absolute;bottom:-120px;left:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,0.035) 0%,transparent 70%);pointer-events:none}
@@ -581,9 +503,7 @@ button{font-family:inherit}
 .user-empty-tip:hover i{color:var(--primary)}
 #viewModal .modal{max-width:560px}
 
-/* ============================================================
-   TXN HERO
-============================================================ */
+/* TXN HERO */
 .txn-hero{padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(10,69,52,0.04),rgba(10,69,52,0.012));border:1px solid rgba(10,69,52,0.1);margin-bottom:16px;display:flex;gap:16px;align-items:center}
 .txn-hero .txn-hero-logo{width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;box-shadow:0 6px 16px -4px rgba(0,0,0,0.16);display:flex;align-items:center;justify-content:center;border:none}
 .txn-hero .txn-hero-logo svg.net-shape{width:100%;height:100%;display:block}
@@ -598,9 +518,7 @@ button{font-family:inherit}
 .txn-amount-block .amt-meta .lbl{font-size:9.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.72;margin-bottom:3px}
 .txn-amount-block .amt-meta .val{font-size:14px;font-weight:800}
 
-/* ============================================================
-   WALLET DRIFT
-============================================================ */
+/* WALLET DRIFT */
 .drift-hero{padding:22px 24px;background:linear-gradient(160deg,rgba(10,69,52,0.035) 0%,rgba(10,69,52,0.008) 55%,transparent 100%);border:1px solid var(--border);border-radius:14px;margin-bottom:18px;position:relative;overflow:hidden;box-shadow:var(--shadow-xs)}
 .drift-hero::before{content:'';position:absolute;top:-90px;right:-70px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.05) 0%,transparent 65%);pointer-events:none}
 .drift-hero-inner{display:flex;align-items:center;gap:16px;position:relative;z-index:1;flex-wrap:wrap}
@@ -650,9 +568,7 @@ button{font-family:inherit}
 .drift-sev.major{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,0.1)}
 .drift-sev.critical{background:#7a1a1a;color:#fff;border-color:transparent}
 
-/* ============================================================
-   NOTIFICATIONS
-============================================================ */
+/* NOTIFICATIONS */
 .notif-stack{position:fixed;top:16px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:460px;z-index:2000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
 .notif{pointer-events:auto;background:rgba(255,255,255,0.92);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:22px;padding:14px 16px 14px 14px;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;border:1px solid rgba(255,255,255,0.6);box-shadow:0 1px 1px rgba(0,0,0,0.03),0 8px 24px -6px rgba(15,23,42,0.18),0 20px 48px -12px rgba(15,23,42,0.14);transform:translateY(-120%) scale(0.96);opacity:0;transition:transform 0.5s cubic-bezier(0.34,1.4,0.5,1),opacity 0.28s ease;will-change:transform,opacity}
 .notif.show{transform:translateY(0) scale(1);opacity:1}
@@ -681,9 +597,7 @@ button{font-family:inherit}
 .notif-close:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
 @media (max-width:480px){.notif-stack{top:10px;width:calc(100% - 20px)}.notif{padding:13px 13px 13px 12px;border-radius:20px;grid-template-columns:40px 1fr auto;gap:10px}.notif-icon{width:40px;height:40px;font-size:15px;border-radius:12px}.notif-name{font-size:13.5px}.notif-amount{font-size:14px}}
 
-/* ============================================================
-   ADMIN ALERT CENTER
-============================================================ */
+/* ADMIN ALERT CENTER */
 .admin-alert-button{position:relative;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition);box-shadow:var(--shadow-xs)}
 .admin-alert-button:hover{color:var(--primary-dark);border-color:rgba(10,69,52,0.32);background:var(--primary-light);transform:translateY(-1px);box-shadow:var(--shadow-hover-light)}
 .admin-alert-button.has-alert{color:var(--danger-dark);border-color:rgba(239,68,68,.28);animation:adminBellPulse 1.1s ease-in-out infinite}
@@ -691,7 +605,6 @@ button{font-family:inherit}
 .admin-alert-count{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--danger);color:#fff;border:2px solid var(--bg-card);font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(239,68,68,.3)}
 .admin-alert-count.visible{display:flex}
 @keyframes adminBellPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.12)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
-
 .admin-alert-panel{position:fixed;z-index:1800;top:72px;right:22px;width:min(430px,calc(100vw - 24px));background:var(--bg-card);border:1px solid var(--border-strong);border-radius:18px;box-shadow:var(--shadow-xl);overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-10px) scale(.98);transition:opacity .2s ease,transform .2s ease,visibility .2s ease}
 .admin-alert-panel.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
 .admin-alert-head{padding:15px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -719,12 +632,10 @@ button{font-family:inherit}
 .admin-alert-empty span{font-size:10.5px}
 .admin-alert-backdrop{position:fixed;inset:0;z-index:1799;background:rgba(3,10,8,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:.2s ease}
 .admin-alert-backdrop.open{opacity:1;visibility:visible}
-
 .admin-alert-setup{position:fixed;left:18px;bottom:18px;z-index:1700;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:12px;background:var(--bg-card);box-shadow:var(--shadow-md)}
 .admin-alert-setup button{border:0;background:var(--primary-gradient);color:#fff;border-radius:8px;padding:8px 11px;font:800 10px inherit;cursor:pointer}
 .admin-alert-setup span{font-size:9.5px;color:var(--text-muted)}
 .admin-alert-setup.hidden{display:none}
-
 .admin-alert-toast{position:fixed;z-index:1900;right:18px;top:82px;width:min(390px,calc(100vw - 24px));background:var(--bg-card);border:1px solid rgba(239,68,68,.35);border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.18);padding:13px;display:grid;grid-template-columns:42px 1fr;gap:10px;animation:alertToastIn .34s var(--ease-out)}
 .admin-alert-toast .big-icon{width:42px;height:42px;border-radius:12px;background:var(--danger-light);color:var(--danger-dark);display:flex;align-items:center;justify-content:center;animation:adminBellPulse 1s infinite}
 .admin-alert-toast strong{font-size:12px;font-weight:900;display:block}
@@ -732,9 +643,7 @@ button{font-family:inherit}
 @keyframes alertToastIn{from{opacity:0;transform:translateY(-12px) scale(.96)}to{opacity:1;transform:none}}
 @media (max-width:900px){.admin-alert-panel{top:64px;right:9px;width:calc(100vw - 18px)}.admin-alert-toast{right:9px;top:66px;width:calc(100vw - 18px)}.admin-alert-setup{left:9px;bottom:92px}}
 
-/* ============================================================
-   TOAST
-============================================================ */
+/* TOAST */
 .toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:420px;width:calc(100% - 32px);pointer-events:none}
 .toast{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;box-shadow:var(--shadow-lg);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:10px;transition:opacity 0.3s ease,transform 0.3s ease;pointer-events:auto;animation:toastIn 0.3s var(--ease-out)}
 .toast.success{border-left:4px solid var(--success)}
@@ -742,9 +651,7 @@ button{font-family:inherit}
 .toast.info{border-left:4px solid var(--info)}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* ============================================================
-   ALARM BANNER
-============================================================ */
+/* ALARM BANNER */
 .alarm-banner{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at center,rgba(161,34,34,.92),rgba(90,15,15,.96));display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;color:#fff;text-align:center;padding:30px;animation:alarmPulseBg 1s ease-in-out infinite alternate}
 .alarm-banner.show{display:flex}
 @keyframes alarmPulseBg{from{background-color:rgba(161,34,34,.92)}to{background-color:rgba(220,38,38,.96)}}
@@ -759,9 +666,140 @@ button{font-family:inherit}
 .alarm-banner .alarm-mute{background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3)}
 .alarm-banner .alarm-mute:hover{background:rgba(0,0,0,.5)}
 
-/* ============================================================
-   RESPONSIVE
-============================================================ */
+/* UNIFIED TXN SEARCH HERO */
+.txn-search-hero{padding:30px 32px 26px;background:linear-gradient(160deg,rgba(10,69,52,0.03) 0%,rgba(10,69,52,0.008) 55%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.txn-search-hero::before{content:'';position:absolute;top:-100px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.05) 0%,transparent 65%);pointer-events:none}
+.txn-search-hero::after{content:'';position:absolute;bottom:-120px;left:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,0.035) 0%,transparent 70%);pointer-events:none}
+.txn-search-inner{position:relative;z-index:1;max-width:880px;margin:0 auto}
+.txn-search-headline{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.txn-search-headline-icon{width:48px;height:48px;border-radius:14px;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;flex-shrink:0;box-shadow:0 8px 22px -6px rgba(10,69,52,0.45),var(--shadow-inset-top)}
+.txn-search-headline-text{flex:1;min-width:0}
+.txn-search-headline-title{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-0.35px;margin-bottom:3px;line-height:1.2}
+.txn-search-headline-sub{font-size:12px;color:var(--text-muted);font-weight:500;line-height:1.4}
+.txn-search-field{position:relative;display:flex;align-items:center;background:var(--bg-card);border:1.5px solid rgba(10,69,52,0.22);border-radius:999px;padding:0 20px;height:56px;box-shadow:0 1px 2px rgba(15,23,42,0.03),0 8px 20px -10px rgba(10,69,52,0.08);transition:all 0.24s cubic-bezier(0.4,0,0.2,1)}
+.txn-search-field:hover{border-color:rgba(10,69,52,0.38)}
+.txn-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,0.08),0 10px 28px -12px rgba(10,69,52,0.22);transform:translateY(-1px)}
+.txn-search-field > i.fa-search{color:var(--primary);font-size:15px;margin-right:14px;transition:all 0.22s ease}
+.txn-search-field:focus-within > i.fa-search{color:var(--primary-dark);transform:scale(1.08)}
+.txn-search-field input{flex:1;border:none;outline:none;background:transparent;font-size:14.5px;font-weight:500;color:var(--text);font-family:inherit;height:100%;letter-spacing:-0.1px;min-width:0}
+.txn-search-field input::placeholder{color:var(--text-muted);font-weight:400}
+.txn-search-clear{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;margin-left:8px;transition:all 0.18s ease;flex-shrink:0}
+.txn-search-clear.visible{display:inline-flex}
+.txn-search-clear:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
+.txn-search-chips{display:flex;align-items:center;gap:6px;margin-top:16px;flex-wrap:wrap}
+.txn-search-chips-label{font-size:10.5px;font-weight:800;color:var(--text-muted);letter-spacing:0.7px;text-transform:uppercase;margin-right:4px}
+.txn-search-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);font-size:11.5px;font-weight:600;cursor:pointer;transition:all 0.18s ease;font-family:inherit}
+.txn-search-chip i{font-size:9.5px;color:var(--text-muted);transition:all 0.18s ease}
+.txn-search-chip:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);transform:translateY(-1px);box-shadow:0 3px 10px -3px rgba(10,69,52,0.12)}
+.txn-search-chip:hover i{color:var(--primary)}
+.txn-search-chip.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark)}
+.txn-search-chip.active i{color:var(--primary)}
+.txn-results-bar{padding:14px 26px;background:linear-gradient(180deg,rgba(10,69,52,0.012),transparent);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:46px}
+.txn-results-bar.is-empty{background:transparent}
+.txn-results-count{font-size:12.5px;color:var(--text-secondary);font-weight:600;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.txn-results-count strong{color:var(--text);font-weight:800;font-size:13.5px}
+.txn-results-count .search-term{color:var(--primary-dark);font-weight:800;background:var(--primary-light);padding:2px 8px;border-radius:5px;font-family:'SF Mono',Menlo,monospace;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.txn-results-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.3px}
+.txn-results-live .live-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 3px rgba(16,185,129,0.15);animation:pulseLive 1.6s ease-in-out infinite}
+
+.txn-card-list{display:flex;flex-direction:column;padding:14px;gap:8px}
+.txn-card{display:grid;grid-template-columns:54px 1fr auto;gap:16px;align-items:center;padding:15px 17px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);position:relative}
+.txn-card:hover{border-color:rgba(10,69,52,0.2);box-shadow:0 8px 22px -10px rgba(10,69,52,0.1),0 2px 6px rgba(10,69,52,0.04);transform:translateY(-2px)}
+.txn-card:active{transform:translateY(0)}
+.txn-card.static{cursor:default}
+.txn-card.static:hover{transform:none;box-shadow:var(--shadow-xs);border-color:var(--border)}
+.txn-card-avatar{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;letter-spacing:-0.5px;flex-shrink:0;position:relative;box-shadow:0 4px 12px -2px rgba(15,23,42,0.18),inset 0 1px 0 rgba(255,255,255,0.25);overflow:hidden}
+.txn-card-avatar.net-mtn{background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
+.txn-card-avatar.net-airtel{background:linear-gradient(135deg,#FF1A1A 0%,#D40000 55%,#A80000 100%)}
+.txn-card-avatar.net-glo{background:linear-gradient(135deg,#00C55E 0%,#00A651 55%,#008A40 100%)}
+.txn-card-avatar.net-t2{background:linear-gradient(135deg,#00856A 0%,#006B54 55%,#005240 100%)}
+.txn-card-avatar.net-generic{background:linear-gradient(135deg,#0d5a44 0%,#0a4534 45%,#062f24 100%)}
+.txn-card-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
+.txn-card-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.txn-card-avatar.txn-refund{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
+.txn-card-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
+.txn-card-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
+.txn-card-avatar svg.net-shape{width:100%;height:100%;display:block}
+.txn-card-info{min-width:0;display:flex;flex-direction:column;gap:6px}
+.txn-card-name-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.txn-card-name{font-size:14.5px;font-weight:700;color:var(--text);letter-spacing:-0.15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.txn-card-badge{font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:6px;letter-spacing:0.5px;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px;border:1px solid transparent;white-space:nowrap}
+.txn-card-badge.success{background:var(--success-light);color:var(--success-dark);border-color:rgba(9,134,88,0.1)}
+.txn-card-badge.pending{background:var(--warning-light);color:var(--warning-dark);border-color:rgba(179,115,8,0.1)}
+.txn-card-badge.failed{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,0.1)}
+.txn-card-badge.refunded{background:var(--purple-light);color:var(--purple-dark);border-color:rgba(124,58,237,0.1)}
+.txn-card-contact{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-muted);font-weight:500;flex-wrap:wrap}
+.txn-card-contact .contact-item{display:inline-flex;align-items:center;gap:5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.txn-card-contact .contact-item i{font-size:10.5px;color:var(--text-muted);opacity:0.7;flex-shrink:0}
+.txn-card-contact .contact-item.mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:0.2px}
+.txn-card-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.txn-card-amount-pill{padding:8px 14px;border-radius:11px;background:linear-gradient(135deg,var(--primary-light),rgba(10,69,52,0.015));border:1px solid rgba(10,69,52,0.08);text-align:right;display:flex;flex-direction:column;gap:1px;min-width:100px}
+.txn-card-amount-pill.credit{background:linear-gradient(135deg,var(--success-light),rgba(16,185,129,0.015));border-color:rgba(9,134,88,0.1)}
+.txn-card-amount-pill.debit{background:linear-gradient(135deg,rgba(100,116,139,0.06),rgba(100,116,139,0.015));border-color:var(--border)}
+.txn-card-amount-label{font-size:9px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted)}
+.txn-card-amount-value{font-size:14.5px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.3px;font-variant-numeric:tabular-nums}
+.txn-card-amount-pill.credit .txn-card-amount-value{color:var(--success-dark)}
+.txn-card-amount-pill.debit .txn-card-amount-value{color:var(--text-secondary)}
+.txn-card-actions{display:flex;gap:6px}
+.txn-card-actions button{height:36px;min-width:36px;padding:0 11px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:11px;font-weight:700;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;box-shadow:var(--shadow-xs);font-family:inherit}
+.txn-card-actions button:hover{transform:translateY(-1px);box-shadow:var(--shadow-hover-light)}
+.txn-card-actions .approve{border-color:rgba(9,134,88,0.2);color:var(--success-dark)}
+.txn-card-actions .approve:hover{background:var(--success-light);border-color:var(--success-dark)}
+.txn-card-actions .reject{border-color:rgba(161,34,34,0.2);color:var(--danger-dark)}
+.txn-card-actions .reject:hover{background:var(--danger-light);border-color:var(--danger-dark)}
+.txn-card-actions .view{border-color:var(--border);color:var(--text-secondary)}
+.txn-card-actions .view:hover{background:var(--primary-light);border-color:var(--primary-dark);color:var(--primary-dark)}
+.txn-card-arrow{width:36px;height:36px;border-radius:10px;background:var(--bg-input);display:inline-flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;transition:all 0.22s ease}
+.txn-card:hover .txn-card-arrow{background:var(--primary);color:#fff;transform:translateX(3px);box-shadow:0 6px 16px -4px rgba(10,69,52,0.35)}
+
+/* USER TRACE BAR */
+.trace-bar{display:flex;flex-direction:column;gap:12px;padding:18px 22px;background:linear-gradient(180deg,rgba(10,69,52,0.025) 0%,rgba(10,69,52,0.005) 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.trace-bar::after{content:'';position:absolute;top:-60px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.06) 0%,transparent 70%);pointer-events:none}
+.trace-head{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.trace-head .trace-icon{width:34px;height:34px;border-radius:10px;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;box-shadow:0 5px 14px -4px rgba(10,69,52,0.4)}
+.trace-head .trace-title{font-size:12px;font-weight:800;color:var(--text);letter-spacing:0.1px}
+.trace-head .trace-sub{font-size:10.5px;color:var(--text-muted);font-weight:500;margin-top:1px}
+.trace-row{display:flex;gap:8px;align-items:center;position:relative;z-index:1}
+.trace-input{flex:1;position:relative;display:flex;align-items:center;background:var(--bg-card);border:1.5px solid rgba(10,69,52,0.18);border-radius:11px;padding:0 14px;height:44px;transition:all 0.2s ease}
+.trace-input:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,69,52,0.08)}
+.trace-input i.fa-user-magnifying-glass{color:var(--primary);font-size:13px;margin-right:10px}
+.trace-input input{flex:1;border:none;outline:none;background:transparent;font-size:13.5px;font-weight:500;color:var(--text);font-family:inherit;height:100%;min-width:0}
+.trace-input input::placeholder{color:var(--text-muted);font-weight:400}
+.trace-clear{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:10px;display:none;align-items:center;justify-content:center;margin-left:6px;transition:all 0.18s ease}
+.trace-clear.visible{display:inline-flex}
+.trace-clear:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
+.trace-btn{padding:0 18px;height:44px;border-radius:11px;border:none;background:var(--primary-gradient);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all 0.2s ease;box-shadow:0 6px 16px -4px rgba(10,69,52,0.35);font-family:inherit;white-space:nowrap}
+.trace-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px -6px rgba(10,69,52,0.45)}
+.trace-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.trace-chip-row{display:flex;gap:6px;flex-wrap:wrap;position:relative;z-index:1}
+.trace-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.18s ease;font-family:inherit}
+.trace-chip i{font-size:9.5px;color:var(--text-muted)}
+.trace-chip:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);transform:translateY(-1px)}
+.trace-chip:hover i{color:var(--primary)}
+.trace-chip.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark)}
+.trace-chip.active i{color:var(--primary)}
+
+/* TRACE PROFILE (loaded user summary) */
+.trace-profile{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 18px;background:linear-gradient(135deg,rgba(10,69,52,0.06) 0%,rgba(10,69,52,0.02) 100%);border:1px solid rgba(10,69,52,0.12);border-radius:14px;margin:12px 22px 0;position:relative;z-index:1;animation:fadeInUp 0.3s var(--ease-out)}
+.trace-profile-avatar{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:17px;flex-shrink:0;box-shadow:0 5px 14px -4px rgba(10,69,52,0.35),inset 0 1px 0 rgba(255,255,255,0.25);letter-spacing:-0.5px}
+.trace-profile-info{min-width:0}
+.trace-profile-name{font-size:14.5px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.trace-profile-meta{font-size:11.5px;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.trace-profile-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--text-muted);opacity:0.5}
+.trace-profile-meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:10.5px}
+.trace-profile-stats{display:flex;gap:16px;flex-shrink:0}
+.trace-profile-stat{text-align:right}
+.trace-profile-stat .lbl{font-size:9.5px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
+.trace-profile-stat .val{font-size:14px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.2px;font-variant-numeric:tabular-nums}
+.trace-profile-stat .val.credit{color:var(--success-dark)}
+.trace-profile-stat .val.debit{color:var(--text)}
+@media (max-width:600px){
+  .trace-profile{grid-template-columns:auto 1fr;gap:12px;padding:13px 14px;margin:10px 12px 0}
+  .trace-profile-stats{grid-column:1 / -1;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid rgba(10,69,52,0.08)}
+  .trace-profile-stat{text-align:left}
+}
+
+/* RESPONSIVE */
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .sidebar{display:none}
@@ -798,20 +836,31 @@ button{font-family:inherit}
   .kpi-strip{grid-template-columns:repeat(2,1fr);gap:10px}
   .chart{height:140px}
   .chart-legend{gap:12px}
+  .txn-search-hero{padding:22px 18px 20px}
+  .txn-search-headline-icon{width:44px;height:44px;border-radius:13px;font-size:17px}
+  .txn-search-headline-title{font-size:15px}
+  .txn-search-headline-sub{font-size:11.5px}
+  .txn-search-field{height:52px;padding:0 18px}
+  .txn-search-field input{font-size:16px}
+  .txn-search-chips{margin-top:14px}
+  .txn-search-chips-label{display:none}
+  .txn-card-list{padding:12px;gap:8px}
+  .txn-card{grid-template-columns:46px 1fr;grid-template-areas:"avatar main" "right right";gap:12px;padding:14px}
+  .txn-card-avatar{grid-area:avatar;width:44px;height:44px;font-size:15px;border-radius:13px}
+  .txn-card-info{grid-area:main;gap:5px}
+  .txn-card-name{font-size:13.5px}
+  .txn-card-contact{font-size:11px;gap:8px}
+  .txn-card-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
+  .txn-card-amount-pill{padding:7px 12px;min-width:auto}
+  .txn-card-amount-value{font-size:13.5px}
+  .txn-card-actions{margin-left:auto}
+  .trace-bar{padding:14px 16px}
+  .trace-row{flex-wrap:wrap}
+  .trace-input{flex:1 1 100%}
+  .trace-btn{width:100%;justify-content:center}
 }
 
 @media (max-width:768px){
-  .section-search-hero{padding:18px 16px 16px}
-  .section-search-inner{gap:8px}
-  .section-search-field{height:52px;padding:0 18px;border-radius:999px;min-width:0;width:100%}
-  .section-search-field > i.fa-search{font-size:14px;margin-right:12px}
-  .section-search-field input{font-size:16px}
-  .section-search-pill{height:52px;padding:0 14px 0 12px;border-radius:999px;font-size:12px;gap:8px}
-  .section-search-pill .lead-plate{width:24px;height:24px;font-size:10px;border-radius:8px}
-  .section-search-pill .pill-label{font-size:9px}
-  .section-search-pill .pill-value{font-size:11.5px;max-width:110px}
-  .section-search-meta{flex-direction:column;align-items:flex-start;gap:4px;margin-top:12px}
-  .section-search-hint{font-size:10.5px}
   .user-search-hero{padding:22px 18px 20px}
   .user-search-headline-icon{width:44px;height:44px;border-radius:13px;font-size:17px}
   .user-search-headline-title{font-size:15px}
@@ -927,23 +976,17 @@ button{font-family:inherit}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
 @media (max-width:768px){input,textarea,select{font-size:16px !important}.user-search-field input,.section-search-field input{font-size:16px !important}}
 
-/* ============================================================
-   SHATOVA V2 — GLOBAL PROFESSIONAL UX LAYER
-============================================================ */
+/* GLOBAL POLISH */
 button,input,textarea,select{font-family:inherit}
 button{touch-action:manipulation}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(10,69,52,.10),0 8px 24px -12px rgba(10,69,52,.22)}
 button:not(:disabled){cursor:pointer}
-.btn-datashop,.icon-btn,.page-btn,.section-search-pill,.user-search-chip,.user-empty-tip,.row-actions button,.run-archive-btn,.drift-refresh-btn,.fund-actions-row button,.sheet-option,.type-sheet-item{position:relative;overflow:hidden}
-.btn-datashop::after,.icon-btn::after,.page-btn::after,.section-search-pill::after,.user-search-chip::after,.user-empty-tip::after,.row-actions button::after,.run-archive-btn::after,.drift-refresh-btn::after,.fund-actions-row button::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.16) 48%,transparent 76%);transform:translateX(-120%);transition:transform .55s ease;pointer-events:none}
-.btn-datashop:hover::after,.icon-btn:hover::after,.page-btn:hover::after,.section-search-pill:hover::after,.user-search-chip:hover::after,.user-empty-tip:hover::after,.row-actions button:hover::after,.run-archive-btn:hover::after,.drift-refresh-btn:hover::after,.fund-actions-row button:hover::after{transform:translateX(120%)}
-.section-search-field,.user-search-field{transition:border-color .22s ease,box-shadow .22s ease,transform .22s ease}
-.user-search-field:focus-within{border-color:var(--primary)!important;box-shadow:0 0 0 4px rgba(10,69,52,.07),0 12px 28px -14px rgba(10,69,52,.22)!important;transform:translateY(-1px)}
-.user-search-clear,.section-search-clear{border:1px solid var(--border);box-shadow:var(--shadow-xs)}
-.user-search-clear:hover,.section-search-clear:hover{border-color:var(--danger);box-shadow:0 6px 16px -8px rgba(239,68,68,.3)}
-#fundLookupIconBtn{width:42px;height:42px;border-radius:12px!important;background:var(--primary-gradient)!important;color:#fff!important;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 7px 18px -6px rgba(10,69,52,.42);flex-shrink:0}
-#fundLookupIconBtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px -7px rgba(10,69,52,.5)!important}
-#fundLookupIconBtn:disabled{opacity:.65;cursor:wait}
+.btn-datashop,.icon-btn,.page-btn,.section-search-pill,.user-search-chip,.user-empty-tip,.row-actions button,.run-archive-btn,.drift-refresh-btn,.fund-actions-row button,.sheet-option,.type-sheet-item,.trace-btn,.trace-chip,.txn-search-chip{position:relative;overflow:hidden}
+.btn-datashop::after,.icon-btn::after,.page-btn::after,.section-search-pill::after,.user-search-chip::after,.user-empty-tip::after,.row-actions button::after,.run-archive-btn::after,.drift-refresh-btn::after,.fund-actions-row button::after,.trace-btn::after,.trace-chip::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.16) 48%,transparent 76%);transform:translateX(-120%);transition:transform .55s ease;pointer-events:none}
+.btn-datashop:hover::after,.icon-btn:hover::after,.page-btn:hover::after,.section-search-pill:hover::after,.user-search-chip:hover::after,.user-empty-tip:hover::after,.row-actions button:hover::after,.run-archive-btn:hover::after,.drift-refresh-btn:hover::after,.fund-actions-row button:hover::after,.trace-btn:hover::after,.trace-chip:hover::after{transform:translateX(120%)}
+.section-search-field,.user-search-field,.txn-search-field{transition:border-color .22s ease,box-shadow .22s ease,transform .22s ease}
+.user-search-clear,.section-search-clear,.txn-search-clear{border:1px solid var(--border);box-shadow:var(--shadow-xs)}
+.user-search-clear:hover,.section-search-clear:hover,.txn-search-clear:hover{border-color:var(--danger);box-shadow:0 6px 16px -8px rgba(239,68,68,.3)}
 #shatovaPageLoader{position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:5000;pointer-events:none;opacity:0;transition:opacity .2s}
 #shatovaPageLoader.active{opacity:1}
 #shatovaPageLoader::before{content:'';display:block;width:35%;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));border-radius:0 4px 4px 0;animation:shatovaProgress 1.05s ease-in-out infinite}
@@ -980,182 +1023,10 @@ button:not(:disabled){cursor:pointer}
  .content{padding-left:12px!important;padding-right:12px!important}.section-search-hero{padding-left:14px;padding-right:14px}.timeframe-bar{padding:10px}.stats-grid{grid-template-columns:1fr 1fr;gap:10px}.stat-card{padding:14px}.stat-value{font-size:20px}
  .user-search-field{height:52px}.fund-actions-row{flex-direction:column}
 }
-
-/* ============================================================
-   SHATOVA V3 — SENIOR UI SEARCH / EMPTY STATES
-============================================================ */
-.section-search-hero{padding:20px 24px 16px;background:linear-gradient(180deg,#fbfdfc 0%,#f7faf8 100%);border-bottom:1px solid rgba(10,69,52,.10)}
-.section-search-inner{gap:12px;align-items:center}
-.section-search-field{height:50px;border:1px solid #d8e2dd;border-radius:12px;padding:0 14px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.035);}
-.section-search-field:hover{border-color:#b8cbc3;box-shadow:0 4px 14px rgba(10,69,52,.07)}
-.section-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,69,52,.08),0 6px 18px rgba(10,69,52,.08);transform:none}
-.section-search-field > i.fa-search{font-size:13px;margin-right:10px;color:#547267}
-.section-search-field:focus-within > i.fa-search{transform:none;color:var(--primary)}
-.section-search-field input{font-size:13.5px;font-weight:500}
-.section-search-field input::placeholder{font-size:13px;color:#8a9993}
-.section-search-pill{height:50px;border-radius:12px;border:1px solid #d8e2dd;padding:0 13px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.035)}
-.section-search-pill:hover{transform:none;border-color:#a9c1b7;box-shadow:0 5px 15px rgba(10,69,52,.08)}
-.section-search-pill .lead-plate{width:28px;height:28px;border-radius:8px}
-.section-search-meta{padding-top:10px}
-.user-search-field{height:52px;border:1px solid #d8e2dd;border-radius:13px;padding:0 10px 0 15px;background:#fff;box-shadow:0 3px 12px rgba(15,23,42,.04)}
-.user-search-field:hover{border-color:#b8cbc3;box-shadow:0 5px 16px rgba(10,69,52,.07)}
-.user-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,69,52,.08),0 7px 20px rgba(10,69,52,.08);transform:none}
-.user-search-field > i.fa-search{font-size:14px;margin-right:10px;color:#547267}
-.user-search-field input{font-size:14px}
-.user-search-field input::placeholder{font-size:13.5px;color:#8a9993}
-.user-search-clear{width:28px;height:28px;margin-left:4px}
-.search-submit-btn{height:40px;min-width:88px;padding:0 14px;border:0;border-radius:9px;background:var(--primary-gradient);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:7px;font:700 12px/1 inherit;cursor:pointer;box-shadow:0 5px 14px -5px rgba(10,69,52,.38);transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}
-.search-submit-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 18px -6px rgba(10,69,52,.45)}
-.search-submit-btn:active:not(:disabled){transform:translateY(0) scale(.98)}
-.search-submit-btn:disabled{opacity:.65;cursor:not-allowed}
-.fund-search-shell{max-width:720px;margin:0 auto}
-.fund-search-title{display:flex;align-items:center;gap:9px;margin:0 0 10px 2px;font-size:11px;font-weight:800;letter-spacing:.55px;text-transform:uppercase;color:#61766d}
-.fund-search-title i{color:var(--primary)}
-.fund-search-row{display:flex;gap:9px;align-items:center}
-.fund-search-row .user-search-field{flex:1;min-width:0}
-.fund-search-help{margin:9px 2px 0;font-size:11px;color:#84938e;display:flex;align-items:center;gap:6px}
-.fund-search-help i{color:var(--primary)}
-.fund-not-found{max-width:640px;margin:18px auto 0;padding:20px;border:1px solid rgba(185,58,58,.18);border-radius:15px;background:linear-gradient(180deg,#fffafa 0%,#fff 100%);display:flex;align-items:center;gap:14px;box-shadow:0 5px 18px rgba(185,58,58,.055);animation:fadeInUp .25s ease}
-.fund-not-found-icon{width:44px;height:44px;border-radius:12px;background:#fff0f0;color:#a12222;display:flex;align-items:center;justify-content:center;flex:0 0 44px;font-size:17px}
-.fund-not-found-copy{min-width:0;flex:1}
-.fund-not-found-title{font-size:13.5px;font-weight:800;color:#8d2424;margin-bottom:3px}
-.fund-not-found-text{font-size:11.5px;line-height:1.5;color:#71807a}
-.fund-not-found-text strong{color:#4f5f59;word-break:break-word}
-.fund-not-found-action{border:1px solid #e4c4c4;background:#fff;color:#8d2424;border-radius:9px;padding:8px 10px;font:700 11px/1 inherit;cursor:pointer;white-space:nowrap}
-.fund-not-found-action:hover{background:#fff4f4;border-color:#dca8a8}
-.fund-empty-premium{padding:42px 24px 52px}
-.fund-empty-icon-wrapper{width:68px;height:68px;border-radius:19px;margin-bottom:16px;font-size:25px}
-.fund-empty-title{font-size:15px}
-.fund-empty-desc{font-size:12px;max-width:380px;margin:auto}
-@media(max-width:700px){
-  .section-search-hero{padding:14px 12px 12px}
-  .section-search-inner{display:flex;flex-direction:column;align-items:stretch;gap:8px}
-  .section-search-field{width:100%;min-width:0;height:48px}
-  .section-search-pill{width:100%;height:46px;justify-content:flex-start}
-  .section-search-meta{padding-top:8px}
-  .fund-search-row{gap:7px}
-  .search-submit-btn{min-width:46px;width:46px;padding:0}
-  .search-submit-btn span{display:none}
-  .fund-search-help{font-size:10.5px}
-  .fund-not-found{margin:14px 12px 0;padding:15px;align-items:flex-start}
-  .fund-not-found-icon{width:40px;height:40px;flex-basis:40px}
-  .fund-not-found-action{align-self:center}
-}
-
-/* ============================================================
-   UNIFIED SEARCH PAGE LAYOUT (Transactions / Deposits / Withdrawals)
-============================================================ */
-.txn-search-hero{padding:30px 32px 26px;background:linear-gradient(160deg,rgba(10,69,52,0.03) 0%,rgba(10,69,52,0.008) 55%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
-.txn-search-hero::before{content:'';position:absolute;top:-100px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.05) 0%,transparent 65%);pointer-events:none}
-.txn-search-hero::after{content:'';position:absolute;bottom:-120px;left:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,0.035) 0%,transparent 70%);pointer-events:none}
-.txn-search-inner{position:relative;z-index:1;max-width:760px;margin:0 auto}
-.txn-search-headline{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.txn-search-headline-icon{width:48px;height:48px;border-radius:14px;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;flex-shrink:0;box-shadow:0 8px 22px -6px rgba(10,69,52,0.45),var(--shadow-inset-top)}
-.txn-search-headline-text{flex:1;min-width:0}
-.txn-search-headline-title{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-0.35px;margin-bottom:3px;line-height:1.2}
-.txn-search-headline-sub{font-size:12px;color:var(--text-muted);font-weight:500;line-height:1.4}
-.txn-search-field{position:relative;display:flex;align-items:center;background:var(--bg-card);border:1.5px solid rgba(10,69,52,0.22);border-radius:999px;padding:0 20px;height:56px;box-shadow:0 1px 2px rgba(15,23,42,0.03),0 8px 20px -10px rgba(10,69,52,0.08);transition:all 0.24s cubic-bezier(0.4,0,0.2,1)}
-.txn-search-field:hover{border-color:rgba(10,69,52,0.38)}
-.txn-search-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,0.08),0 10px 28px -12px rgba(10,69,52,0.22);transform:translateY(-1px)}
-.txn-search-field > i.fa-search{color:var(--primary);font-size:15px;margin-right:14px;transition:all 0.22s ease}
-.txn-search-field:focus-within > i.fa-search{color:var(--primary-dark);transform:scale(1.08)}
-.txn-search-field input{flex:1;border:none;outline:none;background:transparent;font-size:14.5px;font-weight:500;color:var(--text);font-family:inherit;height:100%;letter-spacing:-0.1px;min-width:0}
-.txn-search-field input::placeholder{color:var(--text-muted);font-weight:400}
-.txn-search-clear{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;margin-left:8px;transition:all 0.18s ease;flex-shrink:0}
-.txn-search-clear.visible{display:inline-flex}
-.txn-search-clear:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
-.txn-search-chips{display:flex;align-items:center;gap:6px;margin-top:16px;flex-wrap:wrap}
-.txn-search-chips-label{font-size:10.5px;font-weight:800;color:var(--text-muted);letter-spacing:0.7px;text-transform:uppercase;margin-right:4px}
-.txn-search-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);font-size:11.5px;font-weight:600;cursor:pointer;transition:all 0.18s ease;font-family:inherit}
-.txn-search-chip i{font-size:9.5px;color:var(--text-muted);transition:all 0.18s ease}
-.txn-search-chip:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);transform:translateY(-1px);box-shadow:0 3px 10px -3px rgba(10,69,52,0.12)}
-.txn-search-chip:hover i{color:var(--primary)}
-.txn-search-chip.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark)}
-.txn-search-chip.active i{color:var(--primary)}
-
-.txn-results-bar{padding:14px 26px;background:linear-gradient(180deg,rgba(10,69,52,0.012),transparent);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:46px}
-.txn-results-bar.is-empty{background:transparent}
-.txn-results-count{font-size:12.5px;color:var(--text-secondary);font-weight:600;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
-.txn-results-count strong{color:var(--text);font-weight:800;font-size:13.5px}
-.txn-results-count .search-term{color:var(--primary-dark);font-weight:800;background:var(--primary-light);padding:2px 8px;border-radius:5px;font-family:'SF Mono',Menlo,monospace;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.txn-results-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.3px}
-.txn-results-live .live-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 3px rgba(16,185,129,0.15);animation:pulseLive 1.6s ease-in-out infinite}
-
-.txn-card-list{display:flex;flex-direction:column;padding:14px;gap:8px}
-.txn-card{display:grid;grid-template-columns:54px 1fr auto;gap:16px;align-items:center;padding:15px 17px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);position:relative}
-.txn-card:hover{border-color:rgba(10,69,52,0.2);box-shadow:0 8px 22px -10px rgba(10,69,52,0.1),0 2px 6px rgba(10,69,52,0.04);transform:translateY(-2px)}
-.txn-card:active{transform:translateY(0)}
-.txn-card.static{cursor:default}
-.txn-card.static:hover{transform:none;box-shadow:var(--shadow-xs);border-color:var(--border)}
-.txn-card-avatar{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;letter-spacing:-0.5px;flex-shrink:0;position:relative;box-shadow:0 4px 12px -2px rgba(15,23,42,0.18),inset 0 1px 0 rgba(255,255,255,0.25);overflow:hidden}
-.txn-card-avatar.net-mtn{background:linear-gradient(135deg,#FFDD00 0%,#F5C400 50%,#E0A800 100%)}
-.txn-card-avatar.net-airtel{background:linear-gradient(135deg,#FF1A1A 0%,#D40000 55%,#A80000 100%)}
-.txn-card-avatar.net-glo{background:linear-gradient(135deg,#00C55E 0%,#00A651 55%,#008A40 100%)}
-.txn-card-avatar.net-t2{background:linear-gradient(135deg,#00856A 0%,#006B54 55%,#005240 100%)}
-.txn-card-avatar.net-generic{background:linear-gradient(135deg,#0d5a44 0%,#0a4534 45%,#062f24 100%)}
-.txn-card-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
-.txn-card-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
-.txn-card-avatar.txn-refund{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
-.txn-card-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
-.txn-card-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
-.txn-card-avatar svg.net-shape{width:100%;height:100%;display:block}
-.txn-card-info{min-width:0;display:flex;flex-direction:column;gap:6px}
-.txn-card-name-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.txn-card-name{font-size:14.5px;font-weight:700;color:var(--text);letter-spacing:-0.15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.txn-card-badge{font-size:9.5px;font-weight:800;padding:3px 9px;border-radius:6px;letter-spacing:0.5px;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px;border:1px solid transparent;white-space:nowrap}
-.txn-card-badge.success{background:var(--success-light);color:var(--success-dark);border-color:rgba(9,134,88,0.1)}
-.txn-card-badge.pending{background:var(--warning-light);color:var(--warning-dark);border-color:rgba(179,115,8,0.1)}
-.txn-card-badge.failed{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,0.1)}
-.txn-card-badge.refunded{background:var(--purple-light);color:var(--purple-dark);border-color:rgba(124,58,237,0.1)}
-.txn-card-contact{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-muted);font-weight:500;flex-wrap:wrap}
-.txn-card-contact .contact-item{display:inline-flex;align-items:center;gap:5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.txn-card-contact .contact-item i{font-size:10.5px;color:var(--text-muted);opacity:0.7;flex-shrink:0}
-.txn-card-contact .contact-item.mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:0.2px}
-.txn-card-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
-.txn-card-amount-pill{padding:8px 14px;border-radius:11px;background:linear-gradient(135deg,var(--primary-light),rgba(10,69,52,0.015));border:1px solid rgba(10,69,52,0.08);text-align:right;display:flex;flex-direction:column;gap:1px;min-width:100px}
-.txn-card-amount-pill.credit{background:linear-gradient(135deg,var(--success-light),rgba(16,185,129,0.015));border-color:rgba(9,134,88,0.1)}
-.txn-card-amount-pill.debit{background:linear-gradient(135deg,rgba(100,116,139,0.06),rgba(100,116,139,0.015));border-color:var(--border)}
-.txn-card-amount-label{font-size:9px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted)}
-.txn-card-amount-value{font-size:14.5px;font-weight:800;color:var(--primary-dark);letter-spacing:-0.3px;font-variant-numeric:tabular-nums}
-.txn-card-amount-pill.credit .txn-card-amount-value{color:var(--success-dark)}
-.txn-card-amount-pill.debit .txn-card-amount-value{color:var(--text-secondary)}
-.txn-card-actions{display:flex;gap:6px}
-.txn-card-actions button{height:36px;min-width:36px;padding:0 11px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:11px;font-weight:700;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;box-shadow:var(--shadow-xs);font-family:inherit}
-.txn-card-actions button:hover{transform:translateY(-1px);box-shadow:var(--shadow-hover-light)}
-.txn-card-actions .approve{border-color:rgba(9,134,88,0.2);color:var(--success-dark)}
-.txn-card-actions .approve:hover{background:var(--success-light);border-color:var(--success-dark)}
-.txn-card-actions .reject{border-color:rgba(161,34,34,0.2);color:var(--danger-dark)}
-.txn-card-actions .reject:hover{background:var(--danger-light);border-color:var(--danger-dark)}
-.txn-card-actions .view{border-color:var(--border);color:var(--text-secondary)}
-.txn-card-actions .view:hover{background:var(--primary-light);border-color:var(--primary-dark);color:var(--primary-dark)}
-.txn-card-arrow{width:36px;height:36px;border-radius:10px;background:var(--bg-input);display:inline-flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;transition:all 0.22s ease}
-.txn-card:hover .txn-card-arrow{background:var(--primary);color:#fff;transform:translateX(3px);box-shadow:0 6px 16px -4px rgba(10,69,52,0.35)}
-
-@media (max-width:900px){
-  .txn-search-hero{padding:22px 18px 20px}
-  .txn-search-headline-icon{width:44px;height:44px;border-radius:13px;font-size:17px}
-  .txn-search-headline-title{font-size:15px}
-  .txn-search-headline-sub{font-size:11.5px}
-  .txn-search-field{height:56px;padding:0 18px;border-radius:999px}
-  .txn-search-field input{font-size:16px}
-  .txn-search-chips{margin-top:14px}
-  .txn-search-chips-label{display:none}
-  .txn-card-list{padding:12px;gap:8px}
-  .txn-card{grid-template-columns:46px 1fr;grid-template-areas:"avatar main" "right right";gap:12px;padding:14px}
-  .txn-card-avatar{grid-area:avatar;width:44px;height:44px;font-size:15px;border-radius:13px}
-  .txn-card-info{grid-area:main;gap:5px}
-  .txn-card-name{font-size:13.5px}
-  .txn-card-contact{font-size:11px;gap:8px}
-  .txn-card-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
-  .txn-card-amount-pill{padding:7px 12px;min-width:auto}
-  .txn-card-amount-value{font-size:13.5px}
-  .txn-card-actions{margin-left:auto}
-}
 </style>
 </head>
 <body>
 
-<!-- ★ iPhone‑style notification stack -->
 <div class="notif-stack" id="notifStack" aria-live="polite" aria-atomic="false"></div>
 
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -1176,12 +1047,10 @@ button:not(:disabled){cursor:pointer}
   <nav class="nav-section">
     <div class="nav-section-label">Users</div>
     <button class="nav-item" data-tab="users" onclick="switchTab('users');closeDrawer();"><i class="fas fa-users"></i><span>All Users</span></button>
-    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions');closeDrawer();"><i class="fas fa-exchange-alt"></i><span>Transactions</span></button>
+    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions');closeDrawer();"><i class="fas fa-exchange-alt"></i><span>All Transactions</span></button>
   </nav>
   <nav class="nav-section">
     <div class="nav-section-label">Wallet</div>
-    <button class="nav-item" data-tab="deposits" onclick="switchTab('deposits');closeDrawer();"><i class="fas fa-arrow-down"></i><span>Deposits</span></button>
-    <button class="nav-item" data-tab="withdrawals" onclick="switchTab('withdrawals');closeDrawer();"><i class="fas fa-arrow-up"></i><span>Withdrawals</span></button>
     <button class="nav-item" data-tab="fund" onclick="switchTab('fund');closeDrawer();"><i class="fas fa-hand-holding-dollar"></i><span>Manual Fund</span></button>
   </nav>
   <nav class="nav-section">
@@ -1221,12 +1090,10 @@ button:not(:disabled){cursor:pointer}
     <nav class="nav-section">
       <div class="nav-section-label">Users</div>
       <button class="nav-item" data-tab="users" onclick="switchTab('users')"><i class="fas fa-users"></i><span>All Users</span><span class="nav-badge" id="sidebarUserCount">0</span></button>
-      <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')"><i class="fas fa-exchange-alt"></i><span>Transactions</span><span class="nav-badge" id="sidebarTxnCount">0</span></button>
+      <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')"><i class="fas fa-exchange-alt"></i><span>All Transactions</span><span class="nav-badge" id="sidebarTxnCount">0</span></button>
     </nav>
     <nav class="nav-section">
       <div class="nav-section-label">Wallet</div>
-      <button class="nav-item" data-tab="deposits" onclick="switchTab('deposits')"><i class="fas fa-arrow-down"></i><span>Deposits</span><span class="nav-badge" id="sidebarDepositCount">0</span></button>
-      <button class="nav-item" data-tab="withdrawals" onclick="switchTab('withdrawals')"><i class="fas fa-arrow-up"></i><span>Withdrawals</span><span class="nav-badge" id="sidebarWithdrawalCount">0</span></button>
       <button class="nav-item" data-tab="fund" onclick="switchTab('fund')"><i class="fas fa-hand-holding-dollar"></i><span>Manual Fund</span></button>
     </nav>
     <nav class="nav-section">
@@ -1292,12 +1159,6 @@ button:not(:disabled){cursor:pointer}
           <div class="stat-card" id="cardData"><div class="stat-top"><div class="stat-icon"><i class="fas fa-wifi"></i></div></div><div class="stat-label">Data Sales</div><div class="stat-value" id="statData">—</div><div class="stat-sub" id="statDataSub">0 transactions</div></div>
           <div class="stat-card success" id="cardSuccess"><div class="stat-top"><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div><div class="stat-label">Success Rate</div><div class="stat-value success" id="statSuccess">—</div><div class="stat-sub" id="statSuccessSub">Across all VTU</div></div>
           <div class="stat-card warning" id="cardProfit"><div class="stat-top"><div class="stat-icon"><i class="fas fa-coins"></i></div></div><div class="stat-label">Est. Profit</div><div class="stat-value warning" id="statProfit">—</div><div class="stat-sub" id="statProfitSub">From completed sales</div></div>
-        </div>
-
-        <div class="panel" id="panelRecentDeposits">
-          <div class="panel-head"><h3><i class="fas fa-arrow-down"></i> Recent Deposits</h3><span class="sub" id="recentDepositsMeta">—</span></div>
-          <div class="panel-body no-pad"><div class="data-list" id="recentDepositsList"><div class="loading"><div class="ring"></div><p>Loading deposits…</p></div></div></div>
-          <div class="panel-footer" id="recentDepositsPagination" style="display:none;"></div>
         </div>
 
         <div class="panel" id="panelRecentTx">
@@ -1371,21 +1232,48 @@ button:not(:disabled){cursor:pointer}
         </div>
       </section>
 
-      <!-- TRANSACTIONS -->
+      <!-- ALL TRANSACTIONS (unified + user trace) -->
       <section id="tab-transactions" style="display:none;">
         <div class="panel">
+
+          <!-- Trace by user -->
+          <div class="trace-bar">
+            <div class="trace-head">
+              <div class="trace-icon"><i class="fas fa-user-secret"></i></div>
+              <div>
+                <div class="trace-title">Trace any user's transactions</div>
+                <div class="trace-sub">Enter a phone number, email, or user ID to see everything they've done</div>
+              </div>
+            </div>
+            <div class="trace-row">
+              <div class="trace-input">
+                <i class="fas fa-user-magnifying-glass"></i>
+                <input type="text" id="traceQuery" placeholder="e.g. 08031234567, alice@example.com, 42" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();traceByUser();}" oninput="toggleTraceClear()">
+                <button class="trace-clear" id="traceClear" onclick="clearTrace()" aria-label="Clear"><i class="fas fa-times"></i></button>
+              </div>
+              <button class="trace-btn" id="traceBtn" onclick="traceByUser()"><i class="fas fa-magnifying-glass"></i> <span>Trace</span></button>
+            </div>
+            <div class="trace-chip-row">
+              <button class="trace-chip" onclick="document.getElementById('traceQuery').value='0803';toggleTraceClear();traceByUser();"><i class="fas fa-phone"></i> 0803…</button>
+              <button class="trace-chip" onclick="document.getElementById('traceQuery').value='@gmail.com';toggleTraceClear();traceByUser();"><i class="fas fa-at"></i> @gmail.com</button>
+              <button class="trace-chip" onclick="clearTrace()"><i class="fas fa-rotate-left"></i> Reset</button>
+            </div>
+          </div>
+          <div id="traceProfile"></div>
+
+          <!-- Search + type chips -->
           <div class="txn-search-hero">
             <div class="txn-search-inner">
               <div class="txn-search-headline">
                 <div class="txn-search-headline-icon"><i class="fas fa-receipt"></i></div>
                 <div class="txn-search-headline-text">
-                  <div class="txn-search-headline-title">Find any transaction instantly</div>
-                  <div class="txn-search-headline-sub">Search by phone number, reference, product, or user</div>
+                  <div class="txn-search-headline-title" id="txnHeadlineTitle">All transactions in one place</div>
+                  <div class="txn-search-headline-sub" id="txnHeadlineSub">Deposits, withdrawals, manual funding, airtime, data — every action</div>
                 </div>
               </div>
               <div class="txn-search-field">
                 <i class="fas fa-search"></i>
-                <input type="text" id="txnSearch" placeholder="e.g. 08031234567, shatova-data-…, MTN 1GB" autocomplete="off" spellcheck="false" oninput="onTxnSearchInput()">
+                <input type="text" id="txnSearch" placeholder="Search by phone, reference, product, or name" autocomplete="off" spellcheck="false" oninput="onTxnSearchInput()">
                 <button class="txn-search-clear" id="txnSearchClear" onclick="clearTxnSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
               </div>
               <div class="txn-search-chips" style="margin-top:16px;gap:8px;">
@@ -1394,74 +1282,15 @@ button:not(:disabled){cursor:pointer}
                 <button class="txn-search-chip" onclick="quickTxnSearch('data')" style="padding:5px 14px;"><i class="fas fa-wifi"></i> Data</button>
                 <button class="txn-search-chip" onclick="quickTxnSearch('deposit')" style="padding:5px 14px;"><i class="fas fa-arrow-down"></i> Deposits</button>
                 <button class="txn-search-chip" onclick="quickTxnSearch('withdrawal')" style="padding:5px 14px;"><i class="fas fa-arrow-up"></i> Withdrawals</button>
+                <button class="txn-search-chip" onclick="quickTxnSearch('manual_fund')" style="padding:5px 14px;"><i class="fas fa-plus-circle"></i> Manual credit</button>
+                <button class="txn-search-chip" onclick="quickTxnSearch('manual_debit')" style="padding:5px 14px;"><i class="fas fa-minus-circle"></i> Manual debit</button>
               </div>
             </div>
           </div>
+
           <div class="txn-results-bar is-empty" id="txnResultsBar"></div>
           <div id="transactionsList"></div>
           <div class="panel-footer" id="transactionsPagination" style="display:none;"></div>
-        </div>
-      </section>
-
-      <!-- DEPOSITS -->
-      <section id="tab-deposits" style="display:none;">
-        <div class="panel">
-          <div class="txn-search-hero">
-            <div class="txn-search-inner">
-              <div class="txn-search-headline">
-                <div class="txn-search-headline-icon"><i class="fas fa-arrow-down"></i></div>
-                <div class="txn-search-headline-text">
-                  <div class="txn-search-headline-title">Find any deposit instantly</div>
-                  <div class="txn-search-headline-sub">Search by user, email, phone, or reference</div>
-                </div>
-              </div>
-              <div class="txn-search-field">
-                <i class="fas fa-search"></i>
-                <input type="text" id="depositSearch" placeholder="e.g. alice@example.com, 08031234567, shatova-…" autocomplete="off" spellcheck="false" oninput="onDepositSearchInput()">
-                <button class="txn-search-clear" id="depositSearchClear" onclick="clearDepositSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
-              </div>
-              <div class="txn-search-chips" style="margin-top:16px;gap:8px;">
-                <button class="txn-search-chip" onclick="quickDepositSearch('all')" style="padding:5px 14px;"><i class="fas fa-list"></i> Show all</button>
-                <button class="txn-search-chip" onclick="quickDepositSearch('pending')" style="padding:5px 14px;"><i class="fas fa-clock"></i> Pending only</button>
-                <button class="txn-search-chip" onclick="quickDepositSearch('success')" style="padding:5px 14px;"><i class="fas fa-check"></i> Successful</button>
-                <button class="txn-search-chip" onclick="quickDepositSearch('@gmail.com')" style="padding:5px 14px;"><i class="fas fa-at"></i> @gmail.com</button>
-              </div>
-            </div>
-          </div>
-          <div class="txn-results-bar is-empty" id="depositResultsBar"></div>
-          <div id="depositsList"></div>
-          <div class="panel-footer" id="depositsPagination" style="display:none;"></div>
-        </div>
-      </section>
-
-      <!-- WITHDRAWALS -->
-      <section id="tab-withdrawals" style="display:none;">
-        <div class="panel">
-          <div class="txn-search-hero">
-            <div class="txn-search-inner">
-              <div class="txn-search-headline">
-                <div class="txn-search-headline-icon"><i class="fas fa-arrow-up"></i></div>
-                <div class="txn-search-headline-text">
-                  <div class="txn-search-headline-title">Find any withdrawal instantly</div>
-                  <div class="txn-search-headline-sub">Search by user, bank, account number, or reference</div>
-                </div>
-              </div>
-              <div class="txn-search-field">
-                <i class="fas fa-search"></i>
-                <input type="text" id="withdrawalSearch" placeholder="e.g. GTBank, 0123456789, shatova-wd-…" autocomplete="off" spellcheck="false" oninput="onWithdrawalSearchInput()">
-                <button class="txn-search-clear" id="withdrawalSearchClear" onclick="clearWithdrawalSearch()" aria-label="Clear search"><i class="fas fa-times"></i></button>
-              </div>
-              <div class="txn-search-chips" style="margin-top:16px;gap:8px;">
-                <button class="txn-search-chip" onclick="quickWithdrawalSearch('all')" style="padding:5px 14px;"><i class="fas fa-list"></i> Show all</button>
-                <button class="txn-search-chip" onclick="quickWithdrawalSearch('pending')" style="padding:5px 14px;"><i class="fas fa-clock"></i> Pending only</button>
-                <button class="txn-search-chip" onclick="quickWithdrawalSearch('success')" style="padding:5px 14px;"><i class="fas fa-check"></i> Approved</button>
-                <button class="txn-search-chip" onclick="quickWithdrawalSearch('failed')" style="padding:5px 14px;"><i class="fas fa-ban"></i> Rejected</button>
-              </div>
-            </div>
-          </div>
-          <div class="txn-results-bar is-empty" id="withdrawalResultsBar"></div>
-          <div id="withdrawalsList"></div>
-          <div class="panel-footer" id="withdrawalsPagination" style="display:none;"></div>
         </div>
       </section>
 
@@ -1593,8 +1422,7 @@ button:not(:disabled){cursor:pointer}
   <div class="nav-items">
     <button class="nav-item active" data-tab="overview" onclick="switchTab('overview')" aria-label="Overview"><i class="fas fa-chart-pie"></i><span>Overview</span></button>
     <button class="nav-item" data-tab="users" onclick="switchTab('users')" aria-label="Users"><i class="fas fa-users"></i><span>Users</span></button>
-    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')" aria-label="Transactions"><i class="fas fa-exchange-alt"></i><span>Txns</span></button>
-    <button class="nav-item" data-tab="deposits" onclick="switchTab('deposits')" aria-label="Deposits"><i class="fas fa-arrow-down"></i><span>Deposits</span></button>
+    <button class="nav-item" data-tab="transactions" onclick="switchTab('transactions')" aria-label="All Transactions"><i class="fas fa-exchange-alt"></i><span>Txns</span></button>
     <button class="nav-item" data-tab="fund" onclick="switchTab('fund')" aria-label="Manual Fund"><i class="fas fa-hand-holding-dollar"></i><span>Fund</span></button>
   </div>
 </nav>
@@ -1641,7 +1469,6 @@ button:not(:disabled){cursor:pointer}
 
 <div id="shatovaPageLoader"></div>
 
-<!-- ★ FULLSCREEN ALARM BANNER -->
 <div class="alarm-banner" id="alarmBanner" aria-live="assertive">
   <div class="alarm-icon"><i class="fas fa-bell"></i></div>
   <h2 id="alarmBannerTitle">🚨 New Approval Alert</h2>
@@ -1695,14 +1522,12 @@ button:not(:disabled){cursor:pointer}
     deposits: [], withdrawals: [], transactions: [], users: [],
     userQuery: '', userHasSearched: false, totalUsers: 0,
     userResults: [], userLoading: false, userTotal: 0, userSearched: false, userSearchError: '',
-    depositStatusFilter: 'all',
-    withdrawalStatusFilter: 'all',
     datashop: { balance: 0, totalFunded: 0, totalSpent: 0, lastFunding: null, loaded: false },
     currentApprove: null, currentReject: null,
     currentApproveDeposit: null, currentRejectDeposit: null,
     withdrawApprovePending: false, withdrawRejectPending: false,
     depositApprovePending: false, depositRejectPending: false,
-    recentTxPage: 1, recentDepositsPage: 1, txnPage: 1, depositPage: 1, withdrawalPage: 1,
+    recentTxPage: 1, txnPage: 1,
     PER_PAGE: 10,
     fundUser: null,
     archived: { items: [], page: 1, perPage: 20, total: 0 },
@@ -1713,6 +1538,10 @@ button:not(:disabled){cursor:pointer}
     adminAlerts: [],
     adminAlertIds: new Set(),
     adminSoundEnabled: false,
+    // user trace
+    traceQuery: '',
+    traceUser: null,
+    traceActive: false,
   };
 
   window.__shatovaAdminState = state;
@@ -1951,31 +1780,6 @@ button:not(:disabled){cursor:pointer}
   }
   window.stopAdminAlarm = stopAdminAlarm;
 
-  function playSoftChime() {
-    const ctx = ensureAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime + 0.02;
-    const master = ctx.createGain();
-    master.gain.setValueAtTime(0.0001, now);
-    master.gain.exponentialRampToValueAtTime(0.55, now + 0.02);
-    master.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
-    master.connect(ctx.destination);
-    [1046, 1318, 1568].forEach((f, i) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      const st = now + i * 0.09;
-      o.type = 'sine';
-      o.frequency.setValueAtTime(f, st);
-      g.gain.setValueAtTime(0.0001, st);
-      g.gain.exponentialRampToValueAtTime(0.7, st + 0.015);
-      g.gain.exponentialRampToValueAtTime(0.0001, st + 0.22);
-      o.connect(g); g.connect(master);
-      o.start(st); o.stop(st + 0.24);
-    });
-  }
-  window.playSoftChime = playSoftChime;
-
-  /* ---------- Full-screen alarm banner ---------- */
   function showAlarmBanner(title, text) {
     const b = document.getElementById('alarmBanner');
     if (!b) return;
@@ -2115,8 +1919,6 @@ button:not(:disabled){cursor:pointer}
     const deposits = (state.deposits || []).filter(isPendingDeposit);
     const withdrawals = (state.withdrawals || []).filter(w => getStatus(w) === 'pending');
 
-    // First load: fire alerts for every currently-pending item so admin never misses one.
-    // Only mark as "seen" AFTER we alert.
     deposits.forEach(d => {
       const id = String(d.id || d.reference || '');
       if (!id) return;
@@ -2267,10 +2069,9 @@ button:not(:disabled){cursor:pointer}
   function setRange(key) {
     if (!RANGES[key]) key = '1d';
     state.range = key;
-    state.recentTxPage = 1; state.recentDepositsPage = 1;
-    state.txnPage = 1; state.depositPage = 1; state.withdrawalPage = 1;
+    state.recentTxPage = 1; state.txnPage = 1;
     syncRangeUI();
-    updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderChart(); updateAnalyticsKpis();
+    updateOverview(); renderTransactions(); renderChart(); updateAnalyticsKpis();
   }
   window.setRange = setRange;
   function syncRangeUI() {
@@ -2280,9 +2081,6 @@ button:not(:disabled){cursor:pointer}
       wrap.querySelectorAll('button[data-range]').forEach(b => b.classList.toggle('active', b.dataset.range === state.range));
     });
     $$('#rangeOptions .sheet-option').forEach(o => o.classList.toggle('active', o.dataset.range === state.range));
-    const lbl = $('#txnRangeLabel'); if (lbl) lbl.textContent = r.label;
-    const lbl2 = $('#depositRangeLabel'); if (lbl2) lbl2.textContent = r.label;
-    const lbl3 = $('#withdrawalRangeLabel'); if (lbl3) lbl3.textContent = r.label;
     const metaHtml = `<i class="fas fa-circle-info"></i> <strong>${escapeHtml(r.label)}</strong>`;
     const m1 = $('#rangeMeta'); if (m1) m1.innerHTML = metaHtml;
     const m2 = $('#rangeMeta2'); if (m2) m2.innerHTML = metaHtml;
@@ -2373,9 +2171,7 @@ button:not(:disabled){cursor:pointer}
     overview: { title: 'Dashboard Overview', sub: 'Welcome to your admin panel' },
     analytics: { title: 'Analytics', sub: 'Business insights' },
     users: { title: 'Users', sub: 'Search any account' },
-    transactions: { title: 'Transactions', sub: 'Purchase history' },
-    deposits: { title: 'Deposits', sub: 'Wallet top-ups' },
-    withdrawals: { title: 'Withdrawals', sub: 'Payout requests' },
+    transactions: { title: 'All Transactions', sub: 'Every action across the platform' },
     fund: { title: 'Manual Fund', sub: 'Credit or debit a wallet' },
     archived: { title: 'Archived', sub: 'Old transactions' },
     mismatches: { title: 'Mismatches', sub: 'Audit issues' },
@@ -2386,7 +2182,7 @@ button:not(:disabled){cursor:pointer}
     if (loader) { loader.classList.add('active'); clearTimeout(window.__shatovaTabLoaderTimer); window.__shatovaTabLoaderTimer=setTimeout(()=>loader.classList.remove('active'),650); }
     state.activeTab = tab;
     $$('[data-tab]').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
-    ['overview', 'analytics', 'users', 'transactions', 'deposits', 'withdrawals', 'fund', 'archived', 'mismatches', 'drift'].forEach(t => { const el = document.getElementById('tab-' + t); if (el) el.style.display = t === tab ? 'block' : 'none'; });
+    ['overview', 'analytics', 'users', 'transactions', 'fund', 'archived', 'mismatches', 'drift'].forEach(t => { const el = document.getElementById('tab-' + t); if (el) el.style.display = t === tab ? 'block' : 'none'; });
     const meta = TAB_META[tab] || {};
     const titleEl = $('#pageTitle'); const subEl = $('#pageSub');
     if (titleEl) titleEl.textContent = meta.title || 'Admin';
@@ -2394,9 +2190,7 @@ button:not(:disabled){cursor:pointer}
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (tab === 'analytics') { renderChart(); updateAnalyticsKpis(); }
     if (tab === 'users') setTimeout(() => { const input = document.getElementById('userSearch'); if (input) input.focus(); }, 150);
-    if (tab === 'transactions') setTimeout(() => { const input = document.getElementById('txnSearch'); if (input) input.focus(); }, 150);
-    if (tab === 'deposits') setTimeout(() => { const input = document.getElementById('depositSearch'); if (input) input.focus(); }, 150);
-    if (tab === 'withdrawals') setTimeout(() => { const input = document.getElementById('withdrawalSearch'); if (input) input.focus(); }, 150);
+    if (tab === 'transactions') setTimeout(() => { const input = document.getElementById('traceQuery'); if (input) input.focus(); }, 150);
     if (tab === 'fund') setTimeout(() => { const input = document.getElementById('fundLookupQuery'); if (input) input.focus(); }, 150);
     if (tab === 'archived') loadArchived(1);
     if (tab === 'mismatches') loadMismatches();
@@ -2445,63 +2239,6 @@ button:not(:disabled){cursor:pointer}
       const d = res.data || res || {};
       state.datashop = { balance: getAmount({ amount: d.balance ?? d.wallet_balance ?? 0 }), totalFunded: getAmount({ amount: d.total_funded ?? d.totalFunded ?? d.funded ?? 0 }), totalSpent: getAmount({ amount: d.total_spent ?? d.totalSpent ?? d.spent ?? 0 }), lastFunding: d.last_funding_at || d.lastFundingAt || d.updated_at || null, loaded: true };
     } catch (err) { state.datashop.loaded = true; }
-  }
-
-  /* ---------- DEPOSIT NOTIFICATIONS ---------- */
-  function isPendingDeposit(d) { return d && getStatus(d) === 'pending'; }
-  function showDepositNotification(deposit) {
-    const stack = document.getElementById('notifStack');
-    if (!stack) return;
-    const id = String(deposit.id || deposit.reference || '');
-    if (state.seenDepositIds.has(id)) return;
-    state.seenDepositIds.add(id);
-
-    const name = deposit.user_name || deposit.name || deposit.user_email || 'A user';
-    const email = deposit.user_email || deposit.email || '';
-    const amount = getAmount(deposit);
-    const initial = String(name).charAt(0).toUpperCase();
-
-    const el = document.createElement('div');
-    el.className = 'notif';
-    el.dataset.depositId = id;
-    el.innerHTML = `
-      <div class="notif-icon deposit pulse">${escapeHtml(initial)}</div>
-      <div class="notif-body">
-        <div class="notif-title"><span class="notif-live"></span> New Deposit</div>
-        <div class="notif-name">${escapeHtml(name)}</div>
-        <div class="notif-sub">${email ? escapeHtml(email) : 'Awaiting verification'} · <strong>${formatMoney(amount)}</strong></div>
-        <div class="notif-actions">
-          <button class="notif-btn approve" onclick="notifApprove('${escapeHtml(id)}', event)"><i class="fas fa-check"></i> Approve</button>
-          <button class="notif-btn review" onclick="notifReview('${escapeHtml(id)}', event)"><i class="fas fa-eye"></i> Review</button>
-        </div>
-      </div>
-      <button class="notif-close" onclick="notifDismiss('${escapeHtml(id)}', event)" aria-label="Dismiss"><i class="fas fa-times"></i></button>`;
-    stack.appendChild(el);
-    requestAnimationFrame(() => { requestAnimationFrame(() => el.classList.add('show')); });
-    const timer = setTimeout(() => dismissNotifEl(el), 12000);
-    el._dismissTimer = timer;
-  }
-  function dismissNotifEl(el) {
-    if (!el || !el.parentNode) return;
-    if (el._dismissTimer) clearTimeout(el._dismissTimer);
-    el.classList.remove('show'); el.classList.add('hide');
-    setTimeout(() => el.remove(), 400);
-  }
-  function findDepositById(id) { return (state.deposits || []).find(x => String(x.id) === String(id)); }
-  window.notifApprove = function (id, ev) { if (ev) ev.stopPropagation(); const dep = findDepositById(id); const stack = document.getElementById('notifStack'); const el = stack?.querySelector(`.notif[data-deposit-id="${CSS.escape(String(id))}"]`); if (el) dismissNotifEl(el); if (!dep) { showToast('Deposit not found in cache — open Deposits to review', 'error'); switchTab('deposits'); return; } openApproveDepositModal(dep.id); };
-  window.notifReview = function (id, ev) { if (ev) ev.stopPropagation(); const stack = document.getElementById('notifStack'); const el = stack?.querySelector(`.notif[data-deposit-id="${CSS.escape(String(id))}"]`); if (el) dismissNotifEl(el); switchTab('deposits'); setTimeout(() => { const dep = findDepositById(id); if (dep) viewDeposit(dep.id); }, 200); };
-  window.notifDismiss = function (id, ev) { if (ev) ev.stopPropagation(); const stack = document.getElementById('notifStack'); const el = stack?.querySelector(`.notif[data-deposit-id="${CSS.escape(String(id))}"]`); if (el) dismissNotifEl(el); };
-
-  function detectNewPendingDeposits() {
-    const list = state.deposits || [];
-    const pending = list.filter(isPendingDeposit);
-    if (!state.notifInitialized) {
-      // First load: show notification for every pending item (admin never misses one)
-      pending.forEach(d => showDepositNotification(d));
-      state.notifInitialized = true;
-      return;
-    }
-    pending.forEach(d => { const id = String(d.id || d.reference || ''); if (id && !state.seenDepositIds.has(id)) { showDepositNotification(d); } });
   }
 
   /* ---------- OVERVIEW ---------- */
@@ -2553,41 +2290,9 @@ button:not(:disabled){cursor:pointer}
     setHiddenByValue('cardProfit', profit > 0);
     const setBadge = (id, count) => { const el = document.getElementById(id); if (el) el.textContent = count; };
     setBadge('sidebarTxnCount', (state.transactions || []).length);
-    setBadge('sidebarDepositCount', (state.deposits || []).length);
-    setBadge('sidebarWithdrawalCount', (state.withdrawals || []).length);
     setBadge('sidebarUserCount', totalUserCount);
-    renderRecentDeposits(); renderRecentTx();
+    renderRecentTx();
   }
-
-  function renderRecentDeposits() {
-    const c = $('#recentDepositsList'); if (!c) return;
-    const metaEl = $('#recentDepositsMeta');
-    const paginationEl = $('#recentDepositsPagination');
-    let list = applyRange(state.deposits, state.range).sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
-    const totalItems = list.length;
-    const itemsPerPage = 7;
-    const maxPages = Math.min(5, Math.ceil(totalItems / itemsPerPage));
-    const currentPage = Math.min(state.recentDepositsPage || 1, maxPages || 1);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-    const pageItems = list.slice(startIndex, endIndex);
-    if (metaEl) { const r = RANGES[state.range] || RANGES['1d']; metaEl.textContent = `Showing ${totalItems > 0 ? startIndex + 1 : 0}-${endIndex} of ${totalItems} · ${r.label}`; }
-    const panel = document.getElementById('panelRecentDeposits');
-    if (panel) panel.classList.toggle('is-hidden', totalItems === 0);
-    if (!pageItems.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-arrow-down"></i></div><div class="title">No deposits</div><div class="desc">Wallet top-ups will appear here.</div></div>`; if (paginationEl) paginationEl.style.display = 'none'; return; }
-    c.innerHTML = pageItems.map(d => {
-      const name = d.user_name || d.name || 'Unknown'; const initial = name.charAt(0).toUpperCase(); const amount = getAmount(d); const st = getStatus(d);
-      return `<div class="row-item" onclick="viewDeposit('${escapeHtml(d.id)}')"><div class="row-avatar deposit">${escapeHtml(initial)}</div><div class="row-main"><div class="row-title">${escapeHtml(name)}</div><div class="row-sub"><span>${escapeHtml(d.user_email || d.email || '—')}</span><span class="dot"></span><span class="ref">${escapeHtml(d.reference || d.tx_ref || '—')}</span><span class="status ${st}">${escapeHtml(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount credit">+${formatMoney(amount)}<small>${timeAgo(getDate(d))}</small></div></div></div>`;
-    }).join('');
-    if (paginationEl && maxPages > 1) {
-      let html = `<div class="pagination-info">Page <strong>${currentPage}</strong> of <strong>${maxPages}</strong></div><div class="pagination-controls">`;
-      html += `<button class="page-btn nav" ${currentPage === 1 ? 'disabled' : ''} onclick="event.stopPropagation();goToRecentDepositsPage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
-      for (let i = 1; i <= maxPages; i++) html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="event.stopPropagation();goToRecentDepositsPage(${i})">${i}</button>`;
-      html += `<button class="page-btn nav" ${currentPage === maxPages ? 'disabled' : ''} onclick="event.stopPropagation();goToRecentDepositsPage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></button></div>`;
-      paginationEl.innerHTML = html; paginationEl.style.display = 'flex';
-    } else if (paginationEl) paginationEl.style.display = 'none';
-  }
-  window.goToRecentDepositsPage = (page) => { state.recentDepositsPage = page; renderRecentDeposits(); };
 
   function renderRecentTx() {
     const c = $('#recentTxList'); if (!c) return;
@@ -2828,6 +2533,111 @@ button:not(:disabled){cursor:pointer}
   }
   window.viewUser = viewUser;
 
+  /* ============================================================
+     USER TRACE — filter transactions by a specific user
+     ============================================================ */
+  function toggleTraceClear() {
+    const input = document.getElementById('traceQuery');
+    const clear = document.getElementById('traceClear');
+    if (input && clear) clear.classList.toggle('visible', input.value.length > 0);
+  }
+  window.toggleTraceClear = toggleTraceClear;
+
+  function clearTrace() {
+    state.traceQuery = '';
+    state.traceUser = null;
+    state.traceActive = false;
+    const input = document.getElementById('traceQuery'); if (input) input.value = '';
+    toggleTraceClear();
+    renderTraceProfile();
+    state.txnPage = 1;
+    renderTransactions();
+  }
+  window.clearTrace = clearTrace;
+
+  async function traceByUser() {
+    const input = document.getElementById('traceQuery');
+    const q = (input?.value || '').trim();
+    if (!q) { clearTrace(); return; }
+
+    const btn = document.getElementById('traceBtn');
+    const orig = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Searching…</span>'; }
+
+    // Try to resolve the user via the admin users search first
+    try {
+      const res = await apiCall(`/admin/users?search=${encodeURIComponent(q)}&limit=1`);
+      const list = pickArray(res);
+      const found = list[0] || null;
+      if (!found) {
+        showToast('No user matches that search', 'error');
+        state.traceUser = null; state.traceActive = false;
+        renderTraceProfile();
+        state.txnPage = 1; renderTransactions();
+        return;
+      }
+      state.traceUser = found;
+      state.traceQuery = q;
+      state.traceActive = true;
+      state.txnFilter = 'all'; // reset type filter when tracing
+      state.txnPage = 1;
+      syncTypeUI();
+      renderTraceProfile();
+      renderTransactions();
+      showToast(`Tracing ${found.name || found.email || ('#' + (found.id || found._id))}`, 'success');
+    } catch (err) {
+      showToast(err.message || 'Trace failed', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+    }
+  }
+  window.traceByUser = traceByUser;
+
+  function renderTraceProfile() {
+    const el = document.getElementById('traceProfile');
+    if (!el) return;
+    const u = state.traceUser;
+    if (!state.traceActive || !u) { el.innerHTML = ''; return; }
+
+    const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
+    const initial = (name || '?').charAt(0).toUpperCase();
+    const email = u.email || '';
+    const phone = u.phone || '';
+    const id = u.id || u._id || '—';
+    const balance = formatMoney(u.balance ?? u.wallet_balance ?? 0);
+    const allUserTxns = (state.transactions || []).filter(t => String(t.user_id) === String(id));
+    const totalDebit = allUserTxns.filter(t => txnKind(t) !== 'deposit' && txnKind(t) !== 'manual_fund' && txnKind(t) !== 'refund')
+      .reduce((s, t) => s + getAmount(t), 0);
+    const totalCredit = allUserTxns.filter(t => ['deposit','manual_fund','refund'].includes(txnKind(t)))
+      .reduce((s, t) => s + getAmount(t), 0);
+
+    el.innerHTML = `
+      <div class="trace-profile">
+        <div class="trace-profile-avatar" style="background:${hashColor(name)}">${escapeHtml(initial)}</div>
+        <div class="trace-profile-info">
+          <div class="trace-profile-name">${escapeHtml(name)}</div>
+          <div class="trace-profile-meta">
+            ${email ? `<span><i class="fas fa-envelope" style="font-size:10px;opacity:.7;"></i> ${escapeHtml(email)}</span>` : ''}
+            ${email && phone ? '<span class="dot"></span>' : ''}
+            ${phone ? `<span class="mono"><i class="fas fa-phone" style="font-size:10px;opacity:.7;"></i> ${escapeHtml(phone)}</span>` : ''}
+            <span class="dot"></span>
+            <span class="mono">ID #${escapeHtml(String(id))}</span>
+          </div>
+        </div>
+        <div class="trace-profile-stats">
+          <div class="trace-profile-stat"><div class="lbl">Balance</div><div class="val">${balance}</div></div>
+          <div class="trace-profile-stat"><div class="lbl">In</div><div class="val credit">+${formatMoney(totalCredit, true)}</div></div>
+          <div class="trace-profile-stat"><div class="lbl">Out</div><div class="val debit">−${formatMoney(totalDebit, true)}</div></div>
+        </div>
+      </div>`;
+
+    // Update the transaction headline text
+    const titleEl = document.getElementById('txnHeadlineTitle');
+    const subEl = document.getElementById('txnHeadlineSub');
+    if (titleEl) titleEl.textContent = `Tracing ${name}`;
+    if (subEl) subEl.textContent = `${allUserTxns.length} transaction${allUserTxns.length === 1 ? '' : 's'} found — every action this account has made`;
+  }
+
   /* ---------- TRANSACTIONS ---------- */
   function filterTransactionsBySearch(list, search) {
     if (!search) return list;
@@ -2838,8 +2648,18 @@ button:not(:disabled){cursor:pointer}
   function getFilteredTransactions() {
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     let list = (state.transactions || []).slice();
+
+    // If a user trace is active, filter by that user_id
+    if (state.traceActive && state.traceUser) {
+      const targetId = String(state.traceUser.id || state.traceUser._id || '');
+      list = list.filter(t => String(t.user_id) === targetId);
+    }
+
     if (state.txnFilter !== 'all') list = list.filter(t => txnKind(t) === state.txnFilter);
-    list = applyRange(list, state.range);
+
+    // When tracing a user, ignore the time range so ALL their history shows
+    if (!state.traceActive) list = applyRange(list, state.range);
+
     list = filterTransactionsBySearch(list, search);
     list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     return list;
@@ -2849,13 +2669,18 @@ button:not(:disabled){cursor:pointer}
     const list = getFilteredTransactions();
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     const total = list.reduce((s, t) => s + getAmount(t), 0);
+    const isTracing = state.traceActive && state.traceUser;
 
     const bar = $('#txnResultsBar');
     const c = $('#transactionsList');
     const pag = $('#transactionsPagination');
 
     if (bar) {
-      if (!state.transactions.length && !search) {
+      if (isTracing) {
+        const name = state.traceUser.name || state.traceUser.email || ('#' + (state.traceUser.id || state.traceUser._id));
+        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-user-secret" style="color:var(--primary);"></i> Tracing <strong>${escapeHtml(name)}</strong> · <strong>${list.length}</strong> transaction${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
+        bar.classList.remove('is-empty');
+      } else if (!state.transactions.length && !search) {
         bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-circle-info" style="color:var(--primary);"></i> Start typing to search transactions</span>`;
         bar.classList.add('is-empty');
       } else if (search) {
@@ -2874,7 +2699,7 @@ button:not(:disabled){cursor:pointer}
     state.txnPage = currentPage;
 
     if (!totalItems) {
-      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-receipt"></i></div><div class="user-empty-title">No transactions found</div><div class="user-empty-text">Nothing matches the current filter or search. Try a different keyword or clear the search.</div></div>`;
+      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-receipt"></i></div><div class="user-empty-title">No transactions found</div><div class="user-empty-text">${isTracing ? 'This user has no transactions matching the current filter.' : 'Nothing matches the current filter or search. Try a different keyword or clear the search.'}</div></div>`;
       if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
       return;
     }
@@ -2926,6 +2751,25 @@ button:not(:disabled){cursor:pointer}
     state.txnPage = p; renderTransactions();
     const panel = document.querySelector('#tab-transactions .panel'); if (panel && typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  function quickTxnSearch(kind) {
+    // Clear trace when a type chip is clicked
+    if (state.traceActive) clearTrace();
+    const input = document.getElementById('txnSearch');
+    if (kind === 'all') {
+      if (input) input.value = '';
+      state.txnFilter = 'all';
+      state.txnPage = 1;
+      syncTypeUI();
+      onTxnSearchInput();
+      return;
+    }
+    state.txnFilter = kind;
+    state.txnPage = 1;
+    syncTypeUI();
+    renderTransactions();
+  }
+  window.quickTxnSearch = quickTxnSearch;
 
   /* ---------- TRANSACTION DETAIL ---------- */
   function findTransaction(id) {
@@ -2983,166 +2827,6 @@ button:not(:disabled){cursor:pointer}
   window.viewTransaction = viewTransaction;
   function closeTxnModal() { $('#txnModal').classList.remove('active'); }
   window.closeTxnModal = closeTxnModal;
-
-  /* ---------- DEPOSITS ---------- */
-  function renderDeposits() {
-    const search = ($('#depositSearch')?.value || '').toLowerCase().trim();
-    let list = applyRange(state.deposits, state.range);
-    if (search) list = list.filter(d => { const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return hay.includes(search); });
-    if (state.depositStatusFilter && state.depositStatusFilter !== 'all') list = list.filter(d => getStatus(d) === state.depositStatusFilter);
-    list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
-
-    const pendingCount = list.filter(d => getStatus(d) === 'pending').length;
-    const total = list.reduce((s, d) => s + getAmount(d), 0);
-    const bar = $('#depositResultsBar');
-    if (bar) {
-      if (search) {
-        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> ${list.length} match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span> · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
-        bar.classList.remove('is-empty');
-      } else {
-        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-arrow-down" style="color:var(--primary);"></i> <strong>${list.length}</strong> deposit${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
-        bar.classList.remove('is-empty');
-      }
-    }
-
-    const c = $('#depositsList');
-    const perPage = state.PER_PAGE;
-    const totalItems = list.length;
-    const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
-    const currentPage = Math.min(Math.max(state.depositPage, 1), totalPages);
-    state.depositPage = currentPage;
-
-    if (!totalItems) {
-      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-arrow-down"></i></div><div class="user-empty-title">No deposits found</div><div class="user-empty-text">Wallet top-ups will appear here. Try a different search or time period.</div></div>`;
-      const pag = $('#depositsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
-      return;
-    }
-
-    const slice = list.slice((currentPage - 1) * perPage, currentPage * perPage);
-    c.innerHTML = `<div class="txn-card-list">${slice.map(d => {
-      const name = d.user_name || d.name || 'Unknown';
-      const initial = name.charAt(0).toUpperCase();
-      const amount = getAmount(d);
-      const st = getStatus(d);
-      const isPending = st === 'pending';
-      return `<div class="txn-card static">
-        <div class="txn-card-avatar deposit">${escapeHtml(initial)}</div>
-        <div class="txn-card-info">
-          <div class="txn-card-name-row">
-            <span class="txn-card-name">${escapeHtml(name)}</span>
-            <span class="txn-card-badge ${st}">${escapeHtml(statusLabel(st))}</span>
-          </div>
-          <div class="txn-card-contact">
-            <span class="contact-item"><i class="fas fa-envelope"></i> ${escapeHtml(d.user_email || d.email || '—')}</span>
-            <span class="contact-item mono"><i class="fas fa-hashtag"></i> ${escapeHtml(d.reference || d.tx_ref || '—')}</span>
-            <span class="contact-item"><i class="fas fa-clock"></i> ${timeAgo(getDate(d))}</span>
-          </div>
-        </div>
-        <div class="txn-card-right">
-          <div class="txn-card-amount-pill credit">
-            <span class="txn-card-amount-label">Amount</span>
-            <span class="txn-card-amount-value">+${formatMoney(amount)}</span>
-          </div>
-          <div class="txn-card-actions">
-            ${isPending ? `<button class="approve" onclick="event.stopPropagation();openApproveDepositModal('${escapeHtml(d.id)}')" title="Approve"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectDepositModal('${escapeHtml(d.id)}')" title="Reject"><i class="fas fa-times"></i></button>` : ''}
-            <button class="view" onclick="event.stopPropagation();viewDeposit('${escapeHtml(d.id)}')" title="View"><i class="fas fa-eye"></i></button>
-          </div>
-        </div>
-      </div>`;
-    }).join('')}</div>`;
-    renderPager('depositsPagination', currentPage, totalItems, perPage, 'goToDepositPage');
-  }
-  window.renderDeposits = renderDeposits;
-  function onDepositSearchInput() { toggleClearButton('depositSearch', 'depositSearchClear'); state.depositPage = 1; renderDeposits(); }
-  window.onDepositSearchInput = onDepositSearchInput;
-  function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value = ''; i.focus(); } state.depositStatusFilter = 'all'; onDepositSearchInput(); }
-  window.clearDepositSearch = clearDepositSearch;
-  window.goToDepositPage = (page) => {
-    const totalPages = Math.max(1, Math.ceil((() => { const search = ($('#depositSearch')?.value || '').toLowerCase().trim(); let list = applyRange(state.deposits, state.range); if (search) list = list.filter(d => { const hay = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return hay.includes(search); }); if (state.depositStatusFilter !== 'all') list = list.filter(d => getStatus(d) === state.depositStatusFilter); return list.length; })() / state.PER_PAGE));
-    const p = Math.min(Math.max(page, 1), totalPages);
-    state.depositPage = p; renderDeposits();
-    const panel = document.querySelector('#tab-deposits .panel'); if (panel && typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  /* ---------- WITHDRAWALS ---------- */
-  function renderWithdrawals() {
-    const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
-    let list = applyRange(state.withdrawals, state.range);
-    if (search) list = list.filter(w => { const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return hay.includes(search); });
-    if (state.withdrawalStatusFilter && state.withdrawalStatusFilter !== 'all') list = list.filter(w => getStatus(w) === state.withdrawalStatusFilter);
-    list.sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
-
-    const pendingCount = list.filter(w => getStatus(w) === 'pending').length;
-    const total = list.reduce((s, w) => s + getAmount(w), 0);
-    const bar = $('#withdrawalResultsBar');
-    if (bar) {
-      if (search) {
-        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted);"></i> ${list.length} match${list.length === 1 ? '' : 'es'} for <span class="search-term">${escapeHtml(search)}</span> · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
-        bar.classList.remove('is-empty');
-      } else {
-        bar.innerHTML = `<span class="txn-results-count"><i class="fas fa-arrow-up" style="color:var(--primary);"></i> <strong>${list.length}</strong> request${list.length === 1 ? '' : 's'} · ${formatMoney(total, true)}${pendingCount ? ` · <span style="color:var(--warning-dark);font-weight:800;">${pendingCount} pending</span>` : ''}</span><span class="txn-results-live"><span class="live-dot"></span> Live</span>`;
-        bar.classList.remove('is-empty');
-      }
-    }
-
-    const c = $('#withdrawalsList');
-    const perPage = state.PER_PAGE;
-    const totalItems = list.length;
-    const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
-    const currentPage = Math.min(Math.max(state.withdrawalPage, 1), totalPages);
-    state.withdrawalPage = currentPage;
-
-    if (!totalItems) {
-      c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-arrow-up"></i></div><div class="user-empty-title">No withdrawal requests</div><div class="user-empty-text">User payouts will appear here. Try a different search or time period.</div></div>`;
-      const pag = $('#withdrawalsPagination'); if (pag) { pag.style.display = 'none'; pag.innerHTML = ''; }
-      return;
-    }
-
-    const slice = list.slice((currentPage - 1) * perPage, currentPage * perPage);
-    c.innerHTML = `<div class="txn-card-list">${slice.map(w => {
-      const name = w.user_name || 'Unknown';
-      const initial = name.charAt(0).toUpperCase();
-      const amount = getAmount(w);
-      const st = getStatus(w);
-      const isPending = st === 'pending';
-      return `<div class="txn-card static">
-        <div class="txn-card-avatar withdraw">${escapeHtml(initial)}</div>
-        <div class="txn-card-info">
-          <div class="txn-card-name-row">
-            <span class="txn-card-name">${escapeHtml(name)}</span>
-            <span class="txn-card-badge ${st}">${escapeHtml(statusLabel(st))}</span>
-          </div>
-          <div class="txn-card-contact">
-            <span class="contact-item"><i class="fas fa-building-columns"></i> ${escapeHtml(w.bank_name || '—')}</span>
-            <span class="contact-item mono"><i class="fas fa-hashtag"></i> ${escapeHtml(w.reference || '—')}</span>
-            <span class="contact-item"><i class="fas fa-clock"></i> ${timeAgo(getDate(w))}</span>
-          </div>
-        </div>
-        <div class="txn-card-right">
-          <div class="txn-card-amount-pill debit">
-            <span class="txn-card-amount-label">Amount</span>
-            <span class="txn-card-amount-value">−${formatMoney(amount)}</span>
-          </div>
-          <div class="txn-card-actions">
-            ${isPending ? `<button class="approve" onclick="event.stopPropagation();openApproveModal('${escapeHtml(w.id)}')" title="Approve"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectModal('${escapeHtml(w.id)}')" title="Reject"><i class="fas fa-times"></i></button>` : ''}
-            <button class="view" onclick="event.stopPropagation();viewWithdrawal('${escapeHtml(w.id)}')" title="View"><i class="fas fa-eye"></i></button>
-          </div>
-        </div>
-      </div>`;
-    }).join('')}</div>`;
-    renderPager('withdrawalsPagination', currentPage, totalItems, perPage, 'goToWithdrawalPage');
-  }
-  window.renderWithdrawals = renderWithdrawals;
-  function onWithdrawalSearchInput() { toggleClearButton('withdrawalSearch', 'withdrawalSearchClear'); state.withdrawalPage = 1; renderWithdrawals(); }
-  window.onWithdrawalSearchInput = onWithdrawalSearchInput;
-  function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value = ''; i.focus(); } state.withdrawalStatusFilter = 'all'; onWithdrawalSearchInput(); }
-  window.clearWithdrawalSearch = clearWithdrawalSearch;
-  window.goToWithdrawalPage = (page) => {
-    const totalPages = Math.max(1, Math.ceil((() => { const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim(); let list = applyRange(state.withdrawals, state.range); if (search) list = list.filter(w => { const hay = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return hay.includes(search); }); if (state.withdrawalStatusFilter !== 'all') list = list.filter(w => getStatus(w) === state.withdrawalStatusFilter); return list.length; })() / state.PER_PAGE));
-    const p = Math.min(Math.max(page, 1), totalPages);
-    state.withdrawalPage = p; renderWithdrawals();
-    const panel = document.querySelector('#tab-withdrawals .panel'); if (panel && typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   function viewWithdrawal(id) {
     const w = (state.withdrawals || []).find(x => String(x.id) === String(id));
@@ -3362,6 +3046,8 @@ button:not(:disabled){cursor:pointer}
       state.fundUser.balance = d.wallet_after;
       const balEl = preview_balanceEl(); if (balEl) balEl.textContent = formatMoney(d.wallet_after);
       $('#fundAmount').value = ''; $('#fundReason').value = '';
+      // Refresh so the new txn appears everywhere
+      setTimeout(() => refreshAll(true), 300);
     } catch (err) { showToast(err.message, 'error'); }
     finally { btn.disabled = false; btn.style.pointerEvents = ''; btn.innerHTML = orig; }
   }
@@ -3383,6 +3069,7 @@ button:not(:disabled){cursor:pointer}
       state.fundUser.balance = d.wallet_after;
       const balEl = preview_balanceEl(); if (balEl) balEl.textContent = formatMoney(d.wallet_after);
       $('#fundAmount').value = ''; $('#fundReason').value = '';
+      setTimeout(() => refreshAll(true), 300);
     } catch (err) { showToast(err.message, 'error'); }
     finally { btn.disabled = false; btn.style.pointerEvents = ''; btn.innerHTML = orig; }
   }
@@ -3476,8 +3163,8 @@ button:not(:disabled){cursor:pointer}
   async function refreshAll(silent = false) {
     if (!silent) showToast('Refreshing…', 'info');
     await Promise.all([fetchMe(), fetchUsers(), fetchTransactions(), fetchDeposits(), fetchWithdrawals(), fetchDatashopWallet()]);
-    updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); renderChart(); updateAnalyticsKpis(); syncRangeUI(); syncTypeUI();
-    detectNewPendingDeposits();
+    updateOverview(); renderTransactions(); renderUsers(); renderChart(); updateAnalyticsKpis(); syncRangeUI(); syncTypeUI();
+    renderTraceProfile();
     detectNewAdminApprovals();
     renderAdminAlerts();
     if (state.activeTab === 'mismatches') loadMismatches();
@@ -3486,62 +3173,6 @@ button:not(:disabled){cursor:pointer}
     if (!silent) showToast('Updated', 'success');
   }
   window.refreshAll = refreshAll;
-
-  /* ---------- QUICK SEARCH CHIPS ---------- */
-  function quickTxnSearch(kind) {
-    const input = document.getElementById('txnSearch');
-    if (kind === 'all') {
-      if (input) input.value = '';
-      state.txnFilter = 'all';
-      state.txnPage = 1;
-      syncTypeUI();
-      onTxnSearchInput();
-      return;
-    }
-    state.txnFilter = kind;
-    state.txnPage = 1;
-    syncTypeUI();
-    renderTransactions();
-  }
-  window.quickTxnSearch = quickTxnSearch;
-
-  function quickDepositSearch(mode) {
-    const input = document.getElementById('depositSearch');
-    if (mode === 'all') {
-      if (input) input.value = '';
-      state.depositStatusFilter = 'all';
-      state.depositPage = 1;
-      onDepositSearchInput();
-      return;
-    }
-    if (mode === 'pending' || mode === 'success') {
-      state.depositStatusFilter = mode;
-      state.depositPage = 1;
-      renderDeposits();
-      return;
-    }
-    if (input) { input.value = mode; onDepositSearchInput(); }
-  }
-  window.quickDepositSearch = quickDepositSearch;
-
-  function quickWithdrawalSearch(mode) {
-    const input = document.getElementById('withdrawalSearch');
-    if (mode === 'all') {
-      if (input) input.value = '';
-      state.withdrawalStatusFilter = 'all';
-      state.withdrawalPage = 1;
-      onWithdrawalSearchInput();
-      return;
-    }
-    if (mode === 'pending' || mode === 'success' || mode === 'failed') {
-      state.withdrawalStatusFilter = mode;
-      state.withdrawalPage = 1;
-      renderWithdrawals();
-      return;
-    }
-    if (input) { input.value = mode; onWithdrawalSearchInput(); }
-  }
-  window.quickWithdrawalSearch = quickWithdrawalSearch;
 
   /* ---------- GLOBAL EVENTS ---------- */
   $$('.modal-overlay').forEach(m => {
@@ -3560,8 +3191,7 @@ button:not(:disabled){cursor:pointer}
     if (e.key === 'Escape') {
       if (state.activeTab === 'users' && (state.userQuery || '').length > 0) { clearUserSearch(); return; }
       if (state.activeTab === 'transactions' && ($('#txnSearch')?.value || '').length > 0) { clearTxnSearch(); return; }
-      if (state.activeTab === 'deposits' && ($('#depositSearch')?.value || '').length > 0) { clearDepositSearch(); return; }
-      if (state.activeTab === 'withdrawals' && ($('#withdrawalSearch')?.value || '').length > 0) { clearWithdrawalSearch(); return; }
+      if (state.activeTab === 'transactions' && state.traceActive) { clearTrace(); return; }
       if (state.activeTab === 'archived' && ($('#archSearch')?.value || '').length > 0) { clearArchSearch(); return; }
       if (state.activeTab === 'fund' && ($('#fundLookupQuery')?.value || '').length > 0) { clearFundSearch(); return; }
       if (state.withdrawApprovePending || state.withdrawRejectPending || state.depositApprovePending || state.depositRejectPending) return;
@@ -3571,7 +3201,6 @@ button:not(:disabled){cursor:pointer}
     }
   });
 
-  /* ---------- UNLOCK AUDIO ON FIRST USER GESTURE ---------- */
   ['click','touchstart','keydown'].forEach(evt => {
     document.addEventListener(evt, function unlockOnce() {
       unlockAdminAudio();
@@ -3587,15 +3216,13 @@ button:not(:disabled){cursor:pointer}
 
   async function init() {
     wireRangePills(); syncRangeUI(); syncTypeUI(); resetFundTab(); renderUsers();
-    renderTransactions(); renderDeposits(); renderWithdrawals();
+    renderTransactions();
     await refreshAll(true);
 
-    // ── ⚡ LIGHTNING-FAST APPROVAL DETECTION ────────────────────
     // Poll every 3 seconds — alerts fire in the blink of an eye.
     setInterval(() => refreshAll(true), 3000);
 
-    // Real-time push via SSE (if backend exposes /admin/events).
-    // Silently no-ops if the endpoint doesn't exist — polling still covers it.
+    // Real-time push via SSE
     try {
       const es = new EventSource(`${API_BASE}/admin/events?token=${encodeURIComponent(token)}`);
       es.addEventListener('new-approval', (e) => {
@@ -3607,10 +3234,9 @@ button:not(:disabled){cursor:pointer}
           }
         } catch (_) {}
       });
-      es.onerror = () => { /* silently fall back to 3s polling */ };
-    } catch (_) { /* EventSource unsupported — polling still works */ }
+      es.onerror = () => {};
+    } catch (_) {}
 
-    // Pulse the sound chip until the admin clicks it (one-tap enable)
     const chip = document.getElementById('adminSoundChip');
     if (chip) {
       if (state.adminSoundEnabled) {
