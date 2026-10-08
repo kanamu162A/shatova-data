@@ -29,6 +29,7 @@
   --shadow-xl:0 2px 6px rgba(15,23,42,0.05),0 18px 42px -10px rgba(15,23,42,0.12),0 32px 70px -18px rgba(15,23,42,0.08);
   --shadow-hover-light:0 2px 10px -2px rgba(10,69,52,0.07),0 1px 3px rgba(10,69,52,0.04);
   --shadow-hover-card:0 12px 32px -14px rgba(10,69,52,0.16),0 3px 10px rgba(10,69,52,0.05);
+  --shadow-inset-top:inset 0 1px 0 rgba(255,255,255,0.14);
   --ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0.16,1,0.3,1);
   --header-h:64px;--sidebar-w:260px;
 }
@@ -145,7 +146,7 @@ button{font-family:inherit}
 .panel-body{padding:20px 24px}
 .panel-body.no-pad{padding:0}
 
-/* KPI / CHART */
+/* KPI */
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:20px}
 .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow-xs);transition:all .22s}
 .kpi:hover{border-color:rgba(10,69,52,0.14);transform:translateY(-2px);box-shadow:var(--shadow-hover-card)}
@@ -169,7 +170,7 @@ button{font-family:inherit}
 .chart-legend .lg{display:inline-flex;align-items:center;gap:8px}
 .chart-legend .sw{width:14px;height:8px;border-radius:3px;display:inline-block}
 
-/* ROWS / CARDS */
+/* ROWS */
 .data-list{display:flex;flex-direction:column}
 .row-item{display:grid;grid-template-columns:52px 1fr auto;gap:16px;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);transition:background .18s;cursor:pointer;min-width:0}
 .row-item:last-child{border-bottom:none}
@@ -185,7 +186,6 @@ button{font-family:inherit}
 .row-amount.credit{color:var(--success-dark)}
 .row-actions{display:flex;gap:7px}
 .row-actions button{height:34px;min-width:34px;padding:0 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:inherit}
-.row-actions button:hover{transform:translateY(-1px)}
 .row-actions .approve{border-color:rgba(9,134,88,0.2);color:var(--success-dark)}
 .row-actions .approve:hover:not(:disabled){background:var(--success-light);border-color:var(--success-dark)}
 .row-actions .reject{border-color:rgba(161,34,34,0.2);color:var(--danger-dark)}
@@ -236,6 +236,7 @@ button{font-family:inherit}
 .search-headline-icon{width:52px;height:52px;border-radius:15px;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex-shrink:0;box-shadow:0 8px 22px -6px rgba(10,69,52,0.45)}
 .search-headline-icon.green{background:linear-gradient(135deg,#10b981,#098658)}
 .search-headline-icon.purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.search-headline-icon.gold{background:linear-gradient(135deg,#f59e0b,#b37308)}
 .search-headline-title{font-size:17px;font-weight:900;color:var(--text);letter-spacing:-0.4px;margin-bottom:4px;line-height:1.2}
 .search-headline-sub{font-size:12.5px;color:var(--text-muted);font-weight:500;line-height:1.4}
 .search-bar-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
@@ -312,7 +313,6 @@ button{font-family:inherit}
 .txn-amount.debit .txn-amount-value{color:var(--text-secondary)}
 .txn-actions{display:flex;gap:7px}
 .txn-actions button{height:38px;min-width:38px;padding:0 12px;border-radius:11px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
-.txn-actions button:hover{transform:translateY(-1px)}
 .txn-actions .approve{border-color:rgba(9,134,88,.2);color:var(--success-dark)}
 .txn-actions .approve:hover{background:var(--success-light);border-color:var(--success-dark)}
 .txn-actions .reject{border-color:rgba(161,34,34,.2);color:var(--danger-dark)}
@@ -365,13 +365,11 @@ button{font-family:inherit}
 .sheet-body{padding:0;overflow-y:auto;flex:1;scrollbar-width:thin}
 .sheet-body::-webkit-scrollbar{width:6px}
 .sheet-body::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
-
 .filter-block{padding:20px 24px;border-bottom:1px solid var(--border)}
 .filter-block:last-child{border-bottom:none}
 .filter-block-label{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px}
 .filter-block-label i{color:var(--primary);font-size:12px}
 .filter-block-label .hint{margin-left:auto;font-size:10.5px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-muted);opacity:.8}
-
 .type-list{display:flex;flex-direction:column;gap:6px}
 .type-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;border:1.5px solid transparent;background:var(--bg-card);cursor:pointer;transition:all .16s;font-family:inherit;text-align:left;width:100%;font-size:14px}
 .type-row:hover{background:var(--bg-hover);border-color:var(--border-soft)}
@@ -383,12 +381,10 @@ button{font-family:inherit}
 .type-row.active .type-row-label{color:var(--primary-dark)}
 .type-row-count{font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--bg-input);color:var(--text-muted);flex-shrink:0}
 .type-row.active .type-row-count{background:var(--primary);color:#fff}
-
 .range-grid{display:flex;flex-wrap:wrap;gap:8px}
 .range-chip{padding:9px 16px;border-radius:999px;border:1.5px solid var(--border);background:var(--bg-card);color:var(--text-secondary);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .16s}
 .range-chip:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light)}
 .range-chip.active{border-color:var(--primary);background:var(--primary-gradient);color:#fff;box-shadow:0 6px 14px -4px rgba(10,69,52,.35)}
-
 .trace-search{display:flex;gap:8px;align-items:stretch}
 .trace-search-field{flex:1;position:relative;display:flex;align-items:center;background:var(--bg-input);border:1.5px solid var(--border);border-radius:12px;padding:0 14px;height:50px;transition:all .2s;min-width:0}
 .trace-search-field:focus-within{border-color:var(--primary);background:var(--bg-card);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
@@ -402,7 +398,6 @@ button{font-family:inherit}
 .trace-status.error{color:var(--danger-dark);font-weight:700}
 .trace-status.loading{color:var(--primary-dark);font-weight:700}
 .trace-status.success{color:var(--success-dark);font-weight:700}
-
 .traced-user{margin-top:12px;padding:14px;border-radius:14px;background:linear-gradient(135deg,rgba(10,69,52,.08),rgba(10,69,52,.02));border:1px solid rgba(10,69,52,.14);display:flex;align-items:center;gap:12px;animation:fadeUp .26s}
 .traced-user .avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;flex-shrink:0;box-shadow:0 6px 14px -4px rgba(15,23,42,.25)}
 .traced-user .info{flex:1;min-width:0}
@@ -411,7 +406,6 @@ button{font-family:inherit}
 .traced-user .meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11px}
 .traced-user .remove{padding:8px 14px;border-radius:999px;border:1px solid rgba(161,34,34,.25);background:var(--bg-card);color:var(--danger-dark);font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit;flex-shrink:0;transition:all .18s}
 .traced-user .remove:hover{background:var(--danger-light);border-color:var(--danger-dark)}
-
 .sheet-foot{padding:16px 24px calc(env(safe-area-inset-bottom,0px) + 16px);border-top:1px solid var(--border);background:var(--bg-soft);display:flex;gap:10px;flex-shrink:0}
 .sheet-foot button{flex:1;padding:15px 18px;border-radius:13px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .sheet-foot .clear-all{background:var(--bg-card);border:1.5px solid var(--border);color:var(--text-secondary);flex:0 1 auto;padding:15px 20px}
@@ -466,60 +460,329 @@ button{font-family:inherit}
 .txn-amount-block .amt-meta .lbl{font-size:9.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;opacity:.72;margin-bottom:4px}
 .txn-amount-block .amt-meta .val{font-size:15px;font-weight:800}
 
-/* FUND */
-.fund-form-container{max-width:680px;margin:0 auto;padding:28px 24px 34px}
-.fund-form-group{margin-bottom:24px}
-.fund-form-label{display:block;font-size:12px;font-weight:800;color:var(--text-secondary);margin-bottom:9px}
-.fund-form-input{width:100%;padding:14px 16px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:13px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:all .22s}
-.fund-form-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,0.07)}
-.fund-form-textarea{resize:vertical;min-height:92px;line-height:1.55}
-.fund-form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center;padding-right:44px;cursor:pointer}
-.fund-actions-row{display:flex;gap:12px;margin-top:14px}
-.fund-actions-row button{flex:1;padding:16px 18px;border-radius:13px;border:none;font-size:13.5px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-family:inherit;transition:all .22s}
-.fund-actions-row button:disabled{opacity:.6;cursor:not-allowed}
-.fund-actions-row .fund-btn{background:var(--primary-gradient);color:#fff}
-.fund-actions-row .fund-btn:hover:not(:disabled){transform:translateY(-2px)}
-.fund-actions-row .debit-btn{background:linear-gradient(135deg,#a12222,#7a1a1a);color:#fff}
-.fund-actions-row .debit-btn:hover:not(:disabled){transform:translateY(-2px)}
-.fund-empty{text-align:center;padding:60px 24px 70px;max-width:440px;margin:0 auto}
-.fund-empty-icon{width:88px;height:88px;margin:0 auto 24px;border-radius:26px;background:linear-gradient(135deg,rgba(10,69,52,0.06),rgba(10,69,52,0.015));border:1px solid rgba(10,69,52,0.08);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--primary)}
-.fund-empty-title{font-size:17px;font-weight:900;color:var(--text);margin-bottom:9px}
-.fund-empty-desc{font-size:13px;color:var(--text-muted);line-height:1.6}
-.fund-user-card{padding:24px 26px;border-radius:20px;background:linear-gradient(135deg,#ffffff,#f9fcfb);border:1px solid rgba(10,69,52,.14);margin-bottom:28px;box-shadow:0 14px 40px -18px rgba(10,69,52,.2);position:relative;overflow:hidden}
-[data-theme="dark"] .fund-user-card{background:linear-gradient(135deg,rgba(10,69,52,.14),rgba(10,69,52,.05))}
-.fund-user-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient)}
-.fund-hero{display:flex;align-items:center;gap:18px;margin-bottom:20px;position:relative;z-index:1}
-.fund-avatar-wrap{position:relative;flex-shrink:0}
-.fund-avatar{width:64px;height:64px;border-radius:18px;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px}
-.fund-verified{position:absolute;bottom:-3px;right:-3px;width:22px;height:22px;border-radius:50%;background:var(--success);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;border:3px solid var(--bg-card)}
-.fund-info{flex:1;min-width:0}
-.fund-name{font-size:18px;font-weight:900;color:var(--text);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fund-meta{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:11px;flex-wrap:wrap;font-weight:500}
-.fund-meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11px}
-.fund-chip-id{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;background:var(--primary-light);color:var(--primary-dark);font-family:'SF Mono',Menlo,monospace;font-size:10.5px;font-weight:800}
-.fund-balance-row{display:flex;gap:0;padding-top:20px;border-top:1px dashed rgba(10,69,52,.15)}
-.fund-balance-cell{flex:1}
-.fund-balance-cell + .fund-balance-cell{border-left:1px solid rgba(10,69,52,.08);padding-left:22px}
-.fund-balance-label{font-size:9.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
-.fund-balance-value{font-size:24px;font-weight:900;color:var(--primary-dark);font-variant-numeric:tabular-nums;line-height:1.1}
-.fund-balance-value.held{color:var(--warning-dark)}
-#fundForm{max-height:0;opacity:0;overflow:hidden;transition:max-height .45s,padding .3s;padding:0 22px}
-#fundForm.revealed{max-height:1400px;opacity:1;padding:0}
-.fund-suggest{position:relative}
-.fund-suggest-list{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:60;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:14px;box-shadow:var(--shadow-xl);max-height:320px;overflow-y:auto;display:none}
-.fund-suggest-list.open{display:block}
-.fund-suggest-hint{padding:10px 14px;background:var(--bg-soft);border-bottom:1px solid var(--border);font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:center;gap:7px;position:sticky;top:0;z-index:1}
-.fund-suggest-hint i{color:var(--primary)}
-.fund-suggest-item{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
-.fund-suggest-item:last-child{border-bottom:none}
-.fund-suggest-item:hover{background:var(--bg-hover)}
-.fund-suggest-avatar{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px}
-.fund-suggest-info{min-width:0}
-.fund-suggest-name{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fund-suggest-meta{font-size:11px;color:var(--text-muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fund-suggest-bal{font-size:13px;font-weight:900;color:var(--primary-dark);font-variant-numeric:tabular-nums}
-.fund-suggest-empty{padding:28px 20px;text-align:center;color:var(--text-muted);font-size:12.5px}
-.fund-suggest-empty strong{display:block;color:var(--text-secondary);font-size:13px;margin-bottom:6px}
+/* ============================================================
+   MANUAL FUND — completely redesigned
+   ============================================================ */
+.fund-shell{max-width:760px;margin:0 auto;padding:32px 26px 40px}
+
+/* Stage 1: search */
+.fund-search-stage{
+  background:linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%);
+  border:1px solid rgba(10,69,52,.14);border-radius:22px;
+  padding:28px 28px 26px;position:relative;overflow:hidden;
+  box-shadow:0 14px 40px -20px rgba(10,69,52,.18),0 2px 6px rgba(10,69,52,.04)
+}
+[data-theme="dark"] .fund-search-stage{background:linear-gradient(180deg,rgba(10,69,52,.14),rgba(10,69,52,.05))}
+.fund-search-stage::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient);opacity:.9}
+.fund-search-stage::after{content:'';position:absolute;top:-90px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,.05) 0%,transparent 65%);pointer-events:none}
+.fund-search-head{display:flex;align-items:center;gap:16px;margin-bottom:22px;position:relative;z-index:1}
+.fund-search-head-icon{width:56px;height:56px;border-radius:16px;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 10px 24px -8px rgba(10,69,52,.45)}
+.fund-search-head-title{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.4px;margin-bottom:5px;line-height:1.2}
+.fund-search-head-sub{font-size:13px;color:var(--text-muted);font-weight:500;line-height:1.45}
+
+.fund-search-wrap{position:relative;z-index:1}
+.fund-search-input{
+  position:relative;display:flex;align-items:center;gap:0;
+  background:var(--bg-card);border:2px solid rgba(10,69,52,.18);
+  border-radius:16px;height:64px;transition:all .22s;
+  box-shadow:0 2px 6px rgba(15,23,42,.03),0 12px 28px -14px rgba(10,69,52,.10);
+  overflow:hidden
+}
+.fund-search-input:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.08),0 14px 32px -14px rgba(10,69,52,.22)}
+.fund-search-input:focus-within .fund-search-icon{background:var(--primary-gradient);color:#fff}
+.fund-search-icon{
+  width:56px;height:100%;display:flex;align-items:center;justify-content:center;
+  background:var(--primary-light);color:var(--primary);
+  font-size:17px;flex-shrink:0;transition:all .22s;border-right:1px solid var(--border-soft)
+}
+.fund-search-input input{flex:1;border:none;outline:none;background:transparent;font-size:15px;font-weight:600;color:var(--text);font-family:inherit;padding:0 18px;height:100%;letter-spacing:-.15px;min-width:0}
+.fund-search-input input::placeholder{color:var(--text-muted);font-weight:500}
+.fund-search-clear{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:12px;display:none;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0;transition:all .18s}
+.fund-search-clear.visible{display:inline-flex}
+.fund-search-clear:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
+
+.fund-search-status{margin-top:14px;font-size:12.5px;color:var(--text-muted);font-weight:500;display:flex;align-items:center;gap:8px;position:relative;z-index:1;min-height:18px}
+.fund-search-status.error{color:var(--danger-dark);font-weight:700}
+.fund-search-status.loading{color:var(--primary-dark);font-weight:700}
+.fund-search-status strong{color:var(--text);font-weight:800}
+
+/* Fund suggestions — rich result cards */
+.fund-results{
+  margin-top:20px;display:none;flex-direction:column;gap:10px;
+  position:relative;z-index:1
+}
+.fund-results.open{display:flex;animation:fadeUp .26s}
+
+.fund-result-card{
+  display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;
+  padding:16px 18px;background:var(--bg-card);
+  border:1.5px solid var(--border);border-radius:16px;
+  cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden
+}
+.fund-result-card:hover{
+  border-color:var(--primary);
+  background:linear-gradient(135deg,rgba(10,69,52,.04),rgba(10,69,52,.01));
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px -14px rgba(10,69,52,.22)
+}
+.fund-result-card::after{
+  content:'';position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+  width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(10,69,52,.04) 0%,transparent 70%);
+  pointer-events:none;opacity:0;transition:opacity .2s
+}
+.fund-result-card:hover::after{opacity:1}
+.fund-result-avatar{
+  width:52px;height:52px;border-radius:15px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:19px;letter-spacing:-.5px;flex-shrink:0;
+  box-shadow:0 6px 16px -4px rgba(15,23,42,.22),inset 0 1px 0 rgba(255,255,255,.25);
+  position:relative
+}
+.fund-result-avatar .status-dot{
+  position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;
+  background:var(--success);border:3px solid var(--bg-card);
+  box-shadow:0 2px 6px rgba(16,185,129,.3)
+}
+.fund-result-avatar.status-suspended .status-dot{background:var(--danger)}
+.fund-result-body{min-width:0;display:flex;flex-direction:column;gap:7px}
+.fund-result-name-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.fund-result-name{font-size:15.5px;font-weight:900;color:var(--text);letter-spacing:-.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fund-result-tag{
+  font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:6px;
+  letter-spacing:.5px;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:4px;border:1px solid transparent
+}
+.fund-result-tag.active{background:var(--success-light);color:var(--success-dark);border-color:rgba(9,134,88,.14)}
+.fund-result-tag.suspended{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,.14)}
+.fund-result-tag.admin{background:var(--purple-light);color:var(--purple-dark);border-color:rgba(124,58,237,.14)}
+.fund-result-meta{
+  display:flex;align-items:center;gap:14px;
+  font-size:12px;color:var(--text-muted);font-weight:500;
+  flex-wrap:wrap;row-gap:5px
+}
+.fund-result-meta .item{
+  display:inline-flex;align-items:center;gap:6px;
+  max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.fund-result-meta .item i{font-size:11px;opacity:.7;flex-shrink:0}
+.fund-result-meta .item.mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:.2px}
+.fund-result-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.fund-result-balance{
+  padding:10px 16px;border-radius:13px;
+  background:linear-gradient(135deg,rgba(10,69,52,.07),rgba(10,69,52,.02));
+  border:1px solid rgba(10,69,52,.12);
+  text-align:right;display:flex;flex-direction:column;gap:2px;min-width:112px
+}
+.fund-result-balance-label{font-size:9px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted)}
+.fund-result-balance-value{font-size:15.5px;font-weight:900;color:var(--primary-dark);letter-spacing:-.35px;font-variant-numeric:tabular-nums}
+.fund-result-arrow{
+  width:40px;height:40px;border-radius:12px;
+  background:var(--bg-input);color:var(--text-muted);
+  display:inline-flex;align-items:center;justify-content:center;font-size:13px;
+  transition:all .22s
+}
+.fund-result-card:hover .fund-result-arrow{
+  background:var(--primary);color:#fff;transform:translateX(4px);
+  box-shadow:0 6px 16px -4px rgba(10,69,52,.4)
+}
+
+/* Fund empty/initial state */
+.fund-initial{
+  padding:48px 32px 56px;text-align:center;max-width:520px;margin:0 auto;
+  animation:fadeUp .34s
+}
+.fund-initial-icon{
+  width:96px;height:96px;margin:0 auto 22px;border-radius:28px;
+  background:linear-gradient(135deg,rgba(10,69,52,.07),rgba(10,69,52,.015));
+  border:1px solid rgba(10,69,52,.08);
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;color:var(--primary);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)
+}
+.fund-initial-title{font-size:19px;font-weight:900;color:var(--text);margin-bottom:10px;letter-spacing:-.35px}
+.fund-initial-text{font-size:13.5px;color:var(--text-muted);line-height:1.65;margin-bottom:24px}
+.fund-initial-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.fund-initial-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:999px;
+  background:var(--bg-card);border:1px solid var(--border);
+  color:var(--text-secondary);font-size:12px;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:all .18s
+}
+.fund-initial-chip i{font-size:10px;color:var(--primary);transition:all .18s}
+.fund-initial-chip:hover{
+  border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);
+  transform:translateY(-1px);box-shadow:0 4px 14px -4px rgba(10,69,52,.14)
+}
+.fund-initial-chip:hover i{color:var(--primary-dark)}
+
+/* Stage 2: user detail card + form */
+#fundForm{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s cubic-bezier(0.32,0.72,0.24,1),opacity .32s ease;padding:0}
+#fundForm.revealed{max-height:2400px;opacity:1;padding:0}
+
+.fund-user-detail{
+  background:linear-gradient(135deg,#ffffff 0%,#f9fcfb 100%);
+  border:1px solid rgba(10,69,52,.14);border-radius:22px;
+  margin-top:22px;position:relative;overflow:hidden;
+  box-shadow:0 20px 50px -22px rgba(10,69,52,.22),0 2px 6px rgba(10,69,52,.04)
+}
+[data-theme="dark"] .fund-user-detail{background:linear-gradient(135deg,rgba(10,69,52,.14),rgba(10,69,52,.05))}
+.fund-user-detail::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient)}
+.fund-user-detail::after{content:'';position:absolute;top:-100px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,.05) 0%,transparent 65%);pointer-events:none}
+
+.fund-detail-head{
+  padding:26px 28px 22px;
+  display:flex;align-items:center;gap:20px;
+  border-bottom:1px dashed rgba(10,69,52,.15);
+  position:relative;z-index:1
+}
+.fund-detail-avatar-wrap{position:relative;flex-shrink:0}
+.fund-detail-avatar{
+  width:74px;height:74px;border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:28px;letter-spacing:-.8px;
+  box-shadow:0 14px 30px -10px rgba(15,23,42,.32),inset 0 1px 0 rgba(255,255,255,.25)
+}
+.fund-detail-verified{
+  position:absolute;bottom:-4px;right:-4px;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--success);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;border:3px solid var(--bg-card);
+  box-shadow:0 3px 8px rgba(16,185,129,.35)
+}
+.fund-detail-info{flex:1;min-width:0}
+.fund-detail-name{
+  font-size:20px;font-weight:900;color:var(--text);
+  letter-spacing:-.45px;margin-bottom:8px;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.fund-detail-meta{
+  font-size:12.5px;color:var(--text-muted);font-weight:500;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;row-gap:6px
+}
+.fund-detail-meta .chip-id{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:7px;
+  background:var(--primary-light);color:var(--primary-dark);
+  font-family:'SF Mono',Menlo,monospace;font-size:11px;font-weight:800;
+  border:1px solid rgba(10,69,52,.08)
+}
+.fund-detail-meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:.2px}
+.fund-detail-clear{
+  padding:9px 16px;border-radius:999px;
+  border:1px solid var(--border);background:var(--bg-card);
+  color:var(--text-secondary);font-size:11.5px;font-weight:800;
+  cursor:pointer;font-family:inherit;flex-shrink:0;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:all .18s
+}
+.fund-detail-clear:hover{
+  border-color:var(--danger-dark);color:var(--danger-dark);background:var(--danger-light)
+}
+.fund-detail-clear i{font-size:10px}
+
+.fund-balances{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:0;padding:22px 28px;
+  border-bottom:1px dashed rgba(10,69,52,.15);
+  position:relative;z-index:1
+}
+.fund-balance-block{
+  display:flex;flex-direction:column;gap:6px;
+  padding:0 24px;border-right:1px solid rgba(10,69,52,.08)
+}
+.fund-balance-block:first-child{padding-left:0}
+.fund-balance-block:last-child{padding-right:0;border-right:none}
+.fund-balance-block .label{
+  font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
+  color:var(--text-muted)
+}
+.fund-balance-block .value{
+  font-size:26px;font-weight:900;color:var(--primary-dark);
+  letter-spacing:-.7px;font-variant-numeric:tabular-nums;line-height:1.1
+}
+.fund-balance-block .value.held{color:var(--warning-dark)}
+.fund-balance-block .value.neutral{color:var(--text-secondary)}
+
+.fund-form-body{padding:26px 28px 28px;position:relative;z-index:1}
+
+.fund-form-group{margin-bottom:22px}
+.fund-form-label{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;font-weight:800;color:var(--text-secondary);
+  margin-bottom:10px;letter-spacing:.1px
+}
+.fund-form-label .hint{font-size:10.5px;color:var(--text-muted);font-weight:600;letter-spacing:0;text-transform:none}
+
+.fund-amount-field{position:relative;display:flex;align-items:center;background:var(--bg-card);border:2px solid var(--border);border-radius:14px;transition:all .22s;overflow:hidden}
+.fund-amount-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
+.fund-amount-field .currency{
+  padding:0 18px;height:58px;display:flex;align-items:center;
+  background:var(--primary-light);color:var(--primary-dark);
+  font-size:20px;font-weight:900;border-right:1px solid var(--border-soft);flex-shrink:0
+}
+.fund-amount-field input{
+  flex:1;border:none;outline:none;background:transparent;
+  font-size:20px;font-weight:900;color:var(--text);font-family:inherit;
+  padding:0 18px;height:58px;letter-spacing:-.4px;min-width:0;font-variant-numeric:tabular-nums
+}
+.fund-amount-field input::placeholder{font-weight:600;color:var(--text-muted);letter-spacing:0}
+
+.fund-amount-presets{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.fund-preset-btn{
+  padding:8px 14px;border-radius:999px;
+  background:var(--bg-card);border:1px solid var(--border);
+  color:var(--text-secondary);font-size:12px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:all .18s;
+  font-variant-numeric:tabular-nums
+}
+.fund-preset-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);transform:translateY(-1px)}
+
+.fund-reason-field{
+  width:100%;padding:14px 16px;
+  background:var(--bg-card);border:2px solid var(--border);border-radius:14px;
+  color:var(--text);font-size:14px;font-family:inherit;font-weight:500;
+  outline:none;transition:all .22s;resize:vertical;min-height:88px;line-height:1.55
+}
+.fund-reason-field:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
+.fund-reason-field::placeholder{color:var(--text-muted);font-weight:400}
+
+.fund-source-field{
+  width:100%;padding:14px 44px 14px 16px;
+  background:var(--bg-card);border:2px solid var(--border);border-radius:14px;
+  color:var(--text);font-size:14px;font-family:inherit;font-weight:600;
+  outline:none;transition:all .22s;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 18px center
+}
+.fund-source-field:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
+
+.fund-actions{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-top:24px;padding-top:22px;border-top:1px dashed rgba(10,69,52,.15)
+}
+.fund-action-btn{
+  padding:17px 20px;border-radius:14px;border:none;
+  font-size:14px;font-weight:900;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:inherit;transition:all .22s;letter-spacing:.1px
+}
+.fund-action-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.fund-action-btn i{font-size:15px}
+.fund-action-btn .btn-sub{display:block;font-size:10px;font-weight:700;letter-spacing:.4px;opacity:.8;text-transform:uppercase;margin-top:2px}
+.fund-action-btn.credit{
+  background:linear-gradient(135deg,#10b981 0%,#098658 100%);color:#fff;
+  box-shadow:0 10px 24px -8px rgba(9,134,88,.45)
+}
+.fund-action-btn.credit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(9,134,88,.55)}
+.fund-action-btn.debit{
+  background:linear-gradient(135deg,#a12222 0%,#7a1a1a 100%);color:#fff;
+  box-shadow:0 10px 24px -8px rgba(161,34,34,.45)
+}
+.fund-action-btn.debit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(161,34,34,.55)}
 
 /* DRIFT */
 .drift-hero{padding:24px 28px;background:linear-gradient(180deg,#fbfdfc,#f7faf8);border:1px solid var(--border);border-radius:16px;margin-bottom:20px}
@@ -659,13 +922,34 @@ button{font-family:inherit}
   .txn-avatar{grid-area:avatar;width:46px;height:46px;font-size:16px;border-radius:14px}
   .txn-body{grid-area:main}
   .txn-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
-  .txn-actions{margin-left:auto}
   .user-card{grid-template-columns:48px 1fr;grid-template-areas:"avatar main" "right right";gap:14px;padding:16px}
   .user-avatar{grid-area:avatar;width:46px;height:46px;font-size:16px;border-radius:14px}
   .user-body{grid-area:main}
   .user-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
-  .fund-form-container{padding:22px 18px 26px}
-  .fund-actions-row{flex-direction:column}
+  .fund-shell{padding:20px 16px 32px}
+  .fund-search-stage{padding:22px 20px 22px;border-radius:18px}
+  .fund-search-head-icon{width:48px;height:48px;border-radius:14px;font-size:19px}
+  .fund-search-head-title{font-size:16px}
+  .fund-search-head-sub{font-size:12px}
+  .fund-search-input{height:58px;border-radius:14px}
+  .fund-search-icon{width:50px;font-size:15px}
+  .fund-search-input input{font-size:16px;padding:0 14px}
+  .fund-result-card{grid-template-columns:48px 1fr;grid-template-areas:"avatar main" "right right";gap:14px;padding:14px}
+  .fund-result-avatar{grid-area:avatar;width:46px;height:46px;border-radius:14px;font-size:17px}
+  .fund-result-body{grid-area:main;gap:6px}
+  .fund-result-name{font-size:14.5px}
+  .fund-result-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
+  .fund-result-balance{padding:8px 14px;min-width:auto}
+  .fund-result-balance-value{font-size:14.5px}
+  .fund-detail-head{padding:22px 20px 18px;gap:16px}
+  .fund-detail-avatar{width:64px;height:64px;font-size:24px;border-radius:18px}
+  .fund-detail-name{font-size:17px}
+  .fund-detail-meta{font-size:11.5px;gap:8px}
+  .fund-balances{padding:20px 20px}
+  .fund-balance-block{padding:0 16px}
+  .fund-balance-block .value{font-size:22px}
+  .fund-form-body{padding:22px 20px 24px}
+  .fund-actions{grid-template-columns:1fr;gap:10px}
   #viewModal .modal,#txnModal .modal,#datashopModal .modal{max-width:100%;margin:0;border-radius:20px 20px 0 0;padding:22px 20px}
   #viewModal,#txnModal,#datashopModal,#approveModal,#rejectModal,#approveDepositModal,#rejectDepositModal{align-items:flex-end;padding:0}
   .modal .btns{flex-direction:column-reverse}
@@ -689,11 +973,16 @@ button{font-family:inherit}
   .stat-value{font-size:18px}
   .content{padding:12px 12px 120px}
   .panel-head{padding:14px 16px}
-  .fund-form-container{padding:18px 16px 22px}
-  .fund-user-card{padding:20px 22px}
-  .fund-avatar{width:56px;height:56px;font-size:22px}
-  .fund-name{font-size:16px}
-  .fund-balance-value{font-size:20px}
+  .fund-shell{padding:16px 12px 26px}
+  .fund-search-stage{padding:20px 16px 20px;border-radius:16px}
+  .fund-search-head{flex-direction:column;align-items:flex-start;gap:12px}
+  .fund-search-head-icon{width:44px;height:44px;border-radius:13px;font-size:18px}
+  .fund-detail-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .fund-detail-avatar{width:56px;height:56px;font-size:22px;border-radius:16px}
+  .fund-detail-clear{align-self:flex-start}
+  .fund-balances{grid-template-columns:1fr;padding:18px 16px;gap:16px}
+  .fund-balance-block{padding:0;border-right:none;border-bottom:1px dashed rgba(10,69,52,.15);padding-bottom:14px}
+  .fund-balance-block:last-child{border-bottom:none;padding-bottom:0}
   .kpi-strip{grid-template-columns:1fr 1fr;gap:10px}
   .kpi{padding:14px 16px}
   .kpi .k-value{font-size:18px}
@@ -997,46 +1286,43 @@ button{font-family:inherit}
         </div>
       </section>
 
+      <!-- MANUAL FUND — completely new -->
       <section id="tab-fund" style="display:none">
-        <div class="panel">
-          <div class="panel-head"><h3><i class="fas fa-hand-holding-dollar"></i> Manual Wallet Fund / Debit</h3><span class="sub">Type to search — matching users appear instantly</span></div>
-          <div class="search-hero" style="padding:26px 24px 22px">
-            <div class="search-hero-inner">
-              <div class="search-bar-row">
-                <div class="fund-suggest" style="flex:1">
-                  <div class="search-field">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="fundLookupQuery" placeholder="Phone, email, or user ID…" autocomplete="off" oninput="onFundLookupInput()">
-                    <button class="search-clear" id="fundSearchClear" onclick="clearFundSearch()"><i class="fas fa-times"></i></button>
-                  </div>
-                  <div class="fund-suggest-list" id="fundSuggestList"></div>
+        <div class="panel" style="background:transparent;border:none;box-shadow:none">
+          <div class="fund-shell">
+            <!-- Stage 1: search -->
+            <div class="fund-search-stage" id="fundSearchStage">
+              <div class="fund-search-head">
+                <div class="fund-search-head-icon"><i class="fas fa-hand-holding-dollar"></i></div>
+                <div>
+                  <div class="fund-search-head-title">Manual Wallet Fund / Debit</div>
+                  <div class="fund-search-head-sub">Look up a customer by phone, email, or user ID to credit or debit their wallet.</div>
+                </div>
+              </div>
+              <div class="fund-search-wrap">
+                <div class="fund-search-input">
+                  <span class="fund-search-icon"><i class="fas fa-magnifying-glass"></i></span>
+                  <input type="text" id="fundLookupQuery" placeholder="Phone, email, or user ID…" autocomplete="off" oninput="onFundLookupInput()">
+                  <button class="fund-search-clear" id="fundSearchClear" onclick="clearFundSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="fund-search-status" id="fundSearchStatus"></div>
+              </div>
+              <div class="fund-results" id="fundResults"></div>
+              <div class="fund-initial" id="fundInitial">
+                <div class="fund-initial-icon"><i class="fas fa-user-magnifying-glass"></i></div>
+                <div class="fund-initial-title">Search for a customer</div>
+                <div class="fund-initial-text">Enter a phone number, email address, or user ID above. Matching accounts will appear below — tap one to load their full details and unlock funding.</div>
+                <div class="fund-initial-chips">
+                  <button class="fund-initial-chip" onclick="quickFundSearch('0803')"><i class="fas fa-phone"></i> Try 0803…</button>
+                  <button class="fund-initial-chip" onclick="quickFundSearch('@gmail.com')"><i class="fas fa-at"></i> Try @gmail.com</button>
+                  <button class="fund-initial-chip" onclick="quickFundSearch('1')"><i class="fas fa-hashtag"></i> Try user ID</button>
                 </div>
               </div>
             </div>
-          </div>
-          <div id="fundEmpty" class="fund-empty">
-            <div class="fund-empty-icon"><i class="fas fa-user-magnifying-glass"></i></div>
-            <div class="fund-empty-title">No user selected</div>
-            <div class="fund-empty-desc">Start typing a phone, email, or ID — matching users will appear as you type.</div>
-          </div>
-          <div id="fundForm">
-            <div class="fund-form-container">
+
+            <!-- Stage 2: user detail + form -->
+            <div id="fundForm">
               <div id="fundUserPreview"></div>
-              <div class="fund-form-group"><label class="fund-form-label">Amount (₦)</label><input type="number" id="fundAmount" class="fund-form-input" min="1" step="0.01" placeholder="e.g. 5000"></div>
-              <div class="fund-form-group"><label class="fund-form-label">Reason (visible in user's history)</label><textarea id="fundReason" class="fund-form-input fund-form-textarea" placeholder="e.g. Compensation for failed MTN data" rows="3"></textarea></div>
-              <div class="fund-form-group"><label class="fund-form-label">Source</label>
-                <select id="fundSource" class="fund-form-input fund-form-select">
-                  <option value="support">Customer support</option>
-                  <option value="audit_fix">Audit correction</option>
-                  <option value="offline_payment">Offline bank payment</option>
-                  <option value="promo">Promotional credit</option>
-                  <option value="refund">Refund</option>
-                </select>
-              </div>
-              <div class="fund-actions-row">
-                <button class="fund-btn" id="fundSubmitBtn" onclick="submitManualFund()"><i class="fas fa-plus-circle"></i> Fund Wallet</button>
-                <button class="debit-btn" id="debitSubmitBtn" onclick="submitManualDebit()"><i class="fas fa-minus-circle"></i> Debit Wallet</button>
-              </div>
             </div>
           </div>
         </div>
@@ -1434,6 +1720,7 @@ button{font-family:inherit}
     const pkEl = document.getElementById('chartPeak'); if (pkEl && b[pk]) pkEl.innerHTML = `Peak: <strong style="color:var(--primary-dark)">${esc(b[pk].label)}</strong> · ${fmtMoney(vals[pk], true)}`;
   }
 
+  /* USERS */
   function filterUsers(q) { const query = String(q||'').toLowerCase().trim(); if (!query) return []; const clean = query.replace(/\D/g,''); return (state.users||[]).filter(u => { const hay = `${u.name||''} ${u.email||''} ${u.phone||''}`.toLowerCase(); if (hay.includes(query)) return true; if (clean.length >= 3 && String(u.phone||'').replace(/\D/g,'').includes(clean)) return true; if (String(u.id||u._id||'') === query) return true; return false; }); }
   function uStatus(u) { if (u.is_active === false) return 'suspended'; const s = String(u.status||'').toLowerCase(); if (s === 'suspended' || s === 'banned') return 'suspended'; if (s === 'pending') return 'pending'; return 'active'; }
   function setUserClear(on) { const e = document.getElementById('userSearchClear'); if (e) e.classList.toggle('visible', !!on); }
@@ -1469,9 +1756,7 @@ button{font-family:inherit}
   function viewUser(id) { const u = (state.users||[]).find(x => String(x.id||x._id) === String(id)); if (!u) return; const name = u.name || u.email; const st = uStatus(u); const bal = Number(u.balance ?? u.wallet_balance ?? 0); $('#viewBody').innerHTML = `<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--primary-light);border:1px solid rgba(10,69,52,.1);border-radius:12px;margin-bottom:16px"><div style="width:52px;height:52px;border-radius:50%;background:${hashColor(name)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800">${esc((name||'?').charAt(0).toUpperCase())}</div><div style="flex:1;min-width:0"><div style="font-size:15.5px;font-weight:800;color:var(--primary-dark)">${esc(name)}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><span class="user-badge ${st}">${esc(st)}</span></div></div></div><div class="txn-amount-block" style="margin-bottom:16px"><div class="amt-label">Wallet Balance</div><div class="amt-value">${fmtMoney(bal)}</div></div><div class="row-detail"><span class="lbl">Email</span><span class="val">${esc(u.email||'—')}</span></div><div class="row-detail"><span class="lbl">Phone</span><span class="val mono">${esc(u.phone||'—')}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Role</span><span class="val">${esc(String(u.role||'user').toUpperCase())}</span></div><div class="row-detail"><span class="lbl">Joined</span><span class="val">${fmtDate(u.created_at)}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewUser = viewUser;
 
-  /* ============================================================
-     FILTER SHEET
-  ============================================================ */
+  /* FILTER SHEET */
   function openFilterSheet(tab) {
     state.currentFilterTab = tab;
     const f = state.filters[tab] || {};
@@ -1510,7 +1795,7 @@ button{font-family:inherit}
       if (f.tracedUserId) {
         html += `<div class="traced-user"><div class="avatar" style="background:${hashColor(f.tracedUserName||'?')}">${esc((f.tracedUserName||'?').charAt(0).toUpperCase())}</div><div class="info"><div class="name">${esc(f.tracedUserName)}</div><div class="meta">ID #${esc(String(f.tracedUserId))}</div></div><button class="remove" onclick="removeTracedUser()"><i class="fas fa-times"></i> Remove</button></div>`;
       } else {
-        html += `<div class="trace-search"><div class="trace-search-field"><i class="fas fa-user-magnifying-glass"></i><input type="text" id="traceLookupInput" placeholder="Phone, email, or user ID" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();doTraceUser();}"><div class="user-search-spinner" id="traceLookupSpinner" style="width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;display:none;margin-left:8px"></div></div><button class="trace-search-btn" id="traceLookupBtn" onclick="doTraceUser()"><i class="fas fa-search"></i> Trace</button></div>`;
+        html += `<div class="trace-search"><div class="trace-search-field"><i class="fas fa-user-magnifying-glass"></i><input type="text" id="traceLookupInput" placeholder="Phone, email, or user ID" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();doTraceUser();}"></div><button class="trace-search-btn" id="traceLookupBtn" onclick="doTraceUser()"><i class="fas fa-search"></i> Trace</button></div>`;
         html += `<div class="trace-status" id="traceLookupStatus"></div>`;
       }
       html += `</div>`;
@@ -1560,190 +1845,61 @@ button{font-family:inherit}
     document.body.style.overflow = 'hidden';
   }
   window.openFilterSheet = openFilterSheet;
-
   function closeFilterSheet(e) { if (e && e.target !== $('#filterSheetOverlay')) return; $('#filterSheetOverlay').classList.remove('open'); document.body.style.overflow = ''; }
   window.closeFilterSheet = closeFilterSheet;
-
   function pickType(key) { const f = state.filters.transactions; f.type = f.type === key ? 'all' : key; openFilterSheet('transactions'); updateFilterCount('transactions'); }
   window.pickType = pickType;
-
-  function pickStatus(key) {
-    const t = state.currentFilterTab;
-    const f = state.filters[t] || {};
-    f.status = f.status === key ? 'all' : key;
-    openFilterSheet(t);
-    updateFilterCount(t);
-  }
+  function pickStatus(key) { const t = state.currentFilterTab; const f = state.filters[t] || {}; f.status = f.status === key ? 'all' : key; openFilterSheet(t); updateFilterCount(t); }
   window.pickStatus = pickStatus;
-
   function pickRange(key) { const f = state.filters[state.currentFilterTab] || {}; f.range = key; openFilterSheet(state.currentFilterTab); }
   window.pickRange = pickRange;
-
   function setArchUserId(v) { const f = state.filters.archived; f.userId = v ? Number(v) : null; updateFilterCount('archived'); }
   window.setArchUserId = setArchUserId;
-
   async function doTraceUser() {
     const i = document.getElementById('traceLookupInput');
     const q = (i?.value || '').trim();
     const status = document.getElementById('traceLookupStatus');
-    const btn = document.getElementById('traceLookupBtn');
-    const spinner = document.getElementById('traceLookupSpinner');
-
     if (!q) { if (status) { status.textContent = 'Enter a phone, email, or user ID.'; status.className = 'trace-status error'; } return; }
     if (status) { status.textContent = 'Looking up user…'; status.className = 'trace-status loading'; }
-    if (btn) btn.disabled = true;
-    if (spinner) spinner.style.display = 'block';
-
     try {
-      // Try local cache first (fast path)
       let found = filterUsers(q)[0] || null;
-
-      // If not found locally, ask the server
-      if (!found) {
-        const r = await api(`/admin/users?search=${encodeURIComponent(q)}&limit=1`);
-        const list = pick(r);
-        found = list[0] || null;
-      }
-
-      if (!found) {
-        if (status) { status.textContent = `No user matches "${q}". Try a different phone, email, or ID.`; status.className = 'trace-status error'; }
-        if (spinner) spinner.style.display = 'none';
-        if (btn) btn.disabled = false;
-        return;
-      }
-
-      const uid = String(found.id || found._id);
-      const uname = found.name || found.full_name || found.email || `User #${uid}`;
-
-      state.filters.transactions.tracedUserId = uid;
-      state.filters.transactions.tracedUserName = uname;
-
-      if (status) { status.textContent = `Traced ${uname}. Tap Apply to view their transactions.`; status.className = 'trace-status success'; }
-      if (spinner) spinner.style.display = 'none';
-      if (btn) btn.disabled = false;
+      if (!found) { const r = await api(`/admin/users?search=${encodeURIComponent(q)}&limit=1`); found = pick(r)[0] || null; }
+      if (!found) { if (status) { status.textContent = `No user matches "${q}".`; status.className = 'trace-status error'; } return; }
+      state.filters.transactions.tracedUserId = String(found.id || found._id);
+      state.filters.transactions.tracedUserName = found.name || found.full_name || found.email || `User #${found.id || found._id}`;
+      if (status) { status.textContent = `Traced ${state.filters.transactions.tracedUserName}.`; status.className = 'trace-status success'; }
       updateFilterCount('transactions');
       openFilterSheet('transactions');
-      toast(`Traced ${uname}`, 'success');
-    } catch (err) {
-      if (status) { status.textContent = err.message || 'Lookup failed.'; status.className = 'trace-status error'; }
-      if (spinner) spinner.style.display = 'none';
-      if (btn) btn.disabled = false;
-    }
+      toast(`Traced ${state.filters.transactions.tracedUserName}`, 'success');
+    } catch (err) { if (status) { status.textContent = err.message || 'Lookup failed.'; status.className = 'trace-status error'; } }
   }
   window.doTraceUser = doTraceUser;
-
-  function removeTracedUser() {
-    state.filters.transactions.tracedUserId = null;
-    state.filters.transactions.tracedUserName = null;
-    openFilterSheet('transactions');
-    updateFilterCount('transactions');
-  }
+  function removeTracedUser() { state.filters.transactions.tracedUserId = null; state.filters.transactions.tracedUserName = null; openFilterSheet('transactions'); updateFilterCount('transactions'); }
   window.removeTracedUser = removeTracedUser;
-
-  function updateFilterCount(tab) {
-    const f = state.filters[tab] || {};
-    let c = 0;
-    if (tab === 'transactions') { if (f.type && f.type !== 'all') c++; if (f.range && f.range !== '1d') c++; if (f.tracedUserId) c++; }
-    if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') c++; if (f.range && f.range !== '1d') c++; }
-    if (tab === 'users') { if (f.status && f.status !== 'all') c++; }
-    if (tab === 'archived') { if (f.userId) c++; }
-    const el = document.getElementById(tab + 'FilterCount');
-    if (el) el.textContent = c;
-    const btn = document.getElementById(tab + 'FilterBtn');
-    if (btn) btn.classList.toggle('active', c > 0);
-    renderActiveFilterChips(tab);
-  }
+  function updateFilterCount(tab) { const f = state.filters[tab] || {}; let c = 0; if (tab === 'transactions') { if (f.type && f.type !== 'all') c++; if (f.range && f.range !== '1d') c++; if (f.tracedUserId) c++; } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') c++; if (f.range && f.range !== '1d') c++; } if (tab === 'users') { if (f.status && f.status !== 'all') c++; } if (tab === 'archived') { if (f.userId) c++; } const el = document.getElementById(tab + 'FilterCount'); if (el) el.textContent = c; const btn = document.getElementById(tab + 'FilterBtn'); if (btn) btn.classList.toggle('active', c > 0); renderActiveFilterChips(tab); }
   window.updateFilterCount = updateFilterCount;
-
-  function renderActiveFilterChips(tab) {
-    const el = document.getElementById(tab + 'ActiveFilters');
-    if (!el) return;
-    const f = state.filters[tab] || {};
-    const chips = [];
-    if (tab === 'transactions') {
-      if (f.type && f.type !== 'all') { const t = { airtime:'Airtime', data:'Data', deposit:'Deposits', withdrawal:'Withdrawals', manual_fund:'Manual Credit', manual_debit:'Manual Debit', transfer:'Transfers', refund:'Refunds', other:'Others' }; chips.push({ label: t[f.type] || f.type, clear: () => { f.type = 'all'; } }); }
-      if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); }
-      if (f.tracedUserId) chips.push({ label: `Tracing ${f.tracedUserName || ''}`, clear: () => { f.tracedUserId = null; f.tracedUserName = null; } });
-    }
-    if (tab === 'deposits' || tab === 'withdrawals') {
-      if (f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } });
-      if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); }
-    }
-    if (tab === 'users' && f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } });
-    if (tab === 'archived' && f.userId) chips.push({ label: `User #${f.userId}`, clear: () => { f.userId = null; } });
-    if (!chips.length) { el.innerHTML = ''; return; }
-    el.innerHTML = chips.map((c, i) => `<span class="active-filter-chip"><i class="fas fa-filter"></i> ${esc(c.label)}<button onclick="clearFilterChip('${tab}', ${i})"><i class="fas fa-times"></i></button></span>`).join('');
-  }
+  function renderActiveFilterChips(tab) { const el = document.getElementById(tab + 'ActiveFilters'); if (!el) return; const f = state.filters[tab] || {}; const chips = []; if (tab === 'transactions') { if (f.type && f.type !== 'all') { const t = { airtime:'Airtime', data:'Data', deposit:'Deposits', withdrawal:'Withdrawals', manual_fund:'Manual Credit', manual_debit:'Manual Debit', transfer:'Transfers', refund:'Refunds', other:'Others' }; chips.push({ label: t[f.type] || f.type, clear: () => { f.type = 'all'; } }); } if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } if (f.tracedUserId) chips.push({ label: `Tracing ${f.tracedUserName || ''}`, clear: () => { f.tracedUserId = null; f.tracedUserName = null; } }); } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } } if (tab === 'users' && f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (tab === 'archived' && f.userId) chips.push({ label: `User #${f.userId}`, clear: () => { f.userId = null; } }); if (!chips.length) { el.innerHTML = ''; return; } el.innerHTML = chips.map((c, i) => `<span class="active-filter-chip"><i class="fas fa-filter"></i> ${esc(c.label)}<button onclick="clearFilterChip('${tab}', ${i})"><i class="fas fa-times"></i></button></span>`).join(''); }
   window.renderActiveFilterChips = renderActiveFilterChips;
-
-  function clearFilterChip(tab, idx) {
-    const f = state.filters[tab] || {};
-    if (tab === 'transactions') {
-      const chips = [];
-      if (f.type && f.type !== 'all') chips.push(() => { f.type = 'all'; });
-      if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; });
-      if (f.tracedUserId) chips.push(() => { f.tracedUserId = null; f.tracedUserName = null; });
-      if (chips[idx]) chips[idx]();
-    }
-    if (tab === 'deposits' || tab === 'withdrawals') {
-      const chips = [];
-      if (f.status && f.status !== 'all') chips.push(() => { f.status = 'all'; });
-      if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; });
-      if (chips[idx]) chips[idx]();
-    }
-    if (tab === 'users' && f.status !== 'all') f.status = 'all';
-    if (tab === 'archived' && f.userId) f.userId = null;
-    updateFilterCount(tab);
-    applyFilters(true);
-  }
+  function clearFilterChip(tab, idx) { const f = state.filters[tab] || {}; if (tab === 'transactions') { const chips = []; if (f.type && f.type !== 'all') chips.push(() => { f.type = 'all'; }); if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; }); if (f.tracedUserId) chips.push(() => { f.tracedUserId = null; f.tracedUserName = null; }); if (chips[idx]) chips[idx](); } if (tab === 'deposits' || tab === 'withdrawals') { const chips = []; if (f.status && f.status !== 'all') chips.push(() => { f.status = 'all'; }); if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; }); if (chips[idx]) chips[idx](); } if (tab === 'users' && f.status !== 'all') f.status = 'all'; if (tab === 'archived' && f.userId) f.userId = null; updateFilterCount(tab); applyFilters(true); }
   window.clearFilterChip = clearFilterChip;
-
-  function clearAllFilters() {
-    state.filters[state.currentFilterTab] = state.currentFilterTab === 'transactions' ? { type:'all', range:'1d', tracedUserId:null, tracedUserName:null } : state.currentFilterTab === 'users' ? { status:'all' } : state.currentFilterTab === 'archived' ? { userId:null } : { status:'all', range:'1d' };
-    updateFilterCount(state.currentFilterTab);
-    openFilterSheet(state.currentFilterTab);
-  }
+  function clearAllFilters() { state.filters[state.currentFilterTab] = state.currentFilterTab === 'transactions' ? { type:'all', range:'1d', tracedUserId:null, tracedUserName:null } : state.currentFilterTab === 'users' ? { status:'all' } : state.currentFilterTab === 'archived' ? { userId:null } : { status:'all', range:'1d' }; updateFilterCount(state.currentFilterTab); openFilterSheet(state.currentFilterTab); }
   window.clearAllFilters = clearAllFilters;
-
-  function applyFilters(silent) {
-    const tab = state.currentFilterTab;
-    const f = state.filters[tab] || {};
-    if (tab === 'transactions' || tab === 'deposits' || tab === 'withdrawals') { state.range = f.range || '1d'; syncOverviewRangeUI(); }
-    if (tab === 'transactions') { state.txnPage = 1; renderTransactions(); }
-    if (tab === 'deposits') { state.depositPage = 1; renderDeposits(); }
-    if (tab === 'withdrawals') { state.withdrawalPage = 1; renderWithdrawals(); }
-    if (tab === 'users') { renderUsers(); }
-    if (tab === 'archived') { loadArchived(1); }
-    if (!silent) { closeFilterSheet(); toast('Filters applied', 'success'); }
-  }
+  function applyFilters(silent) { const tab = state.currentFilterTab; const f = state.filters[tab] || {}; if (tab === 'transactions' || tab === 'deposits' || tab === 'withdrawals') { state.range = f.range || '1d'; syncOverviewRangeUI(); } if (tab === 'transactions') { state.txnPage = 1; renderTransactions(); } if (tab === 'deposits') { state.depositPage = 1; renderDeposits(); } if (tab === 'withdrawals') { state.withdrawalPage = 1; renderWithdrawals(); } if (tab === 'users') { renderUsers(); } if (tab === 'archived') { loadArchived(1); } if (!silent) { closeFilterSheet(); toast('Filters applied', 'success'); } }
   window.applyFilters = applyFilters;
 
-  /* ============================================================
-     TRANSACTIONS
-  ============================================================ */
+  /* TRANSACTIONS */
   function filterTxn(list, search) { if (!search) return list; const s = search.toLowerCase().trim(); return list.filter(t => { const m = t.metadata || {}; const h = `${t.phone||m.phone||''} ${t.reference||''} ${t.description||''} ${m.product_name||''} ${t.recipient||''} ${t.user_name||''} ${t.user_email||''}`.toLowerCase(); return h.includes(s); }); }
-
   function getFilteredTxns() {
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     const f = state.filters.transactions;
     let list = (state.transactions || []).slice();
-
-    // Trace by USER ID (fetches that specific user's transactions only)
-    if (f.tracedUserId) {
-      const tid = String(f.tracedUserId);
-      list = list.filter(t => String(t.user_id) === tid);
-    }
-
+    if (f.tracedUserId) { const tid = String(f.tracedUserId); list = list.filter(t => String(t.user_id) === tid); }
     if (f.type && f.type !== 'all') list = list.filter(t => txnKind(t) === f.type);
-
-    // When tracing a user, we ignore the range so we see their full history
     if (!f.tracedUserId) list = applyRange(list, f.range || state.range);
-
     list = filterTxn(list, search);
     list.sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
     return list;
   }
-
   function renderTransactions() {
     const list = getFilteredTxns();
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
@@ -1882,21 +2038,355 @@ button{font-family:inherit}
   function goToDatashopPage() { window.open('https://datashop.ng/dashboard', '_blank', 'noopener'); }
   window.openDatashopWallet = openDatashopWallet; window.closeDatashopWallet = closeDatashopWallet; window.reloadDatashopWallet = reloadDW; window.goToDatashopPage = goToDatashopPage;
 
-  /* MANUAL FUND */
-  function resetFundTab() { state.fundUser = null; const p = $('#fundUserPreview'); if (p) p.innerHTML = ''; const f = $('#fundForm'); if (f) f.classList.remove('revealed'); const e = $('#fundEmpty'); if (e) e.style.display = 'block'; const a = $('#fundAmount'); if (a) a.value = ''; const r = $('#fundReason'); if (r) r.value = ''; const s = $('#fundSource'); if (s) s.value = 'support'; const i = $('#fundLookupQuery'); if (i) i.value = ''; const c = $('#fundSearchClear'); if (c) c.classList.remove('visible'); hideFundSuggest(); }
+  /* ============================================================
+     MANUAL FUND — new redesigned flow
+     ============================================================ */
+  let fundSearchSeq = 0;
+
+  function resetFundTab() {
+    state.fundUser = null;
+    const form = $('#fundForm'); if (form) form.classList.remove('revealed');
+    const initial = $('#fundInitial'); if (initial) initial.style.display = 'block';
+    const results = $('#fundResults'); if (results) { results.classList.remove('open'); results.innerHTML = ''; }
+    const status = $('#fundSearchStatus'); if (status) { status.textContent = ''; status.className = 'fund-search-status'; }
+    const preview = $('#fundUserPreview'); if (preview) preview.innerHTML = '';
+    const input = $('#fundLookupQuery'); if (input) input.value = '';
+    const clear = $('#fundSearchClear'); if (clear) clear.classList.remove('visible');
+  }
   window.resetFundTab = resetFundTab;
-  function clearFundSearch() { const i = document.getElementById('fundLookupQuery'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('fundSearchClear'); if (c) c.classList.remove('visible'); resetFundTab(); }
+
+  function clearFundSearch() {
+    const i = document.getElementById('fundLookupQuery');
+    if (i) { i.value = ''; i.focus(); }
+    resetFundTab();
+  }
   window.clearFundSearch = clearFundSearch;
-  function hideFundSuggest() { const e = document.getElementById('fundSuggestList'); if (e) { e.classList.remove('open'); e.innerHTML = ''; } }
-  function renderFundSuggest(list) { const el = document.getElementById('fundSuggestList'); if (!el) return; if (!list || !list.length) { el.innerHTML = `<div class="fund-suggest-empty"><strong>No matches</strong>Try a different phone, email, or ID.</div>`; el.classList.add('open'); return; } el.innerHTML = `<div class="fund-suggest-hint"><i class="fas fa-bolt"></i> Tap a user to load</div>` + list.slice(0,8).map(u => { const name = u.name || u.full_name || u.email || `User #${u.id||u._id}`; const ini = (name||'?').charAt(0).toUpperCase(); const em = u.email || ''; const ph = u.phone || ''; const bal = fmtMoney(u.balance ?? u.wallet_balance ?? 0); return `<div class="fund-suggest-item" onclick="selectFundSuggest('${esc(u.id||u._id||'')}')"><div class="fund-suggest-avatar" style="background:${hashColor(name)}">${esc(ini)}</div><div class="fund-suggest-info"><div class="fund-suggest-name">${esc(name)}</div><div class="fund-suggest-meta">${em ? esc(em) : ''}${em && ph ? ' · ' : ''}${ph ? esc(ph) : ''}</div></div><div class="fund-suggest-bal">${bal}</div></div>`; }).join(''); el.classList.add('open'); }
-  function onFundLookupInput() { const i = document.getElementById('fundLookupQuery'); const c = document.getElementById('fundSearchClear'); if (i && c) c.classList.toggle('visible', i.value.length > 0); const q = (i?.value || '').trim(); if (!q) { hideFundSuggest(); return; } renderFundSuggest(filterUsers(q)); }
+
+  function quickFundSearch(term) {
+    const i = document.getElementById('fundLookupQuery');
+    if (!i) return;
+    i.value = term;
+    onFundLookupInput();
+    i.focus();
+  }
+  window.quickFundSearch = quickFundSearch;
+
+  function onFundLookupInput() {
+    const i = document.getElementById('fundLookupQuery');
+    const clear = document.getElementById('fundSearchClear');
+    const q = (i?.value || '').trim();
+    if (clear) clear.classList.toggle('visible', q.length > 0);
+
+    const status = document.getElementById('fundSearchStatus');
+    const results = document.getElementById('fundResults');
+    const initial = document.getElementById('fundInitial');
+    const form = document.getElementById('fundForm');
+
+    // When admin types, collapse the previously-selected user (they're starting over)
+    if (q) {
+      if (form) form.classList.remove('revealed');
+      state.fundUser = null;
+      const preview = document.getElementById('fundUserPreview');
+      if (preview) preview.innerHTML = '';
+    }
+
+    if (!q) {
+      if (results) { results.classList.remove('open'); results.innerHTML = ''; }
+      if (status) { status.textContent = ''; status.className = 'fund-search-status'; }
+      if (initial) initial.style.display = 'block';
+      return;
+    }
+
+    if (initial) initial.style.display = 'none';
+    const seq = ++fundSearchSeq;
+    if (status) { status.innerHTML = `<i class="fas fa-circle-notch fa-spin" style="color:var(--primary)"></i> Searching for <strong>${esc(q)}</strong>…`; status.className = 'fund-search-status loading'; }
+
+    // Local first
+    const local = filterUsers(q);
+    if (local.length) {
+      if (seq !== fundSearchSeq) return;
+      renderFundResults(local, q);
+      if (status) { status.textContent = ''; status.className = 'fund-search-status'; }
+      return;
+    }
+
+    // Server search
+    clearTimeout(window.__fundSearchTimer);
+    window.__fundSearchTimer = setTimeout(async () => {
+      try {
+        const r = await api(`/admin/users?search=${encodeURIComponent(q)}&limit=30`);
+        if (seq !== fundSearchSeq) return;
+        const found = pick(r);
+        renderFundResults(found, q);
+        if (status) {
+          if (found.length) { status.textContent = ''; status.className = 'fund-search-status'; }
+          else { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> No user matches <strong>${esc(q)}</strong>. Try a different phone, email, or ID.`; status.className = 'fund-search-status error'; }
+        }
+      } catch (err) {
+        if (seq !== fundSearchSeq) return;
+        if (status) { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> Search failed: ${esc(err.message || 'unknown error')}`; status.className = 'fund-search-status error'; }
+      }
+    }, 260);
+  }
   window.onFundLookupInput = onFundLookupInput;
-  function selectFundSuggest(id) { const u = (state.users||[]).find(x => String(x.id || x._id) === String(id)); if (!u) return; hideFundSuggest(); renderFundUser(u); toast(`Loaded ${u.name || u.email}`, 'success'); }
-  window.selectFundSuggest = selectFundSuggest;
-  function renderFundUser(user) { state.fundUser = user; const p = $('#fundUserPreview'); const e = $('#fundEmpty'); const f = $('#fundForm'); const name = user.name || user.email || user.phone || `#${user.id||user._id}`; const ini = (name||'?').charAt(0).toUpperCase(); const id = user.id || user._id; const bal = fmtMoney(user.balance ?? user.wallet_balance ?? 0); const held = Number(user.held_balance || 0); if (p) p.innerHTML = `<div class="fund-user-card"><div class="fund-hero"><div class="fund-avatar-wrap"><div class="fund-avatar">${esc(ini)}</div><span class="fund-verified"><i class="fas fa-check"></i></span></div><div class="fund-info"><div class="fund-name">${esc(name)}</div><div class="fund-meta"><span class="fund-chip-id"><i class="fas fa-hashtag" style="font-size:9px;opacity:.7"></i>${esc(String(id))}</span>${user.email?`<span><i class="fas fa-envelope" style="font-size:10px;opacity:.6;margin-right:4px"></i>${esc(user.email)}</span>`:''}${user.phone?`<span class="mono"><i class="fas fa-phone" style="font-size:10px;opacity:.6;margin-right:4px"></i>${esc(user.phone)}</span>`:''}</div></div></div><div class="fund-balance-row"><div class="fund-balance-cell"><div class="fund-balance-label">Available Balance</div><div class="fund-balance-value">${bal}</div></div>${held>0?`<div class="fund-balance-cell"><div class="fund-balance-label">On Hold</div><div class="fund-balance-value held">${fmtMoney(held)}</div></div>`:''}</div></div>`; if (e) e.style.display = 'none'; if (f) { f.classList.add('revealed'); setTimeout(() => { const a = $('#fundAmount'); if (a) a.focus(); }, 260); } const i = document.getElementById('fundLookupQuery'); if (i) i.value = name; const c = document.getElementById('fundSearchClear'); if (c) c.classList.add('visible'); }
-  async function submitManualFund() { if (!state.fundUser) { toast('Select a user first', 'error'); return; } const am = Number($('#fundAmount')?.value); const r = ($('#fundReason')?.value || '').trim(); const s = $('#fundSource')?.value || 'support'; if (!am || am <= 0) { toast('Enter a valid amount', 'error'); return; } if (!r) { toast('Reason is required', 'error'); return; } const b = $('#fundSubmitBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Funding…'; try { const res = await api('/admin/wallet/fund', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) }); const d = res.data; toast(`✅ ${fmtMoney(d.amount)} credited — new balance ${fmtMoney(d.wallet_after)}`, 'success'); const a = $('#fundAmount'); if (a) a.value = ''; const r2 = $('#fundReason'); if (r2) r2.value = ''; setTimeout(() => refreshAll(true), 300); } catch (e) { toast(e.message, 'error'); } finally { b.disabled = false; b.innerHTML = o; } }
+
+  function renderFundResults(list, query) {
+    const el = document.getElementById('fundResults');
+    if (!el) return;
+    if (!list || !list.length) {
+      el.classList.remove('open');
+      el.innerHTML = '';
+      return;
+    }
+    el.classList.add('open');
+    el.innerHTML = list.slice(0, 30).map(u => {
+      const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
+      const ini = (name || '?').charAt(0).toUpperCase();
+      const st = uStatus(u);
+      const bal = fmtMoney(u.balance ?? u.wallet_balance ?? 0);
+      const email = u.email || '';
+      const phone = u.phone || '';
+      const isAdmin = /admin|super|owner/i.test(String(u.role || ''));
+      return `
+        <div class="fund-result-card" onclick="selectFundResult('${esc(u.id || u._id || '')}')">
+          <div class="fund-result-avatar ${st === 'suspended' ? 'status-suspended' : ''}" style="background:${hashColor(name)}">
+            ${esc(ini)}<span class="status-dot"></span>
+          </div>
+          <div class="fund-result-body">
+            <div class="fund-result-name-row">
+              <span class="fund-result-name">${esc(name)}</span>
+              ${isAdmin ? `<span class="fund-result-tag admin"><i class="fas fa-shield-halved"></i> Admin</span>` : ''}
+              <span class="fund-result-tag ${st}">${esc(st)}</span>
+            </div>
+            <div class="fund-result-meta">
+              ${email ? `<span class="item"><i class="fas fa-envelope"></i> ${esc(email)}</span>` : ''}
+              ${phone ? `<span class="item mono"><i class="fas fa-phone"></i> ${esc(phone)}</span>` : ''}
+              <span class="item mono"><i class="fas fa-hashtag"></i> ID #${esc(String(u.id || u._id))}</span>
+            </div>
+          </div>
+          <div class="fund-result-right">
+            <div class="fund-result-balance">
+              <span class="fund-result-balance-label">Balance</span>
+              <span class="fund-result-balance-value">${bal}</span>
+            </div>
+            <div class="fund-result-arrow"><i class="fas fa-arrow-right"></i></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectFundResult(id) {
+    const u = (state.users || []).find(x => String(x.id || x._id) === String(id));
+    if (!u) { toast('User not in local cache. Refresh and try again.', 'error'); return; }
+    state.fundUser = u;
+
+    // Render detail card
+    renderFundUserDetail(u);
+
+    // Reveal the form
+    const form = document.getElementById('fundForm');
+    if (form) form.classList.add('revealed');
+
+    // Hide search results + update input to reflect selection
+    const el = document.getElementById('fundResults');
+    if (el) { el.classList.remove('open'); el.innerHTML = ''; }
+    const i = document.getElementById('fundLookupQuery');
+    if (i) i.value = u.name || u.email || u.phone || `#${u.id || u._id}`;
+    const clear = document.getElementById('fundSearchClear');
+    if (clear) clear.classList.add('visible');
+    const status = document.getElementById('fundSearchStatus');
+    if (status) { status.innerHTML = `<i class="fas fa-circle-check" style="color:var(--success-dark)"></i> Loaded <strong>${esc(u.name || u.email)}</strong>. Fill in the form to fund or debit.`; status.className = 'fund-search-status'; }
+
+    // Scroll the card into view
+    setTimeout(() => {
+      const card = document.getElementById('fundUserPreview');
+      if (card && typeof card.scrollIntoView === 'function') card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const amt = document.getElementById('fundAmount');
+      if (amt) amt.focus();
+    }, 280);
+  }
+  window.selectFundResult = selectFundResult;
+
+  function renderFundUserDetail(u) {
+    const preview = document.getElementById('fundUserPreview');
+    if (!preview) return;
+    const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
+    const ini = (name || '?').charAt(0).toUpperCase();
+    const id = u.id || u._id;
+    const st = uStatus(u);
+    const balance = Number(u.balance ?? u.wallet_balance ?? 0);
+    const held = Number(u.held_balance ?? 0);
+    const totalFunded = Number(u.total_funded ?? 0);
+    const totalSpent = Number(u.total_spent ?? 0);
+    const isAdmin = /admin|super|owner/i.test(String(u.role || ''));
+
+    preview.innerHTML = `
+      <div class="fund-user-detail">
+        <div class="fund-detail-head">
+          <div class="fund-detail-avatar-wrap">
+            <div class="fund-detail-avatar" style="background:${hashColor(name)}">${esc(ini)}</div>
+            <div class="fund-detail-verified"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="fund-detail-info">
+            <div class="fund-detail-name">${esc(name)}</div>
+            <div class="fund-detail-meta">
+              <span class="chip-id"><i class="fas fa-hashtag" style="font-size:9px;opacity:.7"></i>${esc(String(id))}</span>
+              ${u.email ? `<span><i class="fas fa-envelope" style="font-size:11px;opacity:.6;margin-right:5px"></i>${esc(u.email)}</span>` : ''}
+              ${u.phone ? `<span class="mono"><i class="fas fa-phone" style="font-size:11px;opacity:.6;margin-right:5px"></i>${esc(u.phone)}</span>` : ''}
+              ${isAdmin ? `<span class="user-badge admin" style="font-size:9px"><i class="fas fa-shield-halved"></i> ${esc(String(u.role || 'admin').toUpperCase())}</span>` : ''}
+              <span class="user-badge ${st}" style="font-size:9px">${esc(st)}</span>
+            </div>
+          </div>
+          <button class="fund-detail-clear" onclick="resetFundTab()"><i class="fas fa-times"></i> Change user</button>
+        </div>
+
+        <div class="fund-balances">
+          <div class="fund-balance-block">
+            <div class="label">Available Balance</div>
+            <div class="value">${fmtMoney(balance)}</div>
+          </div>
+          ${held > 0 ? `
+          <div class="fund-balance-block">
+            <div class="label">On Hold</div>
+            <div class="value held">${fmtMoney(held)}</div>
+          </div>` : ''}
+          <div class="fund-balance-block">
+            <div class="label">Total Funded</div>
+            <div class="value neutral">${fmtMoney(totalFunded)}</div>
+          </div>
+          <div class="fund-balance-block">
+            <div class="label">Total Spent</div>
+            <div class="value neutral">${fmtMoney(totalSpent)}</div>
+          </div>
+        </div>
+
+        <div class="fund-form-body">
+          <div class="fund-form-group">
+            <div class="fund-form-label">Amount <span class="hint">In Naira (₦)</span></div>
+            <div class="fund-amount-field">
+              <span class="currency">₦</span>
+              <input type="number" id="fundAmount" min="1" step="0.01" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="fund-amount-presets">
+              <button class="fund-preset-btn" onclick="setFundAmount(500)">₦500</button>
+              <button class="fund-preset-btn" onclick="setFundAmount(1000)">₦1,000</button>
+              <button class="fund-preset-btn" onclick="setFundAmount(2000)">₦2,000</button>
+              <button class="fund-preset-btn" onclick="setFundAmount(5000)">₦5,000</button>
+              <button class="fund-preset-btn" onclick="setFundAmount(10000)">₦10,000</button>
+              <button class="fund-preset-btn" onclick="setFundAmount(50000)">₦50,000</button>
+            </div>
+          </div>
+
+          <div class="fund-form-group">
+            <div class="fund-form-label">Reason <span class="hint">Visible in user's history</span></div>
+            <textarea id="fundReason" class="fund-reason-field" placeholder="e.g. Compensation for failed MTN data on 2026-09-26 (Ref: shatova-data-…)" rows="3"></textarea>
+          </div>
+
+          <div class="fund-form-group">
+            <div class="fund-form-label">Source</div>
+            <select id="fundSource" class="fund-source-field">
+              <option value="support">Customer support</option>
+              <option value="audit_fix">Audit correction</option>
+              <option value="offline_payment">Offline bank payment</option>
+              <option value="promo">Promotional credit</option>
+              <option value="refund">Refund</option>
+            </select>
+          </div>
+
+          <div class="fund-actions">
+            <button class="fund-action-btn credit" id="fundSubmitBtn" onclick="submitManualFund()">
+              <i class="fas fa-plus-circle"></i>
+              <span>Credit Wallet</span>
+            </button>
+            <button class="fund-action-btn debit" id="debitSubmitBtn" onclick="submitManualDebit()">
+              <i class="fas fa-minus-circle"></i>
+              <span>Debit Wallet</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function setFundAmount(n) {
+    const i = document.getElementById('fundAmount');
+    if (i) { i.value = String(n); i.focus(); }
+  }
+  window.setFundAmount = setFundAmount;
+
+  async function submitManualFund() {
+    if (!state.fundUser) { toast('Select a user first', 'error'); return; }
+    const amountInput = document.getElementById('fundAmount');
+    const reasonInput = document.getElementById('fundReason');
+    const sourceInput = document.getElementById('fundSource');
+    const am = Number(amountInput?.value);
+    const r = (reasonInput?.value || '').trim();
+    const s = sourceInput?.value || 'support';
+    if (!am || am <= 0) { toast('Enter a valid amount', 'error'); amountInput?.focus(); return; }
+    if (!r) { toast('Reason is required', 'error'); reasonInput?.focus(); return; }
+
+    const btn = document.getElementById('fundSubmitBtn');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Crediting…</span>';
+    try {
+      const res = await api('/admin/wallet/fund', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) });
+      const d = res.data;
+      toast(`✅ ${fmtMoney(d.amount)} credited — new balance ${fmtMoney(d.wallet_after)}`, 'success');
+      // Update local cache & redraw preview
+      const u = (state.users || []).find(x => String(x.id || x._id) === String(state.fundUser.id || state.fundUser._id));
+      if (u) u.balance = d.wallet_after;
+      state.fundUser.balance = d.wallet_after;
+      renderFundUserDetail(state.fundUser);
+      // Clear inputs
+      const a = document.getElementById('fundAmount'); if (a) a.value = '';
+      const rEl = document.getElementById('fundReason'); if (rEl) rEl.value = '';
+      setTimeout(() => refreshAll(true), 400);
+    } catch (e) {
+      toast(e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
   window.submitManualFund = submitManualFund;
-  async function submitManualDebit() { if (!state.fundUser) { toast('Select a user first', 'error'); return; } const am = Number($('#fundAmount')?.value); const r = ($('#fundReason')?.value || '').trim(); const s = $('#fundSource')?.value || 'correction'; if (!am || am <= 0) { toast('Enter a valid amount', 'error'); return; } if (!r) { toast('Reason is required', 'error'); return; } if (!confirm(`Debit ${fmtMoney(am)} from ${state.fundUser.name || state.fundUser.email}?`)) return; const b = $('#debitSubmitBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Debiting…'; try { const res = await api('/admin/wallet/debit', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) }); const d = res.data; toast(`✅ ${fmtMoney(d.amount)} debited — new balance ${fmtMoney(d.wallet_after)}`, 'success'); const a = $('#fundAmount'); if (a) a.value = ''; const r2 = $('#fundReason'); if (r2) r2.value = ''; setTimeout(() => refreshAll(true), 300); } catch (e) { toast(e.message, 'error'); } finally { b.disabled = false; b.innerHTML = o; } }
+
+  async function submitManualDebit() {
+    if (!state.fundUser) { toast('Select a user first', 'error'); return; }
+    const amountInput = document.getElementById('fundAmount');
+    const reasonInput = document.getElementById('fundReason');
+    const sourceInput = document.getElementById('fundSource');
+    const am = Number(amountInput?.value);
+    const r = (reasonInput?.value || '').trim();
+    const s = sourceInput?.value || 'correction';
+    if (!am || am <= 0) { toast('Enter a valid amount', 'error'); amountInput?.focus(); return; }
+    if (!r) { toast('Reason is required', 'error'); reasonInput?.focus(); return; }
+    const who = state.fundUser.name || state.fundUser.email || `#${state.fundUser.id || state.fundUser._id}`;
+    if (!confirm(`Debit ${fmtMoney(am)} from ${who}? This cannot be undone.`)) return;
+
+    const btn = document.getElementById('debitSubmitBtn');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Debiting…</span>';
+    try {
+      const res = await api('/admin/wallet/debit', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) });
+      const d = res.data;
+      toast(`✅ ${fmtMoney(d.amount)} debited — new balance ${fmtMoney(d.wallet_after)}`, 'success');
+      const u = (state.users || []).find(x => String(x.id || x._id) === String(state.fundUser.id || state.fundUser._id));
+      if (u) u.balance = d.wallet_after;
+      state.fundUser.balance = d.wallet_after;
+      renderFundUserDetail(state.fundUser);
+      const a = document.getElementById('fundAmount'); if (a) a.value = '';
+      const rEl = document.getElementById('fundReason'); if (rEl) rEl.value = '';
+      setTimeout(() => refreshAll(true), 400);
+    } catch (e) {
+      toast(e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
   window.submitManualDebit = submitManualDebit;
 
   /* ARCHIVED */
@@ -1964,8 +2454,8 @@ button{font-family:inherit}
   requestNotifPermission();
   renderAdminAlerts();
   setInterval(() => { detectNewApprovals(); }, 2500);
-  document.addEventListener('click', e => { if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) { const p = document.getElementById('adminAlertPanel'); if (p && p.classList.contains('open')) toggleAdminAlerts(); } if (!e.target.closest('.fund-suggest')) hideFundSuggest(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideFundSuggest(); if (state.activeTab === 'users' && (state.userQuery||'').length > 0) { clearUserSearch(); return; } if (state.activeTab === 'transactions' && ($('#txnSearch')?.value||'').length > 0) { clearTxnSearch(); return; } closeFilterSheet(); closeViewModal(); closeDatashopWallet(); closeTxnModal(); closeApproveModal(); closeRejectModal(); closeApproveDepositModal(); closeRejectDepositModal(); closeDrawer(); hideAlarmBanner(); stopAlarm(); } });
+  document.addEventListener('click', e => { if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) { const p = document.getElementById('adminAlertPanel'); if (p && p.classList.contains('open')) toggleAdminAlerts(); } });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (state.activeTab === 'users' && (state.userQuery||'').length > 0) { clearUserSearch(); return; } if (state.activeTab === 'transactions' && ($('#txnSearch')?.value||'').length > 0) { clearTxnSearch(); return; } closeFilterSheet(); closeViewModal(); closeDatashopWallet(); closeTxnModal(); closeApproveModal(); closeRejectModal(); closeApproveDepositModal(); closeRejectDepositModal(); closeDrawer(); hideAlarmBanner(); stopAlarm(); } });
 
   (function setupFilterCounts() { ['transactions','deposits','withdrawals','users','archived'].forEach(t => updateFilterCount(t)); })();
 
