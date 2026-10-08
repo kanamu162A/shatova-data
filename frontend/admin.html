@@ -461,328 +461,163 @@ button{font-family:inherit}
 .txn-amount-block .amt-meta .val{font-size:15px;font-weight:800}
 
 /* ============================================================
-   MANUAL FUND — completely redesigned
+   MANUAL FUND — slim, professional, mature redesign
    ============================================================ */
-.fund-shell{max-width:760px;margin:0 auto;padding:32px 26px 40px}
+.fund-shell{max-width:800px;margin:0 auto;padding:28px 24px 40px}
 
-/* Stage 1: search */
-.fund-search-stage{
-  background:linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%);
-  border:1px solid rgba(10,69,52,.14);border-radius:22px;
-  padding:28px 28px 26px;position:relative;overflow:hidden;
-  box-shadow:0 14px 40px -20px rgba(10,69,52,.18),0 2px 6px rgba(10,69,52,.04)
+.fund-panel{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow-sm);overflow:hidden;
 }
-[data-theme="dark"] .fund-search-stage{background:linear-gradient(180deg,rgba(10,69,52,.14),rgba(10,69,52,.05))}
-.fund-search-stage::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient);opacity:.9}
-.fund-search-stage::after{content:'';position:absolute;top:-90px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,.05) 0%,transparent 65%);pointer-events:none}
-.fund-search-head{display:flex;align-items:center;gap:16px;margin-bottom:22px;position:relative;z-index:1}
-.fund-search-head-icon{width:56px;height:56px;border-radius:16px;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 10px 24px -8px rgba(10,69,52,.45)}
-.fund-search-head-title{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.4px;margin-bottom:5px;line-height:1.2}
-.fund-search-head-sub{font-size:13px;color:var(--text-muted);font-weight:500;line-height:1.45}
+.fund-panel-head{
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;background:var(--bg-soft);
+}
+.fund-panel-head .icon{
+  width:42px;height:42px;border-radius:11px;
+  background:var(--primary-gradient);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+.fund-panel-head h2{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.2px;margin-bottom:2px}
+.fund-panel-head p{font-size:12px;color:var(--text-muted);font-weight:500;line-height:1.4}
 
-.fund-search-wrap{position:relative;z-index:1}
-.fund-search-input{
-  position:relative;display:flex;align-items:center;gap:0;
-  background:var(--bg-card);border:2px solid rgba(10,69,52,.18);
-  border-radius:16px;height:64px;transition:all .22s;
-  box-shadow:0 2px 6px rgba(15,23,42,.03),0 12px 28px -14px rgba(10,69,52,.10);
-  overflow:hidden
-}
-.fund-search-input:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.08),0 14px 32px -14px rgba(10,69,52,.22)}
-.fund-search-input:focus-within .fund-search-icon{background:var(--primary-gradient);color:#fff}
-.fund-search-icon{
-  width:56px;height:100%;display:flex;align-items:center;justify-content:center;
-  background:var(--primary-light);color:var(--primary);
-  font-size:17px;flex-shrink:0;transition:all .22s;border-right:1px solid var(--border-soft)
-}
-.fund-search-input input{flex:1;border:none;outline:none;background:transparent;font-size:15px;font-weight:600;color:var(--text);font-family:inherit;padding:0 18px;height:100%;letter-spacing:-.15px;min-width:0}
-.fund-search-input input::placeholder{color:var(--text-muted);font-weight:500}
-.fund-search-clear{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg-input);color:var(--text-muted);cursor:pointer;font-size:12px;display:none;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0;transition:all .18s}
-.fund-search-clear.visible{display:inline-flex}
-.fund-search-clear:hover{background:var(--danger-light);color:var(--danger-dark);transform:rotate(90deg)}
+.fund-panel-body{padding:24px}
 
-.fund-search-status{margin-top:14px;font-size:12.5px;color:var(--text-muted);font-weight:500;display:flex;align-items:center;gap:8px;position:relative;z-index:1;min-height:18px}
-.fund-search-status.error{color:var(--danger-dark);font-weight:700}
-.fund-search-status.loading{color:var(--primary-dark);font-weight:700}
-.fund-search-status strong{color:var(--text);font-weight:800}
-
-/* Fund suggestions — rich result cards */
-.fund-results{
-  margin-top:20px;display:none;flex-direction:column;gap:10px;
-  position:relative;z-index:1
+/* slim search row */
+.fund-search-row{display:flex;gap:10px;align-items:stretch}
+.fund-search-field{
+  flex:1;display:flex;align-items:center;
+  background:var(--bg-input);border:1.5px solid var(--border);
+  border-radius:11px;padding:0 16px;height:52px;
+  transition:all .2s;min-width:0;
 }
-.fund-results.open{display:flex;animation:fadeUp .26s}
-
-.fund-result-card{
-  display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;
-  padding:16px 18px;background:var(--bg-card);
-  border:1.5px solid var(--border);border-radius:16px;
-  cursor:pointer;transition:all .2s;
-  position:relative;overflow:hidden
-}
-.fund-result-card:hover{
-  border-color:var(--primary);
-  background:linear-gradient(135deg,rgba(10,69,52,.04),rgba(10,69,52,.01));
-  transform:translateY(-2px);
-  box-shadow:0 12px 28px -14px rgba(10,69,52,.22)
-}
-.fund-result-card::after{
-  content:'';position:absolute;right:-10px;top:50%;transform:translateY(-50%);
-  width:60px;height:60px;border-radius:50%;
-  background:radial-gradient(circle,rgba(10,69,52,.04) 0%,transparent 70%);
-  pointer-events:none;opacity:0;transition:opacity .2s
-}
-.fund-result-card:hover::after{opacity:1}
-.fund-result-avatar{
-  width:52px;height:52px;border-radius:15px;
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:900;font-size:19px;letter-spacing:-.5px;flex-shrink:0;
-  box-shadow:0 6px 16px -4px rgba(15,23,42,.22),inset 0 1px 0 rgba(255,255,255,.25);
-  position:relative
-}
-.fund-result-avatar .status-dot{
-  position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;
-  background:var(--success);border:3px solid var(--bg-card);
-  box-shadow:0 2px 6px rgba(16,185,129,.3)
-}
-.fund-result-avatar.status-suspended .status-dot{background:var(--danger)}
-.fund-result-body{min-width:0;display:flex;flex-direction:column;gap:7px}
-.fund-result-name-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-.fund-result-name{font-size:15.5px;font-weight:900;color:var(--text);letter-spacing:-.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.fund-result-tag{
-  font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:6px;
-  letter-spacing:.5px;text-transform:uppercase;
-  display:inline-flex;align-items:center;gap:4px;border:1px solid transparent
-}
-.fund-result-tag.active{background:var(--success-light);color:var(--success-dark);border-color:rgba(9,134,88,.14)}
-.fund-result-tag.suspended{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,.14)}
-.fund-result-tag.admin{background:var(--purple-light);color:var(--purple-dark);border-color:rgba(124,58,237,.14)}
-.fund-result-meta{
-  display:flex;align-items:center;gap:14px;
-  font-size:12px;color:var(--text-muted);font-weight:500;
-  flex-wrap:wrap;row-gap:5px
-}
-.fund-result-meta .item{
-  display:inline-flex;align-items:center;gap:6px;
-  max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
-}
-.fund-result-meta .item i{font-size:11px;opacity:.7;flex-shrink:0}
-.fund-result-meta .item.mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:.2px}
-.fund-result-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
-.fund-result-balance{
-  padding:10px 16px;border-radius:13px;
-  background:linear-gradient(135deg,rgba(10,69,52,.07),rgba(10,69,52,.02));
-  border:1px solid rgba(10,69,52,.12);
-  text-align:right;display:flex;flex-direction:column;gap:2px;min-width:112px
-}
-.fund-result-balance-label{font-size:9px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted)}
-.fund-result-balance-value{font-size:15.5px;font-weight:900;color:var(--primary-dark);letter-spacing:-.35px;font-variant-numeric:tabular-nums}
-.fund-result-arrow{
-  width:40px;height:40px;border-radius:12px;
-  background:var(--bg-input);color:var(--text-muted);
-  display:inline-flex;align-items:center;justify-content:center;font-size:13px;
-  transition:all .22s
-}
-.fund-result-card:hover .fund-result-arrow{
-  background:var(--primary);color:#fff;transform:translateX(4px);
-  box-shadow:0 6px 16px -4px rgba(10,69,52,.4)
-}
-
-/* Fund empty/initial state */
-.fund-initial{
-  padding:48px 32px 56px;text-align:center;max-width:520px;margin:0 auto;
-  animation:fadeUp .34s
-}
-.fund-initial-icon{
-  width:96px;height:96px;margin:0 auto 22px;border-radius:28px;
-  background:linear-gradient(135deg,rgba(10,69,52,.07),rgba(10,69,52,.015));
-  border:1px solid rgba(10,69,52,.08);
-  display:flex;align-items:center;justify-content:center;
-  font-size:38px;color:var(--primary);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)
-}
-.fund-initial-title{font-size:19px;font-weight:900;color:var(--text);margin-bottom:10px;letter-spacing:-.35px}
-.fund-initial-text{font-size:13.5px;color:var(--text-muted);line-height:1.65;margin-bottom:24px}
-.fund-initial-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.fund-initial-chip{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 14px;border-radius:999px;
-  background:var(--bg-card);border:1px solid var(--border);
-  color:var(--text-secondary);font-size:12px;font-weight:700;
-  cursor:pointer;font-family:inherit;transition:all .18s
-}
-.fund-initial-chip i{font-size:10px;color:var(--primary);transition:all .18s}
-.fund-initial-chip:hover{
-  border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);
-  transform:translateY(-1px);box-shadow:0 4px 14px -4px rgba(10,69,52,.14)
-}
-.fund-initial-chip:hover i{color:var(--primary-dark)}
-
-/* Stage 2: user detail card + form */
-#fundForm{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s cubic-bezier(0.32,0.72,0.24,1),opacity .32s ease;padding:0}
-#fundForm.revealed{max-height:2400px;opacity:1;padding:0}
-
-.fund-user-detail{
-  background:linear-gradient(135deg,#ffffff 0%,#f9fcfb 100%);
-  border:1px solid rgba(10,69,52,.14);border-radius:22px;
-  margin-top:22px;position:relative;overflow:hidden;
-  box-shadow:0 20px 50px -22px rgba(10,69,52,.22),0 2px 6px rgba(10,69,52,.04)
-}
-[data-theme="dark"] .fund-user-detail{background:linear-gradient(135deg,rgba(10,69,52,.14),rgba(10,69,52,.05))}
-.fund-user-detail::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient)}
-.fund-user-detail::after{content:'';position:absolute;top:-100px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,.05) 0%,transparent 65%);pointer-events:none}
-
-.fund-detail-head{
-  padding:26px 28px 22px;
-  display:flex;align-items:center;gap:20px;
-  border-bottom:1px dashed rgba(10,69,52,.15);
-  position:relative;z-index:1
-}
-.fund-detail-avatar-wrap{position:relative;flex-shrink:0}
-.fund-detail-avatar{
-  width:74px;height:74px;border-radius:22px;
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:900;font-size:28px;letter-spacing:-.8px;
-  box-shadow:0 14px 30px -10px rgba(15,23,42,.32),inset 0 1px 0 rgba(255,255,255,.25)
-}
-.fund-detail-verified{
-  position:absolute;bottom:-4px;right:-4px;
-  width:26px;height:26px;border-radius:50%;
-  background:var(--success);color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;border:3px solid var(--bg-card);
-  box-shadow:0 3px 8px rgba(16,185,129,.35)
-}
-.fund-detail-info{flex:1;min-width:0}
-.fund-detail-name{
-  font-size:20px;font-weight:900;color:var(--text);
-  letter-spacing:-.45px;margin-bottom:8px;line-height:1.2;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
-}
-.fund-detail-meta{
-  font-size:12.5px;color:var(--text-muted);font-weight:500;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;row-gap:6px
-}
-.fund-detail-meta .chip-id{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:4px 10px;border-radius:7px;
-  background:var(--primary-light);color:var(--primary-dark);
-  font-family:'SF Mono',Menlo,monospace;font-size:11px;font-weight:800;
-  border:1px solid rgba(10,69,52,.08)
-}
-.fund-detail-meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11.5px;letter-spacing:.2px}
-.fund-detail-clear{
-  padding:9px 16px;border-radius:999px;
-  border:1px solid var(--border);background:var(--bg-card);
-  color:var(--text-secondary);font-size:11.5px;font-weight:800;
-  cursor:pointer;font-family:inherit;flex-shrink:0;
-  display:inline-flex;align-items:center;gap:6px;
-  transition:all .18s
-}
-.fund-detail-clear:hover{
-  border-color:var(--danger-dark);color:var(--danger-dark);background:var(--danger-light)
-}
-.fund-detail-clear i{font-size:10px}
-
-.fund-balances{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:0;padding:22px 28px;
-  border-bottom:1px dashed rgba(10,69,52,.15);
-  position:relative;z-index:1
-}
-.fund-balance-block{
-  display:flex;flex-direction:column;gap:6px;
-  padding:0 24px;border-right:1px solid rgba(10,69,52,.08)
-}
-.fund-balance-block:first-child{padding-left:0}
-.fund-balance-block:last-child{padding-right:0;border-right:none}
-.fund-balance-block .label{
-  font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
-  color:var(--text-muted)
-}
-.fund-balance-block .value{
-  font-size:26px;font-weight:900;color:var(--primary-dark);
-  letter-spacing:-.7px;font-variant-numeric:tabular-nums;line-height:1.1
-}
-.fund-balance-block .value.held{color:var(--warning-dark)}
-.fund-balance-block .value.neutral{color:var(--text-secondary)}
-
-.fund-form-body{padding:26px 28px 28px;position:relative;z-index:1}
-
-.fund-form-group{margin-bottom:22px}
-.fund-form-label{
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:12px;font-weight:800;color:var(--text-secondary);
-  margin-bottom:10px;letter-spacing:.1px
-}
-.fund-form-label .hint{font-size:10.5px;color:var(--text-muted);font-weight:600;letter-spacing:0;text-transform:none}
-
-.fund-amount-field{position:relative;display:flex;align-items:center;background:var(--bg-card);border:2px solid var(--border);border-radius:14px;transition:all .22s;overflow:hidden}
-.fund-amount-field:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
-.fund-amount-field .currency{
-  padding:0 18px;height:58px;display:flex;align-items:center;
-  background:var(--primary-light);color:var(--primary-dark);
-  font-size:20px;font-weight:900;border-right:1px solid var(--border-soft);flex-shrink:0
-}
-.fund-amount-field input{
+.fund-search-field:focus-within{border-color:var(--primary);background:var(--bg-card);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
+.fund-search-field i{color:var(--primary);font-size:14px;margin-right:12px;flex-shrink:0}
+.fund-search-field input{
   flex:1;border:none;outline:none;background:transparent;
-  font-size:20px;font-weight:900;color:var(--text);font-family:inherit;
-  padding:0 18px;height:58px;letter-spacing:-.4px;min-width:0;font-variant-numeric:tabular-nums
+  font-size:14px;font-weight:500;color:var(--text);font-family:inherit;min-width:0;
 }
-.fund-amount-field input::placeholder{font-weight:600;color:var(--text-muted);letter-spacing:0}
-
-.fund-amount-presets{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.fund-preset-btn{
-  padding:8px 14px;border-radius:999px;
-  background:var(--bg-card);border:1px solid var(--border);
-  color:var(--text-secondary);font-size:12px;font-weight:800;
-  cursor:pointer;font-family:inherit;transition:all .18s;
-  font-variant-numeric:tabular-nums
+.fund-search-field input::placeholder{color:var(--text-muted);font-weight:400}
+.fund-search-clear{
+  width:28px;height:28px;border-radius:50%;border:none;
+  background:var(--bg-card);color:var(--text-muted);
+  cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;
+  margin-left:8px;flex-shrink:0;
 }
-.fund-preset-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);transform:translateY(-1px)}
+.fund-search-clear.visible{display:inline-flex}
+.fund-search-clear:hover{background:var(--danger-light);color:var(--danger-dark)}
 
-.fund-reason-field{
-  width:100%;padding:14px 16px;
-  background:var(--bg-card);border:2px solid var(--border);border-radius:14px;
-  color:var(--text);font-size:14px;font-family:inherit;font-weight:500;
-  outline:none;transition:all .22s;resize:vertical;min-height:88px;line-height:1.55
+.fund-status{margin-top:10px;font-size:12px;color:var(--text-muted);min-height:16px}
+.fund-status.error{color:var(--danger-dark);font-weight:600}
+.fund-status.loading{color:var(--primary-dark);font-weight:600}
+.fund-status.success{color:var(--success-dark);font-weight:600}
+
+/* results list — compact */
+.fund-results{margin-top:14px;display:none;flex-direction:column;gap:6px}
+.fund-results.open{display:flex}
+.fund-result{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 14px;border:1px solid var(--border);border-radius:12px;
+  background:var(--bg-card);cursor:pointer;transition:all .18s;
 }
-.fund-reason-field:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
-.fund-reason-field::placeholder{color:var(--text-muted);font-weight:400}
+.fund-result:hover{border-color:var(--primary);background:var(--primary-light);transform:translateX(2px)}
+.fund-result .avatar{
+  width:42px;height:42px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:15px;flex-shrink:0;position:relative;
+}
+.fund-result .avatar .dot{
+  position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border-radius:50%;
+  background:var(--success);border:2px solid var(--bg-card);
+}
+.fund-result .avatar.suspended .dot{background:var(--danger)}
+.fund-result .info{flex:1;min-width:0}
+.fund-result .name{
+  font-size:14px;font-weight:800;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;
+}
+.fund-result .meta{
+  font-size:11.5px;color:var(--text-muted);font-weight:500;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;row-gap:3px;
+}
+.fund-result .meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11px}
+.fund-result .balance{
+  padding:6px 12px;border-radius:9px;
+  background:var(--primary-light);border:1px solid rgba(10,69,52,.1);
+  font-size:13px;font-weight:900;color:var(--primary-dark);
+  font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0;
+}
 
-.fund-source-field{
-  width:100%;padding:14px 44px 14px 16px;
-  background:var(--bg-card);border:2px solid var(--border);border-radius:14px;
-  color:var(--text);font-size:14px;font-family:inherit;font-weight:600;
-  outline:none;transition:all .22s;cursor:pointer;appearance:none;
+/* selected user summary — slim */
+.fund-selected{
+  margin-top:16px;padding:16px 18px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(10,69,52,.06),rgba(10,69,52,.015));
+  border:1px solid rgba(10,69,52,.12);
+  display:flex;align-items:center;gap:14px;
+}
+.fund-selected .avatar{
+  width:48px;height:48px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:18px;flex-shrink:0;
+}
+.fund-selected .info{flex:1;min-width:0}
+.fund-selected .name{font-size:14.5px;font-weight:900;color:var(--primary-dark);margin-bottom:4px}
+.fund-selected .meta{
+  font-size:11.5px;color:var(--text-muted);font-weight:500;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.fund-selected .meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11px}
+.fund-selected .change{
+  padding:7px 14px;border-radius:9px;border:1px solid var(--border);
+  background:var(--bg-card);color:var(--text-secondary);
+  font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit;
+  flex-shrink:0;transition:all .18s;
+}
+.fund-selected .change:hover{border-color:var(--danger-dark);color:var(--danger-dark);background:var(--danger-light)}
+
+/* form — slim */
+.fund-form{margin-top:20px;display:none}
+.fund-form.revealed{display:block}
+.fund-form-row{display:flex;gap:12px;margin-bottom:16px}
+.fund-form-row > *{flex:1}
+.fund-field{display:flex;flex-direction:column;gap:6px}
+.fund-field label{
+  font-size:11px;font-weight:800;color:var(--text-secondary);
+  letter-spacing:.2px;text-transform:uppercase;
+}
+.fund-field input,.fund-field textarea,.fund-field select{
+  width:100%;padding:12px 14px;
+  background:var(--bg-input);border:1.5px solid var(--border);border-radius:10px;
+  color:var(--text);font-size:13.5px;font-family:inherit;font-weight:500;
+  outline:none;transition:all .2s;
+}
+.fund-field input:focus,.fund-field textarea:focus,.fund-field select:focus{
+  border-color:var(--primary);background:var(--bg-card);box-shadow:0 0 0 4px rgba(10,69,52,.07);
+}
+.fund-field textarea{resize:vertical;min-height:64px;line-height:1.5}
+.fund-field .hint{font-size:10.5px;color:var(--text-muted);font-weight:500}
+.fund-field select{cursor:pointer;appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 18px center
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;
 }
-.fund-source-field:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
 
-.fund-actions{
-  display:grid;grid-template-columns:1fr 1fr;gap:12px;
-  margin-top:24px;padding-top:22px;border-top:1px dashed rgba(10,69,52,.15)
+.fund-actions{display:flex;gap:10px;margin-top:6px}
+.fund-btn{
+  flex:1;padding:13px 18px;border-radius:11px;border:none;
+  font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;
 }
-.fund-action-btn{
-  padding:17px 20px;border-radius:14px;border:none;
-  font-size:14px;font-weight:900;cursor:pointer;
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  font-family:inherit;transition:all .22s;letter-spacing:.1px
-}
-.fund-action-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.fund-action-btn i{font-size:15px}
-.fund-action-btn .btn-sub{display:block;font-size:10px;font-weight:700;letter-spacing:.4px;opacity:.8;text-transform:uppercase;margin-top:2px}
-.fund-action-btn.credit{
-  background:linear-gradient(135deg,#10b981 0%,#098658 100%);color:#fff;
-  box-shadow:0 10px 24px -8px rgba(9,134,88,.45)
-}
-.fund-action-btn.credit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(9,134,88,.55)}
-.fund-action-btn.debit{
-  background:linear-gradient(135deg,#a12222 0%,#7a1a1a 100%);color:#fff;
-  box-shadow:0 10px 24px -8px rgba(161,34,34,.45)
-}
-.fund-action-btn.debit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(161,34,34,.55)}
+.fund-btn:disabled{opacity:.55;cursor:not-allowed}
+.fund-btn.credit{background:linear-gradient(135deg,#10b981,#098658);color:#fff;box-shadow:0 6px 16px -6px rgba(9,134,88,.4)}
+.fund-btn.credit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px -6px rgba(9,134,88,.5)}
+.fund-btn.debit{background:var(--bg-card);border:1.5px solid rgba(161,34,34,.3);color:var(--danger-dark)}
+.fund-btn.debit:hover:not(:disabled){background:var(--danger-light);border-color:var(--danger-dark)}
+
+/* empty state — slim */
+.fund-empty{padding:40px 24px;text-align:center;color:var(--text-muted)}
+.fund-empty i{font-size:32px;color:var(--primary);opacity:.4;margin-bottom:12px;display:block}
+.fund-empty p{font-size:13px;line-height:1.6;max-width:400px;margin:0 auto}
 
 /* DRIFT */
 .drift-hero{padding:24px 28px;background:linear-gradient(180deg,#fbfdfc,#f7faf8);border:1px solid var(--border);border-radius:16px;margin-bottom:20px}
@@ -926,30 +761,15 @@ button{font-family:inherit}
   .user-avatar{grid-area:avatar;width:46px;height:46px;font-size:16px;border-radius:14px}
   .user-body{grid-area:main}
   .user-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
-  .fund-shell{padding:20px 16px 32px}
-  .fund-search-stage{padding:22px 20px 22px;border-radius:18px}
-  .fund-search-head-icon{width:48px;height:48px;border-radius:14px;font-size:19px}
-  .fund-search-head-title{font-size:16px}
-  .fund-search-head-sub{font-size:12px}
-  .fund-search-input{height:58px;border-radius:14px}
-  .fund-search-icon{width:50px;font-size:15px}
-  .fund-search-input input{font-size:16px;padding:0 14px}
-  .fund-result-card{grid-template-columns:48px 1fr;grid-template-areas:"avatar main" "right right";gap:14px;padding:14px}
-  .fund-result-avatar{grid-area:avatar;width:46px;height:46px;border-radius:14px;font-size:17px}
-  .fund-result-body{grid-area:main;gap:6px}
-  .fund-result-name{font-size:14.5px}
-  .fund-result-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
-  .fund-result-balance{padding:8px 14px;min-width:auto}
-  .fund-result-balance-value{font-size:14.5px}
-  .fund-detail-head{padding:22px 20px 18px;gap:16px}
-  .fund-detail-avatar{width:64px;height:64px;font-size:24px;border-radius:18px}
-  .fund-detail-name{font-size:17px}
-  .fund-detail-meta{font-size:11.5px;gap:8px}
-  .fund-balances{padding:20px 20px}
-  .fund-balance-block{padding:0 16px}
-  .fund-balance-block .value{font-size:22px}
-  .fund-form-body{padding:22px 20px 24px}
-  .fund-actions{grid-template-columns:1fr;gap:10px}
+  .fund-shell{padding:18px 14px 32px}
+  .fund-panel-body{padding:18px}
+  .fund-search-row{flex-direction:column}
+  .fund-result{flex-wrap:wrap}
+  .fund-result .balance{width:100%;text-align:center;margin-top:8px}
+  .fund-selected{flex-wrap:wrap}
+  .fund-selected .change{width:100%;text-align:center;margin-top:8px}
+  .fund-form-row{flex-direction:column}
+  .fund-actions{flex-direction:column}
   #viewModal .modal,#txnModal .modal,#datashopModal .modal{max-width:100%;margin:0;border-radius:20px 20px 0 0;padding:22px 20px}
   #viewModal,#txnModal,#datashopModal,#approveModal,#rejectModal,#approveDepositModal,#rejectDepositModal{align-items:flex-end;padding:0}
   .modal .btns{flex-direction:column-reverse}
@@ -973,16 +793,8 @@ button{font-family:inherit}
   .stat-value{font-size:18px}
   .content{padding:12px 12px 120px}
   .panel-head{padding:14px 16px}
-  .fund-shell{padding:16px 12px 26px}
-  .fund-search-stage{padding:20px 16px 20px;border-radius:16px}
-  .fund-search-head{flex-direction:column;align-items:flex-start;gap:12px}
-  .fund-search-head-icon{width:44px;height:44px;border-radius:13px;font-size:18px}
-  .fund-detail-head{flex-direction:column;align-items:flex-start;gap:14px}
-  .fund-detail-avatar{width:56px;height:56px;font-size:22px;border-radius:16px}
-  .fund-detail-clear{align-self:flex-start}
-  .fund-balances{grid-template-columns:1fr;padding:18px 16px;gap:16px}
-  .fund-balance-block{padding:0;border-right:none;border-bottom:1px dashed rgba(10,69,52,.15);padding-bottom:14px}
-  .fund-balance-block:last-child{border-bottom:none;padding-bottom:0}
+  .fund-shell{padding:14px 12px 26px}
+  .fund-panel-body{padding:16px}
   .kpi-strip{grid-template-columns:1fr 1fr;gap:10px}
   .kpi{padding:14px 16px}
   .kpi .k-value{font-size:18px}
@@ -1201,7 +1013,7 @@ button{font-family:inherit}
                 <div class="search-headline-icon"><i class="fas fa-receipt"></i></div>
                 <div>
                   <div class="search-headline-title">All transactions in one place</div>
-                  <div class="search-headline-sub">Search by reference, product, or phone. Open filters to trace a user.</div>
+                  <div class="search-headline-sub">Unified ledger — deposits, withdrawals, VTU, manual, transfers &amp; more</div>
                 </div>
               </div>
               <div class="search-bar-row">
@@ -1286,43 +1098,71 @@ button{font-family:inherit}
         </div>
       </section>
 
-      <!-- MANUAL FUND — completely new -->
+      <!-- MANUAL FUND — slim, professional redesign -->
       <section id="tab-fund" style="display:none">
-        <div class="panel" style="background:transparent;border:none;box-shadow:none">
-          <div class="fund-shell">
-            <!-- Stage 1: search -->
-            <div class="fund-search-stage" id="fundSearchStage">
-              <div class="fund-search-head">
-                <div class="fund-search-head-icon"><i class="fas fa-hand-holding-dollar"></i></div>
-                <div>
-                  <div class="fund-search-head-title">Manual Wallet Fund / Debit</div>
-                  <div class="fund-search-head-sub">Look up a customer by phone, email, or user ID to credit or debit their wallet.</div>
-                </div>
+        <div class="fund-shell">
+          <div class="fund-panel">
+            <div class="fund-panel-head">
+              <div class="icon"><i class="fas fa-hand-holding-dollar"></i></div>
+              <div>
+                <h2>Manual Wallet Adjustment</h2>
+                <p>Credit or debit a customer wallet. Search by phone, email, or user ID.</p>
               </div>
-              <div class="fund-search-wrap">
-                <div class="fund-search-input">
-                  <span class="fund-search-icon"><i class="fas fa-magnifying-glass"></i></span>
+            </div>
+            <div class="fund-panel-body">
+              <!-- Search row -->
+              <div class="fund-search-row">
+                <div class="fund-search-field">
+                  <i class="fas fa-magnifying-glass"></i>
                   <input type="text" id="fundLookupQuery" placeholder="Phone, email, or user ID…" autocomplete="off" oninput="onFundLookupInput()">
                   <button class="fund-search-clear" id="fundSearchClear" onclick="clearFundSearch()" aria-label="Clear"><i class="fas fa-times"></i></button>
                 </div>
-                <div class="fund-search-status" id="fundSearchStatus"></div>
               </div>
+              <div class="fund-status" id="fundSearchStatus"></div>
+
+              <!-- Results -->
               <div class="fund-results" id="fundResults"></div>
-              <div class="fund-initial" id="fundInitial">
-                <div class="fund-initial-icon"><i class="fas fa-user-magnifying-glass"></i></div>
-                <div class="fund-initial-title">Search for a customer</div>
-                <div class="fund-initial-text">Enter a phone number, email address, or user ID above. Matching accounts will appear below — tap one to load their full details and unlock funding.</div>
-                <div class="fund-initial-chips">
-                  <button class="fund-initial-chip" onclick="quickFundSearch('0803')"><i class="fas fa-phone"></i> Try 0803…</button>
-                  <button class="fund-initial-chip" onclick="quickFundSearch('@gmail.com')"><i class="fas fa-at"></i> Try @gmail.com</button>
-                  <button class="fund-initial-chip" onclick="quickFundSearch('1')"><i class="fas fa-hashtag"></i> Try user ID</button>
+
+              <!-- Empty / initial -->
+              <div class="fund-empty" id="fundEmpty">
+                <i class="fas fa-user-magnifying-glass"></i>
+                <p>Enter a phone, email, or user ID to find a customer. Tap a result to load their details and unlock funding.</p>
+              </div>
+
+              <!-- Selected user + form -->
+              <div id="fundSelectedWrap" style="display:none">
+                <div class="fund-selected" id="fundSelected"></div>
+                <div class="fund-form" id="fundForm">
+                  <div class="fund-form-row">
+                    <div class="fund-field">
+                      <label>Amount (₦)</label>
+                      <input type="number" id="fundAmount" min="1" step="0.01" placeholder="0.00" inputmode="decimal">
+                    </div>
+                    <div class="fund-field">
+                      <label>Source</label>
+                      <select id="fundSource">
+                        <option value="support">Customer support</option>
+                        <option value="audit_fix">Audit correction</option>
+                        <option value="offline_payment">Offline bank payment</option>
+                        <option value="promo">Promotional credit</option>
+                        <option value="refund">Refund</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="fund-field" style="margin-bottom:16px">
+                    <label>Reason <span class="hint" style="text-transform:none;font-weight:500">— visible in user's history</span></label>
+                    <textarea id="fundReason" placeholder="e.g. Compensation for failed MTN data on 2026-09-26 (Ref: shatova-data-…)" rows="2"></textarea>
+                  </div>
+                  <div class="fund-actions">
+                    <button class="fund-btn credit" id="fundSubmitBtn" onclick="submitManualFund()">
+                      <i class="fas fa-plus-circle"></i> Credit Wallet
+                    </button>
+                    <button class="fund-btn debit" id="debitSubmitBtn" onclick="submitManualDebit()">
+                      <i class="fas fa-minus-circle"></i> Debit Wallet
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <!-- Stage 2: user detail + form -->
-            <div id="fundForm">
-              <div id="fundUserPreview"></div>
             </div>
           </div>
         </div>
@@ -1454,6 +1294,8 @@ button{font-family:inherit}
     currentFilterTab: 'transactions',
     users: [], totalUsers: 0,
     transactions: [], deposits: [], withdrawals: [],
+    // UNIFIED reservoir — everything merged
+    unifiedTransactions: [],
     userQuery: '', userSearched: false, userResults: [], userLoading: false, userTotal: 0,
     userFilterStatus: 'all',
     datashop: { balance: 0, totalFunded: 0, totalSpent: 0, lastFunding: null },
@@ -1575,7 +1417,7 @@ button{font-family:inherit}
     overview:{title:'Dashboard Overview',sub:'Welcome to your admin panel'},
     analytics:{title:'Analytics',sub:'Business insights'},
     users:{title:'Users',sub:'Search any account'},
-    transactions:{title:'All Transactions',sub:'Every action across the platform'},
+    transactions:{title:'All Transactions',sub:'Unified ledger — every action across the platform'},
     deposits:{title:'Deposits',sub:'Approve or reject deposits'},
     withdrawals:{title:'Withdrawals',sub:'Approve or reject payout requests'},
     fund:{title:'Manual Fund',sub:'Credit or debit a wallet'},
@@ -1620,8 +1462,60 @@ button{font-family:inherit}
   async function fetchMe() { try { const r = await api('/auth/me'); const u = r.data?.user || r.data; if (u) { const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('adminName', u.name || 'Admin'); s('adminEmail', u.email || ''); s('drawerName', u.name || 'Admin'); s('drawerEmail', u.email || ''); s('adminAvatar', (u.name || 'A').charAt(0).toUpperCase()); s('drawerAvatar', (u.name || 'A').charAt(0).toUpperCase()); } } catch (_) {} }
   async function fetchDW() { try { const r = await api('/admin/datashop/wallet'); const d = r.data || r || {}; state.datashop = { balance: getAmount({amount: d.balance ?? 0}), totalFunded: getAmount({amount: d.total_funded ?? 0}), totalSpent: getAmount({amount: d.total_spent ?? 0}), lastFunding: d.last_funding_at || null }; } catch (_) {} }
 
+  /* ============================================================
+     UNIFIED TRANSACTION RESERVOIR
+     Merges deposits, withdrawals, and VTU transactions into one
+     deduplicated, normalized list.
+     ============================================================ */
+  function buildUnifiedTransactions() {
+    const map = new Map();
+    const push = (item, forcedKind) => {
+      if (!item) return;
+      const id = String(item.id || item._id || item.reference || item.tx_ref || '');
+      if (!id) return;
+      const existing = map.get(id);
+      if (existing) {
+        // Already seen — prefer the richer record (with metadata/user_name)
+        const score = (o) => (o.metadata ? 1 : 0) + (o.user_name ? 1 : 0) + (o.user_email ? 1 : 0);
+        if (score(item) > score(existing)) map.set(id, item);
+        return;
+      }
+      map.set(id, item);
+    };
+
+    // 1) VTU / general transactions
+    (state.transactions || []).forEach(t => push(t));
+
+    // 2) Deposits — normalise direction so txnKind detects them
+    (state.deposits || []).forEach(d => {
+      const norm = { ...d };
+      if (!norm.direction) norm.direction = 'CREDIT';
+      if (!norm.type) norm.type = 'deposit';
+      if (!norm.category) norm.category = 'deposit';
+      if (!norm.metadata) norm.metadata = {};
+      if (!norm.metadata.product_name) norm.metadata.product_name = 'Wallet Deposit';
+      push(norm, 'deposit');
+    });
+
+    // 3) Withdrawals — normalise direction
+    (state.withdrawals || []).forEach(w => {
+      const norm = { ...w };
+      if (!norm.direction) norm.direction = 'DEBIT';
+      if (!norm.type) norm.type = 'withdrawal';
+      if (!norm.category) norm.category = 'withdrawal';
+      if (!norm.metadata) norm.metadata = {};
+      if (!norm.metadata.product_name) norm.metadata.product_name = 'Wallet Withdrawal';
+      push(norm, 'withdrawal');
+    });
+
+    // Sort newest first
+    state.unifiedTransactions = Array.from(map.values())
+      .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+  }
+
   function updateOverview() {
-    const txns = applyRange(state.transactions, state.range);
+    buildUnifiedTransactions();
+    const txns = applyRange(state.unifiedTransactions, state.range);
     const dep = applyRange(state.deposits, state.range);
     const wd = applyRange(state.withdrawals, state.range);
     const users = state.users || [];
@@ -1653,7 +1547,7 @@ button{font-family:inherit}
     s('statProfit', fmtMoney(pr, true));
     s('statProfitSub', `From ${sc.length} completed sale${sc.length===1?'':'s'}`);
     const sb = (id,c) => { const e = document.getElementById(id); if (e) e.textContent = c; };
-    sb('sidebarTxnCount', (state.transactions||[]).length);
+    sb('sidebarTxnCount', (state.unifiedTransactions||[]).length);
     sb('sidebarDepositCount', (state.deposits||[]).length);
     sb('sidebarWithdrawalCount', (state.withdrawals||[]).length);
     sb('sidebarUserCount', cnt);
@@ -1665,7 +1559,7 @@ button{font-family:inherit}
   function renderRecentTx() {
     const c = $('#recentTxList'); if (!c) return;
     const p = $('#recentTxPagination');
-    const list = applyRange(state.transactions, state.range).sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
+    const list = applyRange(state.unifiedTransactions, state.range).sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
     const total = list.length; const per = 5; const mp = Math.min(5, Math.ceil(total/per));
     const cp = Math.min(state.recentTxPage || 1, mp || 1);
     const start = (cp-1)*per; const end = Math.min(start+per, total);
@@ -1684,7 +1578,8 @@ button{font-family:inherit}
   window.goToRecentTxPage = (pg) => { state.recentTxPage = pg; renderRecentTx(); };
 
   function updateAnalyticsKpis() {
-    const txns = applyRange(state.transactions, state.range);
+    buildUnifiedTransactions();
+    const txns = applyRange(state.unifiedTransactions, state.range);
     const sc = txns.filter(t => getStatus(t) === 'success');
     const fc = txns.filter(t => getStatus(t) === 'failed');
     const dc = sc.length + fc.length; const rate = dc > 0 ? Math.round(sc.length/dc*100) : 0;
@@ -1711,7 +1606,8 @@ button{font-family:inherit}
   }
   function renderChart() {
     const el = document.getElementById('miniChart'); if (!el) return;
-    const b = buildBuckets(); const txns = state.transactions || [];
+    buildUnifiedTransactions();
+    const b = buildBuckets(); const txns = state.unifiedTransactions || [];
     const vals = b.map(x => { const s = x.start.getTime(), e = x.end.getTime(); return txns.reduce((a,t) => { const ts = new Date(getDate(t)).getTime(); if (isNaN(ts) || ts < s || ts >= e) return a; return a + getAmount(t); }, 0); });
     const mx = Math.max(...vals, 1); const gt = vals.reduce((a,b) => a+b,0); const pk = vals.indexOf(Math.max(...vals));
     el.innerHTML = b.map((x,i) => { const h = Math.max(3, Math.round(vals[i]/mx*100)); const last = i === b.length - 1; const sh = b.length <= 12 || i === 0 || i === b.length - 1 || i % 5 === 0; return `<div class="bar" title="${esc(x.label)} · ${fmtMoney(vals[i])}"><div class="track"><div class="fill ${last?'hot':''}" style="height:${h}%"></div></div><div class="lbl">${sh ? esc(x.label) : ''}</div></div>`; }).join('');
@@ -1767,7 +1663,7 @@ button{font-family:inherit}
 
     if (tab === 'transactions') {
       const counts = { all: 0, airtime: 0, data: 0, deposit: 0, withdrawal: 0, manual_fund: 0, manual_debit: 0, transfer: 0, refund: 0, other: 0 };
-      const list = applyRange(state.transactions || [], f.range || '1d');
+      const list = applyRange(state.unifiedTransactions || [], f.range || '1d');
       for (const t of list) { const k = txnKind(t); counts.all++; if (counts[k] !== undefined) counts[k]++; }
       const types = [
         { key:'all', label:'All types', icon:'fa-th-large' },
@@ -1892,7 +1788,7 @@ button{font-family:inherit}
   function getFilteredTxns() {
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     const f = state.filters.transactions;
-    let list = (state.transactions || []).slice();
+    let list = (state.unifiedTransactions || []).slice();
     if (f.tracedUserId) { const tid = String(f.tracedUserId); list = list.filter(t => String(t.user_id) === tid); }
     if (f.type && f.type !== 'all') list = list.filter(t => txnKind(t) === f.type);
     if (!f.tracedUserId) list = applyRange(list, f.range || state.range);
@@ -1936,7 +1832,7 @@ button{font-family:inherit}
   window.clearTxnSearch = clearTxnSearch;
   window.goToTxnPage = (pg) => { const t = getFilteredTxns().length; const tp = Math.max(1, Math.ceil(t/state.PER_PAGE)); state.txnPage = Math.min(Math.max(pg,1),tp); renderTransactions(); };
 
-  function findTxn(id) { if (!id) return null; const sid = String(id); for (const p of [state.transactions, state.deposits, state.withdrawals, state.archived.items]) { const h = (p||[]).find(x => String(x.id||x._id||x.reference||x.tx_ref) === sid); if (h) return h; } return null; }
+  function findTxn(id) { if (!id) return null; const sid = String(id); for (const p of [state.unifiedTransactions, state.transactions, state.deposits, state.withdrawals, state.archived.items]) { const h = (p||[]).find(x => String(x.id||x._id||x.reference||x.tx_ref) === sid); if (h) return h; } return null; }
   function viewTransaction(id) { const t = findTxn(id); if (!t) { toast('Transaction not found', 'error'); return; } const m = t.metadata || {}; const k = txnKind(t); const nk = detectNetwork(t); const logo = (k === 'airtime' || k === 'data') ? NET_SVG[nk] : kindAvatarHtml(t); const pr = m.product_name || t.description || t.product || `${kindLabel(k)} Transaction`; const ph = t.phone || m.phone || t.recipient || '—'; const am = getAmount(t); const st = getStatus(t); const rf = t.reference || t.tx_ref || t.id || t._id || '—'; const nl = (k === 'airtime' || k === 'data') ? ({mtn:'MTN Nigeria',airtel:'Airtel Nigeria',glo:'Globacom',t2:'9mobile',generic:'VTU Service'}[nk]) : kindLabel(k); $('#txnBody').innerHTML = `<div class="txn-hero"><div class="txn-hero-logo txn-avatar ${kindAvatarClass(t)}" style="border:none">${logo}</div><div class="txn-hero-info"><div class="txn-hero-title">${esc(pr)}</div><div class="txn-hero-sub"><span>${esc(nl)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div></div><div class="txn-amount-block"><div class="amt-label">Amount</div><div class="amt-value">${fmtMoney(am)}</div></div><div class="row-detail"><span class="lbl">Recipient</span><span class="val mono">${esc(ph)}</span></div><div class="row-detail"><span class="lbl">Category</span><span class="val">${esc(kindLabel(k))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(rf)}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Created</span><span class="val">${fmtDate(getDate(t))}</span></div>`; $('#txnModal').classList.add('active'); }
   window.viewTransaction = viewTransaction;
   function closeTxnModal() { $('#txnModal').classList.remove('active'); }
@@ -2039,19 +1935,19 @@ button{font-family:inherit}
   window.openDatashopWallet = openDatashopWallet; window.closeDatashopWallet = closeDatashopWallet; window.reloadDatashopWallet = reloadDW; window.goToDatashopPage = goToDatashopPage;
 
   /* ============================================================
-     MANUAL FUND — new redesigned flow
+     MANUAL FUND — slim, professional flow
      ============================================================ */
   let fundSearchSeq = 0;
 
   function resetFundTab() {
     state.fundUser = null;
-    const form = $('#fundForm'); if (form) form.classList.remove('revealed');
-    const initial = $('#fundInitial'); if (initial) initial.style.display = 'block';
+    const wrap = $('#fundSelectedWrap'); if (wrap) wrap.style.display = 'none';
+    const empty = $('#fundEmpty'); if (empty) empty.style.display = 'block';
     const results = $('#fundResults'); if (results) { results.classList.remove('open'); results.innerHTML = ''; }
-    const status = $('#fundSearchStatus'); if (status) { status.textContent = ''; status.className = 'fund-search-status'; }
-    const preview = $('#fundUserPreview'); if (preview) preview.innerHTML = '';
+    const status = $('#fundSearchStatus'); if (status) { status.textContent = ''; status.className = 'fund-status'; }
     const input = $('#fundLookupQuery'); if (input) input.value = '';
     const clear = $('#fundSearchClear'); if (clear) clear.classList.remove('visible');
+    const form = $('#fundForm'); if (form) form.classList.remove('revealed');
   }
   window.resetFundTab = resetFundTab;
 
@@ -2079,34 +1975,34 @@ button{font-family:inherit}
 
     const status = document.getElementById('fundSearchStatus');
     const results = document.getElementById('fundResults');
-    const initial = document.getElementById('fundInitial');
+    const empty = document.getElementById('fundEmpty');
+    const wrap = document.getElementById('fundSelectedWrap');
     const form = document.getElementById('fundForm');
 
-    // When admin types, collapse the previously-selected user (they're starting over)
+    // When admin types, collapse any previously-selected user
     if (q) {
+      if (wrap) wrap.style.display = 'none';
       if (form) form.classList.remove('revealed');
       state.fundUser = null;
-      const preview = document.getElementById('fundUserPreview');
-      if (preview) preview.innerHTML = '';
     }
 
     if (!q) {
       if (results) { results.classList.remove('open'); results.innerHTML = ''; }
-      if (status) { status.textContent = ''; status.className = 'fund-search-status'; }
-      if (initial) initial.style.display = 'block';
+      if (status) { status.textContent = ''; status.className = 'fund-status'; }
+      if (empty) empty.style.display = 'block';
       return;
     }
 
-    if (initial) initial.style.display = 'none';
+    if (empty) empty.style.display = 'none';
     const seq = ++fundSearchSeq;
-    if (status) { status.innerHTML = `<i class="fas fa-circle-notch fa-spin" style="color:var(--primary)"></i> Searching for <strong>${esc(q)}</strong>…`; status.className = 'fund-search-status loading'; }
+    if (status) { status.innerHTML = `<i class="fas fa-circle-notch fa-spin" style="color:var(--primary)"></i> Searching for <strong>${esc(q)}</strong>…`; status.className = 'fund-status loading'; }
 
     // Local first
     const local = filterUsers(q);
     if (local.length) {
       if (seq !== fundSearchSeq) return;
       renderFundResults(local, q);
-      if (status) { status.textContent = ''; status.className = 'fund-search-status'; }
+      if (status) { status.textContent = ''; status.className = 'fund-status'; }
       return;
     }
 
@@ -2119,12 +2015,12 @@ button{font-family:inherit}
         const found = pick(r);
         renderFundResults(found, q);
         if (status) {
-          if (found.length) { status.textContent = ''; status.className = 'fund-search-status'; }
-          else { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> No user matches <strong>${esc(q)}</strong>. Try a different phone, email, or ID.`; status.className = 'fund-search-status error'; }
+          if (found.length) { status.textContent = ''; status.className = 'fund-status'; }
+          else { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> No user matches <strong>${esc(q)}</strong>. Try a different phone, email, or ID.`; status.className = 'fund-status error'; }
         }
       } catch (err) {
         if (seq !== fundSearchSeq) return;
-        if (status) { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> Search failed: ${esc(err.message || 'unknown error')}`; status.className = 'fund-search-status error'; }
+        if (status) { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> Search failed: ${esc(err.message || 'unknown error')}`; status.className = 'fund-status error'; }
       }
     }, 260);
   }
@@ -2146,31 +2042,20 @@ button{font-family:inherit}
       const bal = fmtMoney(u.balance ?? u.wallet_balance ?? 0);
       const email = u.email || '';
       const phone = u.phone || '';
-      const isAdmin = /admin|super|owner/i.test(String(u.role || ''));
       return `
-        <div class="fund-result-card" onclick="selectFundResult('${esc(u.id || u._id || '')}')">
-          <div class="fund-result-avatar ${st === 'suspended' ? 'status-suspended' : ''}" style="background:${hashColor(name)}">
-            ${esc(ini)}<span class="status-dot"></span>
+        <div class="fund-result" onclick="selectFundResult('${esc(u.id || u._id || '')}')">
+          <div class="avatar ${st === 'suspended' ? 'suspended' : ''}" style="background:${hashColor(name)}">
+            ${esc(ini)}<span class="dot"></span>
           </div>
-          <div class="fund-result-body">
-            <div class="fund-result-name-row">
-              <span class="fund-result-name">${esc(name)}</span>
-              ${isAdmin ? `<span class="fund-result-tag admin"><i class="fas fa-shield-halved"></i> Admin</span>` : ''}
-              <span class="fund-result-tag ${st}">${esc(st)}</span>
-            </div>
-            <div class="fund-result-meta">
-              ${email ? `<span class="item"><i class="fas fa-envelope"></i> ${esc(email)}</span>` : ''}
-              ${phone ? `<span class="item mono"><i class="fas fa-phone"></i> ${esc(phone)}</span>` : ''}
-              <span class="item mono"><i class="fas fa-hashtag"></i> ID #${esc(String(u.id || u._id))}</span>
+          <div class="info">
+            <div class="name">${esc(name)}</div>
+            <div class="meta">
+              ${email ? `<span><i class="fas fa-envelope" style="font-size:10px;opacity:.6"></i> ${esc(email)}</span>` : ''}
+              ${phone ? `<span class="mono"><i class="fas fa-phone" style="font-size:10px;opacity:.6"></i> ${esc(phone)}</span>` : ''}
+              <span class="mono"><i class="fas fa-hashtag" style="font-size:10px;opacity:.6"></i> ${esc(String(u.id || u._id))}</span>
             </div>
           </div>
-          <div class="fund-result-right">
-            <div class="fund-result-balance">
-              <span class="fund-result-balance-label">Balance</span>
-              <span class="fund-result-balance-value">${bal}</span>
-            </div>
-            <div class="fund-result-arrow"><i class="fas fa-arrow-right"></i></div>
-          </div>
+          <div class="balance">${bal}</div>
         </div>
       `;
     }).join('');
@@ -2181,131 +2066,61 @@ button{font-family:inherit}
     if (!u) { toast('User not in local cache. Refresh and try again.', 'error'); return; }
     state.fundUser = u;
 
-    // Render detail card
-    renderFundUserDetail(u);
+    // Render selected summary
+    renderFundSelected(u);
 
-    // Reveal the form
+    // Hide results + empty
+    const results = document.getElementById('fundResults');
+    if (results) { results.classList.remove('open'); results.innerHTML = ''; }
+    const empty = document.getElementById('fundEmpty');
+    if (empty) empty.style.display = 'none';
+
+    // Show selected + form
+    const wrap = document.getElementById('fundSelectedWrap');
+    if (wrap) wrap.style.display = 'block';
     const form = document.getElementById('fundForm');
     if (form) form.classList.add('revealed');
 
-    // Hide search results + update input to reflect selection
-    const el = document.getElementById('fundResults');
-    if (el) { el.classList.remove('open'); el.innerHTML = ''; }
+    // Update input
     const i = document.getElementById('fundLookupQuery');
     if (i) i.value = u.name || u.email || u.phone || `#${u.id || u._id}`;
     const clear = document.getElementById('fundSearchClear');
     if (clear) clear.classList.add('visible');
-    const status = document.getElementById('fundSearchStatus');
-    if (status) { status.innerHTML = `<i class="fas fa-circle-check" style="color:var(--success-dark)"></i> Loaded <strong>${esc(u.name || u.email)}</strong>. Fill in the form to fund or debit.`; status.className = 'fund-search-status'; }
 
-    // Scroll the card into view
+    const status = document.getElementById('fundSearchStatus');
+    if (status) { status.innerHTML = `<i class="fas fa-circle-check" style="color:var(--success-dark)"></i> Loaded <strong>${esc(u.name || u.email)}</strong>. Fill in the form to fund or debit.`; status.className = 'fund-status success'; }
+
+    // Scroll + focus
     setTimeout(() => {
-      const card = document.getElementById('fundUserPreview');
-      if (card && typeof card.scrollIntoView === 'function') card.scrollIntoView({ behavior: 'smooth', block: 'start' });
       const amt = document.getElementById('fundAmount');
       if (amt) amt.focus();
-    }, 280);
+    }, 200);
   }
   window.selectFundResult = selectFundResult;
 
-  function renderFundUserDetail(u) {
-    const preview = document.getElementById('fundUserPreview');
-    if (!preview) return;
+  function renderFundSelected(u) {
+    const el = document.getElementById('fundSelected');
+    if (!el) return;
     const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`;
     const ini = (name || '?').charAt(0).toUpperCase();
     const id = u.id || u._id;
     const st = uStatus(u);
     const balance = Number(u.balance ?? u.wallet_balance ?? 0);
-    const held = Number(u.held_balance ?? 0);
-    const totalFunded = Number(u.total_funded ?? 0);
-    const totalSpent = Number(u.total_spent ?? 0);
     const isAdmin = /admin|super|owner/i.test(String(u.role || ''));
-
-    preview.innerHTML = `
-      <div class="fund-user-detail">
-        <div class="fund-detail-head">
-          <div class="fund-detail-avatar-wrap">
-            <div class="fund-detail-avatar" style="background:${hashColor(name)}">${esc(ini)}</div>
-            <div class="fund-detail-verified"><i class="fas fa-check"></i></div>
-          </div>
-          <div class="fund-detail-info">
-            <div class="fund-detail-name">${esc(name)}</div>
-            <div class="fund-detail-meta">
-              <span class="chip-id"><i class="fas fa-hashtag" style="font-size:9px;opacity:.7"></i>${esc(String(id))}</span>
-              ${u.email ? `<span><i class="fas fa-envelope" style="font-size:11px;opacity:.6;margin-right:5px"></i>${esc(u.email)}</span>` : ''}
-              ${u.phone ? `<span class="mono"><i class="fas fa-phone" style="font-size:11px;opacity:.6;margin-right:5px"></i>${esc(u.phone)}</span>` : ''}
-              ${isAdmin ? `<span class="user-badge admin" style="font-size:9px"><i class="fas fa-shield-halved"></i> ${esc(String(u.role || 'admin').toUpperCase())}</span>` : ''}
-              <span class="user-badge ${st}" style="font-size:9px">${esc(st)}</span>
-            </div>
-          </div>
-          <button class="fund-detail-clear" onclick="resetFundTab()"><i class="fas fa-times"></i> Change user</button>
-        </div>
-
-        <div class="fund-balances">
-          <div class="fund-balance-block">
-            <div class="label">Available Balance</div>
-            <div class="value">${fmtMoney(balance)}</div>
-          </div>
-          ${held > 0 ? `
-          <div class="fund-balance-block">
-            <div class="label">On Hold</div>
-            <div class="value held">${fmtMoney(held)}</div>
-          </div>` : ''}
-          <div class="fund-balance-block">
-            <div class="label">Total Funded</div>
-            <div class="value neutral">${fmtMoney(totalFunded)}</div>
-          </div>
-          <div class="fund-balance-block">
-            <div class="label">Total Spent</div>
-            <div class="value neutral">${fmtMoney(totalSpent)}</div>
-          </div>
-        </div>
-
-        <div class="fund-form-body">
-          <div class="fund-form-group">
-            <div class="fund-form-label">Amount <span class="hint">In Naira (₦)</span></div>
-            <div class="fund-amount-field">
-              <span class="currency">₦</span>
-              <input type="number" id="fundAmount" min="1" step="0.01" placeholder="0.00" inputmode="decimal">
-            </div>
-            <div class="fund-amount-presets">
-              <button class="fund-preset-btn" onclick="setFundAmount(500)">₦500</button>
-              <button class="fund-preset-btn" onclick="setFundAmount(1000)">₦1,000</button>
-              <button class="fund-preset-btn" onclick="setFundAmount(2000)">₦2,000</button>
-              <button class="fund-preset-btn" onclick="setFundAmount(5000)">₦5,000</button>
-              <button class="fund-preset-btn" onclick="setFundAmount(10000)">₦10,000</button>
-              <button class="fund-preset-btn" onclick="setFundAmount(50000)">₦50,000</button>
-            </div>
-          </div>
-
-          <div class="fund-form-group">
-            <div class="fund-form-label">Reason <span class="hint">Visible in user's history</span></div>
-            <textarea id="fundReason" class="fund-reason-field" placeholder="e.g. Compensation for failed MTN data on 2026-09-26 (Ref: shatova-data-…)" rows="3"></textarea>
-          </div>
-
-          <div class="fund-form-group">
-            <div class="fund-form-label">Source</div>
-            <select id="fundSource" class="fund-source-field">
-              <option value="support">Customer support</option>
-              <option value="audit_fix">Audit correction</option>
-              <option value="offline_payment">Offline bank payment</option>
-              <option value="promo">Promotional credit</option>
-              <option value="refund">Refund</option>
-            </select>
-          </div>
-
-          <div class="fund-actions">
-            <button class="fund-action-btn credit" id="fundSubmitBtn" onclick="submitManualFund()">
-              <i class="fas fa-plus-circle"></i>
-              <span>Credit Wallet</span>
-            </button>
-            <button class="fund-action-btn debit" id="debitSubmitBtn" onclick="submitManualDebit()">
-              <i class="fas fa-minus-circle"></i>
-              <span>Debit Wallet</span>
-            </button>
-          </div>
+    el.innerHTML = `
+      <div class="avatar" style="background:${hashColor(name)}">${esc(ini)}</div>
+      <div class="info">
+        <div class="name">${esc(name)}</div>
+        <div class="meta">
+          <span class="mono"><i class="fas fa-hashtag" style="font-size:10px;opacity:.6"></i> ${esc(String(id))}</span>
+          ${u.email ? `<span><i class="fas fa-envelope" style="font-size:10px;opacity:.6"></i> ${esc(u.email)}</span>` : ''}
+          ${u.phone ? `<span class="mono"><i class="fas fa-phone" style="font-size:10px;opacity:.6"></i> ${esc(u.phone)}</span>` : ''}
+          ${isAdmin ? `<span class="user-badge admin" style="font-size:9px"><i class="fas fa-shield-halved"></i> ${esc(String(u.role || 'admin').toUpperCase())}</span>` : ''}
+          <span class="user-badge ${st}" style="font-size:9px">${esc(st)}</span>
+          <span style="font-weight:800;color:var(--primary-dark);font-size:12px">Balance: ${fmtMoney(balance)}</span>
         </div>
       </div>
+      <button class="change" onclick="resetFundTab()"><i class="fas fa-times"></i> Change</button>
     `;
   }
 
@@ -2329,17 +2144,15 @@ button{font-family:inherit}
     const btn = document.getElementById('fundSubmitBtn');
     const orig = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Crediting…</span>';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crediting…';
     try {
       const res = await api('/admin/wallet/fund', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) });
       const d = res.data;
       toast(`✅ ${fmtMoney(d.amount)} credited — new balance ${fmtMoney(d.wallet_after)}`, 'success');
-      // Update local cache & redraw preview
       const u = (state.users || []).find(x => String(x.id || x._id) === String(state.fundUser.id || state.fundUser._id));
       if (u) u.balance = d.wallet_after;
       state.fundUser.balance = d.wallet_after;
-      renderFundUserDetail(state.fundUser);
-      // Clear inputs
+      renderFundSelected(state.fundUser);
       const a = document.getElementById('fundAmount'); if (a) a.value = '';
       const rEl = document.getElementById('fundReason'); if (rEl) rEl.value = '';
       setTimeout(() => refreshAll(true), 400);
@@ -2368,7 +2181,7 @@ button{font-family:inherit}
     const btn = document.getElementById('debitSubmitBtn');
     const orig = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Debiting…</span>';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Debiting…';
     try {
       const res = await api('/admin/wallet/debit', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) });
       const d = res.data;
@@ -2376,7 +2189,7 @@ button{font-family:inherit}
       const u = (state.users || []).find(x => String(x.id || x._id) === String(state.fundUser.id || state.fundUser._id));
       if (u) u.balance = d.wallet_after;
       state.fundUser.balance = d.wallet_after;
-      renderFundUserDetail(state.fundUser);
+      renderFundSelected(state.fundUser);
       const a = document.getElementById('fundAmount'); if (a) a.value = '';
       const rEl = document.getElementById('fundReason'); if (rEl) rEl.value = '';
       setTimeout(() => refreshAll(true), 400);
@@ -2411,7 +2224,7 @@ button{font-family:inherit}
   async function loadDrift() { const c = $('#driftList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api('/admin/wallet/drift'); const items = r.data?.drift || []; const total = r.data?.total_wallets ?? null; const td = items.reduce((a,d) => a+Math.abs(Number(d.drift)||0),0); const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('driftTotal', total != null ? Number(total).toLocaleString() : '—'); s('driftInSync', total != null ? Math.max(0, Number(total)-items.length).toLocaleString() : '—'); s('driftOutOfSync', items.length.toLocaleString()); s('driftTotalAmount', fmtMoney(td, true)); s('driftCount', items.length ? `${items.length} wallet${items.length===1?'':'s'} out of sync` : 'All wallets balanced'); if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">Every wallet is in sync</div><div class="desc">Stored balances match the ledger.</div></div>`; return; } c.innerHTML = items.slice().sort((a,b) => Math.abs(Number(b.drift)||0)-Math.abs(Number(a.drift)||0)).map(d => { const drift = Number(d.drift)||0; const abs = Math.abs(drift); const sev = abs >= 10000 ? 'critical' : abs >= 1000 ? 'major' : 'minor'; const email = d.user_email || d.user_phone || `User #${d.user_id}`; const ini = String(email).charAt(0).toUpperCase(); return `<div class="drift-row"><div class="drift-user"><div class="drift-user-avatar">${esc(ini)}</div><div><div class="drift-user-name">${esc(email)}</div><div class="drift-user-id">ID #${esc(String(d.user_id))}</div></div></div><div class="drift-cell">${fmtMoney(d.wallet_balance)}<span class="drift-sub">Wallet</span></div><div class="drift-cell">${fmtMoney(d.expected_balance)}<span class="drift-sub">Expected</span></div><div class="drift-cell">${fmtMoney(d.ledger_balance)}<span class="drift-sub">Ledger</span></div><div class="drift-delta ${drift>=0?'positive':'negative'}">${drift>=0?'+':'−'}${fmtMoney(abs)}</div><span class="drift-sev ${sev}">${sev}</span></div>`; }).join(''); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-exclamation"></i></div><div class="title">Could not load</div><div class="desc">${esc(e.message)}</div></div>`; } }
   window.loadDrift = loadDrift;
 
-  async function refreshAll(silent = false) { if (!silent) toast('Refreshing…', 'info'); await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); renderChart(); updateAnalyticsKpis(); syncOverviewRangeUI(); detectNewApprovals(); renderAdminAlerts(); if (state.activeTab === 'mismatches') loadMismatches(); if (state.activeTab === 'drift') loadDrift(); if (state.activeTab === 'archived') loadArchived(state.archived.page); if (!silent) toast('Updated', 'success'); }
+  async function refreshAll(silent = false) { if (!silent) toast('Refreshing…', 'info'); await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]); buildUnifiedTransactions(); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); renderChart(); updateAnalyticsKpis(); syncOverviewRangeUI(); detectNewApprovals(); renderAdminAlerts(); if (state.activeTab === 'mismatches') loadMismatches(); if (state.activeTab === 'drift') loadDrift(); if (state.activeTab === 'archived') loadArchived(state.archived.page); if (!silent) toast('Updated', 'success'); }
   window.refreshAll = refreshAll;
 
   /* ALARM */
