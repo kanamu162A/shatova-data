@@ -54,11 +54,13 @@
     }
 
     /* ============================================================
-       REAL ISP LOGO CONTAINERS
+       ISP LOGO STYLES — logos are inline SVG, always render
        ============================================================ */
-    .cat-logo, .bundle-logo, .sb-logo {
+    .cat-logo,
+    .bundle-logo,
+    .sb-logo {
       position: relative;
-      background: #fff !important;
+      background: #ffffff !important;
       overflow: hidden;
       border: 1px solid var(--air-border);
       box-shadow: var(--air-shadow-xs);
@@ -68,17 +70,17 @@
       flex-shrink: 0;
       transition: transform 0.25s var(--air-ease), box-shadow 0.25s var(--air-ease);
     }
-    .cat-logo    { width: 48px; height: 48px; border-radius: 14px; padding: 6px; }
-    .bundle-logo { width: 46px; height: 46px; border-radius: 14px; padding: 6px; }
-    .sb-logo     { width: 42px; height: 42px; border-radius: 12px; padding: 5px; }
+    .cat-logo    { width: 48px; height: 48px; border-radius: 14px; padding: 4px; }
+    .bundle-logo { width: 46px; height: 46px; border-radius: 14px; padding: 4px; }
+    .sb-logo     { width: 42px; height: 42px; border-radius: 12px; padding: 4px; }
 
-    .cat-logo img, .bundle-logo img, .sb-logo img {
+    .cat-logo svg,
+    .bundle-logo svg,
+    .sb-logo svg {
       width: 100%;
       height: 100%;
-      object-fit: contain;
       display: block;
       border-radius: inherit;
-      background: #fff;
     }
 
     /* ============================================================
@@ -117,9 +119,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ============================================================
-       CARDS
-       ============================================================ */
+    /* Cards */
     .category-list, .bundles-list {
       display: flex;
       flex-direction: column;
@@ -166,7 +166,6 @@
     }
     .cat-arrow svg { width: 100%; height: 100%; }
 
-    /* Selected bundle card */
     .selected-bundle {
       display: flex; align-items: center; gap: 12px;
       padding: 14px 16px;
@@ -200,9 +199,6 @@
     .sb-price-group { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
     .sb-price { font-size: 15.5px; font-weight: 800; color: var(--air-text); letter-spacing: -0.3px; }
 
-    /* ============================================================
-       FORM CARD
-       ============================================================ */
     .form-card {
       padding: 20px 18px;
       background: var(--air-surface);
@@ -221,7 +217,6 @@
       letter-spacing: 0.3px; text-transform: uppercase;
     }
 
-    /* Inputs */
     .input-row { display: flex; gap: 8px; }
     .phone-input-wrap { position: relative; flex: 1; min-width: 0; }
     .phone-input-wrap .phone-input { width: 100%; flex: none; }
@@ -263,7 +258,6 @@
     .pick-btn:active { transform: scale(0.97); }
     .pick-btn svg { width: 14px; height: 14px; }
 
-    /* Recent recipients dropdown */
     .phone-dropdown {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 60;
       background: var(--air-surface-elevated);
@@ -281,7 +275,6 @@
       from { opacity: 0; transform: translateY(-4px) scale(0.99); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .phone-dropdown-list { display: flex; flex-direction: column; }
     .phone-dropdown-header {
       padding: 10px 18px 6px;
       font-size: 10px; font-weight: 800; color: var(--air-text-subtle);
@@ -314,7 +307,6 @@
       text-transform: uppercase; letter-spacing: 0.4px;
     }
 
-    /* Mode switch */
     .mode-switch {
       display: flex; gap: 4px;
       background: var(--air-surface-muted); padding: 4px;
@@ -342,7 +334,6 @@
       color: #0a0a0a;
     }
 
-    /* Network badge */
     .network-badge {
       display: inline-flex; align-items: center; gap: 6px;
       margin-top: 10px; padding: 6px 12px;
@@ -363,14 +354,12 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Error hint */
     .error-hint {
       font-size: 11.5px; color: var(--air-danger); font-weight: 600;
       padding-left: 2px; margin-top: 6px; display: none; line-height: 1.4;
     }
     .error-hint.show { display: block; }
 
-    /* Quick amounts */
     .quick-amounts {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 8px; margin-top: 14px;
@@ -398,7 +387,6 @@
       color: var(--air-accent);
     }
 
-    /* Primary buttons */
     .btn-primary {
       width: 100%; height: 52px; padding: 0 28px; margin: 20px auto 0;
       border-radius: var(--air-radius-pill); color: #fff;
@@ -451,7 +439,6 @@
     .btn-link:hover { background: var(--air-accent-soft); }
     .btn-link svg { width: 14px; height: 14px; }
 
-    /* Info box */
     .info-box {
       padding: 16px 18px; background: var(--air-surface-muted);
       border: 1px solid var(--air-border);
@@ -465,7 +452,6 @@
       font-size: 16px; font-weight: 800; color: var(--air-accent); letter-spacing: 0.3px;
     }
 
-    /* Payment options */
     .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
     .pay-option {
       position: relative; padding: 18px 16px 16px;
@@ -508,7 +494,6 @@
     .pay-option-name { font-size: 13.5px; font-weight: 700; color: var(--air-text); margin-bottom: 3px; }
     .pay-option-sub { font-size: 11.5px; color: var(--air-text-muted); font-weight: 500; }
 
-    /* Total box */
     .total-box {
       display: flex; align-items: center; justify-content: space-between;
       padding: 18px 20px;
@@ -519,7 +504,6 @@
     .total-label { font-size: 13.5px; font-weight: 600; color: var(--air-text-muted); }
     .total-amount { font-size: 21px; font-weight: 800; color: var(--air-text); letter-spacing: -0.4px; }
 
-    /* Balance warning */
     .balance-warning {
       display: flex; gap: 12px; margin: 0 0 16px; padding: 16px 18px;
       border-radius: var(--air-radius-md);
@@ -566,7 +550,6 @@
     body.dark .balance-warning-text,
     .theme-dark .balance-warning-text { color: #fca5a5; }
 
-    /* Progress dots */
     .progress-dots {
       position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
       display: flex; align-items: center; gap: 6px; z-index: 2;
@@ -580,7 +563,6 @@
     body.dark .progress-dots .dot { background: rgba(255, 255, 255, 0.2); }
     body.dark .progress-dots .dot.filled { background: #22c55e; }
 
-    /* Page heads */
     #step-categories > .page-head,
     #step-bundles > .page-head,
     #step-checkout > .page-head,
@@ -645,7 +627,6 @@
 
     .hidden { display: none !important; }
 
-    /* Purchase modal */
     .purchase-modal-backdrop {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55);
       z-index: 9999; display: flex; align-items: flex-end; justify-content: center;
@@ -857,7 +838,10 @@
 
   <main class="app-container airtime-page" role="main">
 
-    <!-- STEP 1 — CATEGORIES -->
+    <!-- ============================================================
+         STEP 1 — CATEGORIES
+         ISP LOGOS ARE INLINE SVG — THEY WILL ALWAYS RENDER
+         ============================================================ -->
     <section class="step" id="step-categories" aria-labelledby="cat-title">
       <div class="page-head">
         <button class="back-btn" type="button" onclick="location.href='/home.html'" aria-label="Back to home">
@@ -870,18 +854,18 @@
           <h1 class="page-title" id="cat-title">Airtime</h1>
         </div>
       </div>
-      <!--
-        REAL ISP LOGOS — INLINE & HARDCODED
-        Each category-card now contains the real logo image directly.
-        The `data-provider` attribute tells the system which network this is.
-      -->
+
       <div class="category-list" id="categoryList" role="list">
 
-        <!-- MTN -->
+        <!-- ═══════════ MTN ═══════════ -->
         <div class="category-card" data-provider="mtn" role="listitem" tabindex="0">
-          <div class="cat-logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/MTN_Logo.svg/240px-MTN_Logo.svg.png"
-                 alt="MTN logo" loading="lazy" decoding="async">
+          <div class="cat-logo" aria-hidden="true">
+            <!-- MTN Logo — Inline SVG (yellow oval with MTN text) -->
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="20" fill="#ffcb05"/>
+              <ellipse cx="50" cy="50" rx="38" ry="22" fill="none" stroke="#0a0a0a" stroke-width="4"/>
+              <text x="50" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#0a0a0a">MTN</text>
+            </svg>
           </div>
           <div class="cat-info">
             <div class="cat-name">MTN</div>
@@ -894,11 +878,14 @@
           </div>
         </div>
 
-        <!-- Airtel -->
+        <!-- ═══════════ Airtel ═══════════ -->
         <div class="category-card" data-provider="airtel" role="listitem" tabindex="0">
-          <div class="cat-logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Airtel_logo.svg/240px-Airtel_logo.svg.png"
-                 alt="Airtel logo" loading="lazy" decoding="async">
+          <div class="cat-logo" aria-hidden="true">
+            <!-- Airtel Logo — Red circle with white "airtel" text -->
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#e60000"/>
+              <text x="50" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#ffffff">airtel</text>
+            </svg>
           </div>
           <div class="cat-info">
             <div class="cat-name">Airtel</div>
@@ -911,11 +898,14 @@
           </div>
         </div>
 
-        <!-- Glo -->
+        <!-- ═══════════ Glo ═══════════ -->
         <div class="category-card" data-provider="glo" role="listitem" tabindex="0">
-          <div class="cat-logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Globacom_logo.svg/240px-Globacom_logo.svg.png"
-                 alt="Glo logo" loading="lazy" decoding="async">
+          <div class="cat-logo" aria-hidden="true">
+            <!-- Glo Logo — Green circle with white "glo" text -->
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#00a651"/>
+              <text x="50" y="62" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="900" fill="#ffffff">glo</text>
+            </svg>
           </div>
           <div class="cat-info">
             <div class="cat-name">Glo</div>
@@ -928,11 +918,15 @@
           </div>
         </div>
 
-        <!-- 9mobile (T2) -->
+        <!-- ═══════════ 9mobile (T2) ═══════════ -->
         <div class="category-card" data-provider="t2" role="listitem" tabindex="0">
-          <div class="cat-logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/9mobile_logo.svg/240px-9mobile_logo.svg.png"
-                 alt="9mobile logo" loading="lazy" decoding="async">
+          <div class="cat-logo" aria-hidden="true">
+            <!-- 9mobile / T2 Logo — Orange circle with white "9mobile" text -->
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#f26522"/>
+              <text x="50" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#ffffff">9mobile</text>
+              <text x="50" y="76" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#ffffff" opacity="0.9">T2</text>
+            </svg>
           </div>
           <div class="cat-info">
             <div class="cat-name">9mobile</div>
@@ -1273,7 +1267,7 @@
   <script type="module" src="/js/airtime.js"></script>
   <script src="/js/instant-nav.js?v=4" defer></script>
 
-  <!-- INLINE — Page head freeze logic -->
+  <!-- INLINE — Page head freeze -->
   <script>
     (function () {
       const STEP_IDS = ['step-categories', 'step-bundles', 'step-checkout', 'step-pay'];
@@ -1353,7 +1347,7 @@
     })();
   </script>
 
-  <!-- INLINE — Recent recipients store (no logo injection needed — logos are already in HTML) -->
+  <!-- INLINE — Recent recipients store -->
   <script>
     (function () {
       'use strict';
