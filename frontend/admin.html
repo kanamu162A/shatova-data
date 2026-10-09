@@ -1209,6 +1209,7 @@ button{font-family:inherit}
     charts: { revenue: null, mix: null },
     notificationBootstrapped: false,
     cache: { txns: [], deposits: [], withdrawals: [] },
+    _pagerBusy: false,
   };
 
   const $ = (s) => document.querySelector(s);
@@ -1473,16 +1474,81 @@ button{font-family:inherit}
     renderRecentTx();
   }
 
+  /* ============ PAGER (FIXED) ============ */
+  function renderPager(cid, cp, total, per, fnName) {
+    const el = document.getElementById(cid);
+    if (!el) return;
+    if (!total) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    if (total <= per) {
+      el.innerHTML = `<div class="pagination-info">Showing <strong>1–${total}</strong> of <strong>${total.toLocaleString()}</strong></div>`;
+      el.style.display = 'flex';
+      return;
+    }
+    const tp = Math.max(1, Math.ceil(total/per));
+    const safeCp = Math.min(Math.max(cp, 1), tp);
+    const s = (safeCp-1)*per + 1;
+    const e = Math.min(safeCp*per, total);
+    let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div><div class="pagination-controls">`;
+    h += `<button type="button" class="page-btn" data-page-fn="${fnName}" data-page-val="${safeCp-1}" ${safeCp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+    const pages = [];
+    if (tp <= 6) { for (let i = 1; i <= tp; i++) pages.push(i); }
+    else {
+      pages.push(1);
+      const l = Math.max(2, safeCp-1);
+      const r = Math.min(tp-1, safeCp+1);
+      if (l > 2) pages.push('…');
+      for (let i = l; i <= r; i++) pages.push(i);
+      if (r < tp-1) pages.push('…');
+      pages.push(tp);
+    }
+    pages.forEach(x => {
+      if (x === '…') h += `<span class="page-btn ellipsis">…</span>`;
+      else h += `<button type="button" class="page-btn ${x===safeCp?'active':''}" data-page-fn="${fnName}" data-page-val="${x}">${x}</button>`;
+    });
+    h += `<button type="button" class="page-btn" data-page-fn="${fnName}" data-page-val="${safeCp+1}" ${safeCp===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button></div>`;
+    el.innerHTML = h;
+    el.style.display = 'flex';
+  }
+
+  // SINGLE delegated listener for ALL pager buttons
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('button[data-page-fn]');
+    if (!btn || btn.disabled) return;
+    const fn = btn.getAttribute('data-page-fn');
+    const pg = parseInt(btn.getAttribute('data-page-val'), 10);
+    if (isNaN(pg)) return;
+    e.preventDefault();
+    const handlers = {
+      recentTx: window.goToRecentTxPage,
+      txn: window.goToTxnPage,
+      deposit: window.goToDepositPage,
+      withdrawal: window.goToWithdrawalPage,
+      archived: window.goToArchivedPage,
+    };
+    const h = handlers[fn];
+    if (typeof h === 'function') h(pg);
+  }, true);
+
   function renderRecentTx() {
-    const c = $('#recentTxList'); if (!c) return;
-    const p = $('#recentTxPagination');
-    const list = applyRange(state.unifiedTransactions, state.range).sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
-    const total = list.length; const per = 5; const mp = Math.min(5, Math.ceil(total/per));
-    const cp = Math.min(state.recentTxPage || 1, mp || 1);
-    const start = (cp-1)*per; const end = Math.min(start+per, total);
+    const c = $('#recentTxList');
+    if (!c) return;
+    const list = applyRange(state.unifiedTransactions, state.range)
+      .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+    const total = list.length;
+    const per = 5;
+    const tp = Math.max(1, Math.ceil(total / per));
+    const cp = Math.min(Math.max(state.recentTxPage || 1, 1), tp);
+    state.recentTxPage = cp;
+    const start = (cp - 1) * per;
+    const end = Math.min(start + per, total);
     const items = list.slice(start, end);
-    const panel = document.getElementById('panelRecentTx'); if (panel) panel.classList.toggle('is-hidden', total === 0);
-    if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-receipt"></i></div><div class="title">No transactions</div><div class="desc">Nothing matches the current filter.</div></div>`; if (p) p.style.display = 'none'; return; }
+    const panel = document.getElementById('panelRecentTx');
+    if (panel) panel.classList.toggle('is-hidden', total === 0);
+    if (!items.length) {
+      c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-receipt"></i></div><div class="title">No transactions</div><div class="desc">Nothing matches the current filter.</div></div>`;
+      const p = $('#recentTxPagination'); if (p) { p.style.display = 'none'; p.innerHTML = ''; }
+      return;
+    }
     c.innerHTML = items.map(t => {
       const m = t.metadata || {};
       const ph = t.phone || m.phone || t.recipient || '—';
@@ -1490,9 +1556,18 @@ button{font-family:inherit}
       const prod = m.product_name || t.description || t.product || kindLabel(k) + ' Transaction';
       return `<div class="row-item" onclick="viewTransaction('${esc(t.id || t._id || t.reference || '')}')"><div class="row-avatar ${kindAvatarClass(t)}">${kindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${esc(prod)}</div><div class="row-sub"><span>${esc(ph)}</span><span class="dot"></span><span>${timeAgo(getDate(t))}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount">${fmtMoney(getAmount(t))}</div></div></div>`;
     }).join('');
-    if (p && mp > 1) { let h = `<div class="pagination-info">Showing <strong>${start+1}–${end}</strong> of <strong>${total}</strong></div><div class="pagination-controls">`; h += `<button type="button" class="page-btn" data-page-fn="recentTx" data-page-val="${cp-1}" ${cp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`; for (let i = 1; i <= mp; i++) h += `<button type="button" class="page-btn ${i===cp?'active':''}" data-page-fn="recentTx" data-page-val="${i}">${i}</button>`; h += `<button type="button" class="page-btn" data-page-fn="recentTx" data-page-val="${cp+1}" ${cp===mp?'disabled':''}><i class="fas fa-chevron-right"></i></button></div>`; p.innerHTML = h; p.style.display = 'flex'; } else if (p) p.style.display = 'none';
+    renderPager('recentTxPagination', cp, total, per, 'recentTx');
   }
-  window.goToRecentTxPage = (pg) => { state.recentTxPage = pg; renderRecentTx(); };
+  window.goToRecentTxPage = (pg) => {
+    const list = applyRange(state.unifiedTransactions, state.range)
+      .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+    const tp = Math.max(1, Math.ceil(list.length / 5));
+    const np = Math.min(Math.max(pg, 1), tp);
+    if (np === state.recentTxPage) return;
+    state.recentTxPage = np;
+    renderRecentTx();
+    document.getElementById('panelRecentTx')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   /* ============ ANALYTICS ============ */
   const CHART_COLORS = { primary:'#0a4534', info:'#3b82f6', success:'#10b981', warning:'#f59e0b' };
@@ -1748,45 +1823,6 @@ button{font-family:inherit}
   window.clearAllFilters = clearAllFilters;
   function applyFilters(silent) { const tab = state.currentFilterTab; const f = state.filters[tab] || {}; if (tab === 'transactions' || tab === 'deposits' || tab === 'withdrawals') { state.range = f.range || '1d'; syncOverviewRangeUI(); } if (tab === 'transactions') { state.txnPage = 1; renderTransactions(); } if (tab === 'deposits') { state.depositPage = 1; renderDeposits(); } if (tab === 'withdrawals') { state.withdrawalPage = 1; renderWithdrawals(); } if (tab === 'users') { renderUsers(); } if (tab === 'archived') { loadArchived(1); } if (!silent) { closeFilterSheet(); toast('Filters applied', 'success'); } }
   window.applyFilters = applyFilters;
-
-  /* ============ PAGER — writes buttons, delegates via one document listener ============ */
-  function renderPager(cid, cp, total, per, fnName) {
-    const el = document.getElementById(cid);
-    if (!el) return;
-    if (!total) { el.style.display = 'none'; el.innerHTML = ''; return; }
-    if (total <= per) {
-      el.innerHTML = `<div class="pagination-info">Showing <strong>1–${total}</strong> of <strong>${total.toLocaleString()}</strong></div>`;
-      el.style.display = 'flex';
-      return;
-    }
-    const tp = Math.max(1, Math.ceil(total/per));
-    const s = (cp-1)*per + 1;
-    const e = Math.min(cp*per, total);
-    let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div><div class="pagination-controls">`;
-    h += `<button type="button" class="page-btn" data-page-fn="${fnName}" data-page-val="${cp-1}" ${cp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
-    const pages = [];
-    if (tp <= 6) { for (let i = 1; i <= tp; i++) pages.push(i); }
-    else { pages.push(1); const l = Math.max(2, cp-1); const r = Math.min(tp-1, cp+1); if (l > 2) pages.push('…'); for (let i = l; i <= r; i++) pages.push(i); if (r < tp-1) pages.push('…'); pages.push(tp); }
-    pages.forEach(x => { if (x === '…') h += `<span class="page-btn ellipsis">…</span>`; else h += `<button type="button" class="page-btn ${x===cp?'active':''}" data-page-fn="${fnName}" data-page-val="${x}">${x}</button>`; });
-    h += `<button type="button" class="page-btn" data-page-fn="${fnName}" data-page-val="${cp+1}" ${cp===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button></div>`;
-    el.innerHTML = h;
-    el.style.display = 'flex';
-  }
-
-  // ONE global click listener — dispatches by data-page-fn
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-page-fn]');
-    if (!btn) return;
-    if (btn.disabled) return;
-    const fn = btn.getAttribute('data-page-fn');
-    const pg = parseInt(btn.getAttribute('data-page-val'), 10);
-    if (isNaN(pg)) return;
-    if (fn === 'recentTx' && typeof window.goToRecentTxPage === 'function') window.goToRecentTxPage(pg);
-    else if (fn === 'txn' && typeof window.goToTxnPage === 'function') window.goToTxnPage(pg);
-    else if (fn === 'deposit' && typeof window.goToDepositPage === 'function') window.goToDepositPage(pg);
-    else if (fn === 'withdrawal' && typeof window.goToWithdrawalPage === 'function') window.goToWithdrawalPage(pg);
-    else if (fn === 'archived' && typeof window.goToArchivedPage === 'function') window.goToArchivedPage(pg);
-  });
 
   /* TRANSACTIONS */
   function filterTxn(list, search) { if (!search) return list; const s = search.toLowerCase().trim(); return list.filter(t => { const m = t.metadata || {}; const h = `${t.phone||m.phone||''} ${t.reference||''} ${t.description||''} ${m.product_name||''} ${t.recipient||''} ${t.user_name||''} ${t.user_email||''}`.toLowerCase(); return h.includes(s); }); }
@@ -2062,21 +2098,41 @@ button{font-family:inherit}
   async function loadDrift() { const c = $('#driftList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api('/admin/wallet/drift'); const items = r.data?.drift || []; const total = r.data?.total_wallets ?? null; const td = items.reduce((a,d) => a+Math.abs(Number(d.drift)||0),0); const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('driftTotal', total != null ? Number(total).toLocaleString() : '—'); s('driftInSync', total != null ? Math.max(0, Number(total)-items.length).toLocaleString() : '—'); s('driftOutOfSync', items.length.toLocaleString()); s('driftTotalAmount', fmtMoney(td, true)); s('driftCount', items.length ? `${items.length} wallet${items.length===1?'':'s'} out of sync` : 'All wallets balanced'); if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">Every wallet is in sync</div><div class="desc">Stored balances match the ledger.</div></div>`; return; } c.innerHTML = items.slice().sort((a,b) => Math.abs(Number(b.drift)||0)-Math.abs(Number(a.drift)||0)).map(d => { const drift = Number(d.drift)||0; const abs = Math.abs(drift); const sev = abs >= 10000 ? 'critical' : abs >= 1000 ? 'major' : 'minor'; const email = d.user_email || d.user_phone || `User #${d.user_id}`; const ini = String(email).charAt(0).toUpperCase(); return `<div class="drift-row"><div class="drift-user"><div class="drift-user-avatar">${esc(ini)}</div><div><div class="drift-user-name">${esc(email)}</div><div class="drift-user-id">ID #${esc(String(d.user_id))}</div></div></div><div class="drift-cell">${fmtMoney(d.wallet_balance)}<span class="drift-sub">Wallet</span></div><div class="drift-cell">${fmtMoney(d.expected_balance)}<span class="drift-sub">Expected</span></div><div class="drift-cell">${fmtMoney(d.ledger_balance)}<span class="drift-sub">Ledger</span></div><div class="drift-delta ${drift>=0?'positive':'negative'}">${drift>=0?'+':'−'}${fmtMoney(abs)}</div><span class="drift-sev ${sev}">${sev}</span></div>`; }).join(''); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-exclamation"></i></div><div class="title">Could not load</div><div class="desc">${esc(e.message)}</div></div>`; } }
   window.loadDrift = loadDrift;
 
-  async function refreshAll(silent = false) { if (!silent) toast('Refreshing…', 'info'); await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]); buildUnifiedTransactions(); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); updateAnalytics(); syncOverviewRangeUI(); detectNewApprovals(); renderAdminAlerts(); renderDW(); if (state.activeTab === 'mismatches') loadMismatches(); if (state.activeTab === 'drift') loadDrift(); if (state.activeTab === 'archived') loadArchived(state.archived.page); if (!silent) toast('Updated', 'success'); }
+  async function refreshAll(silent = false) {
+    if (!silent) toast('Refreshing…', 'info');
+    const savedPages = { txn: state.txnPage, deposit: state.depositPage, withdrawal: state.withdrawalPage, recent: state.recentTxPage };
+    await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]);
+    buildUnifiedTransactions();
+    state.txnPage = savedPages.txn;
+    state.depositPage = savedPages.deposit;
+    state.withdrawalPage = savedPages.withdrawal;
+    state.recentTxPage = savedPages.recent;
+    updateOverview();
+    renderTransactions();
+    renderDeposits();
+    renderWithdrawals();
+    renderUsers();
+    updateAnalytics();
+    syncOverviewRangeUI();
+    detectNewApprovals();
+    renderAdminAlerts();
+    renderDW();
+    if (state.activeTab === 'mismatches') loadMismatches();
+    if (state.activeTab === 'drift') loadDrift();
+    if (state.activeTab === 'archived') loadArchived(state.archived.page);
+    if (!silent) toast('Updated', 'success');
+  }
   window.refreshAll = refreshAll;
 
   /* ============================================================
-     AUDIO — iPhone chime via HTMLAudio (works in background tabs)
+     AUDIO
      ============================================================ */
-  // Base64 iPhone "Note" ringtone (E5→G5→C6 chime, ~1.2s, mono, 22050Hz)
-  // Regenerated as a compact WAV blob at runtime for reliability.
   function buildIphoneChimeWavBlob() {
     const sr = 22050;
     const dur = 1.6;
     const n = Math.floor(sr * dur);
     const buffer = new ArrayBuffer(44 + n * 2);
     const view = new DataView(buffer);
-    // WAV header
     const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
     writeStr(0, 'RIFF');
     view.setUint32(4, 36 + n * 2, true);
@@ -2091,8 +2147,6 @@ button{font-family:inherit}
     view.setUint16(34, 16, true);
     writeStr(36, 'data');
     view.setUint32(40, n * 2, true);
-
-    // Three-note chime: E5 (659.25), G5 (783.99), C6 (1046.50) — starting at t offsets
     const notes = [
       { f: 659.25, t0: 0.00, dur: 0.55, amp: 0.55 },
       { f: 783.99, t0: 0.14, dur: 0.60, amp: 0.55 },
@@ -2106,16 +2160,13 @@ button{font-family:inherit}
       const sN = Math.min(n, Math.floor((nt.t0 + nt.dur) * sr));
       for (let i = s0; i < sN; i++) {
         const t = (i - s0) / sr;
-        // Bell-like envelope: fast attack, exponential decay
         const attack = Math.min(1, t / 0.012);
         const decay = Math.exp(-3.2 * t / nt.dur);
         const env = attack * decay;
         out[i] += Math.sin(2 * Math.PI * nt.f * t) * env * nt.amp;
-        // Slight second harmonic for bell timbre
         out[i] += Math.sin(2 * Math.PI * nt.f * 2 * t) * env * nt.amp * 0.18;
       }
     }
-    // Normalize & write
     let mx = 0; for (let i = 0; i < n; i++) { const a = Math.abs(out[i]); if (a > mx) mx = a; }
     const norm = mx > 0 ? (0.9 / mx) : 1;
     for (let i = 0; i < n; i++) {
@@ -2137,7 +2188,6 @@ button{font-family:inherit}
 
   try { if (localStorage.getItem('adminSoundEnabled') === '1') state.adminSoundEnabled = true; } catch (_) {}
 
-  // Prime the audio element on first user gesture
   let audioUnlocked = false;
   function unlockAudio() {
     if (audioUnlocked) return;
@@ -2150,13 +2200,11 @@ button{font-family:inherit}
   }
   ['click','touchstart','keydown','pointerdown','scroll'].forEach(ev => window.addEventListener(ev, unlockAudio, { passive: true }));
 
-  // Loop the chime every 4.5s while a pending alert exists
   let alarmLoop = null, alarmStop = null, alarmActive = false;
   function playIphoneAlert(test = false) {
     if (!state.adminSoundEnabled && !test) return;
     if (!chimeAudioEl || !chimeUrl) return;
     try {
-      // Play 3 chimes: 0s, 1.1s, 2.2s
       chimeAudioEl.currentTime = 0;
       const p = chimeAudioEl.play();
       if (p && p.catch) p.catch(() => {});
@@ -2232,9 +2280,7 @@ button{font-family:inherit}
     if (!id || id.endsWith(':')) return;
     if (state.adminAlertIds.has(id)) return;
     state.adminAlertIds.add(id);
-    // Ring the iPhone chime (works in background because it uses HTMLAudio)
     playIphoneAlert(true);
-    // Loop it while there are pending alerts
     if (!alarmActive && state.adminSoundEnabled) {
       alarmActive = true;
       const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch(_){} alarmLoop = setTimeout(tick, 4600); };
@@ -2279,6 +2325,61 @@ button{font-family:inherit}
   requestNotifPermission();
   renderAdminAlerts();
   setInterval(() => { detectNewApprovals(); }, 2500);
+
+  /* ============================================================
+     RETURN-CHECK: when admin returns to the tab after being away
+     — re-fetch pending items, alert if any new ones appeared.
+     ============================================================ */
+  async function checkForPendingOnReturn() {
+    try {
+      await Promise.all([fetchDep(), fetchWd()]);
+      const pendingDeposits = (state.deposits || []).filter(d => getStatus(d) === 'pending');
+      const pendingWithdrawals = (state.withdrawals || []).filter(w => getStatus(w) === 'pending');
+      const newAlerts = [];
+      pendingDeposits.forEach(d => {
+        const id = String(d.id || d.reference || '');
+        if (id && !state.seenDepositIds.has(id)) { state.seenDepositIds.add(id); newAlerts.push({ type: 'deposit', item: d }); }
+      });
+      pendingWithdrawals.forEach(w => {
+        const id = String(w.id || w.reference || '');
+        if (id && !state.seenWithdrawalIds.has(id)) { state.seenWithdrawalIds.add(id); newAlerts.push({ type: 'withdrawal', item: w }); }
+      });
+      if (newAlerts.length > 0) {
+        newAlerts.forEach(a => {
+          const id = aId(a.type, a.item);
+          if (id && !state.adminAlertIds.has(id)) {
+            state.adminAlertIds.add(id);
+            state.adminAlerts.unshift({ id, type: a.type, item: a.item, createdAt: Date.now() });
+          }
+        });
+        state.adminAlerts = state.adminAlerts.slice(0, 30);
+        renderAdminAlerts();
+        const first = newAlerts[0];
+        const name = first.item.user_name || first.item.name || first.item.user_email || 'User';
+        const amt = fmtMoney(getAmount(first.item));
+        playIphoneAlert(true);
+        showAlarmBanner(
+          first.type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert',
+          `${newAlerts.length} new pending request${newAlerts.length > 1 ? 's' : ''}. Latest: ${name} · ${amt}`
+        );
+        if (state.adminSoundEnabled) {
+          if (alarmLoop) clearTimeout(alarmLoop);
+          alarmActive = true;
+          const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch(_){} alarmLoop = setTimeout(tick, 4600); };
+          alarmLoop = setTimeout(tick, 4600);
+          if (alarmStop) clearTimeout(alarmStop);
+          alarmStop = setTimeout(() => stopAlarm(), 60000);
+        }
+        newAlerts.forEach(a => { try { window.__notifyAdmin?.(a.type, a.item); } catch(_){} });
+        toast(`${newAlerts.length} new pending request${newAlerts.length > 1 ? 's' : ''} detected`, 'info');
+      }
+      updateOverview();
+      renderDeposits();
+      renderWithdrawals();
+    } catch (e) { console.warn('[Return check] failed:', e); }
+  }
+  document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') { checkForPendingOnReturn(); } });
+  window.addEventListener('focus', function() { checkForPendingOnReturn(); });
 
   document.addEventListener('click', e => {
     if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) {
