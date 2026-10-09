@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="/css/instant-nav.css">
 
   <!-- ============================================================
-       INLINE — Professional polish for the Airtime page
+       INLINE — Professional polish + real ISP logos
        ============================================================ -->
   <style>
     /* ------------------------------------------------------------
@@ -1713,7 +1713,7 @@
           <div class="balance-warning-text" id="balanceWarningText">
             You need more money in your wallet to complete this purchase.
           </div>
-          <button type="button" class="balance-warning-btn" id="fundWalletBtn" type="button">
+          <button type="button" class="balance-warning-btn" id="fundWalletBtn">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
             </svg>
@@ -1988,10 +1988,8 @@
 
       function detectProvider(el) {
         if (!el) return null;
-        // Check data-provider on the closest card
         const card = el.closest('[data-provider]');
         if (card && card.dataset.provider) return card.dataset.provider;
-        // Check class names
         const m = el.className.match(/(mtn|airtel|glo|t2)/);
         if (m) return m[1];
         return null;
@@ -2011,10 +2009,8 @@
         const provider = detectProvider(el);
         if (!provider) return;
 
-        // Mark as replaced immediately to avoid loops
         el.dataset.logoReplaced = 'true';
 
-        // Build image with fallback chain
         const img = document.createElement('img');
         img.className = 'provider-logo';
         img.alt = (PROVIDER_LABELS[provider] || 'ISP') + ' logo';
@@ -2024,37 +2020,30 @@
         img.src = LOGO_URLS[provider] || LOGO_URLS.mtn;
 
         img.onerror = function () {
-          // Try fallback URL first
           if (img.src !== FALLBACK_URLS[provider] && FALLBACK_URLS[provider]) {
             img.src = FALLBACK_URLS[provider];
             return;
           }
-          // Final fallback: text initials
           el.innerHTML = '';
           el.appendChild(buildFallback(provider));
         };
 
         img.onload = function () {
-          // Success — nothing else to do
+          // success
         };
 
-        // Clear and mount
         el.innerHTML = '';
         el.appendChild(img);
       }
 
       function upgradeLogos() {
-        // Category logos
         document.querySelectorAll('.cat-logo').forEach(replaceLogo);
-        // Bundle logos
         document.querySelectorAll('.bundle-logo').forEach(replaceLogo);
-        // Selected bundle logos
         document.querySelectorAll('.sb-logo').forEach(replaceLogo);
       }
 
       /* ------------------------------------------------------------
          RECENT RECIPIENTS STORE
-         Elegant, slim dropdown with provider dots.
          ------------------------------------------------------------ */
       const STORAGE_KEY = 'shatova_recent_recipients_v1';
       const MAX_RECENT = 8;
@@ -2096,7 +2085,6 @@
         if (!dropdown || !input) return;
 
         const value = input.value.trim();
-        // Only show when input is focused and not fully typed
         if (value.length >= 11) {
           dropdown.classList.add('hidden');
           return;
@@ -2108,7 +2096,6 @@
           return;
         }
 
-        // Filter by typed prefix
         const filtered = value.length === 0
           ? all
           : all.filter(function (item) { return item.phone.indexOf(value) === 0; });
@@ -2118,7 +2105,6 @@
           return;
         }
 
-        // Build list
         const frag = document.createDocumentFragment();
 
         const header = document.createElement('div');
@@ -2150,7 +2136,6 @@
           btn.appendChild(tag);
 
           btn.addEventListener('mousedown', function (e) {
-            // Prevent blur from hiding the dropdown before click
             e.preventDefault();
           });
 
@@ -2158,7 +2143,6 @@
             input.value = item.phone;
             input.dispatchEvent(new Event('input', { bubbles: true }));
             dropdown.classList.add('hidden');
-            // Bump to top of recents
             saveRecent(item.phone, item.provider);
           });
 
@@ -2180,36 +2164,26 @@
         const dropdown = document.getElementById('recentRecipients');
         if (!input || !dropdown) return;
 
-        // Show on focus
         input.addEventListener('focus', renderRecentDropdown);
-
-        // Filter as user types
         input.addEventListener('input', renderRecentDropdown);
-
-        // Hide on blur with a small delay so clicks register
         input.addEventListener('blur', function () {
           setTimeout(hideRecentDropdown, 180);
         });
-
-        // Escape closes
         input.addEventListener('keydown', function (e) {
           if (e.key === 'Escape') hideRecentDropdown();
         });
 
-        // Click outside closes
         document.addEventListener('click', function (e) {
           if (!input.contains(e.target) && !dropdown.contains(e.target)) {
             hideRecentDropdown();
           }
         });
 
-        // Save on Continue click (if valid)
         const continueBtn = document.getElementById('continueBtn');
         if (continueBtn) {
           continueBtn.addEventListener('click', function () {
             const phone = input.value.trim();
             if (phone.length === 11) {
-              // Try to read provider from network badge
               const badge = document.getElementById('networkBadge');
               let provider = 'mtn';
               if (badge && !badge.classList.contains('hidden')) {
@@ -2223,7 +2197,6 @@
           });
         }
 
-        // Observe network badge changes to auto-save
         const badge = document.getElementById('networkBadge');
         if (badge) {
           const badgeObserver = new MutationObserver(function () {
@@ -2248,13 +2221,11 @@
         upgradeLogos();
         initRecentStore();
 
-        // Re-run after short delays to catch dynamically rendered cards
         setTimeout(upgradeLogos, 150);
         setTimeout(upgradeLogos, 400);
         setTimeout(upgradeLogos, 900);
         setTimeout(upgradeLogos, 1600);
 
-        // Observe dynamic content
         const containers = ['categoryList', 'bundlesList', 'selectedBundleCard', 'payBundleCard'];
         const obs = new MutationObserver(function () {
           setTimeout(upgradeLogos, 40);
@@ -2264,7 +2235,6 @@
           if (el) obs.observe(el, { childList: true, subtree: true });
         });
 
-        // Observe step changes
         const stepObs = new MutationObserver(function () {
           setTimeout(upgradeLogos, 80);
         });
