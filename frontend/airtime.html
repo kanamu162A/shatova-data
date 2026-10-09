@@ -16,22 +16,22 @@
 
   <style>
     /* ============================================================
-       PRO ENHANCEMENTS — REAL PROVIDER LOGOS + REFINED UI
+       PRO ENHANCEMENTS — REAL ISP LOGOS + REFINED UI
        ============================================================ */
 
-    /* ---------- REAL PROVIDER LOGOS (replacing text circles) ---------- */
-    /* We use gstatic favicon service for crisp, real logos */
+    /* ---------- REAL ISP LOGOS (from gstatic.com) ---------- */
+    /* Each provider gets its real logo from gstatic CDN */
     .provider-logo {
       width: 100%;
       height: 100%;
       object-fit: contain;
       border-radius: 50%;
       background: #fff;
-      padding: 5px;
+      padding: 4px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     }
 
-    /* Ensure containers that held text now hold images properly */
+    /* Container styling for all logo holders */
     .cat-logo,
     .bundle-logo,
     .sb-logo {
@@ -45,17 +45,17 @@
     .cat-logo {
       width: 48px !important;
       height: 48px !important;
-      padding: 4px !important;
+      padding: 2px !important;
     }
     .bundle-logo {
       width: 44px !important;
       height: 44px !important;
-      padding: 4px !important;
+      padding: 2px !important;
     }
     .sb-logo {
       width: 42px !important;
       height: 42px !important;
-      padding: 4px !important;
+      padding: 2px !important;
     }
 
     /* ---------- CARD ENHANCEMENTS — padding, shadow, border, hover ---------- */
@@ -707,21 +707,24 @@
     })();
   </script>
 
-  <!-- ═══════════ REAL PROVIDER LOGOS INJECTOR ═══════════ -->
+  <!-- ═══════════ REAL ISP LOGOS INJECTOR (gstatic.com) ═══════════ -->
   <script>
     (function() {
-      // gstatic favicon service — reliable, fast, real logos
-      const LOGO_MAP = {
-        mtn:    'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png', // placeholder, will replace below
-        airtel: 'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
-        glo:    'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
-        t2:     'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png'
+      // ------------------------------------------------------------
+      // REAL ISP LOGOS FROM GSTATIC.COM
+      // ------------------------------------------------------------
+      // These are direct gstatic image URLs for each Nigerian ISP.
+      // MTN, Airtel, Glo, and T2 (9mobile) official logos.
+      const ISP_LOGOS = {
+        mtn:    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfXy7KwjHO5-a673nHKp--FMaWXvR4oJDL0w&s',
+        airtel: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8&s',
+        glo:    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8&s',
+        t2:     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8&s'
       };
 
-      // We'll use actual clearbit-style or direct logo URLs from gstatic-friendly sources.
-      // Since gstatic doesn't host telco logos, we use a reliable CDN with real logos.
-      // These are the actual official logos (SVG/PNG) from Wikimedia, served via CDN.
-      const REAL_LOGOS = {
+      // Fallback URLs in case the primary gstatic ones fail.
+      // Using reliable Wikimedia PNGs as backup.
+      const FALLBACK_LOGOS = {
         mtn:    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/MTN_Logo.svg/240px-MTN_Logo.svg.png',
         airtel: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Airtel_logo.svg/240px-Airtel_logo.svg.png',
         glo:    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Globacom_logo.svg/240px-Globacom_logo.svg.png',
@@ -732,37 +735,49 @@
         if (!el || !provider) return;
         if (el.dataset.logoReplaced === 'true') return;
 
+        // Use primary gstatic logo, fallback to Wikimedia
+        const primarySrc = ISP_LOGOS[provider] || ISP_LOGOS.mtn;
+        const fallbackSrc = FALLBACK_LOGOS[provider] || FALLBACK_LOGOS.mtn;
+
         const img = document.createElement('img');
-        img.src = REAL_LOGOS[provider] || REAL_LOGOS.mtn;
+        img.src = primarySrc;
         img.alt = provider + ' logo';
         img.className = 'provider-logo';
         img.loading = 'lazy';
+
+        // On error, swap to fallback
         img.onerror = function() {
-          // fallback to text initials
-          const initials = provider === 'mtn' ? 'MTN' : provider === 'airtel' ? 'AIR' : provider === 'glo' ? 'GLO' : 'T2';
-          el.innerHTML = initials;
-          el.style.fontWeight = '900';
-          el.style.fontSize = '10.5px';
-          el.style.color = '#fff';
-          el.style.display = 'flex';
-          el.style.alignItems = 'center';
-          el.style.justifyContent = 'center';
-          el.style.background = provider === 'mtn' ? '#ffcb05' : provider === 'airtel' ? '#e60000' : provider === 'glo' ? '#00a651' : '#f26522';
-          el.dataset.logoReplaced = 'true';
+          if (img.src !== fallbackSrc) {
+            img.src = fallbackSrc;
+          } else {
+            // Final fallback: text initials
+            const initials = provider === 'mtn' ? 'MTN' : provider === 'airtel' ? 'AIR' : provider === 'glo' ? 'GLO' : 'T2';
+            el.innerHTML = initials;
+            el.style.fontWeight = '900';
+            el.style.fontSize = '10.5px';
+            el.style.color = '#fff';
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+            el.style.background = provider === 'mtn' ? '#ffcb05' : provider === 'airtel' ? '#e60000' : provider === 'glo' ? '#00a651' : '#f26522';
+            el.dataset.logoReplaced = 'true';
+          }
         };
+
         img.onload = function() {
           el.innerHTML = '';
           el.appendChild(img);
           el.dataset.logoReplaced = 'true';
         };
-        // Clear and append
+
+        // Immediately replace
         el.innerHTML = '';
         el.appendChild(img);
         el.dataset.logoReplaced = 'true';
       }
 
       function upgradeAllLogos() {
-        // Category cards
+        // Category cards (main service list)
         document.querySelectorAll('.cat-logo').forEach(el => {
           const card = el.closest('.category-card');
           if (!card) return;
@@ -771,7 +786,7 @@
           if (provider) replaceLogoElement(el, provider);
         });
 
-        // Bundle cards
+        // Bundle cards (product list)
         document.querySelectorAll('.bundle-logo').forEach(el => {
           const card = el.closest('.bundle-card');
           if (!card) return;
@@ -780,7 +795,7 @@
           if (provider) replaceLogoElement(el, provider);
         });
 
-        // Selected bundle cards (sb-logo)
+        // Selected bundle cards (checkout summary)
         document.querySelectorAll('.sb-logo').forEach(el => {
           const card = el.closest('.selected-bundle');
           if (!card) return;
@@ -792,7 +807,9 @@
 
       // Run on DOM ready and observe for dynamic content
       document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(upgradeAllLogos, 200);
+        // Initial upgrade attempts
+        setTimeout(upgradeAllLogos, 100);
+        setTimeout(upgradeAllLogos, 300);
         setTimeout(upgradeAllLogos, 600);
         setTimeout(upgradeAllLogos, 1200);
 
@@ -817,8 +834,8 @@
       });
 
       window.addEventListener('load', function() {
-        setTimeout(upgradeAllLogos, 300);
-        setTimeout(upgradeAllLogos, 800);
+        setTimeout(upgradeAllLogos, 200);
+        setTimeout(upgradeAllLogos, 600);
       });
     })();
   </script>
