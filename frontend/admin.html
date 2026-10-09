@@ -461,201 +461,220 @@ button{font-family:inherit}
 .txn-amount-block .amt-meta .val{font-size:15px;font-weight:800}
 
 /* ============================================================
-   MANUAL FUND — slim, professional, mature redesign
+   MANUAL FUND — SLIM, PROFESSIONAL (redesigned to match Debit button)
    ============================================================ */
-.fund-shell{max-width:800px;margin:0 auto;padding:28px 24px 40px}
+.fund-shell{max-width:720px;margin:0 auto;padding:24px 20px 36px}
 
 .fund-panel{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
-  box-shadow:var(--shadow-sm);overflow:hidden;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--shadow-xs);overflow:hidden;
 }
 .fund-panel-head{
-  padding:20px 24px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:14px;background:var(--bg-soft);
+  padding:18px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;background:var(--bg-soft);
 }
 .fund-panel-head .icon{
-  width:42px;height:42px;border-radius:11px;
+  width:38px;height:38px;border-radius:10px;
   background:var(--primary-gradient);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
 }
-.fund-panel-head h2{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.2px;margin-bottom:2px}
-.fund-panel-head p{font-size:12px;color:var(--text-muted);font-weight:500;line-height:1.4}
+.fund-panel-head h2{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-.2px;margin-bottom:1px}
+.fund-panel-head p{font-size:11.5px;color:var(--text-muted);font-weight:500;line-height:1.4}
 
-.fund-panel-body{padding:24px}
+.fund-panel-body{padding:20px}
 
 /* slim search row */
-.fund-search-row{display:flex;gap:10px;align-items:stretch}
+.fund-search-row{display:flex;gap:8px;align-items:stretch}
 .fund-search-field{
   flex:1;display:flex;align-items:center;
   background:var(--bg-input);border:1.5px solid var(--border);
-  border-radius:11px;padding:0 16px;height:52px;
+  border-radius:10px;padding:0 14px;height:46px;
   transition:all .2s;min-width:0;
 }
 .fund-search-field:focus-within{border-color:var(--primary);background:var(--bg-card);box-shadow:0 0 0 4px rgba(10,69,52,.07)}
-.fund-search-field i{color:var(--primary);font-size:14px;margin-right:12px;flex-shrink:0}
+.fund-search-field i{color:var(--primary);font-size:13px;margin-right:10px;flex-shrink:0}
 .fund-search-field input{
   flex:1;border:none;outline:none;background:transparent;
-  font-size:14px;font-weight:500;color:var(--text);font-family:inherit;min-width:0;
+  font-size:13.5px;font-weight:500;color:var(--text);font-family:inherit;min-width:0;
 }
 .fund-search-field input::placeholder{color:var(--text-muted);font-weight:400}
 .fund-search-clear{
-  width:28px;height:28px;border-radius:50%;border:none;
+  width:26px;height:26px;border-radius:50%;border:none;
   background:var(--bg-card);color:var(--text-muted);
-  cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center;
-  margin-left:8px;flex-shrink:0;
+  cursor:pointer;font-size:10px;display:none;align-items:center;justify-content:center;
+  margin-left:6px;flex-shrink:0;
 }
 .fund-search-clear.visible{display:inline-flex}
 .fund-search-clear:hover{background:var(--danger-light);color:var(--danger-dark)}
 
-.fund-status{margin-top:10px;font-size:12px;color:var(--text-muted);min-height:16px}
+.fund-status{margin-top:8px;font-size:11.5px;color:var(--text-muted);min-height:16px}
 .fund-status.error{color:var(--danger-dark);font-weight:600}
 .fund-status.loading{color:var(--primary-dark);font-weight:600}
 .fund-status.success{color:var(--success-dark);font-weight:600}
 
 /* results list — compact */
-.fund-results{margin-top:14px;display:none;flex-direction:column;gap:6px}
+.fund-results{margin-top:12px;display:none;flex-direction:column;gap:5px}
 .fund-results.open{display:flex}
 .fund-result{
-  display:flex;align-items:center;gap:14px;
-  padding:12px 14px;border:1px solid var(--border);border-radius:12px;
-  background:var(--bg-card);cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border:1px solid var(--border);border-radius:10px;
+  background:var(--bg-card);cursor:pointer;transition:all .16s;
 }
 .fund-result:hover{border-color:var(--primary);background:var(--primary-light);transform:translateX(2px)}
 .fund-result .avatar{
-  width:42px;height:42px;border-radius:11px;
+  width:38px;height:38px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:800;font-size:15px;flex-shrink:0;position:relative;
+  color:#fff;font-weight:800;font-size:14px;flex-shrink:0;position:relative;
 }
 .fund-result .avatar .dot{
-  position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border-radius:50%;
+  position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;border-radius:50%;
   background:var(--success);border:2px solid var(--bg-card);
 }
 .fund-result .avatar.suspended .dot{background:var(--danger)}
 .fund-result .info{flex:1;min-width:0}
 .fund-result .name{
-  font-size:14px;font-weight:800;color:var(--text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;
+  font-size:13px;font-weight:800;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;
 }
 .fund-result .meta{
-  font-size:11.5px;color:var(--text-muted);font-weight:500;
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;row-gap:3px;
+  font-size:11px;color:var(--text-muted);font-weight:500;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;row-gap:2px;
 }
-.fund-result .meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11px}
+.fund-result .meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:10.5px}
 .fund-result .balance{
-  padding:6px 12px;border-radius:9px;
+  padding:5px 10px;border-radius:8px;
   background:var(--primary-light);border:1px solid rgba(10,69,52,.1);
-  font-size:13px;font-weight:900;color:var(--primary-dark);
+  font-size:12px;font-weight:900;color:var(--primary-dark);
   font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0;
 }
 
 /* selected user summary — slim */
 .fund-selected{
-  margin-top:16px;padding:16px 18px;border-radius:12px;
+  margin-top:14px;padding:14px 16px;border-radius:10px;
   background:linear-gradient(135deg,rgba(10,69,52,.06),rgba(10,69,52,.015));
   border:1px solid rgba(10,69,52,.12);
-  display:flex;align-items:center;gap:14px;
+  display:flex;align-items:center;gap:12px;
 }
 .fund-selected .avatar{
-  width:48px;height:48px;border-radius:13px;
+  width:42px;height:42px;border-radius:11px;
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:900;font-size:18px;flex-shrink:0;
+  color:#fff;font-weight:900;font-size:16px;flex-shrink:0;
 }
 .fund-selected .info{flex:1;min-width:0}
-.fund-selected .name{font-size:14.5px;font-weight:900;color:var(--primary-dark);margin-bottom:4px}
+.fund-selected .name{font-size:13.5px;font-weight:900;color:var(--primary-dark);margin-bottom:3px}
 .fund-selected .meta{
-  font-size:11.5px;color:var(--text-muted);font-weight:500;
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  font-size:11px;color:var(--text-muted);font-weight:500;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
 }
-.fund-selected .meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:11px}
+.fund-selected .meta .mono{font-family:'SF Mono',Menlo,monospace;font-size:10.5px}
 .fund-selected .change{
-  padding:7px 14px;border-radius:9px;border:1px solid var(--border);
+  padding:6px 12px;border-radius:8px;border:1px solid var(--border);
   background:var(--bg-card);color:var(--text-secondary);
-  font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit;
+  font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;
   flex-shrink:0;transition:all .18s;
 }
 .fund-selected .change:hover{border-color:var(--danger-dark);color:var(--danger-dark);background:var(--danger-light)}
 
-/* form — slim */
-.fund-form{margin-top:20px;display:none}
+/* form — slim, matching debit button style */
+.fund-form{margin-top:16px;display:none}
 .fund-form.revealed{display:block}
-.fund-form-row{display:flex;gap:12px;margin-bottom:16px}
+.fund-form-row{display:flex;gap:10px;margin-bottom:14px}
 .fund-form-row > *{flex:1}
-.fund-field{display:flex;flex-direction:column;gap:6px}
+.fund-field{display:flex;flex-direction:column;gap:5px}
 .fund-field label{
-  font-size:11px;font-weight:800;color:var(--text-secondary);
+  font-size:10.5px;font-weight:800;color:var(--text-secondary);
   letter-spacing:.2px;text-transform:uppercase;
 }
 .fund-field input,.fund-field textarea,.fund-field select{
-  width:100%;padding:12px 14px;
-  background:var(--bg-input);border:1.5px solid var(--border);border-radius:10px;
-  color:var(--text);font-size:13.5px;font-family:inherit;font-weight:500;
+  width:100%;padding:10px 12px;
+  background:var(--bg-input);border:1.5px solid var(--border);border-radius:9px;
+  color:var(--text);font-size:13px;font-family:inherit;font-weight:500;
   outline:none;transition:all .2s;
 }
 .fund-field input:focus,.fund-field textarea:focus,.fund-field select:focus{
   border-color:var(--primary);background:var(--bg-card);box-shadow:0 0 0 4px rgba(10,69,52,.07);
 }
-.fund-field textarea{resize:vertical;min-height:64px;line-height:1.5}
-.fund-field .hint{font-size:10.5px;color:var(--text-muted);font-weight:500}
+.fund-field textarea{resize:vertical;min-height:56px;line-height:1.5}
+.fund-field .hint{font-size:10px;color:var(--text-muted);font-weight:500}
 .fund-field select{cursor:pointer;appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;
 }
 
-.fund-actions{display:flex;gap:10px;margin-top:6px}
+.fund-actions{display:flex;gap:8px;margin-top:4px}
 .fund-btn{
-  flex:1;padding:13px 18px;border-radius:11px;border:none;
-  font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  flex:1;padding:11px 16px;border-radius:10px;
+  font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
   transition:all .2s;
 }
 .fund-btn:disabled{opacity:.55;cursor:not-allowed}
-.fund-btn.credit{background:linear-gradient(135deg,#10b981,#098658);color:#fff;box-shadow:0 6px 16px -6px rgba(9,134,88,.4)}
-.fund-btn.credit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px -6px rgba(9,134,88,.5)}
-.fund-btn.debit{background:var(--bg-card);border:1.5px solid rgba(161,34,34,.3);color:var(--danger-dark)}
-.fund-btn.debit:hover:not(:disabled){background:var(--danger-light);border-color:var(--danger-dark)}
+
+/* CREDIT BUTTON — now light and plain, matching debit */
+.fund-btn.credit{
+  background:var(--bg-card);
+  border:1.5px solid rgba(9,134,88,.3);
+  color:var(--success-dark);
+  box-shadow:none;
+}
+.fund-btn.credit:hover:not(:disabled){
+  background:var(--success-light);
+  border-color:var(--success-dark);
+  transform:translateY(-1px);
+}
+.fund-btn.debit{
+  background:var(--bg-card);
+  border:1.5px solid rgba(161,34,34,.3);
+  color:var(--danger-dark);
+}
+.fund-btn.debit:hover:not(:disabled){
+  background:var(--danger-light);
+  border-color:var(--danger-dark);
+  transform:translateY(-1px);
+}
 
 /* empty state — slim */
-.fund-empty{padding:40px 24px;text-align:center;color:var(--text-muted)}
-.fund-empty i{font-size:32px;color:var(--primary);opacity:.4;margin-bottom:12px;display:block}
-.fund-empty p{font-size:13px;line-height:1.6;max-width:400px;margin:0 auto}
+.fund-empty{padding:32px 20px;text-align:center;color:var(--text-muted)}
+.fund-empty i{font-size:28px;color:var(--primary);opacity:.4;margin-bottom:10px;display:block}
+.fund-empty p{font-size:12.5px;line-height:1.6;max-width:360px;margin:0 auto}
 
 /* DRIFT */
-.drift-hero{padding:24px 28px;background:linear-gradient(180deg,#fbfdfc,#f7faf8);border:1px solid var(--border);border-radius:16px;margin-bottom:20px}
+.drift-hero{padding:20px 24px;background:linear-gradient(180deg,#fbfdfc,#f7faf8);border:1px solid var(--border);border-radius:14px;margin-bottom:18px}
 [data-theme="dark"] .drift-hero{background:linear-gradient(180deg,rgba(10,69,52,.05),transparent)}
-.drift-hero-inner{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.drift-hero-icon{width:56px;height:56px;border-radius:16px;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.drift-hero-text{flex:1;min-width:220px}
-.drift-hero-title{font-size:17px;font-weight:900;color:var(--text);margin-bottom:5px}
-.drift-hero-sub{font-size:12.5px;color:var(--text-muted);line-height:1.55}
-.drift-refresh-btn{display:inline-flex;align-items:center;gap:9px;padding:0 18px;height:42px;border-radius:999px;border:1.5px solid rgba(10,69,52,.22);background:var(--bg-card);color:var(--text-secondary);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.drift-hero-inner{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.drift-hero-icon{width:48px;height:48px;border-radius:14px;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.drift-hero-text{flex:1;min-width:200px}
+.drift-hero-title{font-size:15px;font-weight:900;color:var(--text);margin-bottom:4px}
+.drift-hero-sub{font-size:11.5px;color:var(--text-muted);line-height:1.55}
+.drift-refresh-btn{display:inline-flex;align-items:center;gap:8px;padding:0 16px;height:38px;border-radius:999px;border:1.5px solid rgba(10,69,52,.22);background:var(--bg-card);color:var(--text-secondary);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .drift-refresh-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light)}
-.drift-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
-.drift-kpi{display:flex;align-items:center;gap:14px;padding:18px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px}
-.drift-kpi-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.drift-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
+.drift-kpi{display:flex;align-items:center;gap:12px;padding:16px 18px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px}
+.drift-kpi-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .drift-kpi-icon.neutral{background:var(--bg-input);color:var(--text-secondary)}
 .drift-kpi-icon.success{background:var(--success-light);color:var(--success-dark)}
 .drift-kpi-icon.warning{background:var(--warning-light);color:var(--warning-dark)}
 .drift-kpi-icon.danger{background:var(--danger-light);color:var(--danger-dark)}
-.drift-kpi-label{font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
-.drift-kpi-value{font-size:22px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums}
+.drift-kpi-label{font-size:9.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
+.drift-kpi-value{font-size:20px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums}
 .drift-kpi-value.success{color:var(--success-dark)}
 .drift-kpi-value.warning{color:var(--warning-dark)}
 .drift-kpi-value.danger{color:var(--danger-dark)}
-.drift-table-head{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1.2fr 0.9fr;gap:12px;padding:14px 24px;background:var(--bg-soft);border-bottom:1px solid var(--border);font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted)}
-.drift-row{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1.2fr 0.9fr;gap:12px;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);transition:background .18s}
+.drift-table-head{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1.2fr 0.9fr;gap:12px;padding:12px 22px;background:var(--bg-soft);border-bottom:1px solid var(--border);font-size:9.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted)}
+.drift-row{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1.2fr 0.9fr;gap:12px;align-items:center;padding:14px 22px;border-bottom:1px solid var(--border);transition:background .18s}
 .drift-row:last-child{border-bottom:none}
 .drift-row:hover{background:var(--bg-hover)}
-.drift-user{display:flex;align-items:center;gap:12px;min-width:0}
-.drift-user-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#b37308,#8a5506);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.drift-user-name{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.drift-user-id{font-size:10.5px;color:var(--text-muted);font-family:'SF Mono',Menlo,monospace;margin-top:2px}
-.drift-cell{font-size:12.5px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-.drift-cell .drift-sub{display:block;font-size:10px;font-weight:500;color:var(--text-muted);margin-top:3px}
-.drift-delta{font-size:13px;font-weight:900;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.drift-user{display:flex;align-items:center;gap:10px;min-width:0}
+.drift-user-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#b37308,#8a5506);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drift-user-name{font-size:12.5px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drift-user-id{font-size:10px;color:var(--text-muted);font-family:'SF Mono',Menlo,monospace;margin-top:1px}
+.drift-cell{font-size:11.5px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.drift-cell .drift-sub{display:block;font-size:9.5px;font-weight:500;color:var(--text-muted);margin-top:2px}
+.drift-delta{font-size:12px;font-weight:900;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .drift-delta.positive{color:var(--success-dark)}
 .drift-delta.negative{color:var(--danger-dark)}
-.drift-sev{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:9.5px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;justify-self:end;border:1px solid transparent}
-.drift-sev::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.drift-sev{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;justify-self:end;border:1px solid transparent}
+.drift-sev::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor}
 .drift-sev.minor{background:var(--warning-light);color:var(--warning-dark)}
 .drift-sev.major{background:var(--danger-light);color:var(--danger-dark)}
 .drift-sev.critical{background:#7a1a1a;color:#fff}
@@ -667,30 +686,39 @@ button{font-family:inherit}
 .toast.error{border-left:4px solid var(--danger)}
 .toast.info{border-left:4px solid var(--info)}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ADMIN ALERT PANEL — slimmed by 30% */
 .admin-alert-btn{position:relative;width:40px;height:40px;border-radius:12px}
 .admin-alert-btn .alert-badge{position:absolute;right:-3px;top:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid var(--bg-card);font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center}
 .admin-alert-btn.has-alert .alert-badge{display:flex}
-.admin-alert-panel{position:fixed;top:74px;right:24px;width:min(440px,calc(100vw - 28px));max-height:min(620px,calc(100vh - 100px));background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;box-shadow:var(--shadow-xl);z-index:2100;display:flex;flex-direction:column;overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);transition:all .22s}
+.admin-alert-panel{
+  position:fixed;top:74px;right:24px;
+  width:min(308px, calc(100vw - 28px)); /* reduced by 30% from 440px */
+  max-height:min(434px, calc(100vh - 100px)); /* reduced by 30% from 620px */
+  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:16px;
+  box-shadow:var(--shadow-xl);z-index:2100;display:flex;flex-direction:column;overflow:hidden;
+  opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);transition:all .22s;
+}
 .admin-alert-panel.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
-.admin-alert-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
-.admin-alert-head h3{font-size:14px;font-weight:900;display:flex;align-items:center;gap:9px}
-.admin-alert-head h3 i{color:var(--primary)}
-.admin-alert-head button{width:32px;height:32px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-muted);border-radius:9px;cursor:pointer}
-.admin-alert-list{overflow:auto;padding:10px}
-.admin-alert-item{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:14px;border:1px solid transparent;border-radius:14px;transition:all .18s;margin-bottom:5px}
+.admin-alert-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.admin-alert-head h3{font-size:12.5px;font-weight:900;display:flex;align-items:center;gap:7px}
+.admin-alert-head h3 i{color:var(--primary);font-size:12px}
+.admin-alert-head button{width:28px;height:28px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-muted);border-radius:8px;cursor:pointer;font-size:11px}
+.admin-alert-list{overflow:auto;padding:8px}
+.admin-alert-item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:11px;border:1px solid transparent;border-radius:11px;transition:all .18s;margin-bottom:4px}
 .admin-alert-item:hover{background:var(--bg-hover);border-color:var(--border)}
-.admin-alert-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--warning-light);color:var(--warning-dark)}
+.admin-alert-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--warning-light);color:var(--warning-dark);font-size:13px}
 .admin-alert-icon.withdraw{background:var(--purple-light);color:var(--purple-dark)}
-.admin-alert-item .aa-title{font-size:12.5px;font-weight:800;color:var(--text)}
-.admin-alert-item .aa-sub{font-size:10.5px;color:var(--text-muted);margin-top:4px}
-.admin-alert-item .aa-amount{font-size:12.5px;font-weight:900;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums}
-.admin-alert-item .aa-actions{display:flex;gap:6px;margin-top:8px}
-.admin-alert-item .aa-actions button{height:29px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);font-size:10.5px;font-weight:800;padding:0 10px;color:var(--text-secondary);cursor:pointer}
+.admin-alert-item .aa-title{font-size:11.5px;font-weight:800;color:var(--text)}
+.admin-alert-item .aa-sub{font-size:9.5px;color:var(--text-muted);margin-top:3px}
+.admin-alert-item .aa-amount{font-size:11.5px;font-weight:900;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums}
+.admin-alert-item .aa-actions{display:flex;gap:5px;margin-top:6px}
+.admin-alert-item .aa-actions button{height:26px;border-radius:7px;border:1px solid var(--border);background:var(--bg-card);font-size:9.5px;font-weight:800;padding:0 8px;color:var(--text-secondary);cursor:pointer}
 .admin-alert-item .aa-actions .review{color:var(--primary-dark);border-color:rgba(10,69,52,.2);background:var(--primary-light)}
-.admin-alert-empty{padding:56px 24px;text-align:center;color:var(--text-muted)}
-.admin-alert-empty .ae-icon{width:68px;height:68px;border-radius:22px;background:var(--success-light);color:var(--success-dark);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:25px}
-.admin-alert-empty strong{display:block;color:var(--text-secondary);font-size:13.5px;margin-bottom:6px}
-.admin-alert-empty span{font-size:11.5px;line-height:1.5}
+.admin-alert-empty{padding:42px 18px;text-align:center;color:var(--text-muted)}
+.admin-alert-empty .ae-icon{width:54px;height:54px;border-radius:18px;background:var(--success-light);color:var(--success-dark);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px}
+.admin-alert-empty strong{display:block;color:var(--text-secondary);font-size:12px;margin-bottom:4px}
+.admin-alert-empty span{font-size:10.5px;line-height:1.5}
 .admin-sound-chip{position:fixed;right:24px;bottom:24px;z-index:1900;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);box-shadow:var(--shadow-lg);border-radius:999px;padding:12px 18px;display:none;align-items:center;gap:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;animation:chipPulse 1.6s infinite}
 .admin-sound-chip.show{display:inline-flex}
 .admin-sound-chip.on{color:var(--success-dark);border-color:rgba(9,134,88,.2);background:var(--success-light);animation:none}
@@ -762,12 +790,12 @@ button{font-family:inherit}
   .user-body{grid-area:main}
   .user-right{grid-area:right;width:100%;justify-content:space-between;padding-top:12px;border-top:1px dashed var(--border)}
   .fund-shell{padding:18px 14px 32px}
-  .fund-panel-body{padding:18px}
+  .fund-panel-body{padding:16px}
   .fund-search-row{flex-direction:column}
   .fund-result{flex-wrap:wrap}
-  .fund-result .balance{width:100%;text-align:center;margin-top:8px}
+  .fund-result .balance{width:100%;text-align:center;margin-top:6px}
   .fund-selected{flex-wrap:wrap}
-  .fund-selected .change{width:100%;text-align:center;margin-top:8px}
+  .fund-selected .change{width:100%;text-align:center;margin-top:6px}
   .fund-form-row{flex-direction:column}
   .fund-actions{flex-direction:column}
   #viewModal .modal,#txnModal .modal,#datashopModal .modal{max-width:100%;margin:0;border-radius:20px 20px 0 0;padding:22px 20px}
@@ -775,12 +803,12 @@ button{font-family:inherit}
   .modal .btns{flex-direction:column-reverse}
   .modal .btns button{width:100%}
   .drift-table-head{display:none}
-  .drift-row{grid-template-columns:1fr;gap:10px;padding:18px 20px}
+  .drift-row{grid-template-columns:1fr;gap:10px;padding:16px 18px}
   .drift-cell,.drift-delta{text-align:left}
   .drift-sev{justify-self:start}
   .kpi-strip{grid-template-columns:repeat(2,1fr);gap:12px}
   .chart{height:150px}
-  .admin-alert-panel{top:64px;right:10px;width:calc(100vw - 20px)}
+  .admin-alert-panel{top:64px;right:10px;width:min(320px, calc(100vw - 20px));max-height:min(450px, calc(100vh - 80px))}
   .admin-sound-chip{right:12px;bottom:100px}
   .alarm-banner h2{font-size:26px}
   .alarm-banner .alarm-icon{width:96px;height:96px;font-size:48px}
@@ -794,7 +822,7 @@ button{font-family:inherit}
   .content{padding:12px 12px 120px}
   .panel-head{padding:14px 16px}
   .fund-shell{padding:14px 12px 26px}
-  .fund-panel-body{padding:16px}
+  .fund-panel-body{padding:14px}
   .kpi-strip{grid-template-columns:1fr 1fr;gap:10px}
   .kpi{padding:14px 16px}
   .kpi .k-value{font-size:18px}
@@ -1098,7 +1126,7 @@ button{font-family:inherit}
         </div>
       </section>
 
-      <!-- MANUAL FUND — slim, professional redesign -->
+      <!-- MANUAL FUND — slim, professional, light buttons -->
       <section id="tab-fund" style="display:none">
         <div class="fund-shell">
           <div class="fund-panel">
@@ -1149,7 +1177,7 @@ button{font-family:inherit}
                       </select>
                     </div>
                   </div>
-                  <div class="fund-field" style="margin-bottom:16px">
+                  <div class="fund-field" style="margin-bottom:14px">
                     <label>Reason <span class="hint" style="text-transform:none;font-weight:500">— visible in user's history</span></label>
                     <textarea id="fundReason" placeholder="e.g. Compensation for failed MTN data on 2026-09-26 (Ref: shatova-data-…)" rows="2"></textarea>
                   </div>
@@ -1460,22 +1488,56 @@ button{font-family:inherit}
   async function fetchDep() { try { const r = await api('/wallet/admin/deposits/all'); state.deposits = pick(r); } catch (_) { state.deposits = []; } }
   async function fetchWd() { try { const r = await api('/wallet/admin/withdrawals/all'); state.withdrawals = pick(r); } catch (_) { state.withdrawals = []; } }
   async function fetchMe() { try { const r = await api('/auth/me'); const u = r.data?.user || r.data; if (u) { const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('adminName', u.name || 'Admin'); s('adminEmail', u.email || ''); s('drawerName', u.name || 'Admin'); s('drawerEmail', u.email || ''); s('adminAvatar', (u.name || 'A').charAt(0).toUpperCase()); s('drawerAvatar', (u.name || 'A').charAt(0).toUpperCase()); } } catch (_) {} }
-  async function fetchDW() { try { const r = await api('/admin/datashop/wallet'); const d = r.data || r || {}; state.datashop = { balance: getAmount({amount: d.balance ?? 0}), totalFunded: getAmount({amount: d.total_funded ?? 0}), totalSpent: getAmount({amount: d.total_spent ?? 0}), lastFunding: d.last_funding_at || null }; } catch (_) {} }
+
+  /* DATASHOP WALLET — fetches from correct endpoint */
+  async function fetchDW() {
+    try {
+      // Use the correct external wallet endpoint as requested
+      const res = await fetch('/api/v2/account/wallet-balance', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const j = await res.json();
+      if (j.status && j.data) {
+        state.datashop = {
+          balance: j.data.balance ?? 0,
+          totalFunded: j.data.total_funded ?? 0,
+          totalSpent: j.data.total_spent ?? 0,
+          lastFunding: j.data.last_funding_at || null
+        };
+        renderDW();
+      }
+    } catch (e) {
+      console.warn('Datashop wallet fetch failed:', e);
+    }
+  }
+  function renderDW() {
+    const d = state.datashop || {};
+    const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    s('dwBalance', fmtMoney(d.balance || 0));
+    s('dwTotalFunded', fmtMoney(d.totalFunded || 0));
+    s('dwTotalSpent', fmtMoney(d.totalSpent || 0));
+    s('dwLastFunding', d.lastFunding ? timeAgo(d.lastFunding) : '—');
+  }
+  async function reloadDW() { await fetchDW(); renderDW(); }
+  function openDatashopWallet() { renderDW(); $('#datashopModal').classList.add('active'); reloadDW(); }
+  function closeDatashopWallet() { $('#datashopModal').classList.remove('active'); }
+  function goToDatashopPage() { window.open('https://datashop.ng/dashboard', '_blank', 'noopener'); }
+  window.openDatashopWallet = openDatashopWallet; window.closeDatashopWallet = closeDatashopWallet; window.reloadDatashopWallet = reloadDW; window.goToDatashopPage = goToDatashopPage;
 
   /* ============================================================
      UNIFIED TRANSACTION RESERVOIR
-     Merges deposits, withdrawals, and VTU transactions into one
-     deduplicated, normalized list.
      ============================================================ */
   function buildUnifiedTransactions() {
     const map = new Map();
-    const push = (item, forcedKind) => {
+    const push = (item) => {
       if (!item) return;
       const id = String(item.id || item._id || item.reference || item.tx_ref || '');
       if (!id) return;
       const existing = map.get(id);
       if (existing) {
-        // Already seen — prefer the richer record (with metadata/user_name)
         const score = (o) => (o.metadata ? 1 : 0) + (o.user_name ? 1 : 0) + (o.user_email ? 1 : 0);
         if (score(item) > score(existing)) map.set(id, item);
         return;
@@ -1483,10 +1545,7 @@ button{font-family:inherit}
       map.set(id, item);
     };
 
-    // 1) VTU / general transactions
     (state.transactions || []).forEach(t => push(t));
-
-    // 2) Deposits — normalise direction so txnKind detects them
     (state.deposits || []).forEach(d => {
       const norm = { ...d };
       if (!norm.direction) norm.direction = 'CREDIT';
@@ -1494,10 +1553,8 @@ button{font-family:inherit}
       if (!norm.category) norm.category = 'deposit';
       if (!norm.metadata) norm.metadata = {};
       if (!norm.metadata.product_name) norm.metadata.product_name = 'Wallet Deposit';
-      push(norm, 'deposit');
+      push(norm);
     });
-
-    // 3) Withdrawals — normalise direction
     (state.withdrawals || []).forEach(w => {
       const norm = { ...w };
       if (!norm.direction) norm.direction = 'DEBIT';
@@ -1505,10 +1562,9 @@ button{font-family:inherit}
       if (!norm.category) norm.category = 'withdrawal';
       if (!norm.metadata) norm.metadata = {};
       if (!norm.metadata.product_name) norm.metadata.product_name = 'Wallet Withdrawal';
-      push(norm, 'withdrawal');
+      push(norm);
     });
 
-    // Sort newest first
     state.unifiedTransactions = Array.from(map.values())
       .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
   }
@@ -1926,14 +1982,6 @@ button{font-family:inherit}
   async function submitRejectDeposit() { if (!state.currentRejectDeposit || state.depositRejectPending) return; stopAlarm(); const r = $('#rejectDepositReason').value.trim(); if (r.length < 5) { toast('Please give a reason', 'error'); return; } state.depositRejectPending = true; const b = $('#rejectDepositBtn'); const c = $('#rejectDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting…'; if (c) c.disabled = true; try { await api(`/wallet/admin/deposit/${state.currentRejectDeposit.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Deposit rejected', 'error'); state.depositRejectPending = false; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositRejectPending = false; } }
   window.submitRejectDeposit = submitRejectDeposit;
 
-  /* DATASHOP */
-  function openDatashopWallet() { renderDW(); $('#datashopModal').classList.add('active'); reloadDW(); }
-  function closeDatashopWallet() { $('#datashopModal').classList.remove('active'); }
-  function renderDW() { const d = state.datashop || {}; const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('dwBalance', fmtMoney(d.balance||0)); s('dwTotalFunded', fmtMoney(d.totalFunded||0)); s('dwTotalSpent', fmtMoney(d.totalSpent||0)); s('dwLastFunding', d.lastFunding ? timeAgo(d.lastFunding) : '—'); }
-  async function reloadDW() { await fetchDW(); renderDW(); }
-  function goToDatashopPage() { window.open('https://datashop.ng/dashboard', '_blank', 'noopener'); }
-  window.openDatashopWallet = openDatashopWallet; window.closeDatashopWallet = closeDatashopWallet; window.reloadDatashopWallet = reloadDW; window.goToDatashopPage = goToDatashopPage;
-
   /* ============================================================
      MANUAL FUND — slim, professional flow
      ============================================================ */
@@ -1979,7 +2027,6 @@ button{font-family:inherit}
     const wrap = document.getElementById('fundSelectedWrap');
     const form = document.getElementById('fundForm');
 
-    // When admin types, collapse any previously-selected user
     if (q) {
       if (wrap) wrap.style.display = 'none';
       if (form) form.classList.remove('revealed');
@@ -1997,7 +2044,6 @@ button{font-family:inherit}
     const seq = ++fundSearchSeq;
     if (status) { status.innerHTML = `<i class="fas fa-circle-notch fa-spin" style="color:var(--primary)"></i> Searching for <strong>${esc(q)}</strong>…`; status.className = 'fund-status loading'; }
 
-    // Local first
     const local = filterUsers(q);
     if (local.length) {
       if (seq !== fundSearchSeq) return;
@@ -2006,7 +2052,6 @@ button{font-family:inherit}
       return;
     }
 
-    // Server search
     clearTimeout(window.__fundSearchTimer);
     window.__fundSearchTimer = setTimeout(async () => {
       try {
@@ -2066,22 +2111,18 @@ button{font-family:inherit}
     if (!u) { toast('User not in local cache. Refresh and try again.', 'error'); return; }
     state.fundUser = u;
 
-    // Render selected summary
     renderFundSelected(u);
 
-    // Hide results + empty
     const results = document.getElementById('fundResults');
     if (results) { results.classList.remove('open'); results.innerHTML = ''; }
     const empty = document.getElementById('fundEmpty');
     if (empty) empty.style.display = 'none';
 
-    // Show selected + form
     const wrap = document.getElementById('fundSelectedWrap');
     if (wrap) wrap.style.display = 'block';
     const form = document.getElementById('fundForm');
     if (form) form.classList.add('revealed');
 
-    // Update input
     const i = document.getElementById('fundLookupQuery');
     if (i) i.value = u.name || u.email || u.phone || `#${u.id || u._id}`;
     const clear = document.getElementById('fundSearchClear');
@@ -2090,7 +2131,6 @@ button{font-family:inherit}
     const status = document.getElementById('fundSearchStatus');
     if (status) { status.innerHTML = `<i class="fas fa-circle-check" style="color:var(--success-dark)"></i> Loaded <strong>${esc(u.name || u.email)}</strong>. Fill in the form to fund or debit.`; status.className = 'fund-status success'; }
 
-    // Scroll + focus
     setTimeout(() => {
       const amt = document.getElementById('fundAmount');
       if (amt) amt.focus();
