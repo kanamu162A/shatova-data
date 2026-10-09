@@ -46,7 +46,6 @@ html,body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-s
 a{color:inherit;text-decoration:none}
 button{font-family:inherit}
 .app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh}
-
 .sidebar{background:var(--bg-card);border-right:1px solid var(--border);padding:14px 10px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sidebar::-webkit-scrollbar{width:6px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
@@ -75,13 +74,11 @@ button{font-family:inherit}
 .icon-btn{width:32px;height:32px;border-radius:9px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);font-size:11.5px;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow-xs)}
 .icon-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);transform:translateY(-1px)}
 .icon-btn.danger:hover{background:var(--danger-light);border-color:var(--danger-dark);color:var(--danger-dark)}
-
 .drawer-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.55);backdrop-filter:blur(8px);z-index:500;opacity:0;visibility:hidden;transition:opacity .28s,visibility .28s}
 .drawer-overlay.open{opacity:1;visibility:visible}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:82vw;max-width:270px;background:var(--bg-card);border-right:1px solid var(--border);z-index:501;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .32s cubic-bezier(0.32,0.72,0.24,1);overflow-y:auto;padding:14px 10px calc(env(safe-area-inset-bottom,0px) + 14px);gap:14px}
 .drawer.open{transform:translateX(0)}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:2px 6px 12px;border-bottom:1px solid var(--border)}
-
 .main-area{min-width:0;display:flex;flex-direction:column;padding-top:var(--header-h)}
 .topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--header-h);background:rgba(255,255,255,0.85);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:45;backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 2px rgba(15,23,42,0.02)}
 [data-theme="dark"] .topbar{background:rgba(15,20,33,0.85);box-shadow:0 1px 2px rgba(0,0,0,0.3)}
@@ -93,7 +90,6 @@ button{font-family:inherit}
 .btn-datashop:hover{transform:translateY(-1px);box-shadow:0 8px 18px -4px rgba(10,69,52,0.45)}
 .menu-toggle{display:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);cursor:pointer;align-items:center;justify-content:center;font-size:12px}
 .content{padding:18px;max-width:1440px;width:100%;margin:0 auto;flex:1}
-
 .timeframe-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:11px;box-shadow:var(--shadow-xs)}
 .timeframe-bar .tf-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
 .timeframe-bar .tf-title{font-size:9.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);display:inline-flex;align-items:center;gap:6px}
@@ -105,7 +101,6 @@ button{font-family:inherit}
 .tf-pills button{padding:5px 10px;font-size:10.5px;font-weight:700;border-radius:6px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;white-space:nowrap;transition:all .16s;font-family:inherit;flex-shrink:0}
 .tf-pills button:hover:not(.active){color:var(--text);background:var(--bg-hover)}
 .tf-pills button.active{background:var(--bg-card);color:var(--primary-dark);box-shadow:0 1px 2px rgba(15,23,42,0.06),0 3px 8px rgba(15,23,42,0.04);font-weight:800}
-
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
 .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:all .26s;min-width:0;position:relative;overflow:hidden;box-shadow:var(--shadow-xs);animation:fadeUp .45s both}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--primary-gradient);opacity:0;transition:opacity .28s}
@@ -130,7 +125,6 @@ button{font-family:inherit}
 .stat-sub .pill.ok{background:var(--success-light);color:var(--success-dark)}
 .stat-card.is-hidden,.panel.is-hidden{display:none !important}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
 .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow-xs)}
 .panel:hover{border-color:rgba(10,69,52,0.10);box-shadow:var(--shadow-hover-card)}
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap}
@@ -139,8 +133,6 @@ button{font-family:inherit}
 .panel-head .sub{font-size:10.5px;color:var(--text-muted);font-weight:500}
 .panel-body{padding:14px 16px}
 .panel-body.no-pad{padding:0}
-
-/* ============ ANALYTICS — CLEAN & CALM ============ */
 .an-hero{position:relative;border-radius:14px;overflow:hidden;margin-bottom:16px;background:linear-gradient(120deg,#062f24 0%,#0a4534 50%,#0d5a44 100%);color:#fff;padding:22px 24px;box-shadow:0 16px 32px -20px rgba(10,69,52,.45)}
 .an-hero::before{content:'';position:absolute;top:-50%;right:-5%;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.16) 0%,transparent 62%);pointer-events:none}
 .an-hero-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
@@ -188,9 +180,7 @@ button{font-family:inherit}
 .an-footnote i{color:var(--primary)}
 @media (max-width:1100px){.an-grid{grid-template-columns:1fr}.an-two-col{grid-template-columns:1fr}}
 @media (max-width:900px){.chart-wrap{height:220px}.an-hero{padding:18px}.an-hero h2{font-size:15px}.an-hero-stat .val{font-size:18px}}
-
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
-
 .data-list{display:flex;flex-direction:column}
 .row-item{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);transition:background .18s;cursor:pointer;min-width:0}
 .row-item:last-child{border-bottom:none}
@@ -223,7 +213,6 @@ button{font-family:inherit}
 .status.success,.status.successful{background:var(--success-light);color:var(--success-dark);border-color:rgba(9,134,88,0.1)}
 .status.failed,.status.rejected{background:var(--danger-light);color:var(--danger-dark);border-color:rgba(161,34,34,0.1)}
 .status.refunded{background:var(--purple-light);color:var(--purple-dark);border-color:rgba(124,58,237,0.1)}
-
 .panel-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);background:var(--bg-soft);gap:12px;flex-wrap:wrap}
 .pagination-info{font-size:10.5px;color:var(--text-muted);font-weight:600}
 .pagination-info strong{color:var(--text);font-weight:800}
@@ -243,7 +232,6 @@ button{font-family:inherit}
 .loading .ring{width:26px;height:26px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--primary);animation:spin .7s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading p{font-size:11.5px;color:var(--text-muted)}
-
 .search-hero{padding:18px 22px 16px;background:linear-gradient(180deg,#fbfdfc 0%,#f7faf8 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 [data-theme="dark"] .search-hero{background:linear-gradient(180deg,rgba(10,69,52,.05),transparent)}
 .search-hero::before{content:'';position:absolute;top:-80px;right:-70px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.05) 0%,transparent 65%);pointer-events:none}
@@ -284,7 +272,6 @@ button{font-family:inherit}
 .results-live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--text-muted)}
 .results-live .dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.6s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
-
 .txn-card-list{display:flex;flex-direction:column;padding:10px 14px;gap:6px}
 .txn-card{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:11px;cursor:pointer;transition:all .18s}
 .txn-card:hover{border-color:rgba(10,69,52,.2);box-shadow:0 6px 18px -10px rgba(10,69,52,.14);transform:translateY(-1px)}
@@ -333,7 +320,6 @@ button{font-family:inherit}
 .txn-actions .view:hover{background:var(--primary-light);border-color:var(--primary-dark);color:var(--primary-dark)}
 .txn-arrow{width:28px;height:28px;border-radius:8px;background:var(--bg-input);display:inline-flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:10px;transition:all .18s}
 .txn-card:hover .txn-arrow{background:var(--primary);color:#fff;transform:translateX(3px)}
-
 .user-card-list{display:flex;flex-direction:column;padding:10px 14px;gap:6px}
 .user-card{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:11px;cursor:pointer;transition:all .18s}
 .user-card:hover{border-color:rgba(10,69,52,.2);box-shadow:0 6px 18px -10px rgba(10,69,52,.14);transform:translateY(-1px)}
@@ -362,7 +348,6 @@ button{font-family:inherit}
 .user-empty-icon{width:70px;height:70px;margin:0 auto 16px;border-radius:20px;background:linear-gradient(135deg,rgba(10,69,52,0.06),rgba(10,69,52,0.015));border:1px solid rgba(10,69,52,0.08);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--primary)}
 .user-empty-title{font-size:14.5px;font-weight:900;color:var(--text);margin-bottom:6px}
 .user-empty-text{font-size:11.5px;color:var(--text-muted);line-height:1.6;max-width:380px;margin:0 auto}
-
 .sheet-overlay{position:fixed;inset:0;background:rgba(10,15,30,.55);backdrop-filter:blur(8px);z-index:1300;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .28s,visibility .28s}
 .sheet-overlay.open{opacity:1;visibility:visible}
 .sheet{width:100%;max-width:500px;background:var(--bg-card);border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform .34s cubic-bezier(0.32,0.72,0.24,1);max-height:90vh;display:flex;flex-direction:column;border:1px solid var(--border);border-bottom:none;box-shadow:0 -18px 45px rgba(0,0,0,0.15)}
@@ -424,7 +409,6 @@ button{font-family:inherit}
 .sheet-foot .apply{background:var(--primary-gradient);color:#fff;box-shadow:0 6px 16px -4px rgba(10,69,52,.35)}
 .sheet-foot .apply:hover{transform:translateY(-2px);box-shadow:0 10px 22px -6px rgba(10,69,52,.45)}
 .sheet-foot button:disabled{opacity:.5;cursor:not-allowed;transform:none}
-
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,15,30,.5);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.active{display:flex}
 .modal{background:var(--bg-card);border-radius:16px;border:1px solid var(--border);max-width:440px;width:100%;padding:20px 22px;box-shadow:var(--shadow-xl);animation:modalIn .34s;max-height:90vh;overflow-y:auto}
@@ -455,7 +439,6 @@ button{font-family:inherit}
 .modal .btns .secondary:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light)}
 .modal .btns .primary{background:var(--primary-gradient);color:#fff}
 .modal .btns .danger{background:linear-gradient(135deg,#a12222,#7a1a1a);color:#fff}
-
 .txn-hero{padding:16px 18px;border-radius:12px;background:linear-gradient(135deg,rgba(10,69,52,0.05),rgba(10,69,52,0.015));border:1px solid rgba(10,69,52,0.1);margin-bottom:14px;display:flex;gap:14px;align-items:center}
 .txn-hero-logo{width:52px;height:52px;flex-shrink:0;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .txn-hero-logo svg.net-shape{width:100%;height:100%;display:block}
@@ -469,7 +452,6 @@ button{font-family:inherit}
 .txn-amount-block .amt-meta > div{flex:1}
 .txn-amount-block .amt-meta .lbl{font-size:8.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;opacity:.72;margin-bottom:3px}
 .txn-amount-block .amt-meta .val{font-size:13px;font-weight:800}
-
 .fund-shell{max-width:640px;margin:0 auto;padding:16px 14px 28px}
 .fund-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-xs);overflow:hidden}
 .fund-panel-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg-soft)}
@@ -531,7 +513,6 @@ button{font-family:inherit}
 .fund-empty{padding:24px 16px;text-align:center;color:var(--text-muted)}
 .fund-empty i{font-size:24px;color:var(--primary);opacity:.4;margin-bottom:8px;display:block}
 .fund-empty p{font-size:11.5px;line-height:1.6;max-width:320px;margin:0 auto}
-
 .drift-hero{padding:16px 20px;background:linear-gradient(180deg,#fbfdfc,#f7faf8);border:1px solid var(--border);border-radius:12px;margin-bottom:14px}
 [data-theme="dark"] .drift-hero{background:linear-gradient(180deg,rgba(10,69,52,.05),transparent)}
 .drift-hero-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -571,7 +552,6 @@ button{font-family:inherit}
 .drift-sev.minor{background:var(--warning-light);color:var(--warning-dark)}
 .drift-sev.major{background:var(--danger-light);color:var(--danger-dark)}
 .drift-sev.critical{background:#7a1a1a;color:#fff}
-
 .toast-container{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;max-width:400px;width:calc(100% - 28px);pointer-events:none}
 .toast{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:11px 16px;box-shadow:var(--shadow-lg);font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:9px;pointer-events:auto;animation:toastIn .3s}
 .toast.success{border-left:4px solid var(--success)}
@@ -853,7 +833,6 @@ button{font-family:inherit}
           </div>
           <div class="tf-meta" id="rangeMeta2"><i class="fas fa-circle-info"></i> <strong>Today</strong></div>
         </div>
-
         <div class="an-hero">
           <div class="an-hero-inner">
             <div>
@@ -861,105 +840,39 @@ button{font-family:inherit}
               <p>Real-time performance across the Shatova platform — revenue, success rate, and wallet health at a glance.</p>
             </div>
             <div class="an-hero-stats">
-              <div class="an-hero-stat">
-                <div class="lbl">Gross Volume</div>
-                <div class="val" id="heroVolume">₦0</div>
-                <div class="delta" id="heroVolumeDelta">—</div>
-              </div>
-              <div class="an-hero-stat">
-                <div class="lbl">Transactions</div>
-                <div class="val" id="heroTxns">0</div>
-                <div class="delta" id="heroTxnsDelta">—</div>
-              </div>
-              <div class="an-hero-stat">
-                <div class="lbl">Success Rate</div>
-                <div class="val" id="heroSuccess">0%</div>
-                <div class="delta" id="heroSuccessDelta">—</div>
-              </div>
+              <div class="an-hero-stat"><div class="lbl">Gross Volume</div><div class="val" id="heroVolume">₦0</div><div class="delta" id="heroVolumeDelta">—</div></div>
+              <div class="an-hero-stat"><div class="lbl">Transactions</div><div class="val" id="heroTxns">0</div><div class="delta" id="heroTxnsDelta">—</div></div>
+              <div class="an-hero-stat"><div class="lbl">Success Rate</div><div class="val" id="heroSuccess">0%</div><div class="delta" id="heroSuccessDelta">—</div></div>
             </div>
           </div>
         </div>
-
         <div class="an-grid">
           <div class="an-card">
-            <div class="an-card-head">
-              <h3><i class="fas fa-chart-area"></i> Revenue &amp; Volume Trend</h3>
-              <span class="hint" id="chartRangeLabel">Today</span>
-            </div>
-            <div class="an-card-body tight">
-              <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
-            </div>
+            <div class="an-card-head"><h3><i class="fas fa-chart-area"></i> Revenue &amp; Volume Trend</h3><span class="hint" id="chartRangeLabel">Today</span></div>
+            <div class="an-card-body tight"><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
             <div class="chart-legend-custom">
               <span class="lg"><span class="sw" style="background:#0a4534"></span> Gross Volume</span>
               <span class="lg"><span class="sw" style="background:#3b82f6"></span> Successful</span>
               <span class="lg"><span class="sw" style="background:#f59e0b"></span> Profit</span>
             </div>
           </div>
-
           <div class="an-card">
-            <div class="an-card-head">
-              <h3><i class="fas fa-chart-pie"></i> Transaction Mix</h3>
-              <span class="hint">By type</span>
-            </div>
-            <div class="an-card-body tight">
-              <div class="chart-wrap donut"><canvas id="mixChart"></canvas></div>
-            </div>
+            <div class="an-card-head"><h3><i class="fas fa-chart-pie"></i> Transaction Mix</h3><span class="hint">By type</span></div>
+            <div class="an-card-body tight"><div class="chart-wrap donut"><canvas id="mixChart"></canvas></div></div>
           </div>
         </div>
-
         <div class="an-mini-grid">
-          <div class="an-mini">
-            <div class="lbl"><i class="fas fa-circle-check"></i> Success Rate</div>
-            <div class="val" id="miniSuccess">0%</div>
-            <div class="sub" id="miniSuccessSub">0 of 0</div>
-            <div class="bar"><i id="miniSuccessBar" style="width:0%;background:#10b981"></i></div>
-          </div>
-          <div class="an-mini">
-            <div class="lbl"><i class="fas fa-triangle-exclamation"></i> Failure Rate</div>
-            <div class="val" id="miniFailure">0%</div>
-            <div class="sub" id="miniFailureSub">0 failed</div>
-            <div class="bar"><i id="miniFailureBar" style="width:0%;background:#ef4444"></i></div>
-          </div>
-          <div class="an-mini">
-            <div class="lbl"><i class="fas fa-coins"></i> Avg. Transaction</div>
-            <div class="val" id="miniAvg">₦0</div>
-            <div class="sub" id="miniAvgSub">per transaction</div>
-            <div class="bar"><i id="miniAvgBar" style="width:60%;background:#3b82f6"></i></div>
-          </div>
-          <div class="an-mini">
-            <div class="lbl"><i class="fas fa-arrow-trend-up"></i> Profit Margin</div>
-            <div class="val" id="miniMargin">0%</div>
-            <div class="sub" id="miniMarginSub">of gross volume</div>
-            <div class="bar"><i id="miniMarginBar" style="width:0%;background:#f59e0b"></i></div>
-          </div>
+          <div class="an-mini"><div class="lbl"><i class="fas fa-circle-check"></i> Success Rate</div><div class="val" id="miniSuccess">0%</div><div class="sub" id="miniSuccessSub">0 of 0</div><div class="bar"><i id="miniSuccessBar" style="width:0%;background:#10b981"></i></div></div>
+          <div class="an-mini"><div class="lbl"><i class="fas fa-triangle-exclamation"></i> Failure Rate</div><div class="val" id="miniFailure">0%</div><div class="sub" id="miniFailureSub">0 failed</div><div class="bar"><i id="miniFailureBar" style="width:0%;background:#ef4444"></i></div></div>
+          <div class="an-mini"><div class="lbl"><i class="fas fa-coins"></i> Avg. Transaction</div><div class="val" id="miniAvg">₦0</div><div class="sub" id="miniAvgSub">per transaction</div><div class="bar"><i id="miniAvgBar" style="width:60%;background:#3b82f6"></i></div></div>
+          <div class="an-mini"><div class="lbl"><i class="fas fa-arrow-trend-up"></i> Profit Margin</div><div class="val" id="miniMargin">0%</div><div class="sub" id="miniMarginSub">of gross volume</div><div class="bar"><i id="miniMarginBar" style="width:0%;background:#f59e0b"></i></div></div>
         </div>
-
         <div class="an-two-col">
-          <div class="an-card">
-            <div class="an-card-head">
-              <h3><i class="fas fa-trophy"></i> Top Services</h3>
-              <span class="hint">By volume</span>
-            </div>
-            <div class="rank-list" id="topServices">
-              <div class="loading"><div class="ring"></div><p>Loading…</p></div>
-            </div>
-          </div>
-          <div class="an-card">
-            <div class="an-card-head">
-              <h3><i class="fas fa-users"></i> Top Customers</h3>
-              <span class="hint">By spend</span>
-            </div>
-            <div class="rank-list" id="topCustomers">
-              <div class="loading"><div class="ring"></div><p>Loading…</p></div>
-            </div>
-          </div>
+          <div class="an-card"><div class="an-card-head"><h3><i class="fas fa-trophy"></i> Top Services</h3><span class="hint">By volume</span></div><div class="rank-list" id="topServices"><div class="loading"><div class="ring"></div><p>Loading…</p></div></div></div>
+          <div class="an-card"><div class="an-card-head"><h3><i class="fas fa-users"></i> Top Customers</h3><span class="hint">By spend</span></div><div class="rank-list" id="topCustomers"><div class="loading"><div class="ring"></div><p>Loading…</p></div></div></div>
         </div>
-
         <div class="an-card" style="margin-bottom:16px">
-          <div class="an-card-head">
-            <h3><i class="fas fa-layer-group"></i> Operational Snapshot</h3>
-            <span class="hint" id="snapshotRange">Today</span>
-          </div>
+          <div class="an-card-head"><h3><i class="fas fa-layer-group"></i> Operational Snapshot</h3><span class="hint" id="snapshotRange">Today</span></div>
           <div class="an-card-body">
             <div class="an-seg">
               <div class="an-seg-item"><div class="lbl"><i class="fas fa-arrow-down"></i> Deposits</div><div class="val" id="segDeposits">₦0</div></div>
@@ -969,10 +882,7 @@ button{font-family:inherit}
               <div class="an-seg-item"><div class="lbl"><i class="fas fa-hand-holding-dollar"></i> Manual Credit</div><div class="val" id="segManualFund">₦0</div></div>
               <div class="an-seg-item"><div class="lbl"><i class="fas fa-rotate-left"></i> Refunds</div><div class="val" id="segRefunds">₦0</div></div>
             </div>
-            <div class="an-footnote">
-              <i class="fas fa-circle-info"></i>
-              All figures reflect the selected period. Gross = sum of every transaction. Success rate = success ÷ (success + failed).
-            </div>
+            <div class="an-footnote"><i class="fas fa-circle-info"></i> All figures reflect the selected period. Gross = sum of every transaction. Success rate = success ÷ (success + failed).</div>
           </div>
         </div>
       </section>
@@ -1147,12 +1057,8 @@ button{font-family:inherit}
                     <textarea id="fundReason" placeholder="e.g. Compensation for failed MTN data on 2026-09-26 (Ref: shatova-data-…)" rows="2"></textarea>
                   </div>
                   <div class="fund-actions">
-                    <button class="fund-btn credit" id="fundSubmitBtn" onclick="submitManualFund()">
-                      <i class="fas fa-plus-circle"></i> Credit Wallet
-                    </button>
-                    <button class="fund-btn debit" id="debitSubmitBtn" onclick="submitManualDebit()">
-                      <i class="fas fa-minus-circle"></i> Debit Wallet
-                    </button>
+                    <button class="fund-btn credit" id="fundSubmitBtn" onclick="submitManualFund()"><i class="fas fa-plus-circle"></i> Credit Wallet</button>
+                    <button class="fund-btn debit" id="debitSubmitBtn" onclick="submitManualDebit()"><i class="fas fa-minus-circle"></i> Debit Wallet</button>
                   </div>
                 </div>
               </div>
@@ -1304,10 +1210,9 @@ button{font-family:inherit}
     adminAlerts: [], adminAlertIds: new Set(),
     adminSoundEnabled: false,
     charts: { revenue: null, mix: null },
-    seenTxnIds: new Set(),
-    seenDepositIdsAll: new Set(),
-    seenWithdrawalIdsAll: new Set(),
     notificationBootstrapped: false,
+    // Filtered-list caches — pagination handlers read from these
+    cache: { txns: [], deposits: [], withdrawals: [] },
   };
 
   const $ = (s) => document.querySelector(s);
@@ -1372,7 +1277,6 @@ button{font-family:inherit}
     t2:`<svg class="net-shape" viewBox="0 0 56 56"><text x="28" y="40" text-anchor="middle" font-family="'Arial Black',sans-serif" font-weight="900" font-size="26" fill="#fff">9</text></svg>`,
     generic:`<svg class="net-shape" viewBox="0 0 56 56"><text x="28" y="36" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="14" fill="#fff">VTU</text></svg>`,
   };
-
   function txnKind(t) {
     if (!t) return 'other';
     const m = t.metadata || {};
@@ -1459,7 +1363,6 @@ button{font-family:inherit}
   async function fetchDep() { try { const r = await api('/wallet/admin/deposits/all'); state.deposits = pick(r); } catch (_) { state.deposits = []; } }
   async function fetchWd() { try { const r = await api('/wallet/admin/withdrawals/all'); state.withdrawals = pick(r); } catch (_) { state.withdrawals = []; } }
   async function fetchMe() { try { const r = await api('/auth/me'); const u = r.data?.user || r.data; if (u) { const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('adminName', u.name || 'Admin'); s('adminEmail', u.email || ''); s('drawerName', u.name || 'Admin'); s('drawerEmail', u.email || ''); s('adminAvatar', (u.name || 'A').charAt(0).toUpperCase()); s('drawerAvatar', (u.name || 'A').charAt(0).toUpperCase()); } } catch (_) {} }
-
   async function fetchDW() {
     try {
       const r = await api('/admin/datashop/wallet');
@@ -1595,9 +1498,8 @@ button{font-family:inherit}
   }
   window.goToRecentTxPage = (pg) => { state.recentTxPage = pg; renderRecentTx(); };
 
-  /* ============ ADVANCED ANALYTICS ENGINE ============ */
+  /* ============ ANALYTICS ============ */
   const CHART_COLORS = { primary:'#0a4534', info:'#3b82f6', success:'#10b981', warning:'#f59e0b' };
-
   function buildAnalyticsBuckets() {
     const now = new Date(); const b = [];
     if (['30m','1h','2h'].includes(state.range)) {
@@ -1624,7 +1526,6 @@ button{font-family:inherit}
     }
     return b;
   }
-
   function computeAnalyticsSeries() {
     buildUnifiedTransactions();
     const list = applyRange(state.unifiedTransactions, state.range);
@@ -1681,9 +1582,7 @@ button{font-family:inherit}
     }
     return { buckets, seriesGross, seriesSuccess, seriesProfit, counted, amounts, totalSuccessCount, totalFailedCount, rate, avg, totalProfit, margin, heroGross: grossVolume, heroTxns: list.length, topCustomers: Array.from(userSpend.values()).sort((a,b)=>b.total-a.total).slice(0,5) };
   }
-
   function destroyChart(c) { if (c) { try { c.destroy(); } catch(_){} } }
-
   function renderRevenueChart(series) {
     const el = document.getElementById('revenueChart'); if (!el) return;
     const isDark = theme === 'dark';
@@ -1725,7 +1624,6 @@ button{font-family:inherit}
       }
     });
   }
-
   function renderMixChart(counted) {
     const el = document.getElementById('mixChart'); if (!el) return;
     const entries = Object.entries(counted).filter(([k,v]) => v > 0);
@@ -1741,22 +1639,16 @@ button{font-family:inherit}
         responsive: true, maintainAspectRatio: false, cutout: '62%',
         plugins: {
           legend: { position: 'bottom', labels: { boxWidth: 9, boxHeight: 9, padding: 12, font: { size: 10.5, weight: '700' }, color: isDark ? '#c8d0e0' : '#334155', usePointStyle: true, pointStyle: 'circle' } },
-          tooltip: {
-            backgroundColor: isDark ? '#0f1421' : '#0a1628', titleColor: '#fff', bodyColor: '#e2e8f0',
-            padding: 10, cornerRadius: 8,
-            callbacks: { label: (c) => ` ${c.label}: ${c.parsed} txns` }
-          }
+          tooltip: { backgroundColor: isDark ? '#0f1421' : '#0a1628', titleColor: '#fff', bodyColor: '#e2e8f0', padding: 10, cornerRadius: 8, callbacks: { label: (c) => ` ${c.label}: ${c.parsed} txns` } }
         }
       }
     });
   }
-
   function renderTopList(elId, items) {
     const el = document.getElementById(elId); if (!el) return;
     if (!items.length) { el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:11.5px">No data for this period.</div>`; return; }
     el.innerHTML = items.map((it, i) => `<div class="rank-item"><div class="rank-pos">${i+1}</div><div style="min-width:0"><div class="rank-name">${esc(it.label)}</div><div class="rank-sub">${esc(it.sub)}</div></div><div class="rank-val">${it.value}</div></div>`).join('');
   }
-
   function updateAnalytics() {
     if (state.activeTab !== 'analytics') return;
     const series = computeAnalyticsSeries();
@@ -1789,14 +1681,9 @@ button{font-family:inherit}
     renderRevenueChart(series);
     renderMixChart(series.counted);
     const services = [
-      { key:'airtime', label:'Airtime' },
-      { key:'data',    label:'Data' },
-      { key:'deposit', label:'Deposits' },
-      { key:'withdrawal', label:'Withdrawals' },
-      { key:'manual_fund', label:'Manual Credit' },
-      { key:'manual_debit', label:'Manual Debit' },
-      { key:'transfer', label:'Transfers' },
-      { key:'refund', label:'Refunds' },
+      { key:'airtime', label:'Airtime' }, { key:'data', label:'Data' }, { key:'deposit', label:'Deposits' },
+      { key:'withdrawal', label:'Withdrawals' }, { key:'manual_fund', label:'Manual Credit' },
+      { key:'manual_debit', label:'Manual Debit' }, { key:'transfer', label:'Transfers' }, { key:'refund', label:'Refunds' },
     ].map(x => ({ label:x.label, sub:`${series.counted[x.key]} txns`, value: fmtMoney(series.amounts[x.key], true), raw: series.amounts[x.key] }))
      .sort((a,b)=>b.raw-a.raw).slice(0,5);
     renderTopList('topServices', services);
@@ -1811,7 +1698,6 @@ button{font-family:inherit}
   function setUserClear(on) { const e = document.getElementById('userSearchClear'); if (e) e.classList.toggle('visible', !!on); }
   let userSeq = 0;
   async function searchUsersSrv(q) { const seq = ++userSeq; try { const r = await api(`/admin/users?search=${encodeURIComponent(q)}&limit=50`); if (seq !== userSeq) return; state.userResults = pick(r); state.userTotal = r?.meta?.total ?? state.userResults.length; } catch (_) { if (seq !== userSeq) return; state.userResults = []; state.userTotal = 0; } finally { if (seq === userSeq) { state.userLoading = false; renderUsers(); } } }
-
   function renderUsers() {
     const c = $('#usersList'); if (!c) return;
     const bar = $('#userResultsBar');
@@ -1853,16 +1739,11 @@ button{font-family:inherit}
       const list = applyRange(state.unifiedTransactions || [], f.range || '1d');
       for (const t of list) { const k = txnKind(t); counts.all++; if (counts[k] !== undefined) counts[k]++; }
       const types = [
-        { key:'all', label:'All types', icon:'fa-th-large' },
-        { key:'airtime', label:'Airtime', icon:'fa-signal' },
-        { key:'data', label:'Data', icon:'fa-wifi' },
-        { key:'deposit', label:'Deposits', icon:'fa-arrow-down' },
-        { key:'withdrawal', label:'Withdrawals', icon:'fa-arrow-up' },
-        { key:'manual_fund', label:'Manual Credit', icon:'fa-plus-circle' },
-        { key:'manual_debit', label:'Manual Debit', icon:'fa-minus-circle' },
-        { key:'transfer', label:'Transfers', icon:'fa-paper-plane' },
-        { key:'refund', label:'Refunds', icon:'fa-rotate-left' },
-        { key:'other', label:'Others', icon:'fa-receipt' },
+        { key:'all', label:'All types', icon:'fa-th-large' },{ key:'airtime', label:'Airtime', icon:'fa-signal' },
+        { key:'data', label:'Data', icon:'fa-wifi' },{ key:'deposit', label:'Deposits', icon:'fa-arrow-down' },
+        { key:'withdrawal', label:'Withdrawals', icon:'fa-arrow-up' },{ key:'manual_fund', label:'Manual Credit', icon:'fa-plus-circle' },
+        { key:'manual_debit', label:'Manual Debit', icon:'fa-minus-circle' },{ key:'transfer', label:'Transfers', icon:'fa-paper-plane' },
+        { key:'refund', label:'Refunds', icon:'fa-rotate-left' },{ key:'other', label:'Others', icon:'fa-receipt' },
       ];
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-layer-group"></i> Type</div><div class="type-list">`;
       for (const t of types) { const active = f.type === t.key; const cnt = counts[t.key] || 0; html += `<button class="type-row${active?' active':''}" onclick="pickType('${t.key}')"><span class="type-row-icon"><i class="fas ${t.icon}"></i></span><span class="type-row-label">${esc(t.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
@@ -1880,10 +1761,8 @@ button{font-family:inherit}
       const list = applyRange(tab === 'deposits' ? state.deposits : state.withdrawals, f.range || '1d');
       for (const x of list) { counts.all++; const s = getStatus(x); if (counts[s] !== undefined) counts[s]++; }
       const statuses = [
-        { key:'all', label:'All statuses', icon:'fa-list' },
-        { key:'pending', label:'Pending', icon:'fa-clock' },
-        { key:'success', label:'Approved', icon:'fa-check' },
-        { key:'failed', label:'Rejected', icon:'fa-ban' },
+        { key:'all', label:'All statuses', icon:'fa-list' },{ key:'pending', label:'Pending', icon:'fa-clock' },
+        { key:'success', label:'Approved', icon:'fa-check' },{ key:'failed', label:'Rejected', icon:'fa-ban' },
       ];
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-circle-notch"></i> Status</div><div class="type-list">`;
       for (const s of statuses) { const active = f.status === s.key; const cnt = counts[s.key] || 0; html += `<button class="type-row${active?' active':''}" onclick="pickStatus('${s.key}')"><span class="type-row-icon"><i class="fas ${s.icon}"></i></span><span class="type-row-label">${esc(s.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
@@ -1896,10 +1775,8 @@ button{font-family:inherit}
       const counts = { all: (state.users||[]).length, active: 0, suspended: 0, pending: 0 };
       (state.users||[]).forEach(u => { const s = uStatus(u); if (counts[s] !== undefined) counts[s]++; });
       const statuses = [
-        { key:'all', label:'All users', icon:'fa-list' },
-        { key:'active', label:'Active', icon:'fa-circle-check' },
-        { key:'suspended', label:'Suspended', icon:'fa-ban' },
-        { key:'pending', label:'Pending', icon:'fa-clock' },
+        { key:'all', label:'All users', icon:'fa-list' },{ key:'active', label:'Active', icon:'fa-circle-check' },
+        { key:'suspended', label:'Suspended', icon:'fa-ban' },{ key:'pending', label:'Pending', icon:'fa-clock' },
       ];
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-circle-notch"></i> Status</div><div class="type-list">`;
       for (const s of statuses) { const active = f.status === s.key; const cnt = counts[s.key] || 0; html += `<button class="type-row${active?' active':''}" onclick="pickStatus('${s.key}')"><span class="type-row-icon"><i class="fas ${s.icon}"></i></span><span class="type-row-label">${esc(s.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
@@ -1955,16 +1832,25 @@ button{font-family:inherit}
   function applyFilters(silent) { const tab = state.currentFilterTab; const f = state.filters[tab] || {}; if (tab === 'transactions' || tab === 'deposits' || tab === 'withdrawals') { state.range = f.range || '1d'; syncOverviewRangeUI(); } if (tab === 'transactions') { state.txnPage = 1; renderTransactions(); } if (tab === 'deposits') { state.depositPage = 1; renderDeposits(); } if (tab === 'withdrawals') { state.withdrawalPage = 1; renderWithdrawals(); } if (tab === 'users') { renderUsers(); } if (tab === 'archived') { loadArchived(1); } if (!silent) { closeFilterSheet(); toast('Filters applied', 'success'); } }
   window.applyFilters = applyFilters;
 
-  /* PAGINATION — unified & corrected with ellipsis */
-  function renderPager(cid, cp, total, per, fn) {
+  /* ============ PAGINATION (unified, works for all tabs) ============ */
+  function renderPager(cid, cp, total, per, fnName) {
     const el = document.getElementById(cid);
     if (!el) return;
-    if (!total) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    if (!total || total <= per) {
+      // still show "Showing 1-N of N" when there's data but only one page
+      if (total > 0) {
+        el.innerHTML = `<div class="pagination-info">Showing <strong>1–${total}</strong> of <strong>${total.toLocaleString()}</strong></div>`;
+        el.style.display = 'flex';
+      } else {
+        el.style.display = 'none'; el.innerHTML = '';
+      }
+      return;
+    }
     const tp = Math.max(1, Math.ceil(total/per));
-    const s = (cp-1)*per+1;
+    const s = (cp-1)*per + 1;
     const e = Math.min(cp*per, total);
     let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div><div class="pagination-controls">`;
-    h += `<button class="page-btn" ${cp===1?'disabled':''} onclick="window.${fn}(${cp-1})"><i class="fas fa-chevron-left"></i></button>`;
+    h += `<button type="button" class="page-btn" ${cp===1?'disabled':''} data-goto="${fnName}" data-pg="${cp-1}"><i class="fas fa-chevron-left"></i></button>`;
     const pages = [];
     if (tp <= 6) {
       for (let i = 1; i <= tp; i++) pages.push(i);
@@ -1979,11 +1865,19 @@ button{font-family:inherit}
     }
     pages.forEach(x => {
       if (x === '…') h += `<span class="page-btn ellipsis">…</span>`;
-      else h += `<button class="page-btn ${x===cp?'active':''}" onclick="window.${fn}(${x})">${x}</button>`;
+      else h += `<button type="button" class="page-btn ${x===cp?'active':''}" data-goto="${fnName}" data-pg="${x}">${x}</button>`;
     });
-    h += `<button class="page-btn" ${cp===tp?'disabled':''} onclick="window.${fn}(${cp+1})"><i class="fas fa-chevron-right"></i></button></div>`;
+    h += `<button type="button" class="page-btn" ${cp===tp?'disabled':''} data-goto="${fnName}" data-pg="${cp+1}"><i class="fas fa-chevron-right"></i></button></div>`;
     el.innerHTML = h;
     el.style.display = 'flex';
+    // Wire clicks directly — this makes page numbers reliable
+    el.querySelectorAll('button[data-goto]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const fn = btn.getAttribute('data-goto');
+        const pg = parseInt(btn.getAttribute('data-pg'), 10);
+        if (typeof window[fn] === 'function') window[fn](pg);
+      });
+    });
   }
   window.renderPager = renderPager;
 
@@ -2002,6 +1896,7 @@ button{font-family:inherit}
   }
   function renderTransactions() {
     const list = getFilteredTxns();
+    state.cache.txns = list;   // <— cache for pagination
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     const total = list.reduce((a,t) => a+getAmount(t),0);
     const tracing = state.filters.transactions.tracedUserId;
@@ -2033,7 +1928,16 @@ button{font-family:inherit}
   window.onTxnSearchInput = onTxnSearchInput;
   function clearTxnSearch() { const i = document.getElementById('txnSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('txnSearchClear'); if (c) c.classList.remove('visible'); state.txnPage = 1; renderTransactions(); }
   window.clearTxnSearch = clearTxnSearch;
-  window.goToTxnPage = (pg) => { const t = getFilteredTxns().length; const tp = Math.max(1, Math.ceil(t/state.PER_PAGE)); state.txnPage = Math.min(Math.max(pg,1),tp); renderTransactions(); };
+  window.goToTxnPage = (pg) => {
+    const t = state.cache.txns.length;
+    const tp = Math.max(1, Math.ceil(t/state.PER_PAGE));
+    const np = Math.min(Math.max(pg,1), tp);
+    if (np === state.txnPage) return;
+    state.txnPage = np;
+    renderTransactions();
+    const c = document.getElementById('transactionsList');
+    if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   function findTxn(id) { if (!id) return null; const sid = String(id); for (const p of [state.unifiedTransactions, state.transactions, state.deposits, state.withdrawals, state.archived.items]) { const h = (p||[]).find(x => String(x.id||x._id||x.reference||x.tx_ref) === sid); if (h) return h; } return null; }
   function viewTransaction(id) { const t = findTxn(id); if (!t) { toast('Transaction not found', 'error'); return; } const m = t.metadata || {}; const k = txnKind(t); const nk = detectNetwork(t); const logo = (k === 'airtime' || k === 'data') ? NET_SVG[nk] : kindAvatarHtml(t); const pr = m.product_name || t.description || t.product || `${kindLabel(k)} Transaction`; const ph = t.phone || m.phone || t.recipient || '—'; const am = getAmount(t); const st = getStatus(t); const rf = t.reference || t.tx_ref || t.id || t._id || '—'; const nl = (k === 'airtime' || k === 'data') ? ({mtn:'MTN Nigeria',airtel:'Airtel Nigeria',glo:'Globacom',t2:'9mobile',generic:'VTU Service'}[nk]) : kindLabel(k); $('#txnBody').innerHTML = `<div class="txn-hero"><div class="txn-hero-logo txn-avatar ${kindAvatarClass(t)}" style="border:none">${logo}</div><div class="txn-hero-info"><div class="txn-hero-title">${esc(pr)}</div><div class="txn-hero-sub"><span>${esc(nl)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div></div><div class="txn-amount-block"><div class="amt-label">Amount</div><div class="amt-value">${fmtMoney(am)}</div></div><div class="row-detail"><span class="lbl">Recipient</span><span class="val mono">${esc(ph)}</span></div><div class="row-detail"><span class="lbl">Category</span><span class="val">${esc(kindLabel(k))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(rf)}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Created</span><span class="val">${fmtDate(getDate(t))}</span></div>`; $('#txnModal').classList.add('active'); }
@@ -2042,13 +1946,18 @@ button{font-family:inherit}
   window.closeTxnModal = closeTxnModal;
 
   /* DEPOSITS */
-  function renderDeposits() {
+  function getFilteredDeposits() {
     const search = ($('#depositSearch')?.value || '').toLowerCase().trim();
     const f = state.filters.deposits;
     let list = applyRange(state.deposits, f.range || state.range);
     if (search) list = list.filter(d => { const h = `${d.user_name||d.name||''} ${d.user_email||d.email||''} ${d.reference||''}`.toLowerCase(); return h.includes(search); });
     if (f.status && f.status !== 'all') list = list.filter(d => getStatus(d) === f.status);
     list.sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
+    return list;
+  }
+  function renderDeposits() {
+    const list = getFilteredDeposits();
+    state.cache.deposits = list;
     const pend = list.filter(d => getStatus(d) === 'pending').length;
     const total = list.reduce((a,d) => a+getAmount(d),0);
     const bar = $('#depositResultsBar');
@@ -2064,18 +1973,32 @@ button{font-family:inherit}
   window.onDepositSearchInput = onDepositSearchInput;
   function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('depositSearchClear'); if (c) c.classList.remove('visible'); state.depositPage = 1; renderDeposits(); }
   window.clearDepositSearch = clearDepositSearch;
-  window.goToDepositPage = (pg) => { const t = (function(){ const s = ($('#depositSearch')?.value||'').toLowerCase().trim(); const f = state.filters.deposits; let l = applyRange(state.deposits, f.range || state.range); if (s) l = l.filter(d => { const h = `${d.user_name||d.name||''} ${d.user_email||d.email||''} ${d.reference||''}`.toLowerCase(); return h.includes(s); }); if (f.status && f.status !== 'all') l = l.filter(d => getStatus(d) === f.status); return l.length; })(); const tp = Math.max(1, Math.ceil(t/state.PER_PAGE)); state.depositPage = Math.min(Math.max(pg,1),tp); renderDeposits(); };
+  window.goToDepositPage = (pg) => {
+    const t = state.cache.deposits.length;
+    const tp = Math.max(1, Math.ceil(t/state.PER_PAGE));
+    const np = Math.min(Math.max(pg,1), tp);
+    if (np === state.depositPage) return;
+    state.depositPage = np;
+    renderDeposits();
+    const c = document.getElementById('depositsList');
+    if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   function viewDeposit(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">+${fmtMoney(getAmount(d))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(d.reference||d.tx_ref||'—')}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewDeposit = viewDeposit;
 
   /* WITHDRAWALS */
-  function renderWithdrawals() {
+  function getFilteredWithdrawals() {
     const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
     const f = state.filters.withdrawals;
     let list = applyRange(state.withdrawals, f.range || state.range);
     if (search) list = list.filter(w => { const h = `${w.user_name||''} ${w.user_email||''} ${w.reference||''} ${w.bank_name||''}`.toLowerCase(); return h.includes(search); });
     if (f.status && f.status !== 'all') list = list.filter(w => getStatus(w) === f.status);
     list.sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
+    return list;
+  }
+  function renderWithdrawals() {
+    const list = getFilteredWithdrawals();
+    state.cache.withdrawals = list;
     const pend = list.filter(w => getStatus(w) === 'pending').length;
     const total = list.reduce((a,w) => a+getAmount(w),0);
     const bar = $('#withdrawalResultsBar');
@@ -2091,13 +2014,22 @@ button{font-family:inherit}
   window.onWithdrawalSearchInput = onWithdrawalSearchInput;
   function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('withdrawalSearchClear'); if (c) c.classList.remove('visible'); state.withdrawalPage = 1; renderWithdrawals(); }
   window.clearWithdrawalSearch = clearWithdrawalSearch;
-  window.goToWithdrawalPage = (pg) => { const t = (function(){ const s = ($('#withdrawalSearch')?.value||'').toLowerCase().trim(); const f = state.filters.withdrawals; let l = applyRange(state.withdrawals, f.range || state.range); if (s) l = l.filter(w => { const h = `${w.user_name||''} ${w.user_email||''} ${w.reference||''} ${w.bank_name||''}`.toLowerCase(); return h.includes(s); }); if (f.status && f.status !== 'all') l = l.filter(w => getStatus(w) === f.status); return l.length; })(); const tp = Math.max(1, Math.ceil(t/state.PER_PAGE)); state.withdrawalPage = Math.min(Math.max(pg,1),tp); renderWithdrawals(); };
+  window.goToWithdrawalPage = (pg) => {
+    const t = state.cache.withdrawals.length;
+    const tp = Math.max(1, Math.ceil(t/state.PER_PAGE));
+    const np = Math.min(Math.max(pg,1), tp);
+    if (np === state.withdrawalPage) return;
+    state.withdrawalPage = np;
+    renderWithdrawals();
+    const c = document.getElementById('withdrawalsList');
+    if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   function viewWithdrawal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(w.reference||'—')}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Bank</span><span class="val">${esc(w.bank_name||'—')}</span></div><div class="row-detail"><span class="lbl">Account No.</span><span class="val mono">${esc(w.account_number||'—')}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewWithdrawal = viewWithdrawal;
   function closeViewModal() { $('#viewModal').classList.remove('active'); }
   window.closeViewModal = closeViewModal;
 
-  /* APPROVE / REJECT WITHDRAWAL */
+  /* APPROVE / REJECT */
   function openApproveModal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; state.currentApprove = w; stopAlarm(); $('#approveBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div>`; $('#approveRef').value = ''; $('#approveNotes').value = ''; resetWAB(); $('#approveModal').classList.add('active'); }
   window.openApproveModal = openApproveModal;
   function resetWAB() { state.withdrawApprovePending = false; const b = $('#approveSubmitBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-check"></i> Approve'; } const c = $('#approveCancelBtn'); if (c) c.disabled = false; }
@@ -2112,8 +2044,6 @@ button{font-family:inherit}
   window.closeRejectModal = closeRejectModal;
   async function submitReject() { if (!state.currentReject || state.withdrawRejectPending) return; stopAlarm(); const r = $('#rejectReason').value.trim(); if (r.length < 5) { toast('Please give a reason (min 5 chars)', 'error'); return; } state.withdrawRejectPending = true; const b = $('#rejectSubmitBtn'); const c = $('#rejectCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…'; if (c) c.disabled = true; try { await api(`/wallet/admin/withdrawal/${state.currentReject.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Withdrawal rejected', 'error'); state.withdrawRejectPending = false; $('#rejectModal').classList.remove('active'); state.currentReject = null; resetWRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.withdrawRejectPending = false; } }
   window.submitReject = submitReject;
-
-  /* APPROVE / REJECT DEPOSIT */
   function openApproveDepositModal(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; state.currentApproveDeposit = d; stopAlarm(); $('#approveDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val success">+${fmtMoney(getAmount(d))}</span></div>`; $('#approveDepositRef').value = ''; $('#approveDepositNotes').value = ''; resetDAB(); $('#approveDepositModal').classList.add('active'); }
   window.openApproveDepositModal = openApproveDepositModal;
   function resetDAB() { state.depositApprovePending = false; const b = $('#approveDepositBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-check"></i> Credit Wallet'; } const c = $('#approveDepositCancelBtn'); if (c) c.disabled = false; }
@@ -2160,22 +2090,21 @@ button{font-family:inherit}
     const seq = ++fundSearchSeq;
     if (status) { status.innerHTML = `<i class="fas fa-circle-notch fa-spin" style="color:var(--primary)"></i> Searching for <strong>${esc(q)}</strong>…`; status.className = 'fund-status loading'; }
     const local = filterUsers(q);
-    if (local.length) { if (seq !== fundSearchSeq) return; renderFundResults(local, q); if (status) { status.textContent = ''; status.className = 'fund-status'; } return; }
+    if (local.length) { if (seq !== fundSearchSeq) return; renderFundResults(local); if (status) { status.textContent = ''; status.className = 'fund-status'; } return; }
     clearTimeout(window.__fundSearchTimer);
     window.__fundSearchTimer = setTimeout(async () => {
       try {
         const r = await api(`/admin/users?search=${encodeURIComponent(q)}&limit=30`);
         if (seq !== fundSearchSeq) return;
         const found = pick(r);
-        renderFundResults(found, q);
+        renderFundResults(found);
         if (status) { if (found.length) { status.textContent = ''; status.className = 'fund-status'; } else { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> No user matches <strong>${esc(q)}</strong>.`; status.className = 'fund-status error'; } }
       } catch (err) { if (seq !== fundSearchSeq) return; if (status) { status.innerHTML = `<i class="fas fa-circle-exclamation"></i> Search failed: ${esc(err.message || 'unknown error')}`; status.className = 'fund-status error'; } }
     }, 260);
   }
   window.onFundLookupInput = onFundLookupInput;
   function renderFundResults(list) {
-    const el = document.getElementById('fundResults');
-    if (!el) return;
+    const el = document.getElementById('fundResults'); if (!el) return;
     if (!list || !list.length) { el.classList.remove('open'); el.innerHTML = ''; return; }
     el.classList.add('open');
     el.innerHTML = list.slice(0, 30).map(u => {
@@ -2183,8 +2112,7 @@ button{font-family:inherit}
       const ini = (name || '?').charAt(0).toUpperCase();
       const st = uStatus(u);
       const bal = fmtMoney(u.balance ?? u.wallet_balance ?? 0);
-      const email = u.email || '';
-      const phone = u.phone || '';
+      const email = u.email || ''; const phone = u.phone || '';
       return `<div class="fund-result" onclick="selectFundResult('${esc(u.id || u._id || '')}')"><div class="avatar ${st === 'suspended' ? 'suspended' : ''}" style="background:${hashColor(name)}">${esc(ini)}<span class="dot"></span></div><div class="info"><div class="name">${esc(name)}</div><div class="meta">${email ? `<span><i class="fas fa-envelope" style="font-size:10px;opacity:.6"></i> ${esc(email)}</span>` : ''}${phone ? `<span class="mono"><i class="fas fa-phone" style="font-size:10px;opacity:.6"></i> ${esc(phone)}</span>` : ''}<span class="mono"><i class="fas fa-hashtag" style="font-size:10px;opacity:.6"></i> ${esc(String(u.id || u._id))}</span></div></div><div class="balance">${bal}</div></div>`;
     }).join('');
   }
@@ -2223,10 +2151,8 @@ button{font-family:inherit}
     const s = sourceInput?.value || 'support';
     if (!am || am <= 0) { toast('Enter a valid amount', 'error'); amountInput?.focus(); return; }
     if (!r) { toast('Reason is required', 'error'); reasonInput?.focus(); return; }
-    const btn = document.getElementById('fundSubmitBtn');
-    const orig = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crediting…';
+    const btn = document.getElementById('fundSubmitBtn'); const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crediting…';
     try {
       const res = await api('/admin/wallet/fund', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) });
       const d = res.data;
@@ -2254,10 +2180,8 @@ button{font-family:inherit}
     if (!r) { toast('Reason is required', 'error'); reasonInput?.focus(); return; }
     const who = state.fundUser.name || state.fundUser.email || `#${state.fundUser.id || state.fundUser._id}`;
     if (!confirm(`Debit ${fmtMoney(am)} from ${who}? This cannot be undone.`)) return;
-    const btn = document.getElementById('debitSubmitBtn');
-    const orig = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Debiting…';
+    const btn = document.getElementById('debitSubmitBtn'); const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Debiting…';
     try {
       const res = await api('/admin/wallet/debit', { method: 'POST', body: JSON.stringify({ user_id: state.fundUser.id || state.fundUser._id, amount: am, reason: r, source: s }) });
       const d = res.data;
@@ -2300,7 +2224,7 @@ button{font-family:inherit}
   window.refreshAll = refreshAll;
 
   /* ============================================================
-     iPhone-style alert sound + background notifications
+     iPhone alert + background notifications
      ============================================================ */
   let audioCtx = null;
   function ensureCtx() {
@@ -2310,14 +2234,31 @@ button{font-family:inherit}
     if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
     return audioCtx;
   }
-  function unlockAudio() {
-    const c = ensureCtx(); if (!c) return;
-    try { const b = c.createBuffer(1,1,22050); const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } catch (_) {}
+  // Start a silent oscillator in the background to keep ctx alive while hidden
+  function keepAudioWarm() {
+    try {
+      const c = ensureCtx(); if (!c) return;
+      const buf = c.createBuffer(1, 1, 22050);
+      const src = c.createBufferSource(); src.buffer = buf; src.connect(c.destination); src.start(0);
+    } catch (_) {}
   }
-  window.unlockAdminAudio = unlockAudio;
+  window.unlockAdminAudio = keepAudioWarm;
   try { if (localStorage.getItem('adminSoundEnabled') === '1') state.adminSoundEnabled = true; } catch (_) {}
 
-  // Play a single soft bell note
+  // User gesture handler — runs every click/tap until ctx is running
+  function armAudioOnGesture() {
+    try {
+      const c = ensureCtx();
+      if (c && c.state === 'running') return;
+      const b = c.createBuffer(1, 1, 22050);
+      const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0);
+    } catch (_) {}
+  }
+  ['click','touchstart','keydown','pointerdown','scroll'].forEach(ev =>
+    window.addEventListener(ev, armAudioOnGesture, { passive: true })
+  );
+
+  // Soft bell note with bell-like envelope
   function playNote(ctx, freq, startAt, dur, gain, type = 'sine') {
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
@@ -2326,27 +2267,25 @@ button{font-family:inherit}
     g.gain.setValueAtTime(0.0001, startAt);
     g.gain.exponentialRampToValueAtTime(gain, startAt + 0.012);
     g.gain.exponentialRampToValueAtTime(0.0001, startAt + dur);
-    osc.connect(g);
-    g.connect(ctx.destination);
-    osc.start(startAt);
-    osc.stop(startAt + dur + 0.05);
-    return { osc, g };
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(startAt); osc.stop(startAt + dur + 0.05);
   }
 
-  // iPhone "Note" chime: E5 → G5 → C6, with soft octave shimmer
+  // iPhone "Note" chime: E5 → G5 → C6
   function playIphoneChime(startAt) {
     const c = ensureCtx(); if (!c) return;
     const t0 = startAt || c.currentTime + 0.02;
-    playNote(c, 659.25, t0,        0.55, 0.16, 'sine');
-    playNote(c, 783.99, t0 + 0.14, 0.60, 0.16, 'sine');
-    playNote(c, 1046.5, t0 + 0.28, 0.75, 0.18, 'sine');
-    playNote(c, 1318.5, t0 + 0.28, 0.55, 0.07, 'sine');
-    playNote(c, 329.63, t0,        1.0,  0.06, 'sine');
+    playNote(c, 659.25, t0,        0.55, 0.18, 'sine');
+    playNote(c, 783.99, t0 + 0.14, 0.60, 0.18, 'sine');
+    playNote(c, 1046.5, t0 + 0.28, 0.75, 0.20, 'sine');
+    playNote(c, 1318.5, t0 + 0.28, 0.55, 0.08, 'sine');
+    playNote(c, 329.63, t0,        1.0,  0.07, 'sine');
   }
-
   function playIphoneAlert(test = false) {
     if (!state.adminSoundEnabled && !test) return;
     const c = ensureCtx(); if (!c) return;
+    // If ctx is suspended, try to resume now (best effort)
+    if (c.state === 'suspended') { c.resume().catch(()=>{}); }
     stopAlarm();
     const base = c.currentTime + 0.02;
     playIphoneChime(base);
@@ -2355,18 +2294,6 @@ button{font-family:inherit}
   }
 
   let alarmLoop = null, alarmStop = null, alarmActive = false;
-  function playLoopingAlert() {
-    if (!state.adminSoundEnabled) return;
-    stopAlarm();
-    alarmActive = true;
-    const tick = () => {
-      if (!alarmActive) return;
-      try { playIphoneAlert(true); } catch (_) {}
-      alarmLoop = setTimeout(tick, 4600);
-    };
-    tick();
-    alarmStop = setTimeout(() => stopAlarm(), 60000);
-  }
   function stopAlarm() {
     alarmActive = false;
     if (alarmLoop) { clearTimeout(alarmLoop); alarmLoop = null; }
@@ -2377,12 +2304,17 @@ button{font-family:inherit}
   function enableAdminSound() {
     const c = ensureCtx();
     if (!c) { toast('Browser does not support alert sound', 'error'); return; }
-    state.adminSoundEnabled = true;
-    try { localStorage.setItem('adminSoundEnabled','1'); } catch (_) {}
-    const ch = document.getElementById('adminSoundChip');
-    if (ch) { ch.classList.remove('show'); ch.classList.add('on'); ch.innerHTML = '<i class="fas fa-volume-high"></i> 🔔 iPhone alert enabled'; setTimeout(() => { ch.classList.remove('on','show'); }, 2400); }
-    playIphoneAlert(true);
-    toast('🔔 iPhone alert sound enabled', 'success');
+    // Force resume (this click IS the user gesture)
+    c.resume().then(() => {
+      state.adminSoundEnabled = true;
+      try { localStorage.setItem('adminSoundEnabled','1'); } catch (_) {}
+      const ch = document.getElementById('adminSoundChip');
+      if (ch) { ch.classList.remove('show'); ch.classList.add('on'); ch.innerHTML = '<i class="fas fa-volume-high"></i> 🔔 iPhone alert enabled'; setTimeout(() => { ch.classList.remove('on','show'); }, 2400); }
+      playIphoneAlert(true);
+      toast('🔔 iPhone alert sound enabled', 'success');
+    }).catch(() => {
+      toast('Could not start audio — click once more', 'error');
+    });
   }
   window.enableAdminSound = enableAdminSound;
 
@@ -2431,19 +2363,8 @@ button{font-family:inherit}
         try { const n = new Notification(title, { body, icon: '/favicon.ico', tag: payload.tag, requireInteraction: true }); n.onclick = () => { window.focus(); n.close(); }; } catch (_) {}
       }
     }
-    let audioArmed = false;
-    function armAudio() {
-      if (audioArmed) return;
-      try { const c = ensureCtx(); if (c) { const b = c.createBuffer(1,1,22050); const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } audioArmed = true; } catch (_) {}
-    }
-    ['click','touchstart','keydown','scroll'].forEach(ev => window.addEventListener(ev, armAudio, { once: true, passive: true }));
     return {
-      async init() {
-        await registerSW();
-        const p = await ensurePermission();
-        if (p === 'granted') console.log('[Notify] Native notifications enabled');
-        setUnread(0);
-      },
+      async init() { await registerSW(); const p = await ensurePermission(); if (p === 'granted') console.log('[Notify] enabled'); setUnread(0); },
       async notify(title, body, extra) { await fireNative(title, body, extra); },
       incrementUnread() { setUnread(unreadCount + 1); },
       clearUnread() { setUnread(0); },
@@ -2451,19 +2372,13 @@ button{font-family:inherit}
       requestPermission: ensurePermission,
     };
   })();
-
   window.__notifyAdmin = (type, item) => {
     const name = item.user_name || item.name || item.user_email || 'User';
     const amt  = fmtMoney(getAmount(item));
     const isDeposit = type === 'deposit';
     Notify.incrementUnread();
-    Notify.notify(
-      isDeposit ? '💰 New Deposit Request' : '💸 New Withdrawal Request',
-      `${name} · ${amt} is waiting for approval.`,
-      { type, id: item.id || item.reference || '', url: '/admin.html' }
-    );
+    Notify.notify(isDeposit ? '💰 New Deposit Request' : '💸 New Withdrawal Request', `${name} · ${amt} is waiting for approval.`, { type, id: item.id || item.reference || '', url: '/admin.html' });
   };
-
   Notify.init().catch(err => console.warn('[Notify] init error:', err));
 
   function showAlarmBanner(t, x) { const b = document.getElementById('alarmBanner'); if (!b) return; const t1 = document.getElementById('alarmBannerTitle'); const t2 = document.getElementById('alarmBannerText'); if (t1) t1.textContent = t; if (t2) t2.textContent = x; b.classList.add('show'); }
@@ -2476,17 +2391,16 @@ button{font-family:inherit}
   window.handleAlarmMute = handleAlarmMute;
 
   function aId(type, it) { return `${type}:${String(it?.id || it?.reference || '')}`; }
-
   function addAlert(type, item) {
     const id = aId(type, item);
     if (!id || id.endsWith(':')) return;
     if (state.adminAlertIds.has(id)) return;
     state.adminAlertIds.add(id);
 
-    // 🔊 iPhone-style sound (works even in background tab)
+    // Try to warm the audio context, then play
+    try { keepAudioWarm(); } catch (_) {}
     playIphoneAlert(true);
 
-    // 🔔 Native OS notification (works in background tab and when tab is closed)
     try { window.__notifyAdmin?.(type, item); } catch (_) {}
 
     state.adminAlerts.unshift({ id, type, item, createdAt: Date.now() });
@@ -2498,7 +2412,6 @@ button{font-family:inherit}
     toast(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} needs approval · ${name} · ${amt}`, 'info');
     showAlarmBanner(type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert', `${name} · ${amt} is waiting for approval.`);
   }
-
   function renderAdminAlerts() {
     const l = document.getElementById('adminAlertList');
     const b = document.getElementById('adminAlertBadge');
@@ -2518,7 +2431,6 @@ button{font-family:inherit}
     }).join('');
   }
   window.renderAdminAlerts = renderAdminAlerts;
-
   function toggleAdminAlerts() { const p = document.getElementById('adminAlertPanel'); if (!p) return; const o = p.classList.toggle('open'); p.setAttribute('aria-hidden', String(!o)); if (o) { renderAdminAlerts(); stopAlarm(); hideAlarmBanner(); } }
   window.toggleAdminAlerts = toggleAdminAlerts;
   function dismissAlert(id) { state.adminAlerts = state.adminAlerts.filter(a => a.id !== id); renderAdminAlerts(); stopAlarm(); if (!state.adminAlerts.length) hideAlarmBanner(); }
@@ -2536,20 +2448,16 @@ button{font-family:inherit}
   function detectNewApprovals() {
     const d = (state.deposits||[]).filter(x => getStatus(x) === 'pending');
     const w = (state.withdrawals||[]).filter(x => getStatus(x) === 'pending');
-    let newFound = false;
-    d.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenDepositIds.has(id)) { state.seenDepositIds.add(id); if (state.notificationBootstrapped) { addAlert('deposit', x); newFound = true; } } });
-    w.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenWithdrawalIds.has(id)) { state.seenWithdrawalIds.add(id); if (state.notificationBootstrapped) { addAlert('withdrawal', x); newFound = true; } } });
-    return newFound;
+    d.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenDepositIds.has(id)) { state.seenDepositIds.add(id); if (state.notificationBootstrapped) addAlert('deposit', x); } });
+    w.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenWithdrawalIds.has(id)) { state.seenWithdrawalIds.add(id); if (state.notificationBootstrapped) addAlert('withdrawal', x); } });
   }
-
-  function requestNotifPermission() {
-    if (!('Notification' in window) || Notification.permission !== 'default') return;
-    try { setTimeout(() => { Notification.requestPermission().catch(()=>{}); }, 1500); } catch (_) {}
-  }
+  function requestNotifPermission() { if (!('Notification' in window) || Notification.permission !== 'default') return; try { setTimeout(() => { Notification.requestPermission().catch(()=>{}); }, 1500); } catch (_) {} }
 
   requestNotifPermission();
   renderAdminAlerts();
   setInterval(() => { detectNewApprovals(); }, 2500);
+  // Keep audio context warm every 20s (silent)
+  setInterval(() => { try { keepAudioWarm(); } catch (_) {} }, 20000);
 
   document.addEventListener('click', e => {
     if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) {
@@ -2576,19 +2484,12 @@ button{font-family:inherit}
     renderDeposits();
     renderWithdrawals();
     await refreshAll(true);
-    // Prime seen sets WITHOUT notifying (so existing pending items don't spam on page load)
-    detectNewApprovals();
-    // Now enable notifications for anything that arrives AFTER this point
+    detectNewApprovals();               // silently prime seen-sets
     state.notificationBootstrapped = true;
     setInterval(() => refreshAll(true), 3000);
     try {
       const es = new EventSource(`${API_BASE}/admin/events?token=${encodeURIComponent(token)}`);
-      es.addEventListener('new-approval', e => {
-        try {
-          const p = JSON.parse(e.data || '{}');
-          if (p.type === 'deposit' || p.type === 'withdrawal') { addAlert(p.type, p.item || {}); refreshAll(true); }
-        } catch (_) {}
-      });
+      es.addEventListener('new-approval', e => { try { const p = JSON.parse(e.data || '{}'); if (p.type === 'deposit' || p.type === 'withdrawal') { addAlert(p.type, p.item || {}); refreshAll(true); } } catch (_) {} });
       es.onerror = () => {};
     } catch (_) {}
     const ch = document.getElementById('adminSoundChip');
