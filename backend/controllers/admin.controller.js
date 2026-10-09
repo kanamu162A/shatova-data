@@ -1,10 +1,12 @@
 // controllers/admin.controller.js
 // ============================================================
 // Shatova — Admin Controller
-//   • Existing: users, transactions, stats, datashop wallet
-//   • Manual fund/debit now writes to BOTH wallet_ledger AND
+//   • Users, transactions, stats
+//   • Datashop wallet: fetches LIVE balance from Datashop API
+//     (v2/account/wallet-balance) + local funding history.
+//   • Manual fund/debit writes to BOTH wallet_ledger AND
 //     the transactions table so it appears in history.
-//   • Manual fund/debit also broadcasts an SSE event so the
+//   • Manual fund/debit broadcasts an SSE event so the
 //     admin dashboard updates instantly.
 // ============================================================
 
@@ -259,36 +261,95 @@ export async function getStats(req, res) {
 }
 
 /* ============================================================
-   GET /api/v1/admin/datashop/wallet
+   ⭐ GET /api/v1/admin/datashop/wallet
+   Fetches LIVE Datashop balance from Datashop API + local funding history.
    ============================================================ */
 export async function getDatashopWallet(req, res) {
-  try {
-    const { rows } = await query(
-      `SELECT
-         COALESCE(SUM(CASE WHEN UPPER(direction) = 'CREDIT' THEN amount ELSE -amount END), 0)::numeric AS balance,
-         COALESCE(SUM(CASE WHEN UPPER(direction) = 'CREDIT' THEN amount END), 0)::numeric              AS total_funded,
-         COALESCE(SUM(CASE WHEN UPPER(direction) = 'DEBIT'  THEN amount END), 0)::numeric              AS total_spent,
-         MAX(created_at) FILTER (WHERE UPPER(direction) = 'CREDIT')                                     AS last_funding_at
-       FROM transactions
-       WHERE UPPER(type) IN ('DATASHOP_FUNDING', 'DATASHOP_TOPUP')`
-    );
+  // Safe fallback shape (always returned on any failure)
+  const fallback = {
+    success: true,
+    data: { balance: 0, total_funded: 0, total_spent: 0, last_funding_at: null, source: 'fallback' },
+  };
 
-    const row = rows[0] || {};
+  try {
+    // ---------------------------------------------------------
+    // 1. Local funding history (from our own DB)
+    // ---------------------------------------------------------
+    let localFunded = 0, localSpent = 0, lastFundingAt = null;
+    try {
+      const { rows } = await query(
+        `SELECT
+           COALESCE(SUM(CASE WHEN UPPER(direction) = 'CREDIT' THEN amount END), 0)::numeric AS total_funded,
+           COALESCE(SUM(CASE WHEN UPPER(direction) = 'DEBIT'  THEN amount END), 0)::numeric AS total_spent,
+           MAX(created_at) FILTER (WHERE UPPER(direction) = 'CREDIT') AS last_funding_at
+         FROM transactions
+         WHERE UPPER(type) IN ('DATASHOP_FUNDING', 'DATASHOP_TOPUP')`
+      );
+      const r = rows[0] || {};
+      localFunded   = Number(r.total_funded || 0);
+      localSpent    = Number(r.total_spent  || 0);
+      lastFundingAt = r.last_funding_at || null;
+    } catch (dbErr) {
+      console.warn('[admin] Datashop local history query failed:', dbErr.message);
+    }
+
+    // ---------------------------------------------------------
+    // 2. Live Datashop API balance
+    // ---------------------------------------------------------
+    const apiKey  = process.env.DATASHOP_API_KEY;
+    const baseUrl = (process.env.DATASHOP_BASE_URL || 'https://datashop.ng').replace(/\/+$/, '');
+    const endpoint = `${baseUrl}/api/v2/account/wallet-balance`;
+
+    let liveBalance = 0;
+    let liveSource  = 'local';
+
+    if (apiKey) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+        const resp = await fetch(endpoint, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+
+        const json = await resp.json().catch(() => ({}));
+
+        if (resp.ok && json?.status === true && json?.data) {
+          liveBalance = Number(json.data.balance || 0);
+          liveSource  = 'datashop_api';
+        } else {
+          console.warn('[admin] Datashop API returned non-success:', resp.status, json);
+        }
+      } catch (apiErr) {
+        console.warn('[admin] Datashop API fetch failed:', apiErr.message);
+      }
+    } else {
+      console.warn('[admin] DATASHOP_API_KEY not set — returning local-only data.');
+    }
+
+    // ---------------------------------------------------------
+    // 3. Merge + respond
+    // ---------------------------------------------------------
     return res.json({
       success: true,
       data: {
-        balance:         Number(row.balance || 0),
-        total_funded:    Number(row.total_funded || 0),
-        total_spent:     Number(row.total_spent || 0),
-        last_funding_at: row.last_funding_at || null,
+        balance:         liveBalance,
+        total_funded:    localFunded,
+        total_spent:     localSpent,
+        last_funding_at: lastFundingAt,
+        source:          liveSource,
       },
     });
   } catch (err) {
     console.error('[admin] getDatashopWallet:', err);
-    return res.json({
-      success: true,
-      data: { balance: 0, total_funded: 0, total_spent: 0, last_funding_at: null },
-    });
+    return res.json(fallback);
   }
 }
 
