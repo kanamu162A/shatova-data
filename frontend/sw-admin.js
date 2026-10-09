@@ -1,6 +1,4 @@
-// /sw-admin.js  — Service Worker for Shatova Admin
-// Place at site ROOT (same folder as admin.html), not in a subfolder.
-
+// /sw-admin.js — Service Worker for Shatova Admin (place at SITE ROOT)
 self.addEventListener('install', () => { self.skipWaiting(); });
 self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); });
 
@@ -15,12 +13,9 @@ self.addEventListener('message', (event) => {
       renotify: true,
       badge: '/favicon.ico',
       icon: '/favicon.ico',
-      vibrate: [180, 90, 180, 90, 180],
+      vibrate: [200, 100, 200, 100, 200],
       data: extra || {},
-      actions: [
-        { action: 'open', title: 'Open Admin' },
-        { action: 'dismiss', title: 'Dismiss' }
-      ]
+      actions: [ { action: 'open', title: 'Open Admin' }, { action: 'dismiss', title: 'Dismiss' } ]
     });
   }
 });
@@ -31,10 +26,7 @@ self.addEventListener('notificationclick', (event) => {
   const url = (event.notification.data && event.notification.data.url) || '/admin.html';
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
-      // Prefer an existing admin tab
-      for (const c of clients) {
-        if (c.url.includes('/admin')) { c.focus(); return; }
-      }
+      for (const c of clients) if (c.url.includes('/admin')) { c.focus(); return; }
       return self.clients.openWindow(url);
     })
   );
