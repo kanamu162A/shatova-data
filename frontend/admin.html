@@ -1258,56 +1258,11 @@ button{font-family:inherit}
   window.logout = logout;
 
   const STAT_MAP = { success:'success',successful:'success',completed:'success',complete:'success',approved:'success',paid:'success',credited:'success',done:'success',settled:'success',confirmed:'success',verified:'success',captured:'success',pending:'pending',processing:'pending',initiated:'pending',awaiting:'pending','in progress':'pending',in_progress:'pending',queued:'pending',new:'pending',failed:'failed',failure:'failed',rejected:'failed',cancelled:'failed',canceled:'failed',declined:'failed',reversed:'failed',error:'failed',refunded:'refunded' };
-
-  function getStatus(o) {
-    if (!o) return 'pending';
-    const r = o.status ?? o.state ?? o.payment_status ?? o.transaction_status
-      ?? o.transactionStatus ?? o.paymentStatus ?? o.order_status ?? o.approval_status
-      ?? o.approved ?? o.is_approved ?? 'pending';
-    if (r === true) return 'success';
-    if (r === false) return 'pending';
-    const k = String(r).toLowerCase().trim();
-    return STAT_MAP[k] || k || 'pending';
-  }
+  function getStatus(o) { if (!o) return 'pending'; const r = o.status ?? o.state ?? o.payment_status ?? o.transaction_status ?? 'pending'; const k = String(r).toLowerCase().trim(); return STAT_MAP[k] || (k || 'pending'); }
   function statusLabel(s) { const m = { success:'Success', pending:'Pending', failed:'Failed', refunded:'Refunded' }; return m[s] || (s ? s.charAt(0).toUpperCase()+s.slice(1) : 'Pending'); }
-
-  function getAmount(o) {
-    if (o == null) return 0;
-    const c = [
-      o.amount, o.Amount, o.value, o.total, o.transaction_amount, o.transactionAmount,
-      o.credit_amount, o.creditAmount, o.debit_amount, o.debitAmount,
-      o.wallet_amount, o.walletAmount, o.sum, o.price, o.fee,
-      o?.data?.amount, o?.metadata?.amount, o?.payload?.amount, o?.transaction?.amount,
-      o?.amount_ngn, o?.naira, o?.ngn
-    ];
-    for (const x of c) {
-      if (x == null || x === '') continue;
-      const n = Number(String(x).replace(/[^0-9.-]/g, ''));
-      if (!isNaN(n) && n !== 0) return n;
-      if (!isNaN(n)) return n;
-    }
-    return 0;
-  }
+  function getAmount(o) { if (o == null) return 0; const c = [o.amount,o.Amount,o.value,o.total,o.transaction_amount,o.credit_amount,o.debit_amount,o.wallet_amount,o?.data?.amount,o?.metadata?.amount]; for (const x of c) { if (x == null || x === '') continue; const n = Number(String(x).replace(/[^0-9.-]/g,'')); if (!isNaN(n)) return n; } return 0; }
   window.getAmount = getAmount;
-
-  function getDate(o) {
-    if (!o) return null;
-    const c = [o.created_at, o.createdAt, o.date, o.timestamp, o.updated_at, o.updatedAt, o.time, o.inserted_at, o.created, o.date_created, o.transaction_date];
-    for (const x of c) {
-      if (x == null || x === '') continue;
-      if (typeof x === 'number' || /^\d+$/.test(String(x))) {
-        const n = Number(x);
-        if (!isNaN(n) && n > 0) {
-          const ms = n < 1e12 ? n * 1000 : n;
-          const d = new Date(ms);
-          if (!isNaN(d.getTime())) return d.toISOString();
-        }
-      }
-      const d = new Date(x);
-      if (!isNaN(d.getTime())) return d.toISOString();
-    }
-    return null;
-  }
+  function getDate(o) { return o?.created_at || o?.createdAt || o?.date || o?.timestamp || o?.updated_at || null; }
 
   function detectNetwork(t) { if (!t) return 'generic'; const m = t.metadata || {}; const a = (String(m.network || t.network || m.operator || '') + ' ' + String(t.description || m.product_name || '')).toLowerCase(); if (/mtn/.test(a)) return 'mtn'; if (/airtel|\batl\b/.test(a)) return 'airtel'; if (/\bglo\b/.test(a)) return 'glo'; if (/9mobile|etisalat|\bt2\b/.test(a)) return 't2'; return 'generic'; }
   const NET_SVG = {
@@ -1341,7 +1296,7 @@ button{font-family:inherit}
 
   const RANGES = { '30m':{label:'Last 30 minutes',minutes:30},'1h':{label:'Last 1 hour',hours:1},'2h':{label:'Last 2 hours',hours:2},'1d':{label:'Today',startOfDay:true},'7d':{label:'Last 7 days',days:7},'30d':{label:'Last 30 days',days:30},'all':{label:'All time'} };
   function rangeCutoff(key) { const r = RANGES[key]; if (!r) return null; if (r.startOfDay) { const d = new Date(); d.setHours(0,0,0,0); return d; } if (r.minutes) return new Date(Date.now() - r.minutes*60000); if (r.hours) return new Date(Date.now() - r.hours*3600000); if (r.days) return new Date(Date.now() - r.days*86400000); return null; }
-  function applyRange(items, key) { const list = Array.isArray(items) ? items : []; const c = rangeCutoff(key); if (!c) return list.slice(); const ct = c.getTime(); return list.filter(i => { const ds = getDate(i); if (!ds) return true; const t = new Date(ds).getTime(); return !isNaN(t) && t >= ct; }); }
+  function applyRange(items, key) { const list = Array.isArray(items) ? items : []; const c = rangeCutoff(key); if (!c) return list.slice(); const ct = c.getTime(); return list.filter(i => { const t = new Date(getDate(i)).getTime(); return !isNaN(t) && t >= ct; }); }
 
   function syncOverviewRangeUI() {
     const r = RANGES[state.range] || RANGES['1d'];
@@ -1471,85 +1426,55 @@ button{font-family:inherit}
       if (!norm.metadata.product_name) norm.metadata.product_name = 'Wallet Withdrawal';
       push(norm);
     });
-    state.unifiedTransactions = Array.from(map.values()).sort((a, b) => {
-      const da = getDate(a), db = getDate(b);
-      return (db ? new Date(db).getTime() : 0) - (da ? new Date(da).getTime() : 0);
-    });
+    state.unifiedTransactions = Array.from(map.values()).sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
   }
 
   function updateOverview() {
     buildUnifiedTransactions();
-    const txns = state.unifiedTransactions || [];
-    const dep = state.deposits || [];
-    const wd = state.withdrawals || [];
+    const txns = applyRange(state.unifiedTransactions, state.range);
+    const dep = applyRange(state.deposits, state.range);
+    const wd = applyRange(state.withdrawals, state.range);
     const users = state.users || [];
     const cnt = state.totalUsers || users.length || 0;
-
-    const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-
+    const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
     s('statUsers', cnt.toLocaleString());
     s('statUsersSub', cnt === 1 ? '1 registered account' : `${cnt.toLocaleString()} registered accounts`);
-
-    const bal = users.reduce((a, u) => a + (Number(u.balance ?? u.wallet_balance ?? u.walletBalance ?? 0) || 0), 0);
+    const bal = users.reduce((a,u) => a + Number(u.balance ?? u.wallet_balance ?? 0) || 0, 0);
     s('statWalletBalance', fmtMoney(bal, true));
-
-    // Deposits
-    const depSuccess = dep.filter(d => getStatus(d) === 'success');
-    const depPending = dep.filter(d => getStatus(d) === 'pending');
-    const depTotal = depSuccess.reduce((a, d) => a + getAmount(d), 0);
-    s('statDeposits', fmtMoney(depTotal, true));
-    const dSub = document.getElementById('statDepositsSub');
-    if (dSub) dSub.innerHTML = `<span class="pill ok">${depSuccess.length} successful</span>` + (depPending.length ? ` <span class="pill warn">${depPending.length} pending</span>` : '');
-
-    // Withdrawals
-    const wdSuccess = wd.filter(w => getStatus(w) === 'success');
-    const wdPending = wd.filter(w => getStatus(w) === 'pending');
-    const wdTotal = wdSuccess.reduce((a, w) => a + getAmount(w), 0);
-    s('statWithdrawals', fmtMoney(wdTotal, true));
-    const wSub = document.getElementById('statWithdrawalsSub');
-    if (wSub) wSub.innerHTML = `<span class="pill ok">${wdSuccess.length} approved</span>` + (wdPending.length ? ` <span class="pill warn">${wdPending.length} pending</span>` : '');
-
-    // Airtime
-    const at = txns.filter(t => txnKind(t) === 'airtime');
-    const atSuccess = at.filter(t => getStatus(t) === 'success');
-    const atTotal = atSuccess.reduce((a, t) => a + getAmount(t), 0);
-    s('statAirtime', fmtMoney(atTotal, true));
-    s('statAirtimeSub', `${at.length} transaction${at.length === 1 ? '' : 's'}`);
-
-    // Data
-    const dt = txns.filter(t => txnKind(t) === 'data');
-    const dtSuccess = dt.filter(t => getStatus(t) === 'success');
-    const dtTotal = dtSuccess.reduce((a, t) => a + getAmount(t), 0);
-    s('statData', fmtMoney(dtTotal, true));
-    s('statDataSub', `${dt.length} transaction${dt.length === 1 ? '' : 's'}`);
-
-    // Success rate
-    const sc = txns.filter(t => getStatus(t) === 'success');
-    const fc = txns.filter(t => getStatus(t) === 'failed');
-    const denom = sc.length + fc.length;
-    const rate = denom > 0 ? Math.round((sc.length / denom) * 100) : 0;
+    const dS = dep.filter(d => getStatus(d) === 'success').length;
+    const dP = dep.filter(d => getStatus(d) === 'pending').length;
+    s('statDeposits', fmtMoney(dep.reduce((a,d) => a+getAmount(d),0), true));
+    const dSub = document.getElementById('statDepositsSub'); if (dSub) dSub.innerHTML = `<span class="pill ok">${dS} successful</span>` + (dP ? ` <span class="pill warn">${dP} pending</span>` : '');
+    const wS = wd.filter(w => getStatus(w) === 'success').length;
+    const wP = wd.filter(w => getStatus(w) === 'pending').length;
+    s('statWithdrawals', fmtMoney(wd.reduce((a,w) => a+getAmount(w),0), true));
+    const wSub = document.getElementById('statWithdrawalsSub'); if (wSub) wSub.innerHTML = `<span class="pill ok">${wS} approved</span>` + (wP ? ` <span class="pill warn">${wP} pending</span>` : '');
+    const at = txns.filter(t => txnKind(t) === 'airtime'); const atO = at.filter(t => getStatus(t) === 'success');
+    s('statAirtime', fmtMoney(atO.reduce((a,t)=>a+getAmount(t),0), true));
+    s('statAirtimeSub', `${at.length} transaction${at.length===1?'':'s'}`);
+    const dt = txns.filter(t => txnKind(t) === 'data'); const dtO = dt.filter(t => getStatus(t) === 'success');
+    s('statData', fmtMoney(dtO.reduce((a,t)=>a+getAmount(t),0), true));
+    s('statDataSub', `${dt.length} transaction${dt.length===1?'':'s'}`);
+    const sc = txns.filter(t => getStatus(t) === 'success'); const fc = txns.filter(t => getStatus(t) === 'failed'); const dc = sc.length + fc.length;
+    const rate = dc > 0 ? Math.round(sc.length/dc*100) : 0;
     s('statSuccess', `${rate}%`);
-    s('statSuccessSub', `${sc.length} of ${denom} successful`);
-
-    // Profit
-    const profit = txns.reduce((a, t) => {
-      const m = t.metadata || {};
-      return a + (Number(t.profit ?? m.profit ?? t.commission ?? m.commission ?? 0) || 0);
-    }, 0);
-    s('statProfit', fmtMoney(profit, true));
-    s('statProfitSub', `From ${sc.length} completed sale${sc.length === 1 ? '' : 's'}`);
-
-    const sb = (id, c) => { const e = document.getElementById(id); if (e) e.textContent = c; };
-    sb('sidebarTxnCount', txns.length);
-    sb('sidebarDepositCount', dep.length);
-    sb('sidebarWithdrawalCount', wd.length);
+    s('statSuccessSub', `${sc.length} of ${dc} successful`);
+    const pr = txns.reduce((a,t) => { const m = t.metadata || {}; return a + (Number(t.profit ?? m.profit ?? 0) || 0); }, 0);
+    s('statProfit', fmtMoney(pr, true));
+    s('statProfitSub', `From ${sc.length} completed sale${sc.length===1?'':'s'}`);
+    const sb = (id,c) => { const e = document.getElementById(id); if (e) e.textContent = c; };
+    sb('sidebarTxnCount', (state.unifiedTransactions||[]).length);
+    sb('sidebarDepositCount', (state.deposits||[]).length);
+    sb('sidebarWithdrawalCount', (state.withdrawals||[]).length);
     sb('sidebarUserCount', cnt);
-    sb('drawerDepositCount', dep.length);
-    sb('drawerWithdrawalCount', wd.length);
-
+    sb('drawerDepositCount', (state.deposits||[]).length);
+    sb('drawerWithdrawalCount', (state.withdrawals||[]).length);
     renderRecentTx();
   }
 
+  /* ============================================================
+     PAGER — numbered pages with prev / next chevrons
+     ============================================================ */
   function renderPager(cid, cp, total, per, fnName) {
     const el = document.getElementById(cid);
     if (!el) return;
@@ -1559,10 +1484,10 @@ button{font-family:inherit}
       el.style.display = 'flex';
       return;
     }
-    const tp = Math.max(1, Math.ceil(total / per));
+    const tp = Math.max(1, Math.ceil(total/per));
     const safeCp = Math.min(Math.max(cp, 1), tp);
-    const s = (safeCp - 1) * per + 1;
-    const e = Math.min(safeCp * per, total);
+    const s = (safeCp-1)*per + 1;
+    const e = Math.min(safeCp*per, total);
 
     const pages = [];
     if (tp <= 7) {
@@ -1581,19 +1506,20 @@ button{font-family:inherit}
 
     let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div>`;
     h += `<div class="pagination-controls">`;
-    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp - 1})" ${safeCp === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
+    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp-1})" ${safeCp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
     for (const p of pages) {
       if (p === '…') h += `<span class="page-btn ellipsis">…</span>`;
-      else h += `<button type="button" class="page-btn${p === safeCp ? ' active' : ''}" onclick="window.${fnName}GoTo(${p})">${p}</button>`;
+      else h += `<button type="button" class="page-btn${p===safeCp?' active':''}" onclick="window.${fnName}GoTo(${p})">${p}</button>`;
     }
-    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp + 1})" ${safeCp === tp ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
+    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp+1})" ${safeCp===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
     h += `</div>`;
     el.innerHTML = h;
     el.style.display = 'flex';
   }
 
   window.recentTxGoTo = function(pg) {
-    const list = applyRange(state.unifiedTransactions, state.range);
+    const list = applyRange(state.unifiedTransactions, state.range)
+      .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const tp = Math.max(1, Math.ceil(list.length / 5));
     const np = Math.min(Math.max(pg, 1), tp);
     if (np === state.recentTxPage) return;
@@ -1633,7 +1559,8 @@ button{font-family:inherit}
   function renderRecentTx() {
     const c = $('#recentTxList');
     if (!c) return;
-    const list = applyRange(state.unifiedTransactions, state.range);
+    const list = applyRange(state.unifiedTransactions, state.range)
+      .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const total = list.length;
     const per = 5;
     const tp = Math.max(1, Math.ceil(total / per));
@@ -1659,96 +1586,54 @@ button{font-family:inherit}
     renderPager('recentTxPagination', cp, total, per, 'recentTx');
   }
 
+  /* ============ ANALYTICS ============ */
   const CHART_COLORS = { primary:'#0a4534', info:'#3b82f6', success:'#10b981', warning:'#f59e0b' };
   function buildAnalyticsBuckets() {
     const now = new Date(); const b = [];
     if (['30m','1h','2h'].includes(state.range)) {
-      const t = state.range === '30m' ? 30 : state.range === '1h' ? 60 : 120; const st = t / 6;
-      for (let i = 5; i >= 0; i--) { const e = new Date(now.getTime() - i * st * 60000); const s = new Date(e.getTime() - st * 60000); b.push({ start: s, end: e, label: e.getHours().toString().padStart(2, '0') + ':' + e.getMinutes().toString().padStart(2, '0') }); } return b;
+      const t = state.range === '30m' ? 30 : state.range === '1h' ? 60 : 120; const st = t/6;
+      for (let i = 5; i >= 0; i--) { const e = new Date(now.getTime() - i*st*60000); const s = new Date(e.getTime() - st*60000); b.push({ start:s, end:e, label: e.getHours().toString().padStart(2,'0')+':'+e.getMinutes().toString().padStart(2,'0') }); } return b;
     }
-    if (state.range === '1d') { for (let i = 5; i >= 0; i--) { const e = new Date(now.getTime() - i * 4 * 3600000); const s = new Date(e.getTime() - 4 * 3600000); b.push({ start: s, end: e, label: `${String(e.getHours()).padStart(2, '0')}:00` }); } return b; }
+    if (state.range === '1d') { for (let i = 5; i >= 0; i--) { const e = new Date(now.getTime() - i*4*3600000); const s = new Date(e.getTime() - 4*3600000); b.push({ start:s, end:e, label: `${String(e.getHours()).padStart(2,'0')}:00` }); } return b; }
     const days = state.range === '30d' ? 30 : state.range === '7d' ? 7 : 14;
-    for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i); const e = new Date(d); e.setDate(e.getDate() + 1); b.push({ start: d, end: e, label: d.toLocaleDateString('en-NG', { day: 'numeric', month: 'short' }) }); }
+    for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i); const e = new Date(d); e.setDate(e.getDate()+1); b.push({ start:d, end:e, label: d.toLocaleDateString('en-NG',{day:'numeric',month:'short'}) }); }
     return b;
   }
   function computeAnalyticsSeries() {
     buildUnifiedTransactions();
-    const list = state.unifiedTransactions || [];
-
-    const counted = { airtime: 0, data: 0, deposit: 0, withdrawal: 0, manual_fund: 0, manual_debit: 0, transfer: 0, refund: 0, other: 0 };
-    const amounts = { airtime: 0, data: 0, deposit: 0, withdrawal: 0, manual_fund: 0, manual_debit: 0, transfer: 0, refund: 0, other: 0 };
-    let totalSuccessCount = 0, totalFailedCount = 0, grossVolume = 0, totalProfit = 0, successSum = 0, successCnt = 0;
+    const list = applyRange(state.unifiedTransactions, state.range);
+    const counted = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
+    const amounts = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
+    let totalSuccessCount = 0, totalFailedCount = 0, grossVolume = 0, successVolume = 0, totalProfit = 0, successSum = 0, successCnt = 0;
     const userSpend = new Map();
-
     for (const t of list) {
-      const amt = getAmount(t);
-      const st = getStatus(t);
-      const k = txnKind(t);
-      const m = t.metadata || {};
-
+      const amt = getAmount(t); const st = getStatus(t); const k = txnKind(t); const m = t.metadata || {};
       if (counted[k] !== undefined) { counted[k] += 1; amounts[k] += amt; }
       grossVolume += amt;
-
       if (st === 'success') {
-        totalSuccessCount++;
-        successSum += amt;
-        successCnt++;
-        totalProfit += Number(t.profit ?? m.profit ?? t.commission ?? m.commission ?? 0) || 0;
-
-        const isMoneyIn = ['airtime', 'data', 'deposit', 'manual_fund', 'transfer'].includes(k);
-        if (isMoneyIn && amt > 0) {
-          const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown');
-          const nm = t.user_name || t.user_email || t.phone || 'Unknown';
-          const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 };
-          cur.total += amt;
-          cur.count += 1;
-          userSpend.set(uid, cur);
-        }
-      } else if (st === 'failed') {
-        totalFailedCount++;
-      }
+        totalSuccessCount++; successVolume += amt; successSum += amt; successCnt++;
+        const p = Number(t.profit ?? m.profit ?? 0) || 0; totalProfit += p;
+        const isMoneyIn = ['airtime','data','deposit','manual_fund','transfer'].includes(k);
+        if (isMoneyIn && amt > 0) { const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown'); const nm = t.user_name || t.user_email || t.phone || 'Unknown'; const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 }; cur.total += amt; cur.count += 1; userSpend.set(uid, cur); }
+      } else if (st === 'failed') { totalFailedCount++; }
     }
-
     const denom = totalSuccessCount + totalFailedCount;
     const rate = denom > 0 ? Math.round((totalSuccessCount / denom) * 100) : 0;
     const avg = successCnt > 0 ? (successSum / successCnt) : 0;
     const margin = grossVolume > 0 ? (totalProfit / grossVolume) * 100 : 0;
-
     const buckets = buildAnalyticsBuckets();
-    const seriesGross = buckets.map(() => 0);
-    const seriesSuccess = buckets.map(() => 0);
-    const seriesProfit = buckets.map(() => 0);
-
+    const seriesGross = buckets.map(()=>0), seriesSuccess = buckets.map(()=>0), seriesProfit = buckets.map(()=>0);
     for (const t of list) {
-      const ds = getDate(t);
-      if (!ds) continue;
-      const ts = new Date(ds).getTime();
-      if (isNaN(ts)) continue;
-
-      const amt = getAmount(t);
-      const st = getStatus(t);
-      const m = t.metadata || {};
-      const p = Number(t.profit ?? m.profit ?? t.commission ?? m.commission ?? 0) || 0;
-
-      for (let i = 0; i < buckets.length; i++) {
-        if (ts >= buckets[i].start.getTime() && ts < buckets[i].end.getTime()) {
-          seriesGross[i] += amt;
-          if (st === 'success') seriesSuccess[i] += amt;
-          seriesProfit[i] += p;
-          break;
-        }
+      const ts = new Date(getDate(t)).getTime(); if (isNaN(ts)) continue;
+      const amt = getAmount(t); const st = getStatus(t); const m = t.metadata || {};
+      for (let i=0;i<buckets.length;i++){
+        const s = buckets[i].start.getTime(), e = buckets[i].end.getTime();
+        if (ts >= s && ts < e) { seriesGross[i] += amt; if (st === 'success') seriesSuccess[i] += amt; const p = Number(t.profit ?? m.profit ?? 0) || 0; seriesProfit[i] += p; break; }
       }
     }
-
-    return {
-      buckets, seriesGross, seriesSuccess, seriesProfit,
-      counted, amounts,
-      totalSuccessCount, totalFailedCount, rate, avg, totalProfit, margin,
-      heroGross: grossVolume, heroTxns: list.length,
-      topCustomers: Array.from(userSpend.values()).sort((a, b) => b.total - a.total).slice(0, 5)
-    };
+    return { buckets, seriesGross, seriesSuccess, seriesProfit, counted, amounts, totalSuccessCount, totalFailedCount, rate, avg, totalProfit, margin, heroGross: grossVolume, heroTxns: list.length, topCustomers: Array.from(userSpend.values()).sort((a,b)=>b.total-a.total).slice(0,5) };
   }
-  function destroyChart(c) { if (c) { try { c.destroy(); } catch (_) {} } }
+  function destroyChart(c) { if (c) { try { c.destroy(); } catch(_){} } }
   function renderRevenueChart(series) {
     const el = document.getElementById('revenueChart'); if (!el) return;
     const isDark = theme === 'dark';
@@ -1756,29 +1641,29 @@ button{font-family:inherit}
     const tick = isDark ? '#8b9ab5' : '#64748b';
     const labels = series.buckets.map(b => b.label);
     const ctx = el.getContext('2d');
-    const gGross = ctx.createLinearGradient(0, 0, 0, 280); gGross.addColorStop(0, 'rgba(10,69,52,.22)'); gGross.addColorStop(1, 'rgba(10,69,52,0)');
-    const gSucc = ctx.createLinearGradient(0, 0, 0, 280); gSucc.addColorStop(0, 'rgba(59,130,246,.18)'); gSucc.addColorStop(1, 'rgba(59,130,246,0)');
-    const gProfit = ctx.createLinearGradient(0, 0, 0, 280); gProfit.addColorStop(0, 'rgba(245,158,11,.14)'); gProfit.addColorStop(1, 'rgba(245,158,11,0)');
+    const gGross = ctx.createLinearGradient(0,0,0,280); gGross.addColorStop(0,'rgba(10,69,52,.22)'); gGross.addColorStop(1,'rgba(10,69,52,0)');
+    const gSucc = ctx.createLinearGradient(0,0,0,280); gSucc.addColorStop(0,'rgba(59,130,246,.18)'); gSucc.addColorStop(1,'rgba(59,130,246,0)');
+    const gProfit = ctx.createLinearGradient(0,0,0,280); gProfit.addColorStop(0,'rgba(245,158,11,.14)'); gProfit.addColorStop(1,'rgba(245,158,11,0)');
     destroyChart(state.charts.revenue);
     state.charts.revenue = new Chart(ctx, {
       type: 'line',
       data: { labels, datasets: [
-        { label: 'Gross Volume', data: series.seriesGross, borderColor: CHART_COLORS.primary, backgroundColor: gGross, borderWidth: 2.2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.primary, pointBorderColor: '#fff', pointBorderWidth: 2 },
-        { label: 'Successful', data: series.seriesSuccess, borderColor: CHART_COLORS.info, backgroundColor: gSucc, borderWidth: 1.8, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.info, pointBorderColor: '#fff', pointBorderWidth: 2 },
-        { label: 'Profit', data: series.seriesProfit, borderColor: CHART_COLORS.warning, backgroundColor: gProfit, borderWidth: 1.8, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.warning, pointBorderColor: '#fff', pointBorderWidth: 2 },
-      ] },
+        { label:'Gross Volume', data: series.seriesGross, borderColor: CHART_COLORS.primary, backgroundColor: gGross, borderWidth: 2.2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.primary, pointBorderColor: '#fff', pointBorderWidth: 2 },
+        { label:'Successful', data: series.seriesSuccess, borderColor: CHART_COLORS.info, backgroundColor: gSucc, borderWidth: 1.8, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.info, pointBorderColor: '#fff', pointBorderWidth: 2 },
+        { label:'Profit', data: series.seriesProfit, borderColor: CHART_COLORS.warning, backgroundColor: gProfit, borderWidth: 1.8, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.warning, pointBorderColor: '#fff', pointBorderWidth: 2 },
+      ]},
       options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
         plugins: { legend: { display: false }, tooltip: { backgroundColor: isDark ? '#0f1421' : '#0a1628', titleColor: '#fff', bodyColor: '#e2e8f0', borderColor: 'rgba(255,255,255,.1)', borderWidth: 1, padding: 12, cornerRadius: 10, displayColors: true, callbacks: { label: (c) => ` ${c.dataset.label}: ₦${Number(c.parsed.y).toLocaleString('en-NG')}` } } },
-        scales: { x: { grid: { display: false, drawBorder: false }, ticks: { color: tick, font: { size: 10, weight: '700' }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } }, y: { grid: { color: grid, drawBorder: false }, border: { display: false }, ticks: { color: tick, font: { size: 10, weight: '600' }, callback: (v) => v >= 1e6 ? '₦' + (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? '₦' + (v / 1e3).toFixed(0) + 'K' : '₦' + v } } }
+        scales: { x: { grid: { display: false, drawBorder: false }, ticks: { color: tick, font: { size: 10, weight:'700' }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } }, y: { grid: { color: grid, drawBorder: false }, border: { display: false }, ticks: { color: tick, font: { size: 10, weight:'600' }, callback: (v) => v >= 1e6 ? '₦'+(v/1e6).toFixed(1)+'M' : v >= 1e3 ? '₦'+(v/1e3).toFixed(0)+'K' : '₦'+v } } }
       }
     });
   }
   function renderMixChart(counted) {
     const el = document.getElementById('mixChart'); if (!el) return;
-    const entries = Object.entries(counted).filter(([k, v]) => v > 0);
+    const entries = Object.entries(counted).filter(([k,v]) => v > 0);
     const labels = entries.map(([k]) => kindLabel(k));
-    const data = entries.map(([, v]) => v);
-    const palette = ['#0a4534', '#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#ef4444', '#64748b', '#0d5a44', '#1d4ed8'];
+    const data = entries.map(([,v]) => v);
+    const palette = ['#0a4534','#3b82f6','#f59e0b','#8b5cf6','#10b981','#ef4444','#64748b','#0d5a44','#1d4ed8'];
     const isDark = theme === 'dark';
     destroyChart(state.charts.mix);
     state.charts.mix = new Chart(el.getContext('2d'), {
@@ -1792,12 +1677,12 @@ button{font-family:inherit}
   function renderTopList(elId, items) {
     const el = document.getElementById(elId); if (!el) return;
     if (!items.length) { el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:11.5px">No data for this period.</div>`; return; }
-    el.innerHTML = items.map((it, i) => `<div class="rank-item"><div class="rank-pos">${i + 1}</div><div style="min-width:0"><div class="rank-name">${esc(it.label)}</div><div class="rank-sub">${esc(it.sub)}</div></div><div class="rank-val">${it.value}</div></div>`).join('');
+    el.innerHTML = items.map((it, i) => `<div class="rank-item"><div class="rank-pos">${i+1}</div><div style="min-width:0"><div class="rank-name">${esc(it.label)}</div><div class="rank-sub">${esc(it.sub)}</div></div><div class="rank-val">${it.value}</div></div>`).join('');
   }
   function updateAnalytics() {
     if (state.activeTab !== 'analytics') return;
     const series = computeAnalyticsSeries();
-    const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
     s('heroVolume', fmtMoney(series.heroGross, true));
     s('heroTxns', series.heroTxns.toLocaleString());
     s('heroSuccess', `${series.rate}%`);
@@ -1805,15 +1690,15 @@ button{font-family:inherit}
     const tD = document.getElementById('heroTxnsDelta'); if (tD) tD.textContent = `${series.totalSuccessCount} ok · ${series.totalFailedCount} failed`;
     const sD = document.getElementById('heroSuccessDelta'); if (sD) sD.textContent = 'live ledger';
     const totalDen = series.totalSuccessCount + series.totalFailedCount;
-    const failRate = totalDen > 0 ? Math.round(series.totalFailedCount / totalDen * 100) : 0;
+    const failRate = totalDen > 0 ? Math.round(series.totalFailedCount/totalDen*100) : 0;
     s('miniSuccess', `${series.rate}%`); s('miniSuccessSub', `${series.totalSuccessCount} of ${totalDen} successful`);
-    s('miniFailure', `${failRate}%`); s('miniFailureSub', `${series.totalFailedCount} failed`);
+    s('miniFailure', `${failRate}%`);   s('miniFailureSub', `${series.totalFailedCount} failed`);
     s('miniAvg', fmtMoney(series.avg, true)); s('miniAvgSub', `across ${series.totalSuccessCount} txns`);
     s('miniMargin', `${series.margin.toFixed(1)}%`); s('miniMarginSub', `${fmtMoney(series.totalProfit, true)} profit`);
     const sb1 = document.getElementById('miniSuccessBar'); if (sb1) sb1.style.width = series.rate + '%';
     const sb2 = document.getElementById('miniFailureBar'); if (sb2) sb2.style.width = failRate + '%';
-    const sb3 = document.getElementById('miniAvgBar'); if (sb3) sb3.style.width = Math.min(100, (series.avg / 5000) * 100) + '%';
-    const sb4 = document.getElementById('miniMarginBar'); if (sb4) sb4.style.width = Math.min(100, Math.max(2, series.margin * 4)) + '%';
+    const sb3 = document.getElementById('miniAvgBar'); if (sb3) sb3.style.width = Math.min(100, (series.avg/5000)*100) + '%';
+    const sb4 = document.getElementById('miniMarginBar'); if (sb4) sb4.style.width = Math.min(100, Math.max(2, series.margin*4)) + '%';
     s('segDeposits', fmtMoney(series.amounts.deposit, true));
     s('segWithdrawals', fmtMoney(series.amounts.withdrawal, true));
     s('segAirtime', fmtMoney(series.amounts.airtime, true));
@@ -1822,66 +1707,68 @@ button{font-family:inherit}
     s('segRefunds', fmtMoney(series.amounts.refund, true));
     renderRevenueChart(series); renderMixChart(series.counted);
     const services = [
-      { key: 'airtime', label: 'Airtime' }, { key: 'data', label: 'Data' }, { key: 'deposit', label: 'Deposits' },
-      { key: 'withdrawal', label: 'Withdrawals' }, { key: 'manual_fund', label: 'Manual Credit' },
-      { key: 'manual_debit', label: 'Manual Debit' }, { key: 'transfer', label: 'Transfers' }, { key: 'refund', label: 'Refunds' },
-    ].map(x => ({ label: x.label, sub: `${series.counted[x.key]} txns`, value: fmtMoney(series.amounts[x.key], true), raw: series.amounts[x.key] }))
-      .sort((a, b) => b.raw - a.raw).slice(0, 5);
+      { key:'airtime', label:'Airtime' }, { key:'data', label:'Data' }, { key:'deposit', label:'Deposits' },
+      { key:'withdrawal', label:'Withdrawals' }, { key:'manual_fund', label:'Manual Credit' },
+      { key:'manual_debit', label:'Manual Debit' }, { key:'transfer', label:'Transfers' }, { key:'refund', label:'Refunds' },
+    ].map(x => ({ label:x.label, sub:`${series.counted[x.key]} txns`, value: fmtMoney(series.amounts[x.key], true), raw: series.amounts[x.key] }))
+     .sort((a,b)=>b.raw-a.raw).slice(0,5);
     renderTopList('topServices', services);
-    const customers = series.topCustomers.map(c => ({ label: c.name, sub: `${c.count} txn${c.count === 1 ? '' : 's'}`, value: fmtMoney(c.total, true) }));
+    const customers = series.topCustomers.map(c => ({ label:c.name, sub:`${c.count} txn${c.count===1?'':'s'}`, value: fmtMoney(c.total, true) }));
     renderTopList('topCustomers', customers);
   }
   window.updateAnalytics = updateAnalytics;
 
-  function filterUsers(q) { const query = String(q || '').toLowerCase().trim(); if (!query) return []; const clean = query.replace(/\D/g, ''); return (state.users || []).filter(u => { const hay = `${u.name || ''} ${u.email || ''} ${u.phone || ''}`.toLowerCase(); if (hay.includes(query)) return true; if (clean.length >= 3 && String(u.phone || '').replace(/\D/g, '').includes(clean)) return true; if (String(u.id || u._id || '') === query) return true; return false; }); }
-  function uStatus(u) { if (u.is_active === false) return 'suspended'; const s = String(u.status || '').toLowerCase(); if (s === 'suspended' || s === 'banned') return 'suspended'; if (s === 'pending') return 'pending'; return 'active'; }
+  /* USERS */
+  function filterUsers(q) { const query = String(q||'').toLowerCase().trim(); if (!query) return []; const clean = query.replace(/\D/g,''); return (state.users||[]).filter(u => { const hay = `${u.name||''} ${u.email||''} ${u.phone||''}`.toLowerCase(); if (hay.includes(query)) return true; if (clean.length >= 3 && String(u.phone||'').replace(/\D/g,'').includes(clean)) return true; if (String(u.id||u._id||'') === query) return true; return false; }); }
+  function uStatus(u) { if (u.is_active === false) return 'suspended'; const s = String(u.status||'').toLowerCase(); if (s === 'suspended' || s === 'banned') return 'suspended'; if (s === 'pending') return 'pending'; return 'active'; }
   function setUserClear(on) { const e = document.getElementById('userSearchClear'); if (e) e.classList.toggle('visible', !!on); }
   let userSeq = 0;
   async function searchUsersSrv(q) { const seq = ++userSeq; try { const r = await api(`/admin/users?search=${encodeURIComponent(q)}&limit=50`); if (seq !== userSeq) return; state.userResults = pick(r); state.userTotal = r?.meta?.total ?? state.userResults.length; } catch (_) { if (seq !== userSeq) return; state.userResults = []; state.userTotal = 0; } finally { if (seq === userSeq) { state.userLoading = false; renderUsers(); } } }
   function renderUsers() {
     const c = $('#usersList'); if (!c) return;
-    const bar = $('#userResultsBar'); const q = String(state.userQuery || '').trim();
+    const bar = $('#userResultsBar'); const q = String(state.userQuery||'').trim();
     setUserClear(q.length > 0);
     const sb = (h, e) => { if (!bar) return; bar.innerHTML = h; bar.classList.toggle('is-empty', !!e); };
     const statusFilter = state.filters.users.status;
     let list = state.userResults || [];
     if (statusFilter !== 'all') list = list.filter(u => uStatus(u) === statusFilter);
     if (!state.userSearched || !q) { sb(`<span class="results-count"><i class="fas fa-circle-info" style="color:var(--primary)"></i> Start typing to search the directory</span>`, true); c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-user-shield"></i></div><div class="user-empty-title">Search the user directory</div><div class="user-empty-text">Look up any account by name, phone number, email, or user ID.</div></div>`; return; }
-    if (state.userLoading && !list.length) { sb(`<span class="results-count"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary)"></i> Searching <span class="term">${esc(q)}</span>…</span>`, false); c.innerHTML = `<div class="user-card-list">${Array.from({ length: 5 }).map(() => `<div style="height:70px;border-radius:11px;background:linear-gradient(90deg,var(--bg-input),var(--bg-hover),var(--bg-input));background-size:200% 100%;animation:shimmer 1.4s infinite"></div>`).join('')}</div><style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>`; return; }
+    if (state.userLoading && !list.length) { sb(`<span class="results-count"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary)"></i> Searching <span class="term">${esc(q)}</span>…</span>`, false); c.innerHTML = `<div class="user-card-list">${Array.from({length:5}).map(()=>`<div style="height:70px;border-radius:11px;background:linear-gradient(90deg,var(--bg-input),var(--bg-hover),var(--bg-input));background-size:200% 100%;animation:shimmer 1.4s infinite"></div>`).join('')}</div><style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>`; return; }
     if (!list.length) { sb(`<span class="results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted)"></i> No matches for <span class="term">${esc(q)}</span></span>`, true); c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-user-slash"></i></div><div class="user-empty-title">No user found</div><div class="user-empty-text">We couldn't find anyone matching "${esc(q)}".</div></div>`; return; }
     const tl = state.userTotal > list.length ? `<strong>${list.length}</strong> of <strong>${state.userTotal.toLocaleString()}</strong>` : `<strong>${list.length}</strong>`;
-    sb(`<span class="results-count"><i class="fas fa-user-check" style="color:var(--success)"></i> ${tl} user${list.length === 1 ? '' : 's'} matching <span class="term">${esc(q)}</span></span><span class="results-live"><span class="dot"></span> Live</span>`, false);
-    c.innerHTML = `<div class="user-card-list">${list.slice(0, 200).map(u => { const name = u.name || u.full_name || u.email || `User #${u.id || u._id}`; const ini = (name || '?').charAt(0).toUpperCase(); const st = uStatus(u); const bal = fmtMoney(u.balance ?? u.wallet_balance ?? 0); const tc = u.transaction_count ?? 0; const em = u.email || ''; const ph = u.phone || ''; const isA = /admin|super|owner/i.test(String(u.role || '')); return `<div class="user-card" onclick="viewUser('${esc(u.id || u._id || '')}')"><div class="user-avatar ${st === 'suspended' ? 'suspended' : ''}" style="background:${hashColor(name)}">${esc(ini)}<span class="dot"></span></div><div class="user-body"><div class="user-name-row"><span class="user-name">${esc(name)}</span>${isA ? `<span class="user-badge admin"><i class="fas fa-shield-halved"></i> ${esc(String(u.role || 'admin').toUpperCase())}</span>` : ''}<span class="user-badge ${st}">${esc(st)}</span></div><div class="user-meta">${em ? `<span class="item"><i class="fas fa-envelope"></i> ${esc(em)}</span>` : ''}${ph ? `<span class="item mono"><i class="fas fa-phone"></i> ${esc(ph)}</span>` : ''}<span class="item"><i class="fas fa-receipt"></i> ${tc} txn${tc === 1 ? '' : 's'}</span></div></div><div class="user-right"><div class="user-balance"><span class="user-balance-label">Balance</span><span class="user-balance-value">${bal}</span></div><div class="user-arrow"><i class="fas fa-arrow-right"></i></div></div></div>`; }).join('')}</div>`;
+    sb(`<span class="results-count"><i class="fas fa-user-check" style="color:var(--success)"></i> ${tl} user${list.length===1?'':'s'} matching <span class="term">${esc(q)}</span></span><span class="results-live"><span class="dot"></span> Live</span>`, false);
+    c.innerHTML = `<div class="user-card-list">${list.slice(0,200).map(u => { const name = u.name || u.full_name || u.email || `User #${u.id||u._id}`; const ini = (name||'?').charAt(0).toUpperCase(); const st = uStatus(u); const bal = fmtMoney(u.balance ?? u.wallet_balance ?? 0); const tc = u.transaction_count ?? 0; const em = u.email || ''; const ph = u.phone || ''; const isA = /admin|super|owner/i.test(String(u.role||'')); return `<div class="user-card" onclick="viewUser('${esc(u.id||u._id||'')}')"><div class="user-avatar ${st==='suspended'?'suspended':''}" style="background:${hashColor(name)}">${esc(ini)}<span class="dot"></span></div><div class="user-body"><div class="user-name-row"><span class="user-name">${esc(name)}</span>${isA?`<span class="user-badge admin"><i class="fas fa-shield-halved"></i> ${esc(String(u.role||'admin').toUpperCase())}</span>`:''}<span class="user-badge ${st}">${esc(st)}</span></div><div class="user-meta">${em?`<span class="item"><i class="fas fa-envelope"></i> ${esc(em)}</span>`:''}${ph?`<span class="item mono"><i class="fas fa-phone"></i> ${esc(ph)}</span>`:''}<span class="item"><i class="fas fa-receipt"></i> ${tc} txn${tc===1?'':'s'}</span></div></div><div class="user-right"><div class="user-balance"><span class="user-balance-label">Balance</span><span class="user-balance-value">${bal}</span></div><div class="user-arrow"><i class="fas fa-arrow-right"></i></div></div></div>`; }).join('')}</div>`;
   }
   window.renderUsers = renderUsers;
   let userTimer = null;
   function onUserSearchInput(e) { const q = e?.target?.value ?? ''; state.userQuery = q; state.userSearched = q.trim().length > 0; clearTimeout(userTimer); if (!q.trim()) { state.userResults = []; state.userLoading = false; userSeq++; renderUsers(); return; } const local = filterUsers(q); state.userResults = local; state.userLoading = local.length === 0; renderUsers(); userTimer = setTimeout(() => searchUsersSrv(q.trim()), 320); }
   window.onUserSearchInput = onUserSearchInput;
-  function clearUserSearch() { const i = document.getElementById('userSearch'); if (i) { i.value = ''; i.focus(); } state.userQuery = ''; state.userSearched = false; state.userResults = []; state.userLoading = false; userSeq++; renderUsers(); }
+  function clearUserSearch() { const i = document.getElementById('userSearch'); if (i) { i.value=''; i.focus(); } state.userQuery=''; state.userSearched=false; state.userResults=[]; state.userLoading=false; userSeq++; renderUsers(); }
   window.clearUserSearch = clearUserSearch;
-  function viewUser(id) { const u = (state.users || []).find(x => String(x.id || x._id) === String(id)); if (!u) return; const name = u.name || u.email; const st = uStatus(u); const bal = Number(u.balance ?? u.wallet_balance ?? 0); $('#viewBody').innerHTML = `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--primary-light);border:1px solid rgba(10,69,52,.1);border-radius:10px;margin-bottom:14px"><div style="width:48px;height:48px;border-radius:50%;background:${hashColor(name)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800">${esc((name || '?').charAt(0).toUpperCase())}</div><div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:800;color:var(--primary-dark)">${esc(name)}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><span class="user-badge ${st}">${esc(st)}</span></div></div></div><div class="txn-amount-block" style="margin-bottom:14px"><div class="amt-label">Wallet Balance</div><div class="amt-value">${fmtMoney(bal)}</div></div><div class="row-detail"><span class="lbl">Email</span><span class="val">${esc(u.email || '—')}</span></div><div class="row-detail"><span class="lbl">Phone</span><span class="val mono">${esc(u.phone || '—')}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Role</span><span class="val">${esc(String(u.role || 'user').toUpperCase())}</span></div><div class="row-detail"><span class="lbl">Joined</span><span class="val">${fmtDate(u.created_at)}</span></div>`; $('#viewModal').classList.add('active'); }
+  function viewUser(id) { const u = (state.users||[]).find(x => String(x.id||x._id) === String(id)); if (!u) return; const name = u.name || u.email; const st = uStatus(u); const bal = Number(u.balance ?? u.wallet_balance ?? 0); $('#viewBody').innerHTML = `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--primary-light);border:1px solid rgba(10,69,52,.1);border-radius:10px;margin-bottom:14px"><div style="width:48px;height:48px;border-radius:50%;background:${hashColor(name)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800">${esc((name||'?').charAt(0).toUpperCase())}</div><div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:800;color:var(--primary-dark)">${esc(name)}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><span class="user-badge ${st}">${esc(st)}</span></div></div></div><div class="txn-amount-block" style="margin-bottom:14px"><div class="amt-label">Wallet Balance</div><div class="amt-value">${fmtMoney(bal)}</div></div><div class="row-detail"><span class="lbl">Email</span><span class="val">${esc(u.email||'—')}</span></div><div class="row-detail"><span class="lbl">Phone</span><span class="val mono">${esc(u.phone||'—')}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Role</span><span class="val">${esc(String(u.role||'user').toUpperCase())}</span></div><div class="row-detail"><span class="lbl">Joined</span><span class="val">${fmtDate(u.created_at)}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewUser = viewUser;
 
+  /* Filter sheet */
   function openFilterSheet(tab) {
     state.currentFilterTab = tab;
     const f = state.filters[tab] || {};
     const body = $('#filterSheetBody');
-    const titles = { transactions: 'Filter Transactions', deposits: 'Filter Deposits', withdrawals: 'Filter Withdrawals', users: 'Filter Users', archived: 'Filter Archived' };
+    const titles = { transactions:'Filter Transactions', deposits:'Filter Deposits', withdrawals:'Filter Withdrawals', users:'Filter Users', archived:'Filter Archived' };
     $('#filterSheetTitle').textContent = titles[tab] || 'Filters';
     let html = '';
     if (tab === 'transactions') {
       const counts = { all: 0, airtime: 0, data: 0, deposit: 0, withdrawal: 0, manual_fund: 0, manual_debit: 0, transfer: 0, refund: 0, other: 0 };
       const list = applyRange(state.unifiedTransactions || [], f.range || '1d');
       for (const t of list) { const k = txnKind(t); counts.all++; if (counts[k] !== undefined) counts[k]++; }
-      const types = [{ key: 'all', label: 'All types', icon: 'fa-th-large' }, { key: 'airtime', label: 'Airtime', icon: 'fa-signal' }, { key: 'data', label: 'Data', icon: 'fa-wifi' }, { key: 'deposit', label: 'Deposits', icon: 'fa-arrow-down' }, { key: 'withdrawal', label: 'Withdrawals', icon: 'fa-arrow-up' }, { key: 'manual_fund', label: 'Manual Credit', icon: 'fa-plus-circle' }, { key: 'manual_debit', label: 'Manual Debit', icon: 'fa-minus-circle' }, { key: 'transfer', label: 'Transfers', icon: 'fa-paper-plane' }, { key: 'refund', label: 'Refunds', icon: 'fa-rotate-left' }, { key: 'other', label: 'Others', icon: 'fa-receipt' }];
+      const types = [{ key:'all', label:'All types', icon:'fa-th-large' },{ key:'airtime', label:'Airtime', icon:'fa-signal' },{ key:'data', label:'Data', icon:'fa-wifi' },{ key:'deposit', label:'Deposits', icon:'fa-arrow-down' },{ key:'withdrawal', label:'Withdrawals', icon:'fa-arrow-up' },{ key:'manual_fund', label:'Manual Credit', icon:'fa-plus-circle' },{ key:'manual_debit', label:'Manual Debit', icon:'fa-minus-circle' },{ key:'transfer', label:'Transfers', icon:'fa-paper-plane' },{ key:'refund', label:'Refunds', icon:'fa-rotate-left' },{ key:'other', label:'Others', icon:'fa-receipt' }];
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-layer-group"></i> Type</div><div class="type-list">`;
-      for (const t of types) { const active = f.type === t.key; const cnt = counts[t.key] || 0; html += `<button class="type-row${active ? ' active' : ''}" onclick="pickType('${t.key}')"><span class="type-row-icon"><i class="fas ${t.icon}"></i></span><span class="type-row-label">${esc(t.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
+      for (const t of types) { const active = f.type === t.key; const cnt = counts[t.key] || 0; html += `<button class="type-row${active?' active':''}" onclick="pickType('${t.key}')"><span class="type-row-icon"><i class="fas ${t.icon}"></i></span><span class="type-row-label">${esc(t.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
       html += `</div></div>`;
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-clock"></i> Time range</div><div class="range-grid">`;
       Object.entries(RANGES).forEach(([k, r]) => { html += `<button class="range-chip${f.range === k ? ' active' : ''}" onclick="pickRange('${k}')">${esc(r.label)}</button>`; });
       html += `</div></div>`;
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-user-secret"></i> Trace a user<span class="hint">Optional</span></div>`;
-      if (f.tracedUserId) { html += `<div class="traced-user"><div class="avatar" style="background:${hashColor(f.tracedUserName || '?')}">${esc((f.tracedUserName || '?').charAt(0).toUpperCase())}</div><div class="info"><div class="name">${esc(f.tracedUserName)}</div><div class="meta">ID #${esc(String(f.tracedUserId))}</div></div><button class="remove" onclick="removeTracedUser()"><i class="fas fa-times"></i> Remove</button></div>`; }
+      if (f.tracedUserId) { html += `<div class="traced-user"><div class="avatar" style="background:${hashColor(f.tracedUserName||'?')}">${esc((f.tracedUserName||'?').charAt(0).toUpperCase())}</div><div class="info"><div class="name">${esc(f.tracedUserName)}</div><div class="meta">ID #${esc(String(f.tracedUserId))}</div></div><button class="remove" onclick="removeTracedUser()"><i class="fas fa-times"></i> Remove</button></div>`; }
       else { html += `<div class="trace-search"><div class="trace-search-field"><i class="fas fa-user-magnifying-glass"></i><input type="text" id="traceLookupInput" placeholder="Phone, email, or user ID" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();doTraceUser();}"></div><button class="trace-search-btn" id="traceLookupBtn" onclick="doTraceUser()"><i class="fas fa-search"></i> Trace</button></div>`; html += `<div class="trace-status" id="traceLookupStatus"></div>`; }
       html += `</div>`;
     }
@@ -1889,20 +1776,20 @@ button{font-family:inherit}
       const counts = { all: 0, pending: 0, success: 0, failed: 0 };
       const list = applyRange(tab === 'deposits' ? state.deposits : state.withdrawals, f.range || '1d');
       for (const x of list) { counts.all++; const s = getStatus(x); if (counts[s] !== undefined) counts[s]++; }
-      const statuses = [{ key: 'all', label: 'All statuses', icon: 'fa-list' }, { key: 'pending', label: 'Pending', icon: 'fa-clock' }, { key: 'success', label: 'Approved', icon: 'fa-check' }, { key: 'failed', label: 'Rejected', icon: 'fa-ban' }];
+      const statuses = [{ key:'all', label:'All statuses', icon:'fa-list' },{ key:'pending', label:'Pending', icon:'fa-clock' },{ key:'success', label:'Approved', icon:'fa-check' },{ key:'failed', label:'Rejected', icon:'fa-ban' }];
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-circle-notch"></i> Status</div><div class="type-list">`;
-      for (const s of statuses) { const active = f.status === s.key; const cnt = counts[s.key] || 0; html += `<button class="type-row${active ? ' active' : ''}" onclick="pickStatus('${s.key}')"><span class="type-row-icon"><i class="fas ${s.icon}"></i></span><span class="type-row-label">${esc(s.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
+      for (const s of statuses) { const active = f.status === s.key; const cnt = counts[s.key] || 0; html += `<button class="type-row${active?' active':''}" onclick="pickStatus('${s.key}')"><span class="type-row-icon"><i class="fas ${s.icon}"></i></span><span class="type-row-label">${esc(s.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
       html += `</div></div>`;
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-clock"></i> Time range</div><div class="range-grid">`;
       Object.entries(RANGES).forEach(([k, r]) => { html += `<button class="range-chip${f.range === k ? ' active' : ''}" onclick="pickRange('${k}')">${esc(r.label)}</button>`; });
       html += `</div></div>`;
     }
     if (tab === 'users') {
-      const counts = { all: (state.users || []).length, active: 0, suspended: 0, pending: 0 };
-      (state.users || []).forEach(u => { const s = uStatus(u); if (counts[s] !== undefined) counts[s]++; });
-      const statuses = [{ key: 'all', label: 'All users', icon: 'fa-list' }, { key: 'active', label: 'Active', icon: 'fa-circle-check' }, { key: 'suspended', label: 'Suspended', icon: 'fa-ban' }, { key: 'pending', label: 'Pending', icon: 'fa-clock' }];
+      const counts = { all: (state.users||[]).length, active: 0, suspended: 0, pending: 0 };
+      (state.users||[]).forEach(u => { const s = uStatus(u); if (counts[s] !== undefined) counts[s]++; });
+      const statuses = [{ key:'all', label:'All users', icon:'fa-list' },{ key:'active', label:'Active', icon:'fa-circle-check' },{ key:'suspended', label:'Suspended', icon:'fa-ban' },{ key:'pending', label:'Pending', icon:'fa-clock' }];
       html += `<div class="filter-block"><div class="filter-block-label"><i class="fas fa-circle-notch"></i> Status</div><div class="type-list">`;
-      for (const s of statuses) { const active = f.status === s.key; const cnt = counts[s.key] || 0; html += `<button class="type-row${active ? ' active' : ''}" onclick="pickStatus('${s.key}')"><span class="type-row-icon"><i class="fas ${s.icon}"></i></span><span class="type-row-label">${esc(s.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
+      for (const s of statuses) { const active = f.status === s.key; const cnt = counts[s.key] || 0; html += `<button class="type-row${active?' active':''}" onclick="pickStatus('${s.key}')"><span class="type-row-icon"><i class="fas ${s.icon}"></i></span><span class="type-row-label">${esc(s.label)}</span><span class="type-row-count">${cnt}</span></button>`; }
       html += `</div></div>`;
     }
     if (tab === 'archived') {
@@ -1945,16 +1832,17 @@ button{font-family:inherit}
   window.removeTracedUser = removeTracedUser;
   function updateFilterCount(tab) { const f = state.filters[tab] || {}; let c = 0; if (tab === 'transactions') { if (f.type && f.type !== 'all') c++; if (f.range && f.range !== '1d') c++; if (f.tracedUserId) c++; } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') c++; if (f.range && f.range !== '1d') c++; } if (tab === 'users') { if (f.status && f.status !== 'all') c++; } if (tab === 'archived') { if (f.userId) c++; } const el = document.getElementById(tab + 'FilterCount'); if (el) el.textContent = c; const btn = document.getElementById(tab + 'FilterBtn'); if (btn) btn.classList.toggle('active', c > 0); renderActiveFilterChips(tab); }
   window.updateFilterCount = updateFilterCount;
-  function renderActiveFilterChips(tab) { const el = document.getElementById(tab + 'ActiveFilters'); if (!el) return; const f = state.filters[tab] || {}; const chips = []; if (tab === 'transactions') { if (f.type && f.type !== 'all') { const t = { airtime: 'Airtime', data: 'Data', deposit: 'Deposits', withdrawal: 'Withdrawals', manual_fund: 'Manual Credit', manual_debit: 'Manual Debit', transfer: 'Transfers', refund: 'Refunds', other: 'Others' }; chips.push({ label: t[f.type] || f.type, clear: () => { f.type = 'all'; } }); } if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } if (f.tracedUserId) chips.push({ label: `Tracing ${f.tracedUserName || ''}`, clear: () => { f.tracedUserId = null; f.tracedUserName = null; } }); } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } } if (tab === 'users' && f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (tab === 'archived' && f.userId) chips.push({ label: `User #${f.userId}`, clear: () => { f.userId = null; } }); if (!chips.length) { el.innerHTML = ''; return; } el.innerHTML = chips.map((c, i) => `<span class="active-filter-chip"><i class="fas fa-filter"></i> ${esc(c.label)}<button onclick="clearFilterChip('${tab}', ${i})"><i class="fas fa-times"></i></button></span>`).join(''); }
+  function renderActiveFilterChips(tab) { const el = document.getElementById(tab + 'ActiveFilters'); if (!el) return; const f = state.filters[tab] || {}; const chips = []; if (tab === 'transactions') { if (f.type && f.type !== 'all') { const t = { airtime:'Airtime', data:'Data', deposit:'Deposits', withdrawal:'Withdrawals', manual_fund:'Manual Credit', manual_debit:'Manual Debit', transfer:'Transfers', refund:'Refunds', other:'Others' }; chips.push({ label: t[f.type] || f.type, clear: () => { f.type = 'all'; } }); } if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } if (f.tracedUserId) chips.push({ label: `Tracing ${f.tracedUserName || ''}`, clear: () => { f.tracedUserId = null; f.tracedUserName = null; } }); } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } } if (tab === 'users' && f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (tab === 'archived' && f.userId) chips.push({ label: `User #${f.userId}`, clear: () => { f.userId = null; } }); if (!chips.length) { el.innerHTML = ''; return; } el.innerHTML = chips.map((c, i) => `<span class="active-filter-chip"><i class="fas fa-filter"></i> ${esc(c.label)}<button onclick="clearFilterChip('${tab}', ${i})"><i class="fas fa-times"></i></button></span>`).join(''); }
   window.renderActiveFilterChips = renderActiveFilterChips;
   function clearFilterChip(tab, idx) { const f = state.filters[tab] || {}; if (tab === 'transactions') { const chips = []; if (f.type && f.type !== 'all') chips.push(() => { f.type = 'all'; }); if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; }); if (f.tracedUserId) chips.push(() => { f.tracedUserId = null; f.tracedUserName = null; }); if (chips[idx]) chips[idx](); } if (tab === 'deposits' || tab === 'withdrawals') { const chips = []; if (f.status && f.status !== 'all') chips.push(() => { f.status = 'all'; }); if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; }); if (chips[idx]) chips[idx](); } if (tab === 'users' && f.status !== 'all') f.status = 'all'; if (tab === 'archived' && f.userId) f.userId = null; updateFilterCount(tab); applyFilters(true); }
   window.clearFilterChip = clearFilterChip;
-  function clearAllFilters() { state.filters[state.currentFilterTab] = state.currentFilterTab === 'transactions' ? { type: 'all', range: '1d', tracedUserId: null, tracedUserName: null } : state.currentFilterTab === 'users' ? { status: 'all' } : state.currentFilterTab === 'archived' ? { userId: null } : { status: 'all', range: '1d' }; updateFilterCount(state.currentFilterTab); openFilterSheet(state.currentFilterTab); }
+  function clearAllFilters() { state.filters[state.currentFilterTab] = state.currentFilterTab === 'transactions' ? { type:'all', range:'1d', tracedUserId:null, tracedUserName:null } : state.currentFilterTab === 'users' ? { status:'all' } : state.currentFilterTab === 'archived' ? { userId:null } : { status:'all', range:'1d' }; updateFilterCount(state.currentFilterTab); openFilterSheet(state.currentFilterTab); }
   window.clearAllFilters = clearAllFilters;
   function applyFilters(silent) { const tab = state.currentFilterTab; const f = state.filters[tab] || {}; if (tab === 'transactions' || tab === 'deposits' || tab === 'withdrawals') { state.range = f.range || '1d'; syncOverviewRangeUI(); } if (tab === 'transactions') { state.txnPage = 1; renderTransactions(); } if (tab === 'deposits') { state.depositPage = 1; renderDeposits(); } if (tab === 'withdrawals') { state.withdrawalPage = 1; renderWithdrawals(); } if (tab === 'users') { renderUsers(); } if (tab === 'archived') { loadArchived(1); } if (!silent) { closeFilterSheet(); toast('Filters applied', 'success'); } }
   window.applyFilters = applyFilters;
 
-  function filterTxn(list, search) { if (!search) return list; const s = search.toLowerCase().trim(); return list.filter(t => { const m = t.metadata || {}; const h = `${t.phone || m.phone || ''} ${t.reference || ''} ${t.description || ''} ${m.product_name || ''} ${t.recipient || ''} ${t.user_name || ''} ${t.user_email || ''}`.toLowerCase(); return h.includes(s); }); }
+  /* TRANSACTIONS */
+  function filterTxn(list, search) { if (!search) return list; const s = search.toLowerCase().trim(); return list.filter(t => { const m = t.metadata || {}; const h = `${t.phone||m.phone||''} ${t.reference||''} ${t.description||''} ${m.product_name||''} ${t.recipient||''} ${t.user_name||''} ${t.user_email||''}`.toLowerCase(); return h.includes(s); }); }
   function getFilteredTxns() {
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
     const f = state.filters.transactions;
@@ -1963,109 +1851,115 @@ button{font-family:inherit}
     if (f.type && f.type !== 'all') list = list.filter(t => txnKind(t) === f.type);
     if (!f.tracedUserId) list = applyRange(list, f.range || state.range);
     list = filterTxn(list, search);
+    list.sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
     return list;
   }
   function renderTransactions() {
     const list = getFilteredTxns();
     state.cache.txns = list;
     const search = ($('#txnSearch')?.value || '').toLowerCase().trim();
-    const total = list.reduce((a, t) => a + getAmount(t), 0);
+    const total = list.reduce((a,t) => a+getAmount(t),0);
     const tracing = state.filters.transactions.tracedUserId;
     const bar = $('#txnResultsBar');
     if (bar) {
-      if (tracing) bar.innerHTML = `<span class="results-count"><i class="fas fa-user-secret" style="color:var(--primary)"></i> Tracing <strong>${esc(state.filters.transactions.tracedUserName || '')}</strong> · <strong>${list.length}</strong> txn${list.length === 1 ? '' : 's'} · ${fmtMoney(total, true)}</span><span class="results-live"><span class="dot"></span> Live</span>`;
-      else if (search) bar.innerHTML = `<span class="results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted)"></i> ${list.length} match${list.length === 1 ? '' : 'es'} for <span class="term">${esc(search)}</span> · ${fmtMoney(total, true)}</span><span class="results-live"><span class="dot"></span> Live</span>`;
-      else bar.innerHTML = `<span class="results-count"><i class="fas fa-receipt" style="color:var(--primary)"></i> <strong>${list.length}</strong> transaction${list.length === 1 ? '' : 's'} · ${fmtMoney(total, true)}</span><span class="results-live"><span class="dot"></span> Live</span>`;
+      if (tracing) bar.innerHTML = `<span class="results-count"><i class="fas fa-user-secret" style="color:var(--primary)"></i> Tracing <strong>${esc(state.filters.transactions.tracedUserName || '')}</strong> · <strong>${list.length}</strong> txn${list.length===1?'':'s'} · ${fmtMoney(total, true)}</span><span class="results-live"><span class="dot"></span> Live</span>`;
+      else if (search) bar.innerHTML = `<span class="results-count"><i class="fas fa-magnifying-glass" style="color:var(--text-muted)"></i> ${list.length} match${list.length===1?'':'es'} for <span class="term">${esc(search)}</span> · ${fmtMoney(total, true)}</span><span class="results-live"><span class="dot"></span> Live</span>`;
+      else bar.innerHTML = `<span class="results-count"><i class="fas fa-receipt" style="color:var(--primary)"></i> <strong>${list.length}</strong> transaction${list.length===1?'':'s'} · ${fmtMoney(total, true)}</span><span class="results-live"><span class="dot"></span> Live</span>`;
       bar.classList.remove('is-empty');
     }
-    const per = state.PER_PAGE; const ti = list.length; const tp = Math.max(1, Math.ceil(ti / per));
+    const per = state.PER_PAGE; const ti = list.length; const tp = Math.max(1, Math.ceil(ti/per));
     const cp = Math.min(Math.max(state.txnPage, 1), tp); state.txnPage = cp;
     const c = $('#transactionsList'); const p = $('#transactionsPagination');
     if (!ti) { c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-receipt"></i></div><div class="user-empty-title">No transactions found</div><div class="user-empty-text">${tracing ? 'This user has no matching transactions.' : 'Nothing matches the current filter.'}</div></div>`; if (p) { p.style.display = 'none'; p.innerHTML = ''; } return; }
-    const slice = list.slice((cp - 1) * per, cp * per);
+    const slice = list.slice((cp-1)*per, cp*per);
     c.innerHTML = `<div class="txn-card-list">${slice.map(t => {
       const m = t.metadata || {}; const k = txnKind(t);
       const ph = t.phone || m.phone || t.recipient || '—';
       const am = getAmount(t); const st = getStatus(t);
       const pr = m.product_name || t.description || t.product || `${kindLabel(k)} Transaction`;
       const rf = t.reference || t.tx_ref || '—';
-      const isC = ['deposit', 'refund', 'manual_fund'].includes(k);
-      return `<div class="txn-card" onclick="viewTransaction('${esc(t.id || t._id || t.reference || '')}')"><div class="txn-avatar ${kindAvatarClass(t)}">${kindAvatarHtml(t)}</div><div class="txn-body"><div class="txn-name-row"><span class="txn-name">${esc(pr)}</span><span class="txn-badge ${st}">${esc(statusLabel(st))}</span></div><div class="txn-meta"><span class="item mono"><i class="fas fa-phone"></i> ${esc(ph)}</span><span class="item"><i class="fas fa-hashtag"></i> ${esc(rf)}</span><span class="item"><i class="fas fa-clock"></i> ${timeAgo(getDate(t))}</span></div></div><div class="txn-right"><div class="txn-amount ${isC ? 'credit' : 'debit'}"><span class="txn-amount-label">${isC ? 'Credit' : 'Amount'}</span><span class="txn-amount-value">${isC ? '+' : ''}${fmtMoney(am)}</span></div><div class="txn-arrow"><i class="fas fa-arrow-right"></i></div></div></div>`;
+      const isC = ['deposit','refund','manual_fund'].includes(k);
+      return `<div class="txn-card" onclick="viewTransaction('${esc(t.id || t._id || t.reference || '')}')"><div class="txn-avatar ${kindAvatarClass(t)}">${kindAvatarHtml(t)}</div><div class="txn-body"><div class="txn-name-row"><span class="txn-name">${esc(pr)}</span><span class="txn-badge ${st}">${esc(statusLabel(st))}</span></div><div class="txn-meta"><span class="item mono"><i class="fas fa-phone"></i> ${esc(ph)}</span><span class="item"><i class="fas fa-hashtag"></i> ${esc(rf)}</span><span class="item"><i class="fas fa-clock"></i> ${timeAgo(getDate(t))}</span></div></div><div class="txn-right"><div class="txn-amount ${isC?'credit':'debit'}"><span class="txn-amount-label">${isC?'Credit':'Amount'}</span><span class="txn-amount-value">${isC?'+':''}${fmtMoney(am)}</span></div><div class="txn-arrow"><i class="fas fa-arrow-right"></i></div></div></div>`;
     }).join('')}</div>`;
     renderPager('transactionsPagination', cp, ti, per, 'txn');
   }
   window.renderTransactions = renderTransactions;
   function onTxnSearchInput() { const i = document.getElementById('txnSearch'); const c = document.getElementById('txnSearchClear'); if (i && c) c.classList.toggle('visible', i.value.length > 0); state.txnPage = 1; renderTransactions(); }
   window.onTxnSearchInput = onTxnSearchInput;
-  function clearTxnSearch() { const i = document.getElementById('txnSearch'); if (i) { i.value = ''; i.focus(); } const c = document.getElementById('txnSearchClear'); if (c) c.classList.remove('visible'); state.txnPage = 1; renderTransactions(); }
+  function clearTxnSearch() { const i = document.getElementById('txnSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('txnSearchClear'); if (c) c.classList.remove('visible'); state.txnPage = 1; renderTransactions(); }
   window.clearTxnSearch = clearTxnSearch;
 
-  function findTxn(id) { if (!id) return null; const sid = String(id); for (const p of [state.unifiedTransactions, state.transactions, state.deposits, state.withdrawals, state.archived.items]) { const h = (p || []).find(x => String(x.id || x._id || x.reference || x.tx_ref) === sid); if (h) return h; } return null; }
-  function viewTransaction(id) { const t = findTxn(id); if (!t) { toast('Transaction not found', 'error'); return; } const m = t.metadata || {}; const k = txnKind(t); const nk = detectNetwork(t); const logo = (k === 'airtime' || k === 'data') ? NET_SVG[nk] : kindAvatarHtml(t); const pr = m.product_name || t.description || t.product || `${kindLabel(k)} Transaction`; const ph = t.phone || m.phone || t.recipient || '—'; const am = getAmount(t); const st = getStatus(t); const rf = t.reference || t.tx_ref || t.id || t._id || '—'; const nl = (k === 'airtime' || k === 'data') ? ({ mtn: 'MTN Nigeria', airtel: 'Airtel Nigeria', glo: 'Globacom', t2: '9mobile', generic: 'VTU Service' }[nk]) : kindLabel(k); $('#txnBody').innerHTML = `<div class="txn-hero"><div class="txn-hero-logo txn-avatar ${kindAvatarClass(t)}" style="border:none">${logo}</div><div class="txn-hero-info"><div class="txn-hero-title">${esc(pr)}</div><div class="txn-hero-sub"><span>${esc(nl)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div></div><div class="txn-amount-block"><div class="amt-label">Amount</div><div class="amt-value">${fmtMoney(am)}</div></div><div class="row-detail"><span class="lbl">Recipient</span><span class="val mono">${esc(ph)}</span></div><div class="row-detail"><span class="lbl">Category</span><span class="val">${esc(kindLabel(k))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(rf)}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Created</span><span class="val">${fmtDate(getDate(t))}</span></div>`; $('#txnModal').classList.add('active'); }
+  function findTxn(id) { if (!id) return null; const sid = String(id); for (const p of [state.unifiedTransactions, state.transactions, state.deposits, state.withdrawals, state.archived.items]) { const h = (p||[]).find(x => String(x.id||x._id||x.reference||x.tx_ref) === sid); if (h) return h; } return null; }
+  function viewTransaction(id) { const t = findTxn(id); if (!t) { toast('Transaction not found', 'error'); return; } const m = t.metadata || {}; const k = txnKind(t); const nk = detectNetwork(t); const logo = (k === 'airtime' || k === 'data') ? NET_SVG[nk] : kindAvatarHtml(t); const pr = m.product_name || t.description || t.product || `${kindLabel(k)} Transaction`; const ph = t.phone || m.phone || t.recipient || '—'; const am = getAmount(t); const st = getStatus(t); const rf = t.reference || t.tx_ref || t.id || t._id || '—'; const nl = (k === 'airtime' || k === 'data') ? ({mtn:'MTN Nigeria',airtel:'Airtel Nigeria',glo:'Globacom',t2:'9mobile',generic:'VTU Service'}[nk]) : kindLabel(k); $('#txnBody').innerHTML = `<div class="txn-hero"><div class="txn-hero-logo txn-avatar ${kindAvatarClass(t)}" style="border:none">${logo}</div><div class="txn-hero-info"><div class="txn-hero-title">${esc(pr)}</div><div class="txn-hero-sub"><span>${esc(nl)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div></div><div class="txn-amount-block"><div class="amt-label">Amount</div><div class="amt-value">${fmtMoney(am)}</div></div><div class="row-detail"><span class="lbl">Recipient</span><span class="val mono">${esc(ph)}</span></div><div class="row-detail"><span class="lbl">Category</span><span class="val">${esc(kindLabel(k))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(rf)}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Created</span><span class="val">${fmtDate(getDate(t))}</span></div>`; $('#txnModal').classList.add('active'); }
   window.viewTransaction = viewTransaction;
   function closeTxnModal() { $('#txnModal').classList.remove('active'); }
   window.closeTxnModal = closeTxnModal;
 
+  /* DEPOSITS */
   function getFilteredDeposits() {
     const search = ($('#depositSearch')?.value || '').toLowerCase().trim();
     const f = state.filters.deposits;
     let list = applyRange(state.deposits, f.range || state.range);
-    if (search) list = list.filter(d => { const h = `${d.user_name || d.name || ''} ${d.user_email || d.email || ''} ${d.reference || ''}`.toLowerCase(); return h.includes(search); });
+    if (search) list = list.filter(d => { const h = `${d.user_name||d.name||''} ${d.user_email||d.email||''} ${d.reference||''}`.toLowerCase(); return h.includes(search); });
     if (f.status && f.status !== 'all') list = list.filter(d => getStatus(d) === f.status);
+    list.sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
     return list;
   }
   function renderDeposits() {
     const list = getFilteredDeposits();
     state.cache.deposits = list;
     const pend = list.filter(d => getStatus(d) === 'pending').length;
-    const total = list.reduce((a, d) => a + getAmount(d), 0);
+    const total = list.reduce((a,d) => a+getAmount(d),0);
     const bar = $('#depositResultsBar');
-    if (bar) { bar.innerHTML = `<span class="results-count"><i class="fas fa-arrow-down" style="color:var(--primary)"></i> <strong>${list.length}</strong> deposit${list.length === 1 ? '' : 's'} · ${fmtMoney(total, true)}${pend ? ` · <span style="color:var(--warning-dark);font-weight:800">${pend} pending</span>` : ''}</span><span class="results-live"><span class="dot"></span> Live</span>`; bar.classList.remove('is-empty'); }
-    const c = $('#depositsList'); const per = state.PER_PAGE; const ti = list.length; const tp = Math.max(1, Math.ceil(ti / per)); const cp = Math.min(Math.max(state.depositPage, 1), tp); state.depositPage = cp;
+    if (bar) { bar.innerHTML = `<span class="results-count"><i class="fas fa-arrow-down" style="color:var(--primary)"></i> <strong>${list.length}</strong> deposit${list.length===1?'':'s'} · ${fmtMoney(total, true)}${pend?` · <span style="color:var(--warning-dark);font-weight:800">${pend} pending</span>`:''}</span><span class="results-live"><span class="dot"></span> Live</span>`; bar.classList.remove('is-empty'); }
+    const c = $('#depositsList'); const per = state.PER_PAGE; const ti = list.length; const tp = Math.max(1, Math.ceil(ti/per)); const cp = Math.min(Math.max(state.depositPage,1), tp); state.depositPage = cp;
     if (!ti) { c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-arrow-down"></i></div><div class="user-empty-title">No deposits</div><div class="user-empty-text">Wallet top-ups will appear here.</div></div>`; const p = $('#depositsPagination'); if (p) { p.style.display = 'none'; p.innerHTML = ''; } return; }
-    const slice = list.slice((cp - 1) * per, cp * per);
-    c.innerHTML = `<div class="txn-card-list">${slice.map(d => { const name = d.user_name || d.name || 'Unknown'; const ini = name.charAt(0).toUpperCase(); const am = getAmount(d); const st = getStatus(d); const isP = st === 'pending'; return `<div class="txn-card static"><div class="txn-avatar deposit">${esc(ini)}</div><div class="txn-body"><div class="txn-name-row"><span class="txn-name">${esc(name)}</span><span class="txn-badge ${st}">${esc(statusLabel(st))}</span></div><div class="txn-meta"><span class="item"><i class="fas fa-envelope"></i> ${esc(d.user_email || d.email || '—')}</span><span class="item mono"><i class="fas fa-hashtag"></i> ${esc(d.reference || d.tx_ref || '—')}</span><span class="item"><i class="fas fa-clock"></i> ${timeAgo(getDate(d))}</span></div></div><div class="txn-right"><div class="txn-amount credit"><span class="txn-amount-label">Amount</span><span class="txn-amount-value">+${fmtMoney(am)}</span></div><div class="txn-actions">${isP ? `<button class="approve" onclick="event.stopPropagation();openApproveDepositModal('${esc(d.id)}')"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectDepositModal('${esc(d.id)}')"><i class="fas fa-times"></i></button>` : ''}<button class="view" onclick="event.stopPropagation();viewDeposit('${esc(d.id)}')"><i class="fas fa-eye"></i></button></div></div></div>`; }).join('')}</div>`;
+    const slice = list.slice((cp-1)*per, cp*per);
+    c.innerHTML = `<div class="txn-card-list">${slice.map(d => { const name = d.user_name || d.name || 'Unknown'; const ini = name.charAt(0).toUpperCase(); const am = getAmount(d); const st = getStatus(d); const isP = st === 'pending'; return `<div class="txn-card static"><div class="txn-avatar deposit">${esc(ini)}</div><div class="txn-body"><div class="txn-name-row"><span class="txn-name">${esc(name)}</span><span class="txn-badge ${st}">${esc(statusLabel(st))}</span></div><div class="txn-meta"><span class="item"><i class="fas fa-envelope"></i> ${esc(d.user_email||d.email||'—')}</span><span class="item mono"><i class="fas fa-hashtag"></i> ${esc(d.reference||d.tx_ref||'—')}</span><span class="item"><i class="fas fa-clock"></i> ${timeAgo(getDate(d))}</span></div></div><div class="txn-right"><div class="txn-amount credit"><span class="txn-amount-label">Amount</span><span class="txn-amount-value">+${fmtMoney(am)}</span></div><div class="txn-actions">${isP?`<button class="approve" onclick="event.stopPropagation();openApproveDepositModal('${esc(d.id)}')"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectDepositModal('${esc(d.id)}')"><i class="fas fa-times"></i></button>`:''}<button class="view" onclick="event.stopPropagation();viewDeposit('${esc(d.id)}')"><i class="fas fa-eye"></i></button></div></div></div>`; }).join('')}</div>`;
     renderPager('depositsPagination', cp, ti, per, 'deposit');
   }
   window.renderDeposits = renderDeposits;
   function onDepositSearchInput() { const i = document.getElementById('depositSearch'); const c = document.getElementById('depositSearchClear'); if (i && c) c.classList.toggle('visible', i.value.length > 0); state.depositPage = 1; renderDeposits(); }
   window.onDepositSearchInput = onDepositSearchInput;
-  function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value = ''; i.focus(); } const c = document.getElementById('depositSearchClear'); if (c) c.classList.remove('visible'); state.depositPage = 1; renderDeposits(); }
+  function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('depositSearchClear'); if (c) c.classList.remove('visible'); state.depositPage = 1; renderDeposits(); }
   window.clearDepositSearch = clearDepositSearch;
-  function viewDeposit(id) { const d = (state.deposits || []).find(x => String(x.id) === String(id)); if (!d) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name || d.name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">+${fmtMoney(getAmount(d))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(d.reference || d.tx_ref || '—')}</span></div>`; $('#viewModal').classList.add('active'); }
+  function viewDeposit(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">+${fmtMoney(getAmount(d))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(d.reference||d.tx_ref||'—')}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewDeposit = viewDeposit;
 
+  /* WITHDRAWALS */
   function getFilteredWithdrawals() {
     const search = ($('#withdrawalSearch')?.value || '').toLowerCase().trim();
     const f = state.filters.withdrawals;
     let list = applyRange(state.withdrawals, f.range || state.range);
-    if (search) list = list.filter(w => { const h = `${w.user_name || ''} ${w.user_email || ''} ${w.reference || ''} ${w.bank_name || ''}`.toLowerCase(); return h.includes(search); });
+    if (search) list = list.filter(w => { const h = `${w.user_name||''} ${w.user_email||''} ${w.reference||''} ${w.bank_name||''}`.toLowerCase(); return h.includes(search); });
     if (f.status && f.status !== 'all') list = list.filter(w => getStatus(w) === f.status);
+    list.sort((a,b) => new Date(getDate(b)) - new Date(getDate(a)));
     return list;
   }
   function renderWithdrawals() {
     const list = getFilteredWithdrawals();
     state.cache.withdrawals = list;
     const pend = list.filter(w => getStatus(w) === 'pending').length;
-    const total = list.reduce((a, w) => a + getAmount(w), 0);
+    const total = list.reduce((a,w) => a+getAmount(w),0);
     const bar = $('#withdrawalResultsBar');
-    if (bar) { bar.innerHTML = `<span class="results-count"><i class="fas fa-arrow-up" style="color:var(--primary)"></i> <strong>${list.length}</strong> request${list.length === 1 ? '' : 's'} · ${fmtMoney(total, true)}${pend ? ` · <span style="color:var(--warning-dark);font-weight:800">${pend} pending</span>` : ''}</span><span class="results-live"><span class="dot"></span> Live</span>`; bar.classList.remove('is-empty'); }
-    const c = $('#withdrawalsList'); const per = state.PER_PAGE; const ti = list.length; const tp = Math.max(1, Math.ceil(ti / per)); const cp = Math.min(Math.max(state.withdrawalPage, 1), tp); state.withdrawalPage = cp;
+    if (bar) { bar.innerHTML = `<span class="results-count"><i class="fas fa-arrow-up" style="color:var(--primary)"></i> <strong>${list.length}</strong> request${list.length===1?'':'s'} · ${fmtMoney(total, true)}${pend?` · <span style="color:var(--warning-dark);font-weight:800">${pend} pending</span>`:''}</span><span class="results-live"><span class="dot"></span> Live</span>`; bar.classList.remove('is-empty'); }
+    const c = $('#withdrawalsList'); const per = state.PER_PAGE; const ti = list.length; const tp = Math.max(1, Math.ceil(ti/per)); const cp = Math.min(Math.max(state.withdrawalPage,1), tp); state.withdrawalPage = cp;
     if (!ti) { c.innerHTML = `<div class="user-empty"><div class="user-empty-icon"><i class="fas fa-arrow-up"></i></div><div class="user-empty-title">No withdrawal requests</div><div class="user-empty-text">Payouts will appear here.</div></div>`; const p = $('#withdrawalsPagination'); if (p) { p.style.display = 'none'; p.innerHTML = ''; } return; }
-    const slice = list.slice((cp - 1) * per, cp * per);
-    c.innerHTML = `<div class="txn-card-list">${slice.map(w => { const name = w.user_name || 'Unknown'; const ini = name.charAt(0).toUpperCase(); const am = getAmount(w); const st = getStatus(w); const isP = st === 'pending'; return `<div class="txn-card static"><div class="txn-avatar withdraw">${esc(ini)}</div><div class="txn-body"><div class="txn-name-row"><span class="txn-name">${esc(name)}</span><span class="txn-badge ${st}">${esc(statusLabel(st))}</span></div><div class="txn-meta"><span class="item"><i class="fas fa-building-columns"></i> ${esc(w.bank_name || '—')}</span><span class="item mono"><i class="fas fa-hashtag"></i> ${esc(w.reference || '—')}</span><span class="item"><i class="fas fa-clock"></i> ${timeAgo(getDate(w))}</span></div></div><div class="txn-right"><div class="txn-amount debit"><span class="txn-amount-label">Amount</span><span class="txn-amount-value">−${fmtMoney(am)}</span></div><div class="txn-actions">${isP ? `<button class="approve" onclick="event.stopPropagation();openApproveModal('${esc(w.id)}')"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectModal('${esc(w.id)}')"><i class="fas fa-times"></i></button>` : ''}<button class="view" onclick="event.stopPropagation();viewWithdrawal('${esc(w.id)}')"><i class="fas fa-eye"></i></button></div></div></div>`; }).join('')}</div>`;
+    const slice = list.slice((cp-1)*per, cp*per);
+    c.innerHTML = `<div class="txn-card-list">${slice.map(w => { const name = w.user_name || 'Unknown'; const ini = name.charAt(0).toUpperCase(); const am = getAmount(w); const st = getStatus(w); const isP = st === 'pending'; return `<div class="txn-card static"><div class="txn-avatar withdraw">${esc(ini)}</div><div class="txn-body"><div class="txn-name-row"><span class="txn-name">${esc(name)}</span><span class="txn-badge ${st}">${esc(statusLabel(st))}</span></div><div class="txn-meta"><span class="item"><i class="fas fa-building-columns"></i> ${esc(w.bank_name||'—')}</span><span class="item mono"><i class="fas fa-hashtag"></i> ${esc(w.reference||'—')}</span><span class="item"><i class="fas fa-clock"></i> ${timeAgo(getDate(w))}</span></div></div><div class="txn-right"><div class="txn-amount debit"><span class="txn-amount-label">Amount</span><span class="txn-amount-value">−${fmtMoney(am)}</span></div><div class="txn-actions">${isP?`<button class="approve" onclick="event.stopPropagation();openApproveModal('${esc(w.id)}')"><i class="fas fa-check"></i></button><button class="reject" onclick="event.stopPropagation();openRejectModal('${esc(w.id)}')"><i class="fas fa-times"></i></button>`:''}<button class="view" onclick="event.stopPropagation();viewWithdrawal('${esc(w.id)}')"><i class="fas fa-eye"></i></button></div></div></div>`; }).join('')}</div>`;
     renderPager('withdrawalsPagination', cp, ti, per, 'withdrawal');
   }
   window.renderWithdrawals = renderWithdrawals;
   function onWithdrawalSearchInput() { const i = document.getElementById('withdrawalSearch'); const c = document.getElementById('withdrawalSearchClear'); if (i && c) c.classList.toggle('visible', i.value.length > 0); state.withdrawalPage = 1; renderWithdrawals(); }
   window.onWithdrawalSearchInput = onWithdrawalSearchInput;
-  function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value = ''; i.focus(); } const c = document.getElementById('withdrawalSearchClear'); if (c) c.classList.remove('visible'); state.withdrawalPage = 1; renderWithdrawals(); }
+  function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('withdrawalSearchClear'); if (c) c.classList.remove('visible'); state.withdrawalPage = 1; renderWithdrawals(); }
   window.clearWithdrawalSearch = clearWithdrawalSearch;
-  function viewWithdrawal(id) { const w = (state.withdrawals || []).find(x => String(x.id) === String(id)); if (!w) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(w.reference || '—')}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Bank</span><span class="val">${esc(w.bank_name || '—')}</span></div><div class="row-detail"><span class="lbl">Account No.</span><span class="val mono">${esc(w.account_number || '—')}</span></div>`; $('#viewModal').classList.add('active'); }
+  function viewWithdrawal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(w.reference||'—')}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Bank</span><span class="val">${esc(w.bank_name||'—')}</span></div><div class="row-detail"><span class="lbl">Account No.</span><span class="val mono">${esc(w.account_number||'—')}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewWithdrawal = viewWithdrawal;
   function closeViewModal() { $('#viewModal').classList.remove('active'); }
   window.closeViewModal = closeViewModal;
 
+  /* Approve/Reject */
   function removeAlertForItem(type, idOrRef) {
     const key = `${type}:${String(idOrRef)}`;
     state.adminAlerts = state.adminAlerts.filter(a => a.id !== key);
@@ -2073,28 +1967,28 @@ button{font-family:inherit}
   }
   window.removeAlertForItem = removeAlertForItem;
 
-  function openApproveModal(id) { const w = (state.withdrawals || []).find(x => String(x.id) === String(id)); if (!w) return; state.currentApprove = w; stopAlarm(); $('#approveBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div>`; $('#approveRef').value = ''; $('#approveNotes').value = ''; resetWAB(); $('#approveModal').classList.add('active'); }
+  function openApproveModal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; state.currentApprove = w; stopAlarm(); $('#approveBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div>`; $('#approveRef').value = ''; $('#approveNotes').value = ''; resetWAB(); $('#approveModal').classList.add('active'); }
   window.openApproveModal = openApproveModal;
   function resetWAB() { state.withdrawApprovePending = false; const b = $('#approveSubmitBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-check"></i> Approve'; } const c = $('#approveCancelBtn'); if (c) c.disabled = false; }
   function closeApproveModal() { if (state.withdrawApprovePending) return; $('#approveModal').classList.remove('active'); state.currentApprove = null; resetWAB(); }
   window.closeApproveModal = closeApproveModal;
   async function submitApprove() { if (!state.currentApprove || state.withdrawApprovePending) return; stopAlarm(); const ref = $('#approveRef').value.trim(); const notes = $('#approveNotes').value.trim(); if (!ref) { toast('Please enter a reference', 'error'); return; } state.withdrawApprovePending = true; const b = $('#approveSubmitBtn'); const c = $('#approveCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…'; if (c) c.disabled = true; try { const wid = state.currentApprove.id || state.currentApprove.reference; await api(`/wallet/admin/withdrawal/${state.currentApprove.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, provider_reference: ref, approval_notes: notes || null }) }); toast('Withdrawal approved', 'success'); removeAlertForItem('withdrawal', wid); state.withdrawApprovePending = false; $('#approveModal').classList.remove('active'); state.currentApprove = null; resetWAB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.withdrawApprovePending = false; } }
   window.submitApprove = submitApprove;
-  function openRejectModal(id) { const w = (state.withdrawals || []).find(x => String(x.id) === String(id)); if (!w) return; state.currentReject = w; stopAlarm(); $('#rejectBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">${fmtMoney(getAmount(w))}</span></div>`; $('#rejectReason').value = ''; resetWRB(); $('#rejectModal').classList.add('active'); }
+  function openRejectModal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; state.currentReject = w; stopAlarm(); $('#rejectBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">${fmtMoney(getAmount(w))}</span></div>`; $('#rejectReason').value = ''; resetWRB(); $('#rejectModal').classList.add('active'); }
   window.openRejectModal = openRejectModal;
   function resetWRB() { state.withdrawRejectPending = false; const b = $('#rejectSubmitBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-ban"></i> Reject'; } const c = $('#rejectCancelBtn'); if (c) c.disabled = false; }
   function closeRejectModal() { if (state.withdrawRejectPending) return; $('#rejectModal').classList.remove('active'); state.currentReject = null; resetWRB(); }
   window.closeRejectModal = closeRejectModal;
   async function submitReject() { if (!state.currentReject || state.withdrawRejectPending) return; stopAlarm(); const r = $('#rejectReason').value.trim(); if (r.length < 5) { toast('Please give a reason (min 5 chars)', 'error'); return; } state.withdrawRejectPending = true; const b = $('#rejectSubmitBtn'); const c = $('#rejectCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…'; if (c) c.disabled = true; try { const wid = state.currentReject.id || state.currentReject.reference; await api(`/wallet/admin/withdrawal/${state.currentReject.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Withdrawal rejected', 'error'); removeAlertForItem('withdrawal', wid); state.withdrawRejectPending = false; $('#rejectModal').classList.remove('active'); state.currentReject = null; resetWRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.withdrawRejectPending = false; } }
   window.submitReject = submitReject;
-  function openApproveDepositModal(id) { const d = (state.deposits || []).find(x => String(x.id) === String(id)); if (!d) return; state.currentApproveDeposit = d; stopAlarm(); $('#approveDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name || d.name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val success">+${fmtMoney(getAmount(d))}</span></div>`; $('#approveDepositRef').value = ''; $('#approveDepositNotes').value = ''; resetDAB(); $('#approveDepositModal').classList.add('active'); }
+  function openApproveDepositModal(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; state.currentApproveDeposit = d; stopAlarm(); $('#approveDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val success">+${fmtMoney(getAmount(d))}</span></div>`; $('#approveDepositRef').value = ''; $('#approveDepositNotes').value = ''; resetDAB(); $('#approveDepositModal').classList.add('active'); }
   window.openApproveDepositModal = openApproveDepositModal;
   function resetDAB() { state.depositApprovePending = false; const b = $('#approveDepositBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-check"></i> Credit Wallet'; } const c = $('#approveDepositCancelBtn'); if (c) c.disabled = false; }
   function closeApproveDepositModal() { if (state.depositApprovePending) return; $('#approveDepositModal').classList.remove('active'); state.currentApproveDeposit = null; resetDAB(); }
   window.closeApproveDepositModal = closeApproveDepositModal;
   async function submitApproveDeposit() { if (!state.currentApproveDeposit || state.depositApprovePending) return; stopAlarm(); const ref = $('#approveDepositRef').value.trim(); const notes = $('#approveDepositNotes').value.trim(); if (ref.length < 4) { toast('Enter bank reference', 'error'); return; } state.depositApprovePending = true; const b = $('#approveDepositBtn'); const c = $('#approveDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crediting…'; if (c) c.disabled = true; try { const did = state.currentApproveDeposit.id || state.currentApproveDeposit.reference; const r = await api(`/wallet/admin/deposit/${state.currentApproveDeposit.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, approval_notes: notes || null }) }); const cr = r?.data?.deposit?.amount || getAmount(state.currentApproveDeposit); toast(`Wallet credited — ${fmtMoney(cr)}`, 'success'); removeAlertForItem('deposit', did); state.depositApprovePending = false; $('#approveDepositModal').classList.remove('active'); state.currentApproveDeposit = null; resetDAB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositApprovePending = false; } }
   window.submitApproveDeposit = submitApproveDeposit;
-  function openRejectDepositModal(id) { const d = (state.deposits || []).find(x => String(x.id) === String(id)); if (!d) return; state.currentRejectDeposit = d; stopAlarm(); $('#rejectDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name || d.name || '—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">+${fmtMoney(getAmount(d))}</span></div>`; $('#rejectDepositReason').value = ''; resetDRB(); $('#rejectDepositModal').classList.add('active'); }
+  function openRejectDepositModal(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; state.currentRejectDeposit = d; stopAlarm(); $('#rejectDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">+${fmtMoney(getAmount(d))}</span></div>`; $('#rejectDepositReason').value = ''; resetDRB(); $('#rejectDepositModal').classList.add('active'); }
   window.openRejectDepositModal = openRejectDepositModal;
   function resetDRB() { state.depositRejectPending = false; const b = $('#rejectDepositBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-ban"></i> Reject'; } const c = $('#rejectDepositCancelBtn'); if (c) c.disabled = false; }
   function closeRejectDepositModal() { if (state.depositRejectPending) return; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); }
@@ -2102,6 +1996,7 @@ button{font-family:inherit}
   async function submitRejectDeposit() { if (!state.currentRejectDeposit || state.depositRejectPending) return; stopAlarm(); const r = $('#rejectDepositReason').value.trim(); if (r.length < 5) { toast('Please give a reason', 'error'); return; } state.depositRejectPending = true; const b = $('#rejectDepositBtn'); const c = $('#rejectDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting…'; if (c) c.disabled = true; try { const did = state.currentRejectDeposit.id || state.currentRejectDeposit.reference; await api(`/wallet/admin/deposit/${state.currentRejectDeposit.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Deposit rejected', 'error'); removeAlertForItem('deposit', did); state.depositRejectPending = false; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositRejectPending = false; } }
   window.submitRejectDeposit = submitRejectDeposit;
 
+  /* MANUAL FUND */
   let fundSearchSeq = 0;
   function resetFundTab() {
     state.fundUser = null;
@@ -2184,22 +2079,25 @@ button{font-family:inherit}
   }
   window.submitManualDebit = submitManualDebit;
 
-  async function loadArchived(page = 1) { const q = ($('#archSearch')?.value || '').trim(); const uid = state.filters.archived.userId; const params = new URLSearchParams({ page, limit: state.archived.perPage }); if (q) params.set('q', q); if (uid) params.set('user_id', uid); const c = $('#archivedList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api(`/admin/transactions/archived?${params}`); const items = r.data?.items || []; state.archived.items = items; state.archived.page = r.data?.page || 1; state.archived.total = r.data?.total || 0; if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-box-archive"></i></div><div class="title">No archived transactions</div><div class="desc">Nothing has been archived yet.</div></div>`; const p = $('#archivedPagination'); if (p) p.style.display = 'none'; return; } c.innerHTML = items.map(t => { const when = new Date(t.original_created_at || t.created_at).toLocaleString('en-NG'); const isC = String(t.direction || '').toUpperCase() === 'CREDIT'; const st = getStatus(t); return `<div class="row-item static"><div class="row-avatar ${kindAvatarClass(t)}">${kindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${esc(t.description || t.type || 'Transaction')}</div><div class="row-sub"><span>#${t.user_id}</span><span class="dot"></span><span class="ref">${esc(t.reference || '—')}</span><span class="dot"></span><span>${esc(when)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount ${isC ? 'credit' : 'debit'}">${isC ? '+' : '−'}${fmtMoney(getAmount(t))}</div></div></div>`; }).join(''); renderPager('archivedPagination', state.archived.page, state.archived.total, state.archived.perPage, 'archived'); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-box-archive"></i></div><div class="title">Archive empty or unavailable</div><div class="desc">${esc(e.message || 'The archive service did not respond.')}</div><button class="action-btn" onclick="loadArchived(1)"><i class="fas fa-rotate"></i> Retry</button></div>`; } }
+  /* ARCHIVED */
+  async function loadArchived(page = 1) { const q = ($('#archSearch')?.value || '').trim(); const uid = state.filters.archived.userId; const params = new URLSearchParams({ page, limit: state.archived.perPage }); if (q) params.set('q', q); if (uid) params.set('user_id', uid); const c = $('#archivedList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api(`/admin/transactions/archived?${params}`); const items = r.data?.items || []; state.archived.items = items; state.archived.page = r.data?.page || 1; state.archived.total = r.data?.total || 0; if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-box-archive"></i></div><div class="title">No archived transactions</div><div class="desc">Nothing has been archived yet.</div></div>`; const p = $('#archivedPagination'); if (p) p.style.display = 'none'; return; } c.innerHTML = items.map(t => { const when = new Date(t.original_created_at || t.created_at).toLocaleString('en-NG'); const isC = String(t.direction||'').toUpperCase() === 'CREDIT'; const st = getStatus(t); return `<div class="row-item static"><div class="row-avatar ${kindAvatarClass(t)}">${kindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${esc(t.description || t.type || 'Transaction')}</div><div class="row-sub"><span>#${t.user_id}</span><span class="dot"></span><span class="ref">${esc(t.reference || '—')}</span><span class="dot"></span><span>${esc(when)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount ${isC?'credit':'debit'}">${isC?'+':'−'}${fmtMoney(getAmount(t))}</div></div></div>`; }).join(''); renderPager('archivedPagination', state.archived.page, state.archived.total, state.archived.perPage, 'archived'); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-box-archive"></i></div><div class="title">Archive empty or unavailable</div><div class="desc">${esc(e.message || 'The archive service did not respond.')}</div><button class="action-btn" onclick="loadArchived(1)"><i class="fas fa-rotate"></i> Retry</button></div>`; } }
   window.loadArchived = loadArchived;
   let archTimer;
   function onArchiveSearchInput() { const i = document.getElementById('archSearch'); const c = document.getElementById('archSearchClear'); if (i && c) c.classList.toggle('visible', i.value.length > 0); clearTimeout(archTimer); archTimer = setTimeout(() => loadArchived(1), 400); }
   window.onArchiveSearchInput = onArchiveSearchInput;
-  function clearArchSearch() { const i = document.getElementById('archSearch'); if (i) { i.value = ''; i.focus(); } const c = document.getElementById('archSearchClear'); if (c) c.classList.remove('visible'); onArchiveSearchInput(); }
+  function clearArchSearch() { const i = document.getElementById('archSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('archSearchClear'); if (c) c.classList.remove('visible'); onArchiveSearchInput(); }
   window.clearArchSearch = clearArchSearch;
   async function triggerArchiveRun() { if (!confirm('Run the archive now?')) return; try { const r = await api('/admin/transactions/archive', { method: 'POST' }); const d = r.data || {}; toast(`✅ Archived ${d.archived || 0} rows`, 'success'); loadArchived(1); } catch (e) { toast(e.message, 'error'); } }
   window.triggerArchiveRun = triggerArchiveRun;
 
+  /* MISMATCHES */
   async function loadMismatches() { const c = $('#mismatchesList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api('/admin/mismatches?resolved=false&limit=100'); const items = r.data?.mismatches || []; const cnt = document.getElementById('mismatchesCount'); if (cnt) cnt.textContent = `${items.length} open`; const b = document.getElementById('sidebarMismatchCount'); if (b) b.textContent = items.length; const db = document.getElementById('drawerMismatchCount'); if (db) db.textContent = items.length; if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">No open mismatches</div><div class="desc">Your audit is clean 🎉</div></div>`; return; } c.innerHTML = items.map(m => { const sev = m.severity === 'CRITICAL' ? 'failed' : 'pending'; return `<div class="row-item static"><div class="row-avatar txn-other"><i class="fas fa-triangle-exclamation" style="font-size:12px;color:#fff"></i></div><div class="row-main"><div class="row-title">${esc(m.reference)}</div><div class="row-sub"><span class="ref">User #${m.user_id}</span><span class="dot"></span><span class="status ${sev}">${esc(m.severity)}</span></div></div><div class="row-right"><div class="row-amount">${fmtMoney(m.amount)}</div><div class="row-actions"><button class="approve" onclick="resolveMismatch(${m.id})"><i class="fas fa-check"></i></button></div></div></div>`; }).join(''); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-exclamation"></i></div><div class="title">Could not load</div><div class="desc">${esc(e.message)}</div></div>`; } }
   window.loadMismatches = loadMismatches;
   async function resolveMismatch(id) { const note = prompt('Note (optional):') || 'Reviewed by admin'; try { await api(`/admin/mismatches/${id}/resolve`, { method: 'POST', body: JSON.stringify({ note }) }); toast('Mismatch resolved', 'success'); loadMismatches(); } catch (e) { toast(e.message, 'error'); } }
   window.resolveMismatch = resolveMismatch;
 
-  async function loadDrift() { const c = $('#driftList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api('/admin/wallet/drift'); const items = r.data?.drift || []; const total = r.data?.total_wallets ?? null; const td = items.reduce((a, d) => a + Math.abs(Number(d.drift) || 0), 0); const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('driftTotal', total != null ? Number(total).toLocaleString() : '—'); s('driftInSync', total != null ? Math.max(0, Number(total) - items.length).toLocaleString() : '—'); s('driftOutOfSync', items.length.toLocaleString()); s('driftTotalAmount', fmtMoney(td, true)); s('driftCount', items.length ? `${items.length} wallet${items.length === 1 ? '' : 's'} out of sync` : 'All wallets balanced'); if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">Every wallet is in sync</div><div class="desc">Stored balances match the ledger.</div></div>`; return; } c.innerHTML = items.slice().sort((a, b) => Math.abs(Number(b.drift) || 0) - Math.abs(Number(a.drift) || 0)).map(d => { const drift = Number(d.drift) || 0; const abs = Math.abs(drift); const sev = abs >= 10000 ? 'critical' : abs >= 1000 ? 'major' : 'minor'; const email = d.user_email || d.user_phone || `User #${d.user_id}`; const ini = String(email).charAt(0).toUpperCase(); return `<div class="drift-row"><div class="drift-user"><div class="drift-user-avatar">${esc(ini)}</div><div><div class="drift-user-name">${esc(email)}</div><div class="drift-user-id">ID #${esc(String(d.user_id))}</div></div></div><div class="drift-cell">${fmtMoney(d.wallet_balance)}<span class="drift-sub">Wallet</span></div><div class="drift-cell">${fmtMoney(d.expected_balance)}<span class="drift-sub">Expected</span></div><div class="drift-cell">${fmtMoney(d.ledger_balance)}<span class="drift-sub">Ledger</span></div><div class="drift-delta ${drift >= 0 ? 'positive' : 'negative'}">${drift >= 0 ? '+' : '−'}${fmtMoney(abs)}</div><span class="drift-sev ${sev}">${sev}</span></div>`; }).join(''); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-exclamation"></i></div><div class="title">Could not load</div><div class="desc">${esc(e.message)}</div></div>`; } }
+  /* DRIFT */
+  async function loadDrift() { const c = $('#driftList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api('/admin/wallet/drift'); const items = r.data?.drift || []; const total = r.data?.total_wallets ?? null; const td = items.reduce((a,d) => a+Math.abs(Number(d.drift)||0),0); const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('driftTotal', total != null ? Number(total).toLocaleString() : '—'); s('driftInSync', total != null ? Math.max(0, Number(total)-items.length).toLocaleString() : '—'); s('driftOutOfSync', items.length.toLocaleString()); s('driftTotalAmount', fmtMoney(td, true)); s('driftCount', items.length ? `${items.length} wallet${items.length===1?'':'s'} out of sync` : 'All wallets balanced'); if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">Every wallet is in sync</div><div class="desc">Stored balances match the ledger.</div></div>`; return; } c.innerHTML = items.slice().sort((a,b) => Math.abs(Number(b.drift)||0)-Math.abs(Number(a.drift)||0)).map(d => { const drift = Number(d.drift)||0; const abs = Math.abs(drift); const sev = abs >= 10000 ? 'critical' : abs >= 1000 ? 'major' : 'minor'; const email = d.user_email || d.user_phone || `User #${d.user_id}`; const ini = String(email).charAt(0).toUpperCase(); return `<div class="drift-row"><div class="drift-user"><div class="drift-user-avatar">${esc(ini)}</div><div><div class="drift-user-name">${esc(email)}</div><div class="drift-user-id">ID #${esc(String(d.user_id))}</div></div></div><div class="drift-cell">${fmtMoney(d.wallet_balance)}<span class="drift-sub">Wallet</span></div><div class="drift-cell">${fmtMoney(d.expected_balance)}<span class="drift-sub">Expected</span></div><div class="drift-cell">${fmtMoney(d.ledger_balance)}<span class="drift-sub">Ledger</span></div><div class="drift-delta ${drift>=0?'positive':'negative'}">${drift>=0?'+':'−'}${fmtMoney(abs)}</div><span class="drift-sev ${sev}">${sev}</span></div>`; }).join(''); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-exclamation"></i></div><div class="title">Could not load</div><div class="desc">${esc(e.message)}</div></div>`; } }
   window.loadDrift = loadDrift;
 
   async function refreshAll(silent = false) {
@@ -2228,6 +2126,9 @@ button{font-family:inherit}
   }
   window.refreshAll = refreshAll;
 
+  /* ============================================================
+     AUDIO
+     ============================================================ */
   function buildIphoneChimeWavBlob() {
     const sr = 22050;
     const dur = 1.6;
@@ -2299,7 +2200,7 @@ button{font-family:inherit}
       else { chimeAudioEl.pause(); chimeAudioEl.currentTime = 0; chimeAudioEl.muted = false; audioUnlocked = true; }
     } catch (_) {}
   }
-  ['click', 'touchstart', 'keydown', 'pointerdown', 'scroll'].forEach(ev => window.addEventListener(ev, unlockAudio, { passive: true }));
+  ['click','touchstart','keydown','pointerdown','scroll'].forEach(ev => window.addEventListener(ev, unlockAudio, { passive: true }));
 
   let alarmLoop = null, alarmStop = null, alarmActive = false;
   function playIphoneAlert(test = false) {
@@ -2309,8 +2210,8 @@ button{font-family:inherit}
       chimeAudioEl.currentTime = 0;
       const p = chimeAudioEl.play();
       if (p && p.catch) p.catch(() => {});
-      setTimeout(() => { try { chimeAudioEl.currentTime = 0; chimeAudioEl.play().catch(() => {}); } catch (_) {} }, 1100);
-      setTimeout(() => { try { chimeAudioEl.currentTime = 0; chimeAudioEl.play().catch(() => {}); } catch (_) {} }, 2200);
+      setTimeout(() => { try { chimeAudioEl.currentTime = 0; chimeAudioEl.play().catch(()=>{}); } catch (_) {} }, 1100);
+      setTimeout(() => { try { chimeAudioEl.currentTime = 0; chimeAudioEl.play().catch(()=>{}); } catch (_) {} }, 2200);
     } catch (e) { console.warn('[Alert] play failed:', e); }
   }
   function stopAlarm() {
@@ -2326,9 +2227,9 @@ button{font-family:inherit}
       chimeAudioEl.volume = 1.0; chimeAudioEl.muted = false;
       const p = chimeAudioEl.play();
       if (p && p.then) {
-        p.then(() => { chimeAudioEl.pause(); chimeAudioEl.currentTime = 0; state.adminSoundEnabled = true; try { localStorage.setItem('adminSoundEnabled', '1'); } catch (_) {} const ch = document.getElementById('adminSoundChip'); if (ch) { ch.classList.remove('show'); ch.classList.add('on'); ch.innerHTML = '<i class="fas fa-volume-high"></i> 🔔 iPhone alert enabled'; setTimeout(() => { ch.classList.remove('on', 'show'); }, 2400); } playIphoneAlert(true); toast('🔔 iPhone alert sound enabled', 'success'); })
-          .catch(() => { toast('Tap the button once more to enable sound', 'error'); });
-      } else { state.adminSoundEnabled = true; try { localStorage.setItem('adminSoundEnabled', '1'); } catch (_) {} playIphoneAlert(true); toast('🔔 iPhone alert sound enabled', 'success'); const ch = document.getElementById('adminSoundChip'); if (ch) ch.classList.add('on'); }
+        p.then(() => { chimeAudioEl.pause(); chimeAudioEl.currentTime = 0; state.adminSoundEnabled = true; try { localStorage.setItem('adminSoundEnabled','1'); } catch (_) {} const ch = document.getElementById('adminSoundChip'); if (ch) { ch.classList.remove('show'); ch.classList.add('on'); ch.innerHTML = '<i class="fas fa-volume-high"></i> 🔔 iPhone alert enabled'; setTimeout(() => { ch.classList.remove('on','show'); }, 2400); } playIphoneAlert(true); toast('🔔 iPhone alert sound enabled', 'success'); })
+         .catch(() => { toast('Tap the button once more to enable sound', 'error'); });
+      } else { state.adminSoundEnabled = true; try { localStorage.setItem('adminSoundEnabled','1'); } catch (_) {} playIphoneAlert(true); toast('🔔 iPhone alert sound enabled', 'success'); const ch = document.getElementById('adminSoundChip'); if (ch) ch.classList.add('on'); }
     } catch (e) { toast('Could not enable sound', 'error'); }
   }
   window.enableAdminSound = enableAdminSound;
@@ -2342,7 +2243,7 @@ button{font-family:inherit}
     function paintFavicon(count) {
       if (count <= 0) { let l = document.querySelector('link[rel="icon"]'); if (l) l.href = ORIGINAL_ICON; return; }
       const img = new Image(); img.crossOrigin = 'anonymous';
-      img.onload = () => { const c = document.createElement('canvas'); c.width = 64; c.height = 64; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 64, 64); ctx.beginPath(); ctx.arc(50, 14, 12, 0, Math.PI * 2); ctx.fillStyle = '#ef4444'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.stroke(); if (count > 0) { ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(count > 9 ? '9+' : String(count), 50, 15); } let l = document.querySelector('link[rel="icon"]'); if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); } l.href = c.toDataURL('image/png'); };
+      img.onload = () => { const c = document.createElement('canvas'); c.width = 64; c.height = 64; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 64, 64); ctx.beginPath(); ctx.arc(50, 14, 12, 0, Math.PI*2); ctx.fillStyle = '#ef4444'; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.stroke(); if (count > 0) { ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(count > 9 ? '9+' : String(count), 50, 15); } let l = document.querySelector('link[rel="icon"]'); if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); } l.href = c.toDataURL('image/png'); };
       img.onerror = () => {}; img.src = ORIGINAL_ICON;
     }
     function paintTitle(count) { document.title = count > 0 ? `(${count}) ${TITLE_BASE}` : TITLE_BASE; }
@@ -2358,7 +2259,7 @@ button{font-family:inherit}
   })();
   window.__notifyAdmin = (type, item) => {
     const name = item.user_name || item.name || item.user_email || 'User';
-    const amt = fmtMoney(getAmount(item));
+    const amt  = fmtMoney(getAmount(item));
     const isDeposit = type === 'deposit';
     Notify.incrementUnread();
     Notify.notify(isDeposit ? '💰 New Deposit Request' : '💸 New Withdrawal Request', `${name} · ${amt} is waiting for approval.`, { type, id: item.id || item.reference || '', url: '/admin.html' });
@@ -2383,7 +2284,7 @@ button{font-family:inherit}
     playIphoneAlert(true);
     if (!alarmActive && state.adminSoundEnabled) {
       alarmActive = true;
-      const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch (_) {} alarmLoop = setTimeout(tick, 4600); };
+      const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch(_){} alarmLoop = setTimeout(tick, 4600); };
       alarmLoop = setTimeout(tick, 4600);
       alarmStop = setTimeout(() => stopAlarm(), 60000);
     }
@@ -2403,7 +2304,7 @@ button{font-family:inherit}
     if (b) b.textContent = c > 99 ? '99+' : String(c);
     if (btn) btn.classList.toggle('has-alert', c > 0);
     if (!c) { l.innerHTML = '<div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div>'; return; }
-    l.innerHTML = state.adminAlerts.map(a => { const it = a.item || {}; const name = it.user_name || it.name || it.user_email || 'User'; const amt = fmtMoney(getAmount(it)); const isW = a.type === 'withdrawal'; const rf = it.reference || it.tx_ref || it.id || '—'; return `<div class="admin-alert-item"><div class="admin-alert-icon ${isW ? 'withdraw' : ''}"><i class="fas ${isW ? 'fa-arrow-up' : 'fa-arrow-down'}"></i></div><div><div class="aa-title">${isW ? 'Withdrawal' : 'Deposit'} awaiting approval</div><div class="aa-sub">${esc(name)} · Ref ${esc(String(rf))}</div><div class="aa-actions"><button class="review" onclick="reviewAlert('${esc(a.id)}')"><i class="fas fa-eye"></i> Review</button><button onclick="dismissAlert('${esc(a.id)}')"><i class="fas fa-check"></i> Dismiss</button></div></div><div class="aa-amount">${isW ? '-' : '+'}${amt}</div></div>`; }).join('');
+    l.innerHTML = state.adminAlerts.map(a => { const it = a.item || {}; const name = it.user_name || it.name || it.user_email || 'User'; const amt = fmtMoney(getAmount(it)); const isW = a.type === 'withdrawal'; const rf = it.reference || it.tx_ref || it.id || '—'; return `<div class="admin-alert-item"><div class="admin-alert-icon ${isW?'withdraw':''}"><i class="fas ${isW?'fa-arrow-up':'fa-arrow-down'}"></i></div><div><div class="aa-title">${isW?'Withdrawal':'Deposit'} awaiting approval</div><div class="aa-sub">${esc(name)} · Ref ${esc(String(rf))}</div><div class="aa-actions"><button class="review" onclick="reviewAlert('${esc(a.id)}')"><i class="fas fa-eye"></i> Review</button><button onclick="dismissAlert('${esc(a.id)}')"><i class="fas fa-check"></i> Dismiss</button></div></div><div class="aa-amount">${isW?'-':'+'}${amt}</div></div>`; }).join('');
   }
   window.renderAdminAlerts = renderAdminAlerts;
   function toggleAdminAlerts() { const p = document.getElementById('adminAlertPanel'); if (!p) return; const o = p.classList.toggle('open'); p.setAttribute('aria-hidden', String(!o)); if (o) { renderAdminAlerts(); stopAlarm(); hideAlarmBanner(); } }
@@ -2415,12 +2316,12 @@ button{font-family:inherit}
   window.reviewAdminAlert = reviewAlert;
 
   function detectNewApprovals() {
-    const d = (state.deposits || []).filter(x => getStatus(x) === 'pending');
-    const w = (state.withdrawals || []).filter(x => getStatus(x) === 'pending');
+    const d = (state.deposits||[]).filter(x => getStatus(x) === 'pending');
+    const w = (state.withdrawals||[]).filter(x => getStatus(x) === 'pending');
     d.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenDepositIds.has(id)) { state.seenDepositIds.add(id); if (state.notificationBootstrapped) addAlert('deposit', x); } });
     w.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenWithdrawalIds.has(id)) { state.seenWithdrawalIds.add(id); if (state.notificationBootstrapped) addAlert('withdrawal', x); } });
   }
-  function requestNotifPermission() { if (!('Notification' in window) || Notification.permission !== 'default') return; try { setTimeout(() => { Notification.requestPermission().catch(() => {}); }, 1500); } catch (_) {} }
+  function requestNotifPermission() { if (!('Notification' in window) || Notification.permission !== 'default') return; try { setTimeout(() => { Notification.requestPermission().catch(()=>{}); }, 1500); } catch (_) {} }
 
   requestNotifPermission();
   renderAdminAlerts();
@@ -2461,12 +2362,12 @@ button{font-family:inherit}
         if (state.adminSoundEnabled) {
           if (alarmLoop) clearTimeout(alarmLoop);
           alarmActive = true;
-          const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch (_) {} alarmLoop = setTimeout(tick, 4600); };
+          const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch(_){} alarmLoop = setTimeout(tick, 4600); };
           alarmLoop = setTimeout(tick, 4600);
           if (alarmStop) clearTimeout(alarmStop);
           alarmStop = setTimeout(() => stopAlarm(), 60000);
         }
-        newAlerts.forEach(a => { try { window.__notifyAdmin?.(a.type, a.item); } catch (_) {} });
+        newAlerts.forEach(a => { try { window.__notifyAdmin?.(a.type, a.item); } catch(_){} });
         toast(`${newAlerts.length} new pending request${newAlerts.length > 1 ? 's' : ''} detected`, 'info');
       }
       updateOverview();
@@ -2485,13 +2386,13 @@ button{font-family:inherit}
   });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      if (state.activeTab === 'users' && (state.userQuery || '').length > 0) { clearUserSearch(); return; }
-      if (state.activeTab === 'transactions' && ($('#txnSearch')?.value || '').length > 0) { clearTxnSearch(); return; }
+      if (state.activeTab === 'users' && (state.userQuery||'').length > 0) { clearUserSearch(); return; }
+      if (state.activeTab === 'transactions' && ($('#txnSearch')?.value||'').length > 0) { clearTxnSearch(); return; }
       closeFilterSheet(); closeViewModal(); closeDatashopWallet(); closeTxnModal(); closeApproveModal(); closeRejectModal(); closeApproveDepositModal(); closeRejectDepositModal(); closeDrawer(); hideAlarmBanner(); stopAlarm();
     }
   });
 
-  (function setupFilterCounts() { ['transactions', 'deposits', 'withdrawals', 'users', 'archived'].forEach(t => updateFilterCount(t)); })();
+  (function setupFilterCounts() { ['transactions','deposits','withdrawals','users','archived'].forEach(t => updateFilterCount(t)); })();
 
   async function init() {
     wireRangePills();
@@ -2516,7 +2417,7 @@ button{font-family:inherit}
           state.adminAlerts.push({ id, type: 'withdrawal', item: x, createdAt: Date.now() });
         }
       });
-      state.adminAlerts.sort((a, b) => b.createdAt - a.createdAt);
+      state.adminAlerts.sort((a,b) => b.createdAt - a.createdAt);
       renderAdminAlerts();
     })();
     setInterval(() => refreshAll(true), 3000);
