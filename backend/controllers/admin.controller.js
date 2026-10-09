@@ -262,13 +262,18 @@ export async function getStats(req, res) {
 
 /* ============================================================
    ⭐ GET /api/v1/admin/datashop/wallet
-   Fetches LIVE Datashop balance from Datashop API + local funding history.
+   Fetches LIVE Datashop balance + local funding history.
    ============================================================ */
 export async function getDatashopWallet(req, res) {
-  // Safe fallback shape (always returned on any failure)
   const fallback = {
     success: true,
-    data: { balance: 0, total_funded: 0, total_spent: 0, last_funding_at: null, source: 'fallback' },
+    data: {
+      balance: 0,
+      total_funded: 0,
+      total_spent: 0,
+      last_funding_at: null,
+      source: 'fallback',
+    },
   };
 
   try {
@@ -306,7 +311,7 @@ export async function getDatashopWallet(req, res) {
     if (apiKey) {
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+        const timeout = setTimeout(() => controller.abort(), 8000);
 
         const resp = await fetch(endpoint, {
           method: 'GET',
@@ -407,7 +412,6 @@ export async function manualFund(req, res) {
       source,
     });
 
-    // ⚡ Notify every connected admin dashboard in real-time
     try {
       adminEventBus.emitAdmin('admin-funded', {
         kind:   'manual_fund',
