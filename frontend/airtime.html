@@ -9,10 +9,196 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Font Awesome for real provider icons (simple integration) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/airtime.css">
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/instant-nav.css">
+
+  <style>
+    /* ---- Inline enhancements for real logos & recent phone store ---- */
+    /* Real provider logo images (using CDN links for demonstration; fallback to FA icons) */
+    .provider-logo-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #fff;
+      padding: 6px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      flex-shrink: 0;
+    }
+    .provider-logo-img.small {
+      width: 38px;
+      height: 38px;
+      padding: 5px;
+    }
+    .provider-logo-img.tiny {
+      width: 34px;
+      height: 34px;
+      padding: 4px;
+    }
+
+    /* fallback icon styles if image fails */
+    .provider-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-weight: 900;
+      font-size: 12px;
+      color: #fff;
+      flex-shrink: 0;
+      background: #888;
+    }
+    .provider-fallback.mtn    { background: #ffcb05; color: #0a0a0a; }
+    .provider-fallback.airtel { background: #e60000; }
+    .provider-fallback.glo    { background: #00a651; }
+    .provider-fallback.t2     { background: #f26522; }
+
+    /* Recent phone store — make it beautiful & professional */
+    .phone-dropdown {
+      max-height: 260px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.12), 0 4px 10px -4px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.98);
+    }
+    .phone-dropdown-item {
+      padding: 12px 16px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #1f2937;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.18s, color 0.18s;
+    }
+    .phone-dropdown-item:hover {
+      background: #f4faf7;
+      color: #0a4534;
+    }
+    .phone-dropdown-item:active {
+      background: #e8f3ed;
+      color: #0a4534;
+    }
+    .phone-dropdown-item .recent-network-badge {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .phone-dropdown-item .recent-network-badge.mtn    { background: #ffcb05; }
+    .phone-dropdown-item .recent-network-badge.airtel { background: #e60000; }
+    .phone-dropdown-item .recent-network-badge.glo    { background: #00a651; }
+    .phone-dropdown-item .recent-network-badge.t2     { background: #f26522; }
+
+    .phone-dropdown-item .recent-phone {
+      flex: 1;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+    .phone-dropdown-item .recent-tag {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef2f0;
+      color: #5b7a6b;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Category & bundle card logo adjustment */
+    .cat-logo img,
+    .bundle-logo img,
+    .sb-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      padding: 4px;
+      background: #fff;
+    }
+    .cat-logo,
+    .bundle-logo,
+    .sb-logo {
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    /* Professional polish for category cards */
+    .category-card {
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .cat-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .cat-sub {
+      font-size: 11.5px;
+    }
+
+    /* Provider name in recent store */
+    .recent-provider-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-left: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Dark mode tweaks for recent dropdown */
+    body.dark .phone-dropdown,
+    .theme-dark .phone-dropdown {
+      background: #1a1f1c;
+      border-color: rgba(255,255,255,0.06);
+    }
+    body.dark .phone-dropdown-item,
+    .theme-dark .phone-dropdown-item {
+      color: #d1d7d4;
+      border-bottom-color: rgba(255,255,255,0.04);
+    }
+    body.dark .phone-dropdown-item:hover,
+    .theme-dark .phone-dropdown-item:hover {
+      background: #232d27;
+      color: #b0f0c0;
+    }
+    body.dark .phone-dropdown-item .recent-tag,
+    .theme-dark .phone-dropdown-item .recent-tag {
+      background: #1f2a23;
+      color: #9aa3a0;
+    }
+    body.dark .recent-provider-name,
+    .theme-dark .recent-provider-name {
+      color: #9aa3a0;
+    }
+
+    /* Better logo sizing for T2 (it's a text logo) */
+    .cat-logo .t2-logo-text,
+    .bundle-logo .t2-logo-text,
+    .sb-logo .t2-logo-text {
+      font-weight: 900;
+      font-size: 14px;
+      color: #f26522;
+      background: #fff;
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body>
 
@@ -352,13 +538,9 @@
   </div>
 
   <!-- ═══════════ SCRIPTS — order matters ═══════════ -->
-  <!-- 1. auth-guard first: no token → /login.html, no PIN → /pin.html -->
   <script src="/js/auth-guard.js"></script>
-
-  <!-- 2. api base -->
   <script src="/js/api.js"></script>
 
-  <!-- 3. page logic -->
   <script type="module" src="/js/components.js"></script>
   <script type="module" src="/js/airtime.js"></script>
   <script src="/js/instant-nav.js?v=4" defer></script>
@@ -451,6 +633,340 @@
       });
 
       schedule();
+    })();
+  </script>
+
+  <!-- ═══════════ INLINE SCRIPT FOR REAL LOGOS & RECENT PHONE STORE ═══════════ -->
+  <script>
+    (function() {
+      // ------------------------------------------------------------
+      // 1. REAL PROVIDER LOGOS – injecting real images into existing cards
+      // ------------------------------------------------------------
+      // We'll use MutationObserver or run after page load to find logo containers
+      // and replace them with <img> tags. This avoids rewriting all JS.
+      
+      const PROVIDER_LOGOS = {
+        mtn: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/MTN_Logo.svg/512px-MTN_Logo.svg.png',
+        airtel: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Airtel_logo.svg/512px-Airtel_logo.svg.png',
+        glo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Globacom_logo.svg/512px-Globacom_logo.svg.png',
+        t2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/9mobile_logo.svg/512px-9mobile_logo.svg.png' // T2 (9mobile) logo
+      };
+
+      // Fallback for T2 if 9mobile logo doesn't load — use a styled text version
+      const T2_FALLBACK_HTML = '<div class="t2-logo-text">T2</div>';
+
+      function replaceWithLogo(container, provider, sizeClass = '') {
+        if (!container || !provider) return;
+        // If already an image, skip
+        if (container.querySelector('img')) return;
+        // If we already replaced, skip
+        if (container.dataset.logoReplaced === 'true') return;
+
+        const img = document.createElement('img');
+        img.src = PROVIDER_LOGOS[provider] || '';
+        img.alt = provider + ' logo';
+        img.className = 'provider-logo-img ' + sizeClass;
+        img.onerror = function() {
+          // fallback: keep original text or use T2 text
+          if (provider === 't2') {
+            container.innerHTML = T2_FALLBACK_HTML;
+          } else {
+            // revert to text initials
+            const initials = provider === 'mtn' ? 'MTN' : provider === 'airtel' ? 'AIR' : provider === 'glo' ? 'GLO' : 'T2';
+            container.innerHTML = initials;
+            container.className = container.className.replace(/provider-logo-img/g, '') + ' provider-fallback ' + provider;
+          }
+          container.dataset.logoReplaced = 'true';
+        };
+        img.onload = function() {
+          container.innerHTML = '';
+          container.appendChild(img);
+          container.dataset.logoReplaced = 'true';
+        };
+        // Clear and append
+        container.innerHTML = '';
+        container.appendChild(img);
+        container.dataset.logoReplaced = 'true';
+      }
+
+      function upgradeLogos() {
+        // Category cards
+        document.querySelectorAll('.cat-logo').forEach(el => {
+          const card = el.closest('.category-card');
+          if (!card) return;
+          const provider = card.dataset.provider || 
+                           (el.className.match(/\.(mtn|airtel|glo|t2)/) ? el.className.match(/\.(mtn|airtel|glo|t2)/)[1] : null);
+          if (provider) replaceWithLogo(el, provider, '');
+        });
+
+        // Bundle cards
+        document.querySelectorAll('.bundle-logo').forEach(el => {
+          const card = el.closest('.bundle-card');
+          if (!card) return;
+          const provider = card.dataset.provider || 
+                           (el.className.match(/\.(mtn|airtel|glo|t2)/) ? el.className.match(/\.(mtn|airtel|glo|t2)/)[1] : null);
+          if (provider) replaceWithLogo(el, provider, 'small');
+        });
+
+        // Selected bundle cards (sb-logo)
+        document.querySelectorAll('.sb-logo').forEach(el => {
+          const card = el.closest('.selected-bundle');
+          if (!card) return;
+          const provider = card.dataset.provider || 
+                           (el.className.match(/\.(mtn|airtel|glo|t2)/) ? el.className.match(/\.(mtn|airtel|glo|t2)/)[1] : null);
+          if (provider) replaceWithLogo(el, provider, 'tiny');
+        });
+      }
+
+      // ------------------------------------------------------------
+      // 2. RECENT PHONE STORE – elegant & professional
+      // ------------------------------------------------------------
+      // We'll enhance the existing dropdown list by storing recent numbers
+      // with provider detection and nice UI.
+
+      const STORAGE_KEY = 'shatova_recent_phones';
+
+      function getRecentPhones() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return [];
+      }
+
+      function saveRecentPhone(phone, provider) {
+        if (!phone || phone.length < 11) return;
+        let recent = getRecentPhones();
+        // Remove if exists
+        recent = recent.filter(item => item.phone !== phone);
+        // Add to front
+        recent.unshift({ phone, provider, timestamp: Date.now() });
+        // Keep max 8
+        recent = recent.slice(0, 8);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(recent));
+        } catch (e) {}
+      }
+
+      function renderRecentDropdown() {
+        const dropdown = document.getElementById('recentRecipients');
+        const list = document.getElementById('rrList');
+        if (!dropdown || !list) return;
+
+        const recent = getRecentPhones();
+        if (recent.length === 0) {
+          dropdown.classList.add('hidden');
+          return;
+        }
+
+        // Only show if input is focused and empty or partially typed
+        const input = document.getElementById('phoneInput');
+        if (!input) return;
+        const val = input.value.trim();
+        // Show if input is empty or starts with digits but not complete
+        if (val.length >= 11) {
+          dropdown.classList.add('hidden');
+          return;
+        }
+
+        // Filter by what user typed
+        let filtered = recent;
+        if (val.length > 0) {
+          filtered = recent.filter(item => item.phone.startsWith(val));
+        }
+
+        if (filtered.length === 0) {
+          dropdown.classList.add('hidden');
+          return;
+        }
+
+        list.innerHTML = '';
+        filtered.forEach(item => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'phone-dropdown-item';
+          btn.dataset.phone = item.phone;
+
+          // Network badge dot
+          const dot = document.createElement('span');
+          dot.className = 'recent-network-badge ' + (item.provider || 'mtn');
+          
+          const phoneSpan = document.createElement('span');
+          phoneSpan.className = 'recent-phone';
+          phoneSpan.textContent = item.phone;
+
+          const tag = document.createElement('span');
+          tag.className = 'recent-tag';
+          tag.textContent = item.provider ? item.provider.toUpperCase() : 'RECENT';
+
+          btn.appendChild(dot);
+          btn.appendChild(phoneSpan);
+          btn.appendChild(tag);
+
+          btn.addEventListener('click', function() {
+            input.value = item.phone;
+            // Trigger input event to detect network
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            dropdown.classList.add('hidden');
+            // Save again to bump
+            saveRecentPhone(item.phone, item.provider);
+          });
+
+          list.appendChild(btn);
+        });
+
+        // Add a subtle header
+        if (!list.querySelector('.recent-header')) {
+          const header = document.createElement('div');
+          header.className = 'recent-header';
+          header.style.cssText = 'padding:10px 16px 6px;font-size:10px;font-weight:700;color:#9aa3a0;letter-spacing:0.6px;text-transform:uppercase;';
+          header.textContent = 'Recent numbers';
+          list.insertBefore(header, list.firstChild);
+        }
+
+        dropdown.classList.remove('hidden');
+      }
+
+      // Attach to phone input
+      function initRecentStore() {
+        const input = document.getElementById('phoneInput');
+        const dropdown = document.getElementById('recentRecipients');
+        if (!input || !dropdown) return;
+
+        // Show on focus
+        input.addEventListener('focus', function() {
+          renderRecentDropdown();
+        });
+
+        // Hide on blur (with delay to allow click)
+        input.addEventListener('blur', function() {
+          setTimeout(() => {
+            dropdown.classList.add('hidden');
+          }, 200);
+        });
+
+        // Filter as user types
+        input.addEventListener('input', function() {
+          renderRecentDropdown();
+        });
+
+        // Hide on escape
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            dropdown.classList.add('hidden');
+          }
+        });
+
+        // Click outside closes
+        document.addEventListener('click', function(e) {
+          if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
+
+        // Save recent when a valid phone is entered & network detected
+        // We'll hook into the existing detection by observing the network badge
+        const networkBadge = document.getElementById('networkBadge');
+        if (networkBadge) {
+          const badgeObserver = new MutationObserver(function() {
+            const badgeText = networkBadge.querySelector('.nb-text');
+            if (badgeText && !networkBadge.classList.contains('hidden')) {
+              const phone = input.value.trim();
+              if (phone.length === 11) {
+                // Try to determine provider from badge text or class
+                let provider = 'mtn';
+                const txt = badgeText.textContent.toLowerCase();
+                if (txt.includes('mtn')) provider = 'mtn';
+                else if (txt.includes('airtel')) provider = 'airtel';
+                else if (txt.includes('glo')) provider = 'glo';
+                else if (txt.includes('t2') || txt.includes('9mobile')) provider = 't2';
+                saveRecentPhone(phone, provider);
+              }
+            }
+          });
+          badgeObserver.observe(networkBadge, { attributes: true, childList: true, subtree: true });
+        }
+
+        // Also save on continue button click (if valid)
+        const continueBtn = document.getElementById('continueBtn');
+        if (continueBtn) {
+          continueBtn.addEventListener('click', function() {
+            const phone = input.value.trim();
+            if (phone.length === 11) {
+              // determine provider from badge or fallback
+              let provider = 'mtn';
+              const badge = document.getElementById('networkBadge');
+              if (badge && !badge.classList.contains('hidden')) {
+                const txt = badge.textContent.toLowerCase();
+                if (txt.includes('mtn')) provider = 'mtn';
+                else if (txt.includes('airtel')) provider = 'airtel';
+                else if (txt.includes('glo')) provider = 'glo';
+                else if (txt.includes('t2') || txt.includes('9mobile')) provider = 't2';
+              }
+              saveRecentPhone(phone, provider);
+            }
+          });
+        }
+      }
+
+      // ------------------------------------------------------------
+      // 3. OBSERVE DOM CHANGES TO UPGRADE LOGOS (since JS renders them)
+      // ------------------------------------------------------------
+      const observer = new MutationObserver(function(mutations) {
+        let shouldUpgrade = false;
+        for (let m of mutations) {
+          if (m.addedNodes.length) {
+            for (let node of m.addedNodes) {
+              if (node.nodeType === 1) {
+                if (node.classList && (node.classList.contains('category-card') || 
+                    node.classList.contains('bundle-card') || 
+                    node.classList.contains('selected-bundle'))) {
+                  shouldUpgrade = true;
+                }
+                if (node.querySelector && node.querySelector('.cat-logo, .bundle-logo, .sb-logo')) {
+                  shouldUpgrade = true;
+                }
+              }
+            }
+          }
+        }
+        if (shouldUpgrade) {
+          setTimeout(upgradeLogos, 50);
+        }
+      });
+
+      // Start observing after DOM ready
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initial upgrade
+        setTimeout(upgradeLogos, 300);
+        setTimeout(upgradeLogos, 800);
+        initRecentStore();
+
+        // Observe main containers
+        const containers = ['categoryList', 'bundlesList', 'selectedBundleCard', 'payBundleCard'];
+        containers.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            observer.observe(el, { childList: true, subtree: true });
+          }
+        });
+
+        // Also observe step changes to re-upgrade
+        const stepObserver = new MutationObserver(function() {
+          setTimeout(upgradeLogos, 100);
+        });
+        ['step-categories', 'step-bundles', 'step-checkout', 'step-pay'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) stepObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+        });
+      });
+
+      // Also re-run on load
+      window.addEventListener('load', function() {
+        setTimeout(upgradeLogos, 200);
+        setTimeout(upgradeLogos, 600);
+      });
+
     })();
   </script>
 
