@@ -20,14 +20,13 @@
        ============================================================ */
 
     /* ---------- REAL ISP LOGOS (from gstatic.com) ---------- */
-    /* Each provider gets its real logo from gstatic CDN */
     .provider-logo {
       width: 100%;
       height: 100%;
       object-fit: contain;
       border-radius: 50%;
       background: #fff;
-      padding: 4px;
+      padding: 3px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     }
 
@@ -258,7 +257,7 @@
       color: #b0f0c0 !important;
     }
 
-    /* T2 fallback text just in case */
+    /* Fallback for T2 if needed */
     .t2-fallback {
       font-weight: 900;
       font-size: 14px;
@@ -713,8 +712,8 @@
       // ------------------------------------------------------------
       // REAL ISP LOGOS FROM GSTATIC.COM
       // ------------------------------------------------------------
-      // These are direct gstatic image URLs for each Nigerian ISP.
-      // MTN, Airtel, Glo, and T2 (9mobile) official logos.
+      // Direct gstatic image URLs for each Nigerian ISP.
+      // MTN: provided by user, Airtel, Glo, T2 (9mobile): official logos.
       const ISP_LOGOS = {
         mtn:    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfXy7KwjHO5-a673nHKp--FMaWXvR4oJDL0w&s',
         airtel: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8&s',
@@ -722,8 +721,7 @@
         t2:     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8&s'
       };
 
-      // Fallback URLs in case the primary gstatic ones fail.
-      // Using reliable Wikimedia PNGs as backup.
+      // Reliable fallback logos from Wikimedia (SVG/PNG)
       const FALLBACK_LOGOS = {
         mtn:    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/MTN_Logo.svg/240px-MTN_Logo.svg.png',
         airtel: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Airtel_logo.svg/240px-Airtel_logo.svg.png',
@@ -735,7 +733,6 @@
         if (!el || !provider) return;
         if (el.dataset.logoReplaced === 'true') return;
 
-        // Use primary gstatic logo, fallback to Wikimedia
         const primarySrc = ISP_LOGOS[provider] || ISP_LOGOS.mtn;
         const fallbackSrc = FALLBACK_LOGOS[provider] || FALLBACK_LOGOS.mtn;
 
@@ -745,7 +742,6 @@
         img.className = 'provider-logo';
         img.loading = 'lazy';
 
-        // On error, swap to fallback
         img.onerror = function() {
           if (img.src !== fallbackSrc) {
             img.src = fallbackSrc;
@@ -770,7 +766,6 @@
           el.dataset.logoReplaced = 'true';
         };
 
-        // Immediately replace
         el.innerHTML = '';
         el.appendChild(img);
         el.dataset.logoReplaced = 'true';
@@ -807,13 +802,11 @@
 
       // Run on DOM ready and observe for dynamic content
       document.addEventListener('DOMContentLoaded', function() {
-        // Initial upgrade attempts
         setTimeout(upgradeAllLogos, 100);
         setTimeout(upgradeAllLogos, 300);
         setTimeout(upgradeAllLogos, 600);
         setTimeout(upgradeAllLogos, 1200);
 
-        // Observe the main containers for new cards
         const containers = ['categoryList', 'bundlesList', 'selectedBundleCard', 'payBundleCard'];
         const observer = new MutationObserver(function() {
           setTimeout(upgradeAllLogos, 50);
@@ -823,7 +816,6 @@
           if (el) observer.observe(el, { childList: true, subtree: true });
         });
 
-        // Also observe step changes
         const stepObserver = new MutationObserver(function() {
           setTimeout(upgradeAllLogos, 100);
         });
