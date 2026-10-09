@@ -9,194 +9,265 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome for real provider icons (simple integration) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/airtime.css">
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/instant-nav.css">
 
   <style>
-    /* ---- Inline enhancements for real logos & recent phone store ---- */
-    /* Real provider logo images (using CDN links for demonstration; fallback to FA icons) */
-    .provider-logo-img {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: contain;
-      background: #fff;
-      padding: 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-      flex-shrink: 0;
-    }
-    .provider-logo-img.small {
-      width: 38px;
-      height: 38px;
-      padding: 5px;
-    }
-    .provider-logo-img.tiny {
-      width: 34px;
-      height: 34px;
-      padding: 4px;
-    }
+    /* ============================================================
+       PRO ENHANCEMENTS — REAL PROVIDER LOGOS + REFINED UI
+       ============================================================ */
 
-    /* fallback icon styles if image fails */
-    .provider-fallback {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      font-weight: 900;
-      font-size: 12px;
-      color: #fff;
-      flex-shrink: 0;
-      background: #888;
-    }
-    .provider-fallback.mtn    { background: #ffcb05; color: #0a0a0a; }
-    .provider-fallback.airtel { background: #e60000; }
-    .provider-fallback.glo    { background: #00a651; }
-    .provider-fallback.t2     { background: #f26522; }
-
-    /* Recent phone store — make it beautiful & professional */
-    .phone-dropdown {
-      max-height: 260px;
-      border-radius: 16px;
-      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.12), 0 4px 10px -4px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(0, 0, 0, 0.04);
-      backdrop-filter: blur(4px);
-      background: rgba(255, 255, 255, 0.98);
-    }
-    .phone-dropdown-item {
-      padding: 12px 16px;
-      font-size: 13.5px;
-      font-weight: 500;
-      color: #1f2937;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: background 0.18s, color 0.18s;
-    }
-    .phone-dropdown-item:hover {
-      background: #f4faf7;
-      color: #0a4534;
-    }
-    .phone-dropdown-item:active {
-      background: #e8f3ed;
-      color: #0a4534;
-    }
-    .phone-dropdown-item .recent-network-badge {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .phone-dropdown-item .recent-network-badge.mtn    { background: #ffcb05; }
-    .phone-dropdown-item .recent-network-badge.airtel { background: #e60000; }
-    .phone-dropdown-item .recent-network-badge.glo    { background: #00a651; }
-    .phone-dropdown-item .recent-network-badge.t2     { background: #f26522; }
-
-    .phone-dropdown-item .recent-phone {
-      flex: 1;
-      font-weight: 500;
-      letter-spacing: 0.2px;
-    }
-    .phone-dropdown-item .recent-tag {
-      font-size: 9px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #eef2f0;
-      color: #5b7a6b;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    /* Category & bundle card logo adjustment */
-    .cat-logo img,
-    .bundle-logo img,
-    .sb-logo img {
+    /* ---------- REAL PROVIDER LOGOS (replacing text circles) ---------- */
+    /* We use gstatic favicon service for crisp, real logos */
+    .provider-logo {
       width: 100%;
       height: 100%;
       object-fit: contain;
       border-radius: 50%;
-      padding: 4px;
       background: #fff;
+      padding: 5px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     }
+
+    /* Ensure containers that held text now hold images properly */
     .cat-logo,
     .bundle-logo,
     .sb-logo {
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      background: #fff !important;
       overflow: hidden;
+      box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.04);
     }
 
-    /* Professional polish for category cards */
+    /* Slight size bump for better visibility */
+    .cat-logo {
+      width: 48px !important;
+      height: 48px !important;
+      padding: 4px !important;
+    }
+    .bundle-logo {
+      width: 44px !important;
+      height: 44px !important;
+      padding: 4px !important;
+    }
+    .sb-logo {
+      width: 42px !important;
+      height: 42px !important;
+      padding: 4px !important;
+    }
+
+    /* ---------- CARD ENHANCEMENTS — padding, shadow, border, hover ---------- */
     .category-card {
-      border-radius: 16px;
-      padding: 16px;
+      padding: 16px 18px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+      box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+      transition: transform 0.22s ease, box-shadow 0.3s ease, border-color 0.22s ease !important;
+      background: #ffffff;
     }
-    .cat-name {
-      font-size: 14px;
-      font-weight: 700;
+    .category-card:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.10), 0 4px 12px -4px rgba(0, 0, 0, 0.04) !important;
+      border-color: rgba(10, 69, 52, 0.15) !important;
     }
-    .cat-sub {
-      font-size: 11.5px;
-    }
-
-    /* Provider name in recent store */
-    .recent-provider-name {
-      font-size: 11px;
-      font-weight: 600;
-      color: #6b7280;
-      margin-left: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+    .category-card:active {
+      transform: translateY(0) scale(0.995) !important;
     }
 
-    /* Dark mode tweaks for recent dropdown */
+    .bundle-card {
+      padding: 16px 18px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+      box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+      transition: transform 0.22s ease, box-shadow 0.3s ease, border-color 0.22s ease !important;
+      background: #ffffff;
+    }
+    .bundle-card:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.10), 0 4px 12px -4px rgba(0, 0, 0, 0.04) !important;
+      border-color: rgba(10, 69, 52, 0.15) !important;
+    }
+    .bundle-card:active {
+      transform: translateY(0) scale(0.995) !important;
+    }
+
+    /* Selected bundle card */
+    .selected-bundle {
+      padding: 14px 16px !important;
+      border-radius: 16px !important;
+      box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Form card */
+    .form-card {
+      padding: 20px 18px !important;
+      border-radius: 18px !important;
+      box-shadow: 0 2px 12px -6px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Info box */
+    .info-box {
+      border-radius: 14px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    /* Payment options */
+    .pay-option {
+      border-radius: 16px !important;
+      padding: 18px 16px 16px !important;
+      box-shadow: 0 2px 8px -4px rgba(0, 0, 0, 0.04) !important;
+      transition: transform 0.2s ease, box-shadow 0.28s ease, border-color 0.2s ease !important;
+    }
+    .pay-option:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.10) !important;
+      border-color: rgba(10, 69, 52, 0.2) !important;
+    }
+    .pay-option.active {
+      border-color: rgba(10, 69, 52, 0.5) !important;
+      box-shadow: 0 0 0 2px rgba(10, 69, 52, 0.08), 0 4px 12px -4px rgba(10, 69, 52, 0.15) !important;
+    }
+
+    /* Total box */
+    .total-box {
+      border-radius: 16px !important;
+      padding: 18px 20px !important;
+      box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Primary button hover refinement */
+    .btn-primary,
+    #payNowBtn {
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), filter 0.22s ease, box-shadow 0.32s ease !important;
+    }
+    .btn-primary:hover:not(:disabled),
+    #payNowBtn:hover:not(:disabled) {
+      transform: translateY(-3px) !important;
+      filter: brightness(1.06) !important;
+    }
+    .btn-primary:active:not(:disabled),
+    #payNowBtn:active:not(:disabled) {
+      transform: translateY(0) scale(0.98) !important;
+    }
+
+    /* Quick amount buttons */
+    .quick-amt {
+      border-radius: 12px !important;
+      padding: 12px 8px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+      transition: transform 0.18s ease, box-shadow 0.24s ease, border-color 0.2s ease !important;
+    }
+    .quick-amt:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 14px -6px rgba(10, 69, 52, 0.15) !important;
+      border-color: rgba(10, 69, 52, 0.35) !important;
+    }
+
+    /* Input fields */
+    .phone-input {
+      border-radius: 14px !important;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+      transition: box-shadow 0.25s ease, border-color 0.25s ease !important;
+    }
+    .phone-input:focus {
+      box-shadow: 0 0 0 3px rgba(10, 69, 52, 0.10), inset 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+    }
+
+    /* Pick button */
+    .pick-btn {
+      border-radius: 14px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+      transition: transform 0.18s ease, box-shadow 0.24s ease !important;
+    }
+    .pick-btn:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 10px -4px rgba(10, 69, 52, 0.15) !important;
+    }
+
+    /* Mode switch */
+    .mode-switch {
+      border-radius: 14px !important;
+      padding: 4px !important;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+    }
+    .mode-btn {
+      border-radius: 10px !important;
+      padding: 10px 8px !important;
+      transition: all 0.22s ease !important;
+    }
+    .mode-btn:hover:not(.active) {
+      background: rgba(0, 0, 0, 0.03) !important;
+    }
+
+    /* Dropdown items — professional polish */
+    .phone-dropdown {
+      border-radius: 16px !important;
+      box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.15), 0 4px 12px -4px rgba(0, 0, 0, 0.06) !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+      padding: 6px 0 !important;
+    }
+    .phone-dropdown-item {
+      padding: 12px 18px !important;
+      font-size: 13.5px !important;
+      font-weight: 500 !important;
+      color: #1f2937 !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
+      transition: background 0.18s ease, color 0.18s ease !important;
+    }
+    .phone-dropdown-item:last-child {
+      border-bottom: none !important;
+    }
+    .phone-dropdown-item:hover {
+      background: #f4faf7 !important;
+      color: #0a4534 !important;
+    }
+
+    /* Dark mode refinements */
+    body.dark .category-card,
+    .theme-dark .category-card,
+    body.dark .bundle-card,
+    .theme-dark .bundle-card {
+      background: #161918 !important;
+      border-color: rgba(255, 255, 255, 0.06) !important;
+    }
+    body.dark .category-card:hover,
+    .theme-dark .category-card:hover,
+    body.dark .bundle-card:hover,
+    .theme-dark .bundle-card:hover {
+      border-color: rgba(34, 197, 94, 0.25) !important;
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.4) !important;
+    }
     body.dark .phone-dropdown,
     .theme-dark .phone-dropdown {
-      background: #1a1f1c;
-      border-color: rgba(255,255,255,0.06);
+      background: #1a1f1c !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
     }
     body.dark .phone-dropdown-item,
     .theme-dark .phone-dropdown-item {
-      color: #d1d7d4;
-      border-bottom-color: rgba(255,255,255,0.04);
+      color: #d1d7d4 !important;
+      border-bottom-color: rgba(255, 255, 255, 0.04) !important;
     }
     body.dark .phone-dropdown-item:hover,
     .theme-dark .phone-dropdown-item:hover {
-      background: #232d27;
-      color: #b0f0c0;
-    }
-    body.dark .phone-dropdown-item .recent-tag,
-    .theme-dark .phone-dropdown-item .recent-tag {
-      background: #1f2a23;
-      color: #9aa3a0;
-    }
-    body.dark .recent-provider-name,
-    .theme-dark .recent-provider-name {
-      color: #9aa3a0;
+      background: #232d27 !important;
+      color: #b0f0c0 !important;
     }
 
-    /* Better logo sizing for T2 (it's a text logo) */
-    .cat-logo .t2-logo-text,
-    .bundle-logo .t2-logo-text,
-    .sb-logo .t2-logo-text {
+    /* T2 fallback text just in case */
+    .t2-fallback {
       font-weight: 900;
       font-size: 14px;
       color: #f26522;
-      background: #fff;
-      border-radius: 50%;
-      width: 100%;
-      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
@@ -636,67 +707,68 @@
     })();
   </script>
 
-  <!-- ═══════════ INLINE SCRIPT FOR REAL LOGOS & RECENT PHONE STORE ═══════════ -->
+  <!-- ═══════════ REAL PROVIDER LOGOS INJECTOR ═══════════ -->
   <script>
     (function() {
-      // ------------------------------------------------------------
-      // 1. REAL PROVIDER LOGOS – injecting real images into existing cards
-      // ------------------------------------------------------------
-      // We'll use MutationObserver or run after page load to find logo containers
-      // and replace them with <img> tags. This avoids rewriting all JS.
-      
-      const PROVIDER_LOGOS = {
-        mtn: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/MTN_Logo.svg/512px-MTN_Logo.svg.png',
-        airtel: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Airtel_logo.svg/512px-Airtel_logo.svg.png',
-        glo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Globacom_logo.svg/512px-Globacom_logo.svg.png',
-        t2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/9mobile_logo.svg/512px-9mobile_logo.svg.png' // T2 (9mobile) logo
+      // gstatic favicon service — reliable, fast, real logos
+      const LOGO_MAP = {
+        mtn:    'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png', // placeholder, will replace below
+        airtel: 'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
+        glo:    'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
+        t2:     'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png'
       };
 
-      // Fallback for T2 if 9mobile logo doesn't load — use a styled text version
-      const T2_FALLBACK_HTML = '<div class="t2-logo-text">T2</div>';
+      // We'll use actual clearbit-style or direct logo URLs from gstatic-friendly sources.
+      // Since gstatic doesn't host telco logos, we use a reliable CDN with real logos.
+      // These are the actual official logos (SVG/PNG) from Wikimedia, served via CDN.
+      const REAL_LOGOS = {
+        mtn:    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/MTN_Logo.svg/240px-MTN_Logo.svg.png',
+        airtel: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Airtel_logo.svg/240px-Airtel_logo.svg.png',
+        glo:    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Globacom_logo.svg/240px-Globacom_logo.svg.png',
+        t2:     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/9mobile_logo.svg/240px-9mobile_logo.svg.png'
+      };
 
-      function replaceWithLogo(container, provider, sizeClass = '') {
-        if (!container || !provider) return;
-        // If already an image, skip
-        if (container.querySelector('img')) return;
-        // If we already replaced, skip
-        if (container.dataset.logoReplaced === 'true') return;
+      function replaceLogoElement(el, provider) {
+        if (!el || !provider) return;
+        if (el.dataset.logoReplaced === 'true') return;
 
         const img = document.createElement('img');
-        img.src = PROVIDER_LOGOS[provider] || '';
+        img.src = REAL_LOGOS[provider] || REAL_LOGOS.mtn;
         img.alt = provider + ' logo';
-        img.className = 'provider-logo-img ' + sizeClass;
+        img.className = 'provider-logo';
+        img.loading = 'lazy';
         img.onerror = function() {
-          // fallback: keep original text or use T2 text
-          if (provider === 't2') {
-            container.innerHTML = T2_FALLBACK_HTML;
-          } else {
-            // revert to text initials
-            const initials = provider === 'mtn' ? 'MTN' : provider === 'airtel' ? 'AIR' : provider === 'glo' ? 'GLO' : 'T2';
-            container.innerHTML = initials;
-            container.className = container.className.replace(/provider-logo-img/g, '') + ' provider-fallback ' + provider;
-          }
-          container.dataset.logoReplaced = 'true';
+          // fallback to text initials
+          const initials = provider === 'mtn' ? 'MTN' : provider === 'airtel' ? 'AIR' : provider === 'glo' ? 'GLO' : 'T2';
+          el.innerHTML = initials;
+          el.style.fontWeight = '900';
+          el.style.fontSize = '10.5px';
+          el.style.color = '#fff';
+          el.style.display = 'flex';
+          el.style.alignItems = 'center';
+          el.style.justifyContent = 'center';
+          el.style.background = provider === 'mtn' ? '#ffcb05' : provider === 'airtel' ? '#e60000' : provider === 'glo' ? '#00a651' : '#f26522';
+          el.dataset.logoReplaced = 'true';
         };
         img.onload = function() {
-          container.innerHTML = '';
-          container.appendChild(img);
-          container.dataset.logoReplaced = 'true';
+          el.innerHTML = '';
+          el.appendChild(img);
+          el.dataset.logoReplaced = 'true';
         };
         // Clear and append
-        container.innerHTML = '';
-        container.appendChild(img);
-        container.dataset.logoReplaced = 'true';
+        el.innerHTML = '';
+        el.appendChild(img);
+        el.dataset.logoReplaced = 'true';
       }
 
-      function upgradeLogos() {
+      function upgradeAllLogos() {
         // Category cards
         document.querySelectorAll('.cat-logo').forEach(el => {
           const card = el.closest('.category-card');
           if (!card) return;
           const provider = card.dataset.provider || 
                            (el.className.match(/\.(mtn|airtel|glo|t2)/) ? el.className.match(/\.(mtn|airtel|glo|t2)/)[1] : null);
-          if (provider) replaceWithLogo(el, provider, '');
+          if (provider) replaceLogoElement(el, provider);
         });
 
         // Bundle cards
@@ -705,7 +777,7 @@
           if (!card) return;
           const provider = card.dataset.provider || 
                            (el.className.match(/\.(mtn|airtel|glo|t2)/) ? el.className.match(/\.(mtn|airtel|glo|t2)/)[1] : null);
-          if (provider) replaceWithLogo(el, provider, 'small');
+          if (provider) replaceLogoElement(el, provider);
         });
 
         // Selected bundle cards (sb-logo)
@@ -714,246 +786,29 @@
           if (!card) return;
           const provider = card.dataset.provider || 
                            (el.className.match(/\.(mtn|airtel|glo|t2)/) ? el.className.match(/\.(mtn|airtel|glo|t2)/)[1] : null);
-          if (provider) replaceWithLogo(el, provider, 'tiny');
+          if (provider) replaceLogoElement(el, provider);
         });
       }
 
-      // ------------------------------------------------------------
-      // 2. RECENT PHONE STORE – elegant & professional
-      // ------------------------------------------------------------
-      // We'll enhance the existing dropdown list by storing recent numbers
-      // with provider detection and nice UI.
-
-      const STORAGE_KEY = 'shatova_recent_phones';
-
-      function getRecentPhones() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) return JSON.parse(raw);
-        } catch (e) {}
-        return [];
-      }
-
-      function saveRecentPhone(phone, provider) {
-        if (!phone || phone.length < 11) return;
-        let recent = getRecentPhones();
-        // Remove if exists
-        recent = recent.filter(item => item.phone !== phone);
-        // Add to front
-        recent.unshift({ phone, provider, timestamp: Date.now() });
-        // Keep max 8
-        recent = recent.slice(0, 8);
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(recent));
-        } catch (e) {}
-      }
-
-      function renderRecentDropdown() {
-        const dropdown = document.getElementById('recentRecipients');
-        const list = document.getElementById('rrList');
-        if (!dropdown || !list) return;
-
-        const recent = getRecentPhones();
-        if (recent.length === 0) {
-          dropdown.classList.add('hidden');
-          return;
-        }
-
-        // Only show if input is focused and empty or partially typed
-        const input = document.getElementById('phoneInput');
-        if (!input) return;
-        const val = input.value.trim();
-        // Show if input is empty or starts with digits but not complete
-        if (val.length >= 11) {
-          dropdown.classList.add('hidden');
-          return;
-        }
-
-        // Filter by what user typed
-        let filtered = recent;
-        if (val.length > 0) {
-          filtered = recent.filter(item => item.phone.startsWith(val));
-        }
-
-        if (filtered.length === 0) {
-          dropdown.classList.add('hidden');
-          return;
-        }
-
-        list.innerHTML = '';
-        filtered.forEach(item => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'phone-dropdown-item';
-          btn.dataset.phone = item.phone;
-
-          // Network badge dot
-          const dot = document.createElement('span');
-          dot.className = 'recent-network-badge ' + (item.provider || 'mtn');
-          
-          const phoneSpan = document.createElement('span');
-          phoneSpan.className = 'recent-phone';
-          phoneSpan.textContent = item.phone;
-
-          const tag = document.createElement('span');
-          tag.className = 'recent-tag';
-          tag.textContent = item.provider ? item.provider.toUpperCase() : 'RECENT';
-
-          btn.appendChild(dot);
-          btn.appendChild(phoneSpan);
-          btn.appendChild(tag);
-
-          btn.addEventListener('click', function() {
-            input.value = item.phone;
-            // Trigger input event to detect network
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            dropdown.classList.add('hidden');
-            // Save again to bump
-            saveRecentPhone(item.phone, item.provider);
-          });
-
-          list.appendChild(btn);
-        });
-
-        // Add a subtle header
-        if (!list.querySelector('.recent-header')) {
-          const header = document.createElement('div');
-          header.className = 'recent-header';
-          header.style.cssText = 'padding:10px 16px 6px;font-size:10px;font-weight:700;color:#9aa3a0;letter-spacing:0.6px;text-transform:uppercase;';
-          header.textContent = 'Recent numbers';
-          list.insertBefore(header, list.firstChild);
-        }
-
-        dropdown.classList.remove('hidden');
-      }
-
-      // Attach to phone input
-      function initRecentStore() {
-        const input = document.getElementById('phoneInput');
-        const dropdown = document.getElementById('recentRecipients');
-        if (!input || !dropdown) return;
-
-        // Show on focus
-        input.addEventListener('focus', function() {
-          renderRecentDropdown();
-        });
-
-        // Hide on blur (with delay to allow click)
-        input.addEventListener('blur', function() {
-          setTimeout(() => {
-            dropdown.classList.add('hidden');
-          }, 200);
-        });
-
-        // Filter as user types
-        input.addEventListener('input', function() {
-          renderRecentDropdown();
-        });
-
-        // Hide on escape
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') {
-            dropdown.classList.add('hidden');
-          }
-        });
-
-        // Click outside closes
-        document.addEventListener('click', function(e) {
-          if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
-          }
-        });
-
-        // Save recent when a valid phone is entered & network detected
-        // We'll hook into the existing detection by observing the network badge
-        const networkBadge = document.getElementById('networkBadge');
-        if (networkBadge) {
-          const badgeObserver = new MutationObserver(function() {
-            const badgeText = networkBadge.querySelector('.nb-text');
-            if (badgeText && !networkBadge.classList.contains('hidden')) {
-              const phone = input.value.trim();
-              if (phone.length === 11) {
-                // Try to determine provider from badge text or class
-                let provider = 'mtn';
-                const txt = badgeText.textContent.toLowerCase();
-                if (txt.includes('mtn')) provider = 'mtn';
-                else if (txt.includes('airtel')) provider = 'airtel';
-                else if (txt.includes('glo')) provider = 'glo';
-                else if (txt.includes('t2') || txt.includes('9mobile')) provider = 't2';
-                saveRecentPhone(phone, provider);
-              }
-            }
-          });
-          badgeObserver.observe(networkBadge, { attributes: true, childList: true, subtree: true });
-        }
-
-        // Also save on continue button click (if valid)
-        const continueBtn = document.getElementById('continueBtn');
-        if (continueBtn) {
-          continueBtn.addEventListener('click', function() {
-            const phone = input.value.trim();
-            if (phone.length === 11) {
-              // determine provider from badge or fallback
-              let provider = 'mtn';
-              const badge = document.getElementById('networkBadge');
-              if (badge && !badge.classList.contains('hidden')) {
-                const txt = badge.textContent.toLowerCase();
-                if (txt.includes('mtn')) provider = 'mtn';
-                else if (txt.includes('airtel')) provider = 'airtel';
-                else if (txt.includes('glo')) provider = 'glo';
-                else if (txt.includes('t2') || txt.includes('9mobile')) provider = 't2';
-              }
-              saveRecentPhone(phone, provider);
-            }
-          });
-        }
-      }
-
-      // ------------------------------------------------------------
-      // 3. OBSERVE DOM CHANGES TO UPGRADE LOGOS (since JS renders them)
-      // ------------------------------------------------------------
-      const observer = new MutationObserver(function(mutations) {
-        let shouldUpgrade = false;
-        for (let m of mutations) {
-          if (m.addedNodes.length) {
-            for (let node of m.addedNodes) {
-              if (node.nodeType === 1) {
-                if (node.classList && (node.classList.contains('category-card') || 
-                    node.classList.contains('bundle-card') || 
-                    node.classList.contains('selected-bundle'))) {
-                  shouldUpgrade = true;
-                }
-                if (node.querySelector && node.querySelector('.cat-logo, .bundle-logo, .sb-logo')) {
-                  shouldUpgrade = true;
-                }
-              }
-            }
-          }
-        }
-        if (shouldUpgrade) {
-          setTimeout(upgradeLogos, 50);
-        }
-      });
-
-      // Start observing after DOM ready
+      // Run on DOM ready and observe for dynamic content
       document.addEventListener('DOMContentLoaded', function() {
-        // Initial upgrade
-        setTimeout(upgradeLogos, 300);
-        setTimeout(upgradeLogos, 800);
-        initRecentStore();
+        setTimeout(upgradeAllLogos, 200);
+        setTimeout(upgradeAllLogos, 600);
+        setTimeout(upgradeAllLogos, 1200);
 
-        // Observe main containers
+        // Observe the main containers for new cards
         const containers = ['categoryList', 'bundlesList', 'selectedBundleCard', 'payBundleCard'];
+        const observer = new MutationObserver(function() {
+          setTimeout(upgradeAllLogos, 50);
+        });
         containers.forEach(id => {
           const el = document.getElementById(id);
-          if (el) {
-            observer.observe(el, { childList: true, subtree: true });
-          }
+          if (el) observer.observe(el, { childList: true, subtree: true });
         });
 
-        // Also observe step changes to re-upgrade
+        // Also observe step changes
         const stepObserver = new MutationObserver(function() {
-          setTimeout(upgradeLogos, 100);
+          setTimeout(upgradeAllLogos, 100);
         });
         ['step-categories', 'step-bundles', 'step-checkout', 'step-pay'].forEach(id => {
           const el = document.getElementById(id);
@@ -961,12 +816,10 @@
         });
       });
 
-      // Also re-run on load
       window.addEventListener('load', function() {
-        setTimeout(upgradeLogos, 200);
-        setTimeout(upgradeLogos, 600);
+        setTimeout(upgradeAllLogos, 300);
+        setTimeout(upgradeAllLogos, 800);
       });
-
     })();
   </script>
 
