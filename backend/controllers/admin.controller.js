@@ -3,7 +3,8 @@
 // Shatova — Admin Controller
 //   • Users, transactions, stats
 //   • Datashop wallet: fetches LIVE balance from Datashop API
-//     (v2/account/wallet-balance) + local funding history.
+//     Reads env vars: VTU_API_KEY + VTU_API_BASE (fallback:
+//     DATASHOP_API_KEY + DATASHOP_BASE_URL)
 //   • Manual fund/debit writes to BOTH wallet_ledger AND
 //     the transactions table so it appears in history.
 //   • Manual fund/debit broadcasts an SSE event so the
@@ -263,10 +264,14 @@ export async function getStats(req, res) {
 /* ============================================================
    ⭐ GET /api/v1/admin/datashop/wallet
    Fetches LIVE Datashop balance + local funding history.
-   Default base URL is https://app.datashop.africa
-   Env vars:
-     DATASHOP_API_KEY  — bearer token from Datashop dashboard
-     DATASHOP_BASE_URL — optional; defaults to https://app.datashop.africa
+
+   Reads credentials from (in priority order):
+     1. VTU_API_KEY  / VTU_API_BASE          (your Render env)
+     2. DATASHOP_API_KEY / DATASHOP_BASE_URL (fallback)
+
+   Handles both base URL formats:
+     • https://app.datashop.africa          → appends /api/v2
+     • https://app.datashop.africa/api/v2   → uses as-is
    ============================================================ */
 export async function getDatashopWallet(req, res) {
   const fallback = {
@@ -303,17 +308,33 @@ export async function getDatashopWallet(req, res) {
     }
 
     // ---------------------------------------------------------
-    // 2. Live Datashop API balance
+    // 2. Resolve credentials from env
     // ---------------------------------------------------------
-    const apiKey   = process.env.DATASHOP_API_KEY;
-    const baseUrl  = (process.env.DATASHOP_BASE_URL || 'https://app.datashop.africa').replace(/\/+$/, '');
-    const endpoint = `${baseUrl}/api/v2/account/wallet-balance`;
+    const apiKey =
+      process.env.VTU_API_KEY ||
+      process.env.DATASHOP_API_KEY ||
+      null;
+
+    const rawBase = (
+      process.env.VTU_API_BASE ||
+      process.env.DATASHOP_BASE_URL ||
+      'https://app.datashop.africa'
+    ).replace(/\/+$/, '');
+
+    // If base already ends with /api/vN, don't append again.
+    const hasApiSuffix = /\/api\/v\d+$/i.test(rawBase);
+    const apiPath = hasApiSuffix ? rawBase.match(/\/api\/v\d+$/i)[0] : '/api/v2';
+    const baseUrl = hasApiSuffix ? rawBase.replace(/\/api\/v\d+$/i, '') : rawBase;
+    const endpoint = `${baseUrl}${apiPath}/account/wallet-balance`;
 
     let liveBalance = 0;
     let liveSource  = 'local';
     let debugInfo   = null;
 
-    if (apiKey) {
+    if (!apiKey) {
+      console.warn('[admin] Datashop API key missing — check VTU_API_KEY env var.');
+      debugInfo = { error: 'VTU_API_KEY not set' };
+    } else {
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 10000);
@@ -344,9 +365,9 @@ export async function getDatashopWallet(req, res) {
           const candidate =
             json?.data?.balance ??
             json?.data?.wallet?.balance ??
+            json?.data?.available_balance ??
             json?.balance ??
             json?.wallet?.balance ??
-            json?.data?.available_balance ??
             null;
 
           if (candidate != null && !Number.isNaN(Number(candidate))) {
@@ -364,9 +385,6 @@ export async function getDatashopWallet(req, res) {
         console.warn('[admin] Datashop API fetch failed:', apiErr.message, { endpoint });
         debugInfo = { endpoint, error: apiErr.message };
       }
-    } else {
-      console.warn('[admin] DATASHOP_API_KEY not set — returning local-only data.');
-      debugInfo = { error: 'DATASHOP_API_KEY not set' };
     }
 
     // ---------------------------------------------------------
