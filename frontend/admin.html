@@ -6,6 +6,7 @@
 <title>Shatova · Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -47,7 +48,7 @@ a{color:inherit;text-decoration:none}
 button{font-family:inherit}
 .app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh}
 
-/* SIDEBAR — slim */
+/* SIDEBAR */
 .sidebar{background:var(--bg-card);border-right:1px solid var(--border);padding:14px 10px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sidebar::-webkit-scrollbar{width:6px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
@@ -110,7 +111,7 @@ button{font-family:inherit}
 .tf-pills button:hover:not(.active){color:var(--text);background:var(--bg-hover)}
 .tf-pills button.active{background:var(--bg-card);color:var(--primary-dark);box-shadow:0 1px 2px rgba(15,23,42,0.06),0 3px 8px rgba(15,23,42,0.04);font-weight:800}
 
-/* STATS — slim */
+/* STATS */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
 .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:all .26s;min-width:0;position:relative;overflow:hidden;box-shadow:var(--shadow-xs);animation:fadeUp .45s both}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--primary-gradient);opacity:0;transition:opacity .28s}
@@ -146,6 +147,76 @@ button{font-family:inherit}
 .panel-body{padding:14px 16px}
 .panel-body.no-pad{padding:0}
 
+/* ===== ADVANCED ANALYTICS ===== */
+.an-hero{position:relative;border-radius:16px;overflow:hidden;margin-bottom:16px;background:linear-gradient(120deg,#062f24 0%,#0a4534 45%,#0d5a44 100%);color:#fff;padding:22px 24px;box-shadow:0 20px 40px -20px rgba(10,69,52,.5)}
+.an-hero::before{content:'';position:absolute;top:-60%;right:-10%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.22) 0%,transparent 60%);pointer-events:none}
+.an-hero::after{content:'';position:absolute;bottom:-70%;left:-8%;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.14) 0%,transparent 65%);pointer-events:none}
+.an-hero-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.an-hero h2{font-size:18px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
+.an-hero p{font-size:11.5px;color:rgba(255,255,255,.7);font-weight:500;line-height:1.5;max-width:480px}
+.an-hero-stats{display:flex;gap:22px;flex-wrap:wrap}
+.an-hero-stat .lbl{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:5px}
+.an-hero-stat .val{font-size:22px;font-weight:900;letter-spacing:-.7px;font-variant-numeric:tabular-nums}
+.an-hero-stat .delta{font-size:10.5px;font-weight:700;margin-top:3px;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:rgba(34,197,94,.2);color:#86efac}
+.an-hero-stat .delta.down{background:rgba(239,68,68,.2);color:#fca5a5}
+.an-grid{display:grid;grid-template-columns:1.65fr 1fr;gap:14px;margin-bottom:16px}
+.an-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-xs);overflow:hidden;display:flex;flex-direction:column}
+.an-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.an-card-head h3{font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+.an-card-head h3 i{color:var(--primary)}
+.an-card-head .hint{font-size:10px;color:var(--text-muted);font-weight:600}
+.an-card-body{padding:16px 18px;flex:1;position:relative;min-height:260px}
+.an-card-body.tight{padding:10px 14px}
+.chart-wrap{position:relative;width:100%;height:280px}
+.chart-wrap.donut{height:230px}
+.chart-wrap.small{height:180px}
+.chart-legend-custom{display:flex;flex-wrap:wrap;gap:12px;padding:0 18px 16px}
+.chart-legend-custom .lg{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;color:var(--text-secondary)}
+.chart-legend-custom .lg .sw{width:12px;height:12px;border-radius:4px}
+.an-mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.an-mini{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow-xs);transition:all .22s}
+.an-mini:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover-card);border-color:rgba(10,69,52,.12)}
+.an-mini .lbl{font-size:9px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.an-mini .lbl i{color:var(--primary)}
+.an-mini .val{font-size:18px;font-weight:900;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.an-mini .sub{font-size:10px;color:var(--text-muted);font-weight:600;margin-top:4px}
+.an-mini .bar{height:5px;border-radius:3px;background:var(--bg-input);margin-top:9px;overflow:hidden}
+.an-mini .bar > i{display:block;height:100%;border-radius:3px;background:var(--primary-gradient);transition:width .5s var(--ease-out)}
+.an-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.rank-list{display:flex;flex-direction:column;gap:2px;padding:6px 10px 12px}
+.rank-item{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:9px 10px;border-radius:9px;transition:background .16s}
+.rank-item:hover{background:var(--bg-hover)}
+.rank-pos{width:26px;height:26px;border-radius:8px;background:var(--bg-input);color:var(--text-secondary);font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rank-item:nth-child(1) .rank-pos{background:linear-gradient(135deg,#f59e0b,#b37308);color:#fff}
+.rank-item:nth-child(2) .rank-pos{background:linear-gradient(135deg,#94a3b8,#475569);color:#fff}
+.rank-item:nth-child(3) .rank-pos{background:linear-gradient(135deg,#d97706,#7c2d12);color:#fff}
+.rank-name{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-sub{font-size:10px;color:var(--text-muted);font-weight:500;margin-top:2px}
+.rank-val{font-size:12px;font-weight:900;color:var(--primary-dark);font-variant-numeric:tabular-nums;white-space:nowrap}
+.an-seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.an-seg-item{padding:14px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--border-soft)}
+.an-seg-item .lbl{font-size:9px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.an-seg-item .val{font-size:17px;font-weight:900;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.an-seg-item .val.green{color:var(--success-dark)}
+.an-seg-item .val.red{color:var(--danger-dark)}
+.an-seg-item .val.blue{color:var(--info-dark)}
+.an-seg-item .val.purple{color:var(--purple-dark)}
+.an-seg-item .val.gold{color:var(--warning-dark)}
+.an-footnote{padding:10px 18px 16px;font-size:10px;color:var(--text-muted);line-height:1.55;display:flex;align-items:center;gap:7px}
+.an-footnote i{color:var(--primary)}
+
+@media (max-width:1100px){
+  .an-grid{grid-template-columns:1fr}
+  .an-two-col{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .chart-wrap{height:220px}
+  .an-hero{padding:18px}
+  .an-hero h2{font-size:16px}
+  .an-hero-stat .val{font-size:18px}
+}
+/* ===== END ADVANCED ANALYTICS ===== */
+
 /* KPI */
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
 .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow-xs);transition:all .22s}
@@ -156,19 +227,6 @@ button{font-family:inherit}
 .kpi.accent .k-value{color:var(--primary-dark)}
 .kpi.success .k-value{color:var(--success-dark)}
 .kpi.warning .k-value{color:var(--warning-dark)}
-.chart-summary{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.chart-summary .big{font-size:24px;font-weight:900;letter-spacing:-0.6px;font-variant-numeric:tabular-nums}
-.chart-summary .big.green{color:var(--primary-dark)}
-.chart-summary .cap{font-size:11px;color:var(--text-muted);font-weight:500}
-.chart{display:flex;align-items:flex-end;gap:5px;height:160px;padding:8px 0 0;border-bottom:1px solid var(--border)}
-.chart .bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;min-width:0;height:100%}
-.chart .bar .track{width:100%;max-width:32px;height:100%;background:linear-gradient(180deg,rgba(10,69,52,0.05),rgba(10,69,52,0.02));border-radius:7px 7px 0 0;display:flex;align-items:flex-end;overflow:hidden}
-.chart .bar .fill{width:100%;background:linear-gradient(180deg,rgba(10,69,52,0.55),rgba(10,69,52,0.28));border-radius:7px 7px 0 0;transition:height .4s}
-.chart .bar .fill.hot{background:var(--primary-gradient)}
-.chart .bar .lbl{font-size:9px;font-weight:700;color:var(--text-muted);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.chart-legend{display:flex;align-items:center;gap:14px;padding:12px 0 0;flex-wrap:wrap;font-size:10.5px;color:var(--text-muted);font-weight:600}
-.chart-legend .lg{display:inline-flex;align-items:center;gap:6px}
-.chart-legend .sw{width:12px;height:7px;border-radius:2px;display:inline-block}
 
 /* ROWS */
 .data-list{display:flex;flex-direction:column}
@@ -225,7 +283,7 @@ button{font-family:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading p{font-size:11.5px;color:var(--text-muted)}
 
-/* SEARCH HERO — compact */
+/* SEARCH HERO */
 .search-hero{padding:18px 22px 16px;background:linear-gradient(180deg,#fbfdfc 0%,#f7faf8 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 [data-theme="dark"] .search-hero{background:linear-gradient(180deg,rgba(10,69,52,.05),transparent)}
 .search-hero::before{content:'';position:absolute;top:-80px;right:-70px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(10,69,52,0.05) 0%,transparent 65%);pointer-events:none}
@@ -267,7 +325,7 @@ button{font-family:inherit}
 .results-live .dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.6s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
 
-/* CARDS — slim (transactions + users) */
+/* CARDS */
 .txn-card-list{display:flex;flex-direction:column;padding:10px 14px;gap:6px}
 .txn-card{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:11px;cursor:pointer;transition:all .18s}
 .txn-card:hover{border-color:rgba(10,69,52,.2);box-shadow:0 6px 18px -10px rgba(10,69,52,.14);transform:translateY(-1px)}
@@ -835,6 +893,7 @@ button{font-family:inherit}
         </div>
       </section>
 
+      <!-- ===== ADVANCED ANALYTICS SECTION ===== -->
       <section id="tab-analytics" style="display:none">
         <div class="timeframe-bar">
           <div class="tf-left">
@@ -846,25 +905,130 @@ button{font-family:inherit}
           </div>
           <div class="tf-meta" id="rangeMeta2"><i class="fas fa-circle-info"></i> <strong>Today</strong></div>
         </div>
-        <div class="kpi-strip">
-          <div class="kpi accent"><div class="k-label">Processed</div><div class="k-value" id="kpiProcessed">₦0</div><div class="k-sub" id="kpiProcessedSub">in this period</div></div>
-          <div class="kpi success"><div class="k-label">Success Rate</div><div class="k-value" id="kpiSuccess">0%</div><div class="k-sub" id="kpiSuccessSub">—</div></div>
-          <div class="kpi"><div class="k-label">Transactions</div><div class="k-value" id="kpiTxns">0</div><div class="k-sub" id="kpiTxnsSub">—</div></div>
-          <div class="kpi warning"><div class="k-label">Profit</div><div class="k-value" id="kpiProfit">₦0</div><div class="k-sub" id="kpiProfitSub">estimated</div></div>
+
+        <div class="an-hero">
+          <div class="an-hero-inner">
+            <div>
+              <h2>Business Intelligence</h2>
+              <p>Real-time performance across the entire Shatova platform — revenue, success rates, user growth and wallet health at a glance.</p>
+            </div>
+            <div class="an-hero-stats">
+              <div class="an-hero-stat">
+                <div class="lbl">Gross Volume</div>
+                <div class="val" id="heroVolume">₦0</div>
+                <div class="delta" id="heroVolumeDelta"><i class="fas fa-arrow-up"></i> —</div>
+              </div>
+              <div class="an-hero-stat">
+                <div class="lbl">Transactions</div>
+                <div class="val" id="heroTxns">0</div>
+                <div class="delta" id="heroTxnsDelta"><i class="fas fa-arrow-up"></i> —</div>
+              </div>
+              <div class="an-hero-stat">
+                <div class="lbl">Success Rate</div>
+                <div class="val" id="heroSuccess">0%</div>
+                <div class="delta" id="heroSuccessDelta"><i class="fas fa-arrow-up"></i> —</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="panel">
-          <div class="panel-head"><h3><i class="fas fa-chart-line"></i> Transaction Volume</h3><span class="sub" id="chartRangeLabel">Today</span></div>
-          <div class="panel-body">
-            <div class="chart-summary"><span class="big green" id="chartTotal">₦0</span><span class="cap" id="chartTotalCap">total processed</span></div>
-            <div class="chart" id="miniChart"></div>
-            <div class="chart-legend">
-              <span class="lg"><span class="sw" style="background:var(--primary-gradient)"></span> Current</span>
-              <span class="lg"><span class="sw" style="background:linear-gradient(180deg,rgba(10,69,52,0.55),rgba(10,69,52,0.28))"></span> Earlier</span>
-              <span class="lg" style="margin-left:auto" id="chartPeak"></span>
+
+        <div class="an-grid">
+          <div class="an-card">
+            <div class="an-card-head">
+              <h3><i class="fas fa-chart-area"></i> Revenue &amp; Volume Trend</h3>
+              <span class="hint" id="chartRangeLabel">Today</span>
+            </div>
+            <div class="an-card-body tight">
+              <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
+            </div>
+            <div class="chart-legend-custom">
+              <span class="lg"><span class="sw" style="background:linear-gradient(135deg,#0d5a44,#062f24)"></span> Gross Volume</span>
+              <span class="lg"><span class="sw" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)"></span> Successful</span>
+              <span class="lg"><span class="sw" style="background:linear-gradient(135deg,#f59e0b,#b37308)"></span> Profit</span>
+            </div>
+          </div>
+
+          <div class="an-card">
+            <div class="an-card-head">
+              <h3><i class="fas fa-chart-pie"></i> Transaction Mix</h3>
+              <span class="hint">By type</span>
+            </div>
+            <div class="an-card-body tight">
+              <div class="chart-wrap donut"><canvas id="mixChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="an-mini-grid">
+          <div class="an-mini">
+            <div class="lbl"><i class="fas fa-circle-check"></i> Success Rate</div>
+            <div class="val" id="miniSuccess">0%</div>
+            <div class="sub" id="miniSuccessSub">0 of 0</div>
+            <div class="bar"><i id="miniSuccessBar" style="width:0%"></i></div>
+          </div>
+          <div class="an-mini">
+            <div class="lbl"><i class="fas fa-triangle-exclamation"></i> Failure Rate</div>
+            <div class="val" id="miniFailure">0%</div>
+            <div class="sub" id="miniFailureSub">0 failed</div>
+            <div class="bar"><i id="miniFailureBar" style="width:0%;background:linear-gradient(135deg,#ef4444,#a12222)"></i></div>
+          </div>
+          <div class="an-mini">
+            <div class="lbl"><i class="fas fa-coins"></i> Avg. Transaction</div>
+            <div class="val" id="miniAvg">₦0</div>
+            <div class="sub" id="miniAvgSub">per transaction</div>
+            <div class="bar"><i id="miniAvgBar" style="width:60%"></i></div>
+          </div>
+          <div class="an-mini">
+            <div class="lbl"><i class="fas fa-arrow-trend-up"></i> Profit Margin</div>
+            <div class="val" id="miniMargin">0%</div>
+            <div class="sub" id="miniMarginSub">of gross volume</div>
+            <div class="bar"><i id="miniMarginBar" style="width:0%;background:linear-gradient(135deg,#f59e0b,#b37308)"></i></div>
+          </div>
+        </div>
+
+        <div class="an-two-col">
+          <div class="an-card">
+            <div class="an-card-head">
+              <h3><i class="fas fa-trophy"></i> Top Services</h3>
+              <span class="hint">By volume</span>
+            </div>
+            <div class="rank-list" id="topServices">
+              <div class="loading"><div class="ring"></div><p>Loading…</p></div>
+            </div>
+          </div>
+          <div class="an-card">
+            <div class="an-card-head">
+              <h3><i class="fas fa-users"></i> Top Customers</h3>
+              <span class="hint">By spend</span>
+            </div>
+            <div class="rank-list" id="topCustomers">
+              <div class="loading"><div class="ring"></div><p>Loading…</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="an-card" style="margin-bottom:16px">
+          <div class="an-card-head">
+            <h3><i class="fas fa-layer-group"></i> Operational Snapshot</h3>
+            <span class="hint" id="snapshotRange">Today</span>
+          </div>
+          <div class="an-card-body">
+            <div class="an-seg">
+              <div class="an-seg-item"><div class="lbl"><i class="fas fa-arrow-down"></i> Deposits</div><div class="val green" id="segDeposits">₦0</div></div>
+              <div class="an-seg-item"><div class="lbl"><i class="fas fa-arrow-up"></i> Withdrawals</div><div class="val red" id="segWithdrawals">₦0</div></div>
+              <div class="an-seg-item"><div class="lbl"><i class="fas fa-signal"></i> Airtime</div><div class="val blue" id="segAirtime">₦0</div></div>
+              <div class="an-seg-item"><div class="lbl"><i class="fas fa-wifi"></i> Data</div><div class="val purple" id="segData">₦0</div></div>
+              <div class="an-seg-item"><div class="lbl"><i class="fas fa-hand-holding-dollar"></i> Manual Credits</div><div class="val gold" id="segManualFund">₦0</div></div>
+              <div class="an-seg-item"><div class="lbl"><i class="fas fa-rotate-left"></i> Refunds</div><div class="val" id="segRefunds">₦0</div></div>
+            </div>
+            <div class="an-footnote">
+              <i class="fas fa-circle-info"></i>
+              Figures reflect the selected period and are derived from the live unified ledger. Profit is estimated from recorded margins.
             </div>
           </div>
         </div>
       </section>
+      <!-- ===== END ADVANCED ANALYTICS ===== -->
 
       <section id="tab-users" style="display:none">
         <div class="panel">
@@ -1134,7 +1298,9 @@ button{font-family:inherit}
 
 <div class="modal-overlay" id="viewModal"><div class="modal"><div class="head"><h3><i class="fas fa-eye"></i> Details</h3><button class="close" onclick="closeViewModal()"><i class="fas fa-times"></i></button></div><div id="viewBody"></div><div class="btns"><button class="secondary" onclick="closeViewModal()"><i class="fas fa-times"></i> Close</button></div></div></div>
 <div class="modal-overlay" id="txnModal"><div class="modal"><div class="head"><h3><i class="fas fa-receipt"></i> Transaction Details</h3><button class="close" onclick="closeTxnModal()"><i class="fas fa-times"></i></button></div><div id="txnBody"></div><div class="btns"><button class="secondary" onclick="closeTxnModal()"><i class="fas fa-times"></i> Close</button></div></div></div>
-<div class="modal-overlay" id="datashopModal"><div class="modal"><div class="head"><h3><i class="fas fa-store"></i> Datashop Wallet</h3><button class="close" onclick="closeDatashopWallet()"><i class="fas fa-times"></i></button></div><div class="txn-amount-block" style="margin-bottom:14px"><div class="amt-label">Available Balance</div><div class="amt-value" id="dwBalance">₦0</div><div class="amt-meta"><div><div class="lbl">Total Funded</div><div class="val" id="dwTotalFunded">₦0</div></div><div><div class="lbl">Total Spent</div><div class="val" id="dwTotalSpent">₦0</div></div></div></div><div class="row-detail"><span class="lbl">Last Funding</span><span class="val" id="dwLastFunding">—</span></div><div class="row-detail"><span class="lbl">Source</span><span class="val" id="dwSource">—</span></div><hr class="divider"><div style="display:flex;gap:8px"><button onclick="goToDatashopPage()" style="flex:1;padding:10px;border-radius:9px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);font-weight:800;cursor:pointer;font-family:inherit;font-size:12px"><i class="fas fa-external-link-alt"></i> Open</button><button onclick="reloadDatashopWallet()" style="flex:1;padding:10px;border-radius:9px;border:none;background:var(--primary-gradient);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px"><i class="fas fa-sync-alt"></i> Refresh</button></div></div></div>
+
+<!-- Datashop modal — Funded & Spent removed, refresh fixed -->
+<div class="modal-overlay" id="datashopModal"><div class="modal"><div class="head"><h3><i class="fas fa-store"></i> Datashop Wallet</h3><button class="close" onclick="closeDatashopWallet()"><i class="fas fa-times"></i></button></div><div class="txn-amount-block" style="margin-bottom:14px"><div class="amt-label">Available Balance</div><div class="amt-value" id="dwBalance">₦0</div></div><div class="row-detail"><span class="lbl">Last Funding</span><span class="val" id="dwLastFunding">—</span></div><div class="row-detail"><span class="lbl">Source</span><span class="val" id="dwSource">—</span></div><hr class="divider"><div style="display:flex;gap:8px"><button onclick="goToDatashopPage()" style="flex:1;padding:10px;border-radius:9px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);font-weight:800;cursor:pointer;font-family:inherit;font-size:12px"><i class="fas fa-external-link-alt"></i> Open</button><button onclick="reloadDatashopWallet()" style="flex:1;padding:10px;border-radius:9px;border:none;background:var(--primary-gradient);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px"><i class="fas fa-sync-alt"></i> Refresh</button></div></div></div>
 
 <div class="modal-overlay" id="approveModal"><div class="modal"><div class="head"><h3><i class="fas fa-check-circle"></i> Approve Withdrawal</h3><button class="close" onclick="closeApproveModal()"><i class="fas fa-times"></i></button></div><div id="approveBody"></div><div class="input-group"><label>Transaction Reference</label><input type="text" id="approveRef" placeholder="Enter bank reference" autocomplete="off"><div class="hint">From the user's bank receipt</div></div><div class="input-group"><label>Notes (Optional)</label><textarea id="approveNotes" placeholder="Add notes…" rows="2"></textarea></div><div class="btns"><button class="secondary" id="approveCancelBtn" onclick="closeApproveModal()">Cancel</button><button class="primary" id="approveSubmitBtn" onclick="submitApprove()"><i class="fas fa-check"></i> Approve</button></div></div></div>
 <div class="modal-overlay" id="rejectModal"><div class="modal"><div class="head"><h3><i class="fas fa-times-circle danger"></i> Reject Withdrawal</h3><button class="close" onclick="closeRejectModal()"><i class="fas fa-times"></i></button></div><div id="rejectBody"></div><div style="padding:10px 12px;background:var(--danger-light);border:1px solid rgba(161,34,34,.12);border-radius:9px;margin-bottom:12px;font-size:11px;color:var(--danger-dark);font-weight:600;line-height:1.45"><strong>Warning:</strong> This cannot be undone.</div><div class="input-group"><label>Reason for Rejection</label><textarea id="rejectReason" placeholder="Type the reason…" rows="3"></textarea></div><div class="btns"><button class="secondary" id="rejectCancelBtn" onclick="closeRejectModal()">Cancel</button><button class="danger" id="rejectSubmitBtn" onclick="submitReject()"><i class="fas fa-ban"></i> Reject</button></div></div></div>
@@ -1191,6 +1357,7 @@ button{font-family:inherit}
     seenDepositIds: new Set(), seenWithdrawalIds: new Set(),
     adminAlerts: [], adminAlertIds: new Set(),
     adminSoundEnabled: false,
+    charts: { revenue: null, mix: null },
   };
 
   const $ = (s) => document.querySelector(s);
@@ -1224,7 +1391,7 @@ button{font-family:inherit}
   let theme = localStorage.getItem('adminTheme') || 'light';
   document.documentElement.setAttribute('data-theme', theme);
   updateThemeIcons();
-  function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('adminTheme', theme); updateThemeIcons(); }
+  function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('adminTheme', theme); updateThemeIcons(); rebuildChartsTheme(); }
   function updateThemeIcons() { const ic = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; ['themeIconSidebar','themeIconDrawer'].forEach(id => { const e = document.getElementById(id); if (e) e.className = ic; }); }
   window.toggleTheme = toggleTheme;
 
@@ -1289,14 +1456,15 @@ button{font-family:inherit}
     const m1 = $('#rangeMeta'); if (m1) m1.innerHTML = h;
     const m2 = $('#rangeMeta2'); if (m2) m2.innerHTML = h;
     const cl = $('#chartRangeLabel'); if (cl) cl.textContent = state.range === 'all' ? 'Last 14 days' : state.range === '30m' ? 'Last 30 minutes' : state.range === '1h' ? 'Last 1 hour' : state.range === '2h' ? 'Last 2 hours' : state.range === '1d' ? 'Today' : state.range === '7d' ? 'Last 7 days' : 'Last 30 days';
+    const sr = $('#snapshotRange'); if (sr) sr.textContent = r.label;
   }
-  function setOverviewRange(key) { if (!RANGES[key]) key = '1d'; state.range = key; state.filters.transactions.range = key; state.filters.deposits.range = key; state.filters.withdrawals.range = key; state.recentTxPage = 1; state.txnPage = 1; state.depositPage = 1; state.withdrawalPage = 1; syncOverviewRangeUI(); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderChart(); updateAnalyticsKpis(); }
+  function setOverviewRange(key) { if (!RANGES[key]) key = '1d'; state.range = key; state.filters.transactions.range = key; state.filters.deposits.range = key; state.filters.withdrawals.range = key; state.recentTxPage = 1; state.txnPage = 1; state.depositPage = 1; state.withdrawalPage = 1; syncOverviewRangeUI(); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); updateAnalytics(); }
   window.setRange = setOverviewRange;
   function wireRangePills() { ['#tfPillsOverview','#tfPillsAnalytics'].forEach(sel => { const w = document.querySelector(sel); if (!w) return; w.addEventListener('click', e => { const b = e.target.closest('button[data-range]'); if (!b) return; setOverviewRange(b.dataset.range); }); }); }
 
   const TAB_META = {
     overview:{title:'Dashboard Overview',sub:'Welcome to your admin panel'},
-    analytics:{title:'Analytics',sub:'Business insights'},
+    analytics:{title:'Analytics',sub:'Business insights & performance'},
     users:{title:'Users',sub:'Search any account'},
     transactions:{title:'All Transactions',sub:'Unified ledger — every action across the platform'},
     deposits:{title:'Deposits',sub:'Approve or reject deposits'},
@@ -1315,7 +1483,7 @@ button{font-family:inherit}
     if ($('#pageTitle')) $('#pageTitle').textContent = m.title || 'Admin';
     if ($('#pageSub')) $('#pageSub').textContent = m.sub || '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (tab === 'analytics') { renderChart(); updateAnalyticsKpis(); }
+    if (tab === 'analytics') setTimeout(() => updateAnalytics(), 60);
     if (tab === 'users') setTimeout(() => { const i = document.getElementById('userSearch'); if (i) i.focus(); }, 150);
     if (tab === 'transactions') setTimeout(() => { const i = document.getElementById('txnSearch'); if (i) i.focus(); }, 150);
     if (tab === 'deposits') setTimeout(() => { const i = document.getElementById('depositSearch'); if (i) i.focus(); }, 150);
@@ -1342,6 +1510,7 @@ button{font-family:inherit}
   async function fetchWd() { try { const r = await api('/wallet/admin/withdrawals/all'); state.withdrawals = pick(r); } catch (_) { state.withdrawals = []; } }
   async function fetchMe() { try { const r = await api('/auth/me'); const u = r.data?.user || r.data; if (u) { const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('adminName', u.name || 'Admin'); s('adminEmail', u.email || ''); s('drawerName', u.name || 'Admin'); s('drawerEmail', u.email || ''); s('adminAvatar', (u.name || 'A').charAt(0).toUpperCase()); s('drawerAvatar', (u.name || 'A').charAt(0).toUpperCase()); } } catch (_) {} }
 
+  /* Datashop wallet — Funded & Spent removed; refresh now actually re-fetches */
   async function fetchDW() {
     try {
       const r = await api('/admin/datashop/wallet');
@@ -1363,8 +1532,6 @@ button{font-family:inherit}
     const d = state.datashop || {};
     const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
     s('dwBalance', fmtMoney(d.balance || 0));
-    s('dwTotalFunded', fmtMoney(d.totalFunded || 0));
-    s('dwTotalSpent', fmtMoney(d.totalSpent || 0));
     s('dwLastFunding', d.lastFunding ? timeAgo(d.lastFunding) : '—');
     const srcEl = document.getElementById('dwSource');
     if (srcEl) {
@@ -1373,8 +1540,16 @@ button{font-family:inherit}
       srcEl.className = 'val' + (d.source === 'datashop_api' ? ' success' : d.source === 'fallback' || d.source === 'error' ? ' danger' : '');
     }
   }
-  async function reloadDW() { await fetchDW(); }
-  function openDatashopWallet() { renderDW(); $('#datashopModal').classList.add('active'); reloadDW(); }
+  /* Fixed refresh: this now triggers a fresh fetch and gives feedback */
+  async function reloadDW() {
+    const btn = event && event.target ? event.target.closest('button') : null;
+    const orig = btn ? btn.innerHTML : null;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing…'; }
+    try { await fetchDW(); toast('Datashop wallet refreshed', 'success'); }
+    catch (e) { toast('Could not refresh wallet', 'error'); }
+    finally { if (btn) { btn.disabled = false; btn.innerHTML = orig; } }
+  }
+  function openDatashopWallet() { renderDW(); $('#datashopModal').classList.add('active'); fetchDW(); }
   function closeDatashopWallet() { $('#datashopModal').classList.remove('active'); }
   function goToDatashopPage() { window.open('https://app.datashop.africa', '_blank', 'noopener'); }
   window.openDatashopWallet = openDatashopWallet; window.closeDatashopWallet = closeDatashopWallet; window.reloadDatashopWallet = reloadDW; window.goToDatashopPage = goToDatashopPage;
@@ -1479,44 +1654,245 @@ button{font-family:inherit}
   }
   window.goToRecentTxPage = (pg) => { state.recentTxPage = pg; renderRecentTx(); };
 
-  function updateAnalyticsKpis() {
-    buildUnifiedTransactions();
-    const txns = applyRange(state.unifiedTransactions, state.range);
-    const sc = txns.filter(t => getStatus(t) === 'success');
-    const fc = txns.filter(t => getStatus(t) === 'failed');
-    const dc = sc.length + fc.length; const rate = dc > 0 ? Math.round(sc.length/dc*100) : 0;
-    const total = txns.reduce((a,t) => a+getAmount(t),0);
-    const pr = txns.reduce((a,t) => { const m = t.metadata || {}; return a + (Number(t.profit ?? m.profit ?? 0) || 0); }, 0);
-    const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-    s('kpiProcessed', fmtMoney(total, true));
-    s('kpiProcessedSub', `across ${txns.length} transaction${txns.length===1?'':'s'}`);
-    s('kpiSuccess', `${rate}%`);
-    s('kpiSuccessSub', `${sc.length} of ${dc}`);
-    s('kpiTxns', txns.length.toLocaleString());
-    s('kpiTxnsSub', `${sc.length} successful`);
-    s('kpiProfit', fmtMoney(pr, true));
-    s('kpiProfitSub', `on ${sc.length} sales`);
-  }
+  /* ============ ADVANCED ANALYTICS ENGINE ============ */
+  const CHART_COLORS = {
+    primary: '#0a4534', primaryLight: 'rgba(10,69,52,.75)',
+    info: '#3b82f6', infoLight: 'rgba(59,130,246,.75)',
+    success: '#10b981', warning: '#f59e0b', danger: '#ef4444', purple: '#8b5cf6', muted:'#94a3b8'
+  };
 
-  function buildBuckets() {
+  function buildAnalyticsBuckets() {
     const now = new Date(); const b = [];
-    if (['30m','1h','2h'].includes(state.range)) { const t = state.range === '30m' ? 30 : state.range === '1h' ? 60 : 120; const st = t/6; for (let i = 5; i >= 0; i--) { const e = new Date(now.getTime() - i*st*60000); const s = new Date(e.getTime() - st*60000); b.push({ start:s, end:e, label: e.getHours().toString().padStart(2,'0')+':'+e.getMinutes().toString().padStart(2,'0') }); } return b; }
-    if (state.range === '1d') { for (let i = 5; i >= 0; i--) { const e = new Date(now.getTime() - i*4*3600000); const s = new Date(e.getTime() - 4*3600000); b.push({ start:s, end:e, label: `${String(e.getHours()).padStart(2,'0')}:00` }); } return b; }
+    if (['30m','1h','2h'].includes(state.range)) {
+      const t = state.range === '30m' ? 30 : state.range === '1h' ? 60 : 120;
+      const st = t/6;
+      for (let i = 5; i >= 0; i--) {
+        const e = new Date(now.getTime() - i*st*60000); const s = new Date(e.getTime() - st*60000);
+        b.push({ start:s, end:e, label: e.getHours().toString().padStart(2,'0')+':'+e.getMinutes().toString().padStart(2,'0') });
+      }
+      return b;
+    }
+    if (state.range === '1d') {
+      for (let i = 5; i >= 0; i--) {
+        const e = new Date(now.getTime() - i*4*3600000); const s = new Date(e.getTime() - 4*3600000);
+        b.push({ start:s, end:e, label: `${String(e.getHours()).padStart(2,'0')}:00` });
+      }
+      return b;
+    }
     const days = state.range === '30d' ? 30 : state.range === '7d' ? 7 : 14;
-    for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i); const e = new Date(d); e.setDate(e.getDate()+1); b.push({ start:d, end:e, label: d.toLocaleDateString('en-NG',{weekday:'short'}) }); }
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+      const e = new Date(d); e.setDate(e.getDate()+1);
+      b.push({ start:d, end:e, label: d.toLocaleDateString('en-NG',{day:'numeric',month:'short'}) });
+    }
     return b;
   }
-  function renderChart() {
-    const el = document.getElementById('miniChart'); if (!el) return;
+
+  function computeAnalyticsSeries() {
     buildUnifiedTransactions();
-    const b = buildBuckets(); const txns = state.unifiedTransactions || [];
-    const vals = b.map(x => { const s = x.start.getTime(), e = x.end.getTime(); return txns.reduce((a,t) => { const ts = new Date(getDate(t)).getTime(); if (isNaN(ts) || ts < s || ts >= e) return a; return a + getAmount(t); }, 0); });
-    const mx = Math.max(...vals, 1); const gt = vals.reduce((a,b) => a+b,0); const pk = vals.indexOf(Math.max(...vals));
-    el.innerHTML = b.map((x,i) => { const h = Math.max(3, Math.round(vals[i]/mx*100)); const last = i === b.length - 1; const sh = b.length <= 12 || i === 0 || i === b.length - 1 || i % 5 === 0; return `<div class="bar" title="${esc(x.label)} · ${fmtMoney(vals[i])}"><div class="track"><div class="fill ${last?'hot':''}" style="height:${h}%"></div></div><div class="lbl">${sh ? esc(x.label) : ''}</div></div>`; }).join('');
-    if (document.getElementById('chartTotal')) document.getElementById('chartTotal').textContent = fmtMoney(gt, true);
-    const cap = document.getElementById('chartTotalCap'); if (cap) { const r = RANGES[state.range] || RANGES['1d']; cap.textContent = `total processed · ${r.label.toLowerCase()}`; }
-    const pkEl = document.getElementById('chartPeak'); if (pkEl && b[pk]) pkEl.innerHTML = `Peak: <strong style="color:var(--primary-dark)">${esc(b[pk].label)}</strong> · ${fmtMoney(vals[pk], true)}`;
+    const buckets = buildAnalyticsBuckets();
+    const all = state.unifiedTransactions || [];
+    const gross = buckets.map(()=>0), success = buckets.map(()=>0), profit = buckets.map(()=>0);
+    const counted = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
+    const amounts = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
+    const userSpend = new Map();
+    let totalSuccess = 0, totalFailed = 0, sum = 0, cnt = 0;
+
+    all.forEach(t => {
+      const ts = new Date(getDate(t)).getTime(); if (isNaN(ts)) return;
+      const amt = getAmount(t); const st = getStatus(t); const k = txnKind(t);
+      const m = t.metadata || {};
+      // Bucket
+      for (let i=0;i<buckets.length;i++){
+        const s = buckets[i].start.getTime(), e = buckets[i].end.getTime();
+        if (ts >= s && ts < e) {
+          gross[i] += amt;
+          if (st === 'success') success[i] += amt;
+          const p = Number(t.profit ?? m.profit ?? 0) || 0;
+          profit[i] += p;
+          break;
+        }
+      }
+      // Kind
+      if (counted[k] !== undefined) {
+        counted[k]++; amounts[k] += amt;
+        if (st === 'success') { totalSuccess++; sum += amt; cnt++; }
+        else if (st === 'failed') totalFailed++;
+      }
+      // top customers
+      if (st === 'success' && amt > 0) {
+        const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown');
+        const nm = t.user_name || t.user_email || t.phone || 'Unknown';
+        const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 };
+        cur.total += amt; cur.count += 1;
+        userSpend.set(uid, cur);
+      }
+    });
+
+    // Hero numbers
+    const heroGross = gross.reduce((a,b)=>a+b,0);
+    const heroTxns = all.filter(t => { const ts = new Date(getDate(t)).getTime(); return !isNaN(ts) && ts >= (buckets[0]?.start?.getTime()||0); }).length;
+    const denom = totalSuccess + totalFailed;
+    const rate = denom > 0 ? Math.round(totalSuccess/denom*100) : 0;
+    const avg = cnt > 0 ? sum / cnt : 0;
+    const totalProfit = profit.reduce((a,b)=>a+b,0);
+    const margin = heroGross > 0 ? (totalProfit/heroGross*100) : 0;
+
+    return {
+      buckets, gross, success, profit,
+      counted, amounts,
+      totalSuccess, totalFailed, rate, avg, totalProfit, margin,
+      heroGross, heroTxns,
+      topCustomers: Array.from(userSpend.values()).sort((a,b)=>b.total-a.total).slice(0,5),
+    };
   }
+
+  function destroyChart(c) { if (c) { try { c.destroy(); } catch(_){} } }
+
+  function rebuildChartsTheme() { updateAnalytics(); }
+
+  function renderRevenueChart(series) {
+    const el = document.getElementById('revenueChart'); if (!el) return;
+    const isDark = theme === 'dark';
+    const grid = isDark ? 'rgba(255,255,255,.06)' : 'rgba(10,22,40,.05)';
+    const tick = isDark ? '#8b9ab5' : '#64748b';
+    const labels = series.buckets.map(b => b.label);
+    const ctx = el.getContext('2d');
+
+    // Gradients
+    const gGross = ctx.createLinearGradient(0,0,0,280);
+    gGross.addColorStop(0,'rgba(13,90,68,.55)');
+    gGross.addColorStop(1,'rgba(13,90,68,.02)');
+    const gSucc = ctx.createLinearGradient(0,0,0,280);
+    gSucc.addColorStop(0,'rgba(59,130,246,.35)');
+    gSucc.addColorStop(1,'rgba(59,130,246,.02)');
+    const gProfit = ctx.createLinearGradient(0,0,0,280);
+    gProfit.addColorStop(0,'rgba(245,158,11,.28)');
+    gProfit.addColorStop(1,'rgba(245,158,11,.02)');
+
+    destroyChart(state.charts.revenue);
+    state.charts.revenue = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label:'Gross Volume', data: series.gross, borderColor: CHART_COLORS.primary, backgroundColor: gGross, borderWidth: 2.5, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.primary, pointBorderColor: '#fff', pointBorderWidth: 2 },
+          { label:'Successful', data: series.success, borderColor: CHART_COLORS.info, backgroundColor: gSucc, borderWidth: 2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.info, pointBorderColor: '#fff', pointBorderWidth: 2 },
+          { label:'Profit', data: series.profit, borderColor: CHART_COLORS.warning, backgroundColor: gProfit, borderWidth: 2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.warning, pointBorderColor: '#fff', pointBorderWidth: 2 },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: isDark ? '#0f1421' : '#0a1628',
+            titleColor: '#fff', bodyColor: '#e2e8f0',
+            borderColor: 'rgba(255,255,255,.1)', borderWidth: 1,
+            padding: 12, cornerRadius: 10, displayColors: true,
+            callbacks: { label: (c) => ` ${c.dataset.label}: ₦${Number(c.parsed.y).toLocaleString('en-NG')}` }
+          }
+        },
+        scales: {
+          x: { grid: { display: false, drawBorder: false }, ticks: { color: tick, font: { size: 10, weight:'700' }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+          y: { grid: { color: grid, drawBorder: false }, border: { display: false }, ticks: { color: tick, font: { size: 10, weight:'600' }, callback: (v) => v >= 1e6 ? '₦'+(v/1e6).toFixed(1)+'M' : v >= 1e3 ? '₦'+(v/1e3).toFixed(0)+'K' : '₦'+v } }
+        }
+      }
+    });
+  }
+
+  function renderMixChart(counted) {
+    const el = document.getElementById('mixChart'); if (!el) return;
+    const entries = Object.entries(counted).filter(([k,v]) => v > 0);
+    const labels = entries.map(([k]) => kindLabel(k));
+    const data = entries.map(([,v]) => v);
+    const palette = ['#0a4534','#3b82f6','#f59e0b','#8b5cf6','#10b981','#ef4444','#64748b','#0d5a44','#1d4ed8'];
+    const isDark = theme === 'dark';
+    destroyChart(state.charts.mix);
+    state.charts.mix = new Chart(el.getContext('2d'), {
+      type: 'doughnut',
+      data: { labels, datasets: [{ data, backgroundColor: palette.slice(0, data.length), borderWidth: 3, borderColor: isDark ? '#0f1421' : '#fff', hoverOffset: 8 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '62%',
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, padding: 12, font: { size: 10.5, weight: '700' }, color: isDark ? '#c8d0e0' : '#334155', usePointStyle: true, pointStyle: 'circle' } },
+          tooltip: {
+            backgroundColor: isDark ? '#0f1421' : '#0a1628', titleColor: '#fff', bodyColor: '#e2e8f0',
+            padding: 10, cornerRadius: 8,
+            callbacks: { label: (c) => ` ${c.label}: ${c.parsed} txns` }
+          }
+        }
+      }
+    });
+  }
+
+  function renderTopList(elId, items, isCustomer) {
+    const el = document.getElementById(elId); if (!el) return;
+    if (!items.length) { el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:11.5px">No data for this period.</div>`; return; }
+    el.innerHTML = items.map((it, i) => {
+      const label = it.label; const sub = it.sub; const val = it.value;
+      return `<div class="rank-item"><div class="rank-pos">${i+1}</div><div style="min-width:0"><div class="rank-name">${esc(label)}</div><div class="rank-sub">${esc(sub)}</div></div><div class="rank-val">${val}</div></div>`;
+    }).join('');
+  }
+
+  function updateAnalytics() {
+    if (state.activeTab !== 'analytics') return;
+    const series = computeAnalyticsSeries();
+    const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+
+    // Hero
+    s('heroVolume', fmtMoney(series.heroGross, true));
+    s('heroTxns', series.heroTxns.toLocaleString());
+    s('heroSuccess', `${series.rate}%`);
+    const vD = document.getElementById('heroVolumeDelta');
+    const tD = document.getElementById('heroTxnsDelta');
+    const sD = document.getElementById('heroSuccessDelta');
+    if (vD) vD.innerHTML = `<i class="fas fa-arrow-up"></i> ${series.rate}% success`;
+    if (tD) tD.innerHTML = `<i class="fas fa-check"></i> ${series.totalSuccess} ok · ${series.totalFailed} failed`;
+    if (sD) sD.innerHTML = `<i class="fas fa-bolt"></i> live ledger`;
+
+    // Minis
+    const totalDen = series.totalSuccess + series.totalFailed;
+    const failRate = totalDen > 0 ? Math.round(series.totalFailed/totalDen*100) : 0;
+    s('miniSuccess', `${series.rate}%`); s('miniSuccessSub', `${series.totalSuccess} of ${totalDen} successful`);
+    s('miniFailure', `${failRate}%`);   s('miniFailureSub', `${series.totalFailed} failed`);
+    s('miniAvg', fmtMoney(series.avg, true)); s('miniAvgSub', `across ${series.totalSuccess} txns`);
+    s('miniMargin', `${series.margin.toFixed(1)}%`); s('miniMarginSub', `${fmtMoney(series.totalProfit, true)} profit`);
+    const sb1 = document.getElementById('miniSuccessBar'); if (sb1) sb1.style.width = series.rate + '%';
+    const sb2 = document.getElementById('miniFailureBar'); if (sb2) sb2.style.width = failRate + '%';
+    const sb3 = document.getElementById('miniAvgBar'); if (sb3) sb3.style.width = Math.min(100, (series.avg/5000)*100) + '%';
+    const sb4 = document.getElementById('miniMarginBar'); if (sb4) sb4.style.width = Math.min(100, Math.max(2, series.margin*4)) + '%';
+
+    // Segments
+    s('segDeposits', fmtMoney(series.amounts.deposit, true));
+    s('segWithdrawals', fmtMoney(series.amounts.withdrawal, true));
+    s('segAirtime', fmtMoney(series.amounts.airtime, true));
+    s('segData', fmtMoney(series.amounts.data, true));
+    s('segManualFund', fmtMoney(series.amounts.manual_fund, true));
+    s('segRefunds', fmtMoney(series.amounts.refund, true));
+
+    // Charts
+    renderRevenueChart(series);
+    renderMixChart(series.counted);
+
+    // Top services
+    const services = [
+      { key:'airtime', label:'Airtime', sub:`${series.counted.airtime} txns` },
+      { key:'data',    label:'Data',    sub:`${series.counted.data} txns` },
+      { key:'deposit', label:'Deposits',sub:`${series.counted.deposit} txns` },
+      { key:'withdrawal', label:'Withdrawals', sub:`${series.counted.withdrawal} txns` },
+      { key:'manual_fund', label:'Manual Credit', sub:`${series.counted.manual_fund} txns` },
+    ].map(x => ({ label:x.label, sub:x.sub, value: fmtMoney(series.amounts[x.key], true), raw: series.amounts[x.key] }))
+     .sort((a,b)=>b.raw-a.raw).slice(0,5);
+    renderTopList('topServices', services, false);
+
+    // Top customers
+    const customers = series.topCustomers.map(c => ({ label:c.name, sub:`${c.count} txn${c.count===1?'':'s'}`, value: fmtMoney(c.total, true) }));
+    renderTopList('topCustomers', customers, true);
+  }
+  window.updateAnalytics = updateAnalytics;
+  /* ============ END ADVANCED ANALYTICS ============ */
 
   /* USERS */
   function filterUsers(q) { const query = String(q||'').toLowerCase().trim(); if (!query) return []; const clean = query.replace(/\D/g,''); return (state.users||[]).filter(u => { const hay = `${u.name||''} ${u.email||''} ${u.phone||''}`.toLowerCase(); if (hay.includes(query)) return true; if (clean.length >= 3 && String(u.phone||'').replace(/\D/g,'').includes(clean)) return true; if (String(u.id||u._id||'') === query) return true; return false; }); }
@@ -1983,7 +2359,7 @@ button{font-family:inherit}
   async function loadDrift() { const c = $('#driftList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api('/admin/wallet/drift'); const items = r.data?.drift || []; const total = r.data?.total_wallets ?? null; const td = items.reduce((a,d) => a+Math.abs(Number(d.drift)||0),0); const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('driftTotal', total != null ? Number(total).toLocaleString() : '—'); s('driftInSync', total != null ? Math.max(0, Number(total)-items.length).toLocaleString() : '—'); s('driftOutOfSync', items.length.toLocaleString()); s('driftTotalAmount', fmtMoney(td, true)); s('driftCount', items.length ? `${items.length} wallet${items.length===1?'':'s'} out of sync` : 'All wallets balanced'); if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-check"></i></div><div class="title">Every wallet is in sync</div><div class="desc">Stored balances match the ledger.</div></div>`; return; } c.innerHTML = items.slice().sort((a,b) => Math.abs(Number(b.drift)||0)-Math.abs(Number(a.drift)||0)).map(d => { const drift = Number(d.drift)||0; const abs = Math.abs(drift); const sev = abs >= 10000 ? 'critical' : abs >= 1000 ? 'major' : 'minor'; const email = d.user_email || d.user_phone || `User #${d.user_id}`; const ini = String(email).charAt(0).toUpperCase(); return `<div class="drift-row"><div class="drift-user"><div class="drift-user-avatar">${esc(ini)}</div><div><div class="drift-user-name">${esc(email)}</div><div class="drift-user-id">ID #${esc(String(d.user_id))}</div></div></div><div class="drift-cell">${fmtMoney(d.wallet_balance)}<span class="drift-sub">Wallet</span></div><div class="drift-cell">${fmtMoney(d.expected_balance)}<span class="drift-sub">Expected</span></div><div class="drift-cell">${fmtMoney(d.ledger_balance)}<span class="drift-sub">Ledger</span></div><div class="drift-delta ${drift>=0?'positive':'negative'}">${drift>=0?'+':'−'}${fmtMoney(abs)}</div><span class="drift-sev ${sev}">${sev}</span></div>`; }).join(''); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-circle-exclamation"></i></div><div class="title">Could not load</div><div class="desc">${esc(e.message)}</div></div>`; } }
   window.loadDrift = loadDrift;
 
-  async function refreshAll(silent = false) { if (!silent) toast('Refreshing…', 'info'); await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]); buildUnifiedTransactions(); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); renderChart(); updateAnalyticsKpis(); syncOverviewRangeUI(); detectNewApprovals(); renderAdminAlerts(); renderDW(); if (state.activeTab === 'mismatches') loadMismatches(); if (state.activeTab === 'drift') loadDrift(); if (state.activeTab === 'archived') loadArchived(state.archived.page); if (!silent) toast('Updated', 'success'); }
+  async function refreshAll(silent = false) { if (!silent) toast('Refreshing…', 'info'); await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]); buildUnifiedTransactions(); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); updateAnalytics(); syncOverviewRangeUI(); detectNewApprovals(); renderAdminAlerts(); renderDW(); if (state.activeTab === 'mismatches') loadMismatches(); if (state.activeTab === 'drift') loadDrift(); if (state.activeTab === 'archived') loadArchived(state.archived.page); if (!silent) toast('Updated', 'success'); }
   window.refreshAll = refreshAll;
 
   /* ALARM */
