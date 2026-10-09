@@ -1474,7 +1474,6 @@ button{font-family:inherit}
 
   /* ============================================================
      PAGER — numbered pages with prev / next chevrons
-     Uses inline onclick to call window.<fnName>GoTo(page)
      ============================================================ */
   function renderPager(cid, cp, total, per, fnName) {
     const el = document.getElementById(cid);
@@ -1507,21 +1506,17 @@ button{font-family:inherit}
 
     let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div>`;
     h += `<div class="pagination-controls">`;
-    // PREV
     h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp-1})" ${safeCp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
-    // Numbers
     for (const p of pages) {
       if (p === '…') h += `<span class="page-btn ellipsis">…</span>`;
       else h += `<button type="button" class="page-btn${p===safeCp?' active':''}" onclick="window.${fnName}GoTo(${p})">${p}</button>`;
     }
-    // NEXT
     h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp+1})" ${safeCp===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
     h += `</div>`;
     el.innerHTML = h;
     el.style.display = 'flex';
   }
 
-  /* ---- Numbered pagination handlers ---- */
   window.recentTxGoTo = function(pg) {
     const list = applyRange(state.unifiedTransactions, state.range)
       .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
@@ -1559,9 +1554,7 @@ button{font-family:inherit}
     renderWithdrawals();
     document.getElementById('withdrawalsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  window.archivedGoTo = function(pg) {
-    loadArchived(pg);
-  };
+  window.archivedGoTo = function(pg) { loadArchived(pg); };
 
   function renderRecentTx() {
     const c = $('#recentTxList');
@@ -2241,7 +2234,6 @@ button{font-family:inherit}
   }
   window.enableAdminSound = enableAdminSound;
 
-  /* Native notification bridge */
   const Notify = (() => {
     const TITLE_BASE = 'Shatova · Admin';
     const ORIGINAL_ICON = document.querySelector('link[rel="icon"]')?.href || '/favicon.ico';
@@ -2335,9 +2327,6 @@ button{font-family:inherit}
   renderAdminAlerts();
   setInterval(() => { detectNewApprovals(); }, 2500);
 
-  /* ============================================================
-     RETURN CHECK — pending items populate alert panel on return
-     ============================================================ */
   async function checkForPendingOnReturn() {
     try {
       await Promise.all([fetchDep(), fetchWd()]);
@@ -2413,7 +2402,6 @@ button{font-family:inherit}
     await refreshAll(true);
     detectNewApprovals();
     state.notificationBootstrapped = true;
-    // Hydrate alert panel with existing pending items (no sound)
     (function hydrateAlertsFromPending() {
       (state.deposits || []).filter(x => getStatus(x) === 'pending').forEach(x => {
         const id = aId('deposit', x);
