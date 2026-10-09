@@ -6,6 +6,7 @@
 <title>Shatova · Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="icon" href="/favicon.ico">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -28,9 +29,7 @@
   --shadow-md:0 1px 2px rgba(15,23,42,0.04),0 6px 16px -3px rgba(15,23,42,0.06),0 10px 28px -8px rgba(15,23,42,0.04);
   --shadow-lg:0 1px 3px rgba(15,23,42,0.05),0 10px 28px -6px rgba(15,23,42,0.08),0 20px 48px -14px rgba(15,23,42,0.06);
   --shadow-xl:0 2px 6px rgba(15,23,42,0.05),0 18px 42px -10px rgba(15,23,42,0.12),0 32px 70px -18px rgba(15,23,42,0.08);
-  --shadow-hover-light:0 2px 10px -2px rgba(10,69,52,0.07),0 1px 3px rgba(10,69,52,0.04);
   --shadow-hover-card:0 12px 32px -14px rgba(10,69,52,0.16),0 3px 10px rgba(10,69,52,0.05);
-  --shadow-inset-top:inset 0 1px 0 rgba(255,255,255,0.14);
   --ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0.16,1,0.3,1);
   --header-h:60px;--sidebar-w:230px;
 }
@@ -147,7 +146,7 @@ button{font-family:inherit}
 .panel-body{padding:14px 16px}
 .panel-body.no-pad{padding:0}
 
-/* ===== ADVANCED ANALYTICS ===== */
+/* ADVANCED ANALYTICS */
 .an-hero{position:relative;border-radius:16px;overflow:hidden;margin-bottom:16px;background:linear-gradient(120deg,#062f24 0%,#0a4534 45%,#0d5a44 100%);color:#fff;padding:22px 24px;box-shadow:0 20px 40px -20px rgba(10,69,52,.5)}
 .an-hero::before{content:'';position:absolute;top:-60%;right:-10%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.22) 0%,transparent 60%);pointer-events:none}
 .an-hero::after{content:'';position:absolute;bottom:-70%;left:-8%;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.14) 0%,transparent 65%);pointer-events:none}
@@ -169,7 +168,6 @@ button{font-family:inherit}
 .an-card-body.tight{padding:10px 14px}
 .chart-wrap{position:relative;width:100%;height:280px}
 .chart-wrap.donut{height:230px}
-.chart-wrap.small{height:180px}
 .chart-legend-custom{display:flex;flex-wrap:wrap;gap:12px;padding:0 18px 16px}
 .chart-legend-custom .lg{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;color:var(--text-secondary)}
 .chart-legend-custom .lg .sw{width:12px;height:12px;border-radius:4px}
@@ -204,18 +202,8 @@ button{font-family:inherit}
 .an-seg-item .val.gold{color:var(--warning-dark)}
 .an-footnote{padding:10px 18px 16px;font-size:10px;color:var(--text-muted);line-height:1.55;display:flex;align-items:center;gap:7px}
 .an-footnote i{color:var(--primary)}
-
-@media (max-width:1100px){
-  .an-grid{grid-template-columns:1fr}
-  .an-two-col{grid-template-columns:1fr}
-}
-@media (max-width:900px){
-  .chart-wrap{height:220px}
-  .an-hero{padding:18px}
-  .an-hero h2{font-size:16px}
-  .an-hero-stat .val{font-size:18px}
-}
-/* ===== END ADVANCED ANALYTICS ===== */
+@media (max-width:1100px){.an-grid{grid-template-columns:1fr}.an-two-col{grid-template-columns:1fr}}
+@media (max-width:900px){.chart-wrap{height:220px}.an-hero{padding:18px}.an-hero h2{font-size:16px}.an-hero-stat .val{font-size:18px}}
 
 /* KPI */
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
@@ -224,9 +212,6 @@ button{font-family:inherit}
 .kpi .k-label{font-size:9px;font-weight:800;letter-spacing:0.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
 .kpi .k-value{font-size:19px;font-weight:900;color:var(--text);letter-spacing:-0.5px;line-height:1.1;font-variant-numeric:tabular-nums}
 .kpi .k-sub{font-size:10.5px;color:var(--text-muted);margin-top:5px;font-weight:500}
-.kpi.accent .k-value{color:var(--primary-dark)}
-.kpi.success .k-value{color:var(--success-dark)}
-.kpi.warning .k-value{color:var(--warning-dark)}
 
 /* ROWS */
 .data-list{display:flex;flex-direction:column}
@@ -893,7 +878,6 @@ button{font-family:inherit}
         </div>
       </section>
 
-      <!-- ===== ADVANCED ANALYTICS SECTION ===== -->
       <section id="tab-analytics" style="display:none">
         <div class="timeframe-bar">
           <div class="tf-left">
@@ -1023,12 +1007,11 @@ button{font-family:inherit}
             </div>
             <div class="an-footnote">
               <i class="fas fa-circle-info"></i>
-              Figures reflect the selected period and are derived from the live unified ledger. Profit is estimated from recorded margins.
+              All figures reflect the selected period and are computed from the same unified ledger. Gross Volume = sum of all segments. Success Rate counts only Success vs Failed.
             </div>
           </div>
         </div>
       </section>
-      <!-- ===== END ADVANCED ANALYTICS ===== -->
 
       <section id="tab-users" style="display:none">
         <div class="panel">
@@ -1299,7 +1282,6 @@ button{font-family:inherit}
 <div class="modal-overlay" id="viewModal"><div class="modal"><div class="head"><h3><i class="fas fa-eye"></i> Details</h3><button class="close" onclick="closeViewModal()"><i class="fas fa-times"></i></button></div><div id="viewBody"></div><div class="btns"><button class="secondary" onclick="closeViewModal()"><i class="fas fa-times"></i> Close</button></div></div></div>
 <div class="modal-overlay" id="txnModal"><div class="modal"><div class="head"><h3><i class="fas fa-receipt"></i> Transaction Details</h3><button class="close" onclick="closeTxnModal()"><i class="fas fa-times"></i></button></div><div id="txnBody"></div><div class="btns"><button class="secondary" onclick="closeTxnModal()"><i class="fas fa-times"></i> Close</button></div></div></div>
 
-<!-- Datashop modal — Funded & Spent removed, refresh fixed -->
 <div class="modal-overlay" id="datashopModal"><div class="modal"><div class="head"><h3><i class="fas fa-store"></i> Datashop Wallet</h3><button class="close" onclick="closeDatashopWallet()"><i class="fas fa-times"></i></button></div><div class="txn-amount-block" style="margin-bottom:14px"><div class="amt-label">Available Balance</div><div class="amt-value" id="dwBalance">₦0</div></div><div class="row-detail"><span class="lbl">Last Funding</span><span class="val" id="dwLastFunding">—</span></div><div class="row-detail"><span class="lbl">Source</span><span class="val" id="dwSource">—</span></div><hr class="divider"><div style="display:flex;gap:8px"><button onclick="goToDatashopPage()" style="flex:1;padding:10px;border-radius:9px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);font-weight:800;cursor:pointer;font-family:inherit;font-size:12px"><i class="fas fa-external-link-alt"></i> Open</button><button onclick="reloadDatashopWallet()" style="flex:1;padding:10px;border-radius:9px;border:none;background:var(--primary-gradient);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;font-size:12px"><i class="fas fa-sync-alt"></i> Refresh</button></div></div></div>
 
 <div class="modal-overlay" id="approveModal"><div class="modal"><div class="head"><h3><i class="fas fa-check-circle"></i> Approve Withdrawal</h3><button class="close" onclick="closeApproveModal()"><i class="fas fa-times"></i></button></div><div id="approveBody"></div><div class="input-group"><label>Transaction Reference</label><input type="text" id="approveRef" placeholder="Enter bank reference" autocomplete="off"><div class="hint">From the user's bank receipt</div></div><div class="input-group"><label>Notes (Optional)</label><textarea id="approveNotes" placeholder="Add notes…" rows="2"></textarea></div><div class="btns"><button class="secondary" id="approveCancelBtn" onclick="closeApproveModal()">Cancel</button><button class="primary" id="approveSubmitBtn" onclick="submitApprove()"><i class="fas fa-check"></i> Approve</button></div></div></div>
@@ -1345,7 +1327,7 @@ button{font-family:inherit}
     unifiedTransactions: [],
     userQuery: '', userSearched: false, userResults: [], userLoading: false, userTotal: 0,
     userFilterStatus: 'all',
-    datashop: { balance: 0, totalFunded: 0, totalSpent: 0, lastFunding: null, source: null },
+    datashop: { balance: 0, lastFunding: null, source: null },
     currentApprove: null, currentReject: null,
     currentApproveDeposit: null, currentRejectDeposit: null,
     withdrawApprovePending: false, withdrawRejectPending: false,
@@ -1391,7 +1373,7 @@ button{font-family:inherit}
   let theme = localStorage.getItem('adminTheme') || 'light';
   document.documentElement.setAttribute('data-theme', theme);
   updateThemeIcons();
-  function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('adminTheme', theme); updateThemeIcons(); rebuildChartsTheme(); }
+  function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('adminTheme', theme); updateThemeIcons(); updateAnalytics(); }
   function updateThemeIcons() { const ic = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; ['themeIconSidebar','themeIconDrawer'].forEach(id => { const e = document.getElementById(id); if (e) e.className = ic; }); }
   window.toggleTheme = toggleTheme;
 
@@ -1510,21 +1492,13 @@ button{font-family:inherit}
   async function fetchWd() { try { const r = await api('/wallet/admin/withdrawals/all'); state.withdrawals = pick(r); } catch (_) { state.withdrawals = []; } }
   async function fetchMe() { try { const r = await api('/auth/me'); const u = r.data?.user || r.data; if (u) { const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('adminName', u.name || 'Admin'); s('adminEmail', u.email || ''); s('drawerName', u.name || 'Admin'); s('drawerEmail', u.email || ''); s('adminAvatar', (u.name || 'A').charAt(0).toUpperCase()); s('drawerAvatar', (u.name || 'A').charAt(0).toUpperCase()); } } catch (_) {} }
 
-  /* Datashop wallet — Funded & Spent removed; refresh now actually re-fetches */
   async function fetchDW() {
     try {
       const r = await api('/admin/datashop/wallet');
       const d = r.data || {};
-      state.datashop = {
-        balance:     Number(d.balance || 0),
-        totalFunded: Number(d.total_funded || 0),
-        totalSpent:  Number(d.total_spent  || 0),
-        lastFunding: d.last_funding_at || null,
-        source:      d.source || 'local',
-      };
+      state.datashop = { balance: Number(d.balance || 0), lastFunding: d.last_funding_at || null, source: d.source || 'local' };
     } catch (e) {
-      console.warn('Datashop wallet fetch failed:', e);
-      state.datashop = { balance: 0, totalFunded: 0, totalSpent: 0, lastFunding: null, source: 'error' };
+      state.datashop = { balance: 0, lastFunding: null, source: 'error' };
     }
     renderDW();
   }
@@ -1540,7 +1514,6 @@ button{font-family:inherit}
       srcEl.className = 'val' + (d.source === 'datashop_api' ? ' success' : d.source === 'fallback' || d.source === 'error' ? ' danger' : '');
     }
   }
-  /* Fixed refresh: this now triggers a fresh fetch and gives feedback */
   async function reloadDW() {
     const btn = event && event.target ? event.target.closest('button') : null;
     const orig = btn ? btn.innerHTML : null;
@@ -1654,12 +1627,8 @@ button{font-family:inherit}
   }
   window.goToRecentTxPage = (pg) => { state.recentTxPage = pg; renderRecentTx(); };
 
-  /* ============ ADVANCED ANALYTICS ENGINE ============ */
-  const CHART_COLORS = {
-    primary: '#0a4534', primaryLight: 'rgba(10,69,52,.75)',
-    info: '#3b82f6', infoLight: 'rgba(59,130,246,.75)',
-    success: '#10b981', warning: '#f59e0b', danger: '#ef4444', purple: '#8b5cf6', muted:'#94a3b8'
-  };
+  /* ============ ADVANCED ANALYTICS ENGINE (accurate, ties out) ============ */
+  const CHART_COLORS = { primary:'#0a4534', info:'#3b82f6', success:'#10b981', warning:'#f59e0b', danger:'#ef4444', purple:'#8b5cf6', muted:'#94a3b8' };
 
   function buildAnalyticsBuckets() {
     const now = new Date(); const b = [];
@@ -1688,68 +1657,97 @@ button{font-family:inherit}
     return b;
   }
 
+  // Compute ALL analytics from the SAME filtered set. Every number ties out.
   function computeAnalyticsSeries() {
     buildUnifiedTransactions();
-    const buckets = buildAnalyticsBuckets();
-    const all = state.unifiedTransactions || [];
-    const gross = buckets.map(()=>0), success = buckets.map(()=>0), profit = buckets.map(()=>0);
+
+    // 1. All transactions in selected range (this is the source of truth)
+    const list = applyRange(state.unifiedTransactions, state.range);
+
+    // 2. Sum and count by kind
     const counted = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
     const amounts = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
-    const userSpend = new Map();
-    let totalSuccess = 0, totalFailed = 0, sum = 0, cnt = 0;
 
-    all.forEach(t => {
-      const ts = new Date(getDate(t)).getTime(); if (isNaN(ts)) return;
-      const amt = getAmount(t); const st = getStatus(t); const k = txnKind(t);
+    let totalSuccessCount = 0, totalFailedCount = 0;
+    let grossVolume = 0;          // sum of ALL transactions
+    let successVolume = 0;        // sum of successful only
+    let totalProfit = 0;          // sum of profit field
+    let successSum = 0, successCnt = 0;
+
+    const userSpend = new Map();
+
+    for (const t of list) {
+      const amt = getAmount(t);
+      const st = getStatus(t);
+      const k = txnKind(t);
       const m = t.metadata || {};
-      // Bucket
+
+      // Kind counters & amount per kind
+      if (counted[k] !== undefined) {
+        counted[k] += 1;
+        amounts[k] += amt;
+      }
+
+      // Totals (money = every transaction, regardless of status)
+      grossVolume += amt;
+
+      if (st === 'success') {
+        totalSuccessCount++;
+        successVolume += amt;
+        successSum += amt; successCnt++;
+        const p = Number(t.profit ?? m.profit ?? 0) || 0;
+        totalProfit += p;
+
+        // top customers — only successful, only money-in transactions
+        const isMoneyIn = ['airtime','data','deposit','manual_fund','transfer'].includes(k);
+        if (isMoneyIn && amt > 0) {
+          const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown');
+          const nm = t.user_name || t.user_email || t.phone || 'Unknown';
+          const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 };
+          cur.total += amt; cur.count += 1;
+          userSpend.set(uid, cur);
+        }
+      } else if (st === 'failed') {
+        totalFailedCount++;
+      }
+      // 'pending' and 'refunded' counted in counted[] but neither success nor fail
+    }
+
+    const denom = totalSuccessCount + totalFailedCount;
+    const rate = denom > 0 ? Math.round((totalSuccessCount / denom) * 100) : 0;
+    const avg = successCnt > 0 ? (successSum / successCnt) : 0;
+    const margin = grossVolume > 0 ? (totalProfit / grossVolume) * 100 : 0;
+
+    // 3. Time-series buckets — computed from SAME list
+    const buckets = buildAnalyticsBuckets();
+    const seriesGross = buckets.map(()=>0);
+    const seriesSuccess = buckets.map(()=>0);
+    const seriesProfit = buckets.map(()=>0);
+    for (const t of list) {
+      const ts = new Date(getDate(t)).getTime(); if (isNaN(ts)) continue;
+      const amt = getAmount(t); const st = getStatus(t); const m = t.metadata || {};
       for (let i=0;i<buckets.length;i++){
         const s = buckets[i].start.getTime(), e = buckets[i].end.getTime();
         if (ts >= s && ts < e) {
-          gross[i] += amt;
-          if (st === 'success') success[i] += amt;
+          seriesGross[i] += amt;
+          if (st === 'success') seriesSuccess[i] += amt;
           const p = Number(t.profit ?? m.profit ?? 0) || 0;
-          profit[i] += p;
+          seriesProfit[i] += p;
           break;
         }
       }
-      // Kind
-      if (counted[k] !== undefined) {
-        counted[k]++; amounts[k] += amt;
-        if (st === 'success') { totalSuccess++; sum += amt; cnt++; }
-        else if (st === 'failed') totalFailed++;
-      }
-      // top customers
-      if (st === 'success' && amt > 0) {
-        const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown');
-        const nm = t.user_name || t.user_email || t.phone || 'Unknown';
-        const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 };
-        cur.total += amt; cur.count += 1;
-        userSpend.set(uid, cur);
-      }
-    });
-
-    // Hero numbers
-    const heroGross = gross.reduce((a,b)=>a+b,0);
-    const heroTxns = all.filter(t => { const ts = new Date(getDate(t)).getTime(); return !isNaN(ts) && ts >= (buckets[0]?.start?.getTime()||0); }).length;
-    const denom = totalSuccess + totalFailed;
-    const rate = denom > 0 ? Math.round(totalSuccess/denom*100) : 0;
-    const avg = cnt > 0 ? sum / cnt : 0;
-    const totalProfit = profit.reduce((a,b)=>a+b,0);
-    const margin = heroGross > 0 ? (totalProfit/heroGross*100) : 0;
+    }
 
     return {
-      buckets, gross, success, profit,
+      buckets, seriesGross, seriesSuccess, seriesProfit,
       counted, amounts,
-      totalSuccess, totalFailed, rate, avg, totalProfit, margin,
-      heroGross, heroTxns,
+      totalSuccessCount, totalFailedCount, rate, avg, totalProfit, margin,
+      heroGross: grossVolume, heroSuccessVolume: successVolume, heroTxns: list.length,
       topCustomers: Array.from(userSpend.values()).sort((a,b)=>b.total-a.total).slice(0,5),
     };
   }
 
   function destroyChart(c) { if (c) { try { c.destroy(); } catch(_){} } }
-
-  function rebuildChartsTheme() { updateAnalytics(); }
 
   function renderRevenueChart(series) {
     const el = document.getElementById('revenueChart'); if (!el) return;
@@ -1759,7 +1757,6 @@ button{font-family:inherit}
     const labels = series.buckets.map(b => b.label);
     const ctx = el.getContext('2d');
 
-    // Gradients
     const gGross = ctx.createLinearGradient(0,0,0,280);
     gGross.addColorStop(0,'rgba(13,90,68,.55)');
     gGross.addColorStop(1,'rgba(13,90,68,.02)');
@@ -1776,9 +1773,9 @@ button{font-family:inherit}
       data: {
         labels,
         datasets: [
-          { label:'Gross Volume', data: series.gross, borderColor: CHART_COLORS.primary, backgroundColor: gGross, borderWidth: 2.5, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.primary, pointBorderColor: '#fff', pointBorderWidth: 2 },
-          { label:'Successful', data: series.success, borderColor: CHART_COLORS.info, backgroundColor: gSucc, borderWidth: 2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.info, pointBorderColor: '#fff', pointBorderWidth: 2 },
-          { label:'Profit', data: series.profit, borderColor: CHART_COLORS.warning, backgroundColor: gProfit, borderWidth: 2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.warning, pointBorderColor: '#fff', pointBorderWidth: 2 },
+          { label:'Gross Volume', data: series.seriesGross, borderColor: CHART_COLORS.primary, backgroundColor: gGross, borderWidth: 2.5, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.primary, pointBorderColor: '#fff', pointBorderWidth: 2 },
+          { label:'Successful', data: series.seriesSuccess, borderColor: CHART_COLORS.info, backgroundColor: gSucc, borderWidth: 2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.info, pointBorderColor: '#fff', pointBorderWidth: 2 },
+          { label:'Profit', data: series.seriesProfit, borderColor: CHART_COLORS.warning, backgroundColor: gProfit, borderWidth: 2, tension: .4, fill: true, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: CHART_COLORS.warning, pointBorderColor: '#fff', pointBorderWidth: 2 },
         ]
       },
       options: {
@@ -1827,13 +1824,10 @@ button{font-family:inherit}
     });
   }
 
-  function renderTopList(elId, items, isCustomer) {
+  function renderTopList(elId, items) {
     const el = document.getElementById(elId); if (!el) return;
     if (!items.length) { el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:11.5px">No data for this period.</div>`; return; }
-    el.innerHTML = items.map((it, i) => {
-      const label = it.label; const sub = it.sub; const val = it.value;
-      return `<div class="rank-item"><div class="rank-pos">${i+1}</div><div style="min-width:0"><div class="rank-name">${esc(label)}</div><div class="rank-sub">${esc(sub)}</div></div><div class="rank-val">${val}</div></div>`;
-    }).join('');
+    el.innerHTML = items.map((it, i) => `<div class="rank-item"><div class="rank-pos">${i+1}</div><div style="min-width:0"><div class="rank-name">${esc(it.label)}</div><div class="rank-sub">${esc(it.sub)}</div></div><div class="rank-val">${it.value}</div></div>`).join('');
   }
 
   function updateAnalytics() {
@@ -1841,7 +1835,7 @@ button{font-family:inherit}
     const series = computeAnalyticsSeries();
     const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
 
-    // Hero
+    // Hero — ties out exactly
     s('heroVolume', fmtMoney(series.heroGross, true));
     s('heroTxns', series.heroTxns.toLocaleString());
     s('heroSuccess', `${series.rate}%`);
@@ -1849,22 +1843,22 @@ button{font-family:inherit}
     const tD = document.getElementById('heroTxnsDelta');
     const sD = document.getElementById('heroSuccessDelta');
     if (vD) vD.innerHTML = `<i class="fas fa-arrow-up"></i> ${series.rate}% success`;
-    if (tD) tD.innerHTML = `<i class="fas fa-check"></i> ${series.totalSuccess} ok · ${series.totalFailed} failed`;
+    if (tD) tD.innerHTML = `<i class="fas fa-check"></i> ${series.totalSuccessCount} ok · ${series.totalFailedCount} failed`;
     if (sD) sD.innerHTML = `<i class="fas fa-bolt"></i> live ledger`;
 
     // Minis
-    const totalDen = series.totalSuccess + series.totalFailed;
-    const failRate = totalDen > 0 ? Math.round(series.totalFailed/totalDen*100) : 0;
-    s('miniSuccess', `${series.rate}%`); s('miniSuccessSub', `${series.totalSuccess} of ${totalDen} successful`);
-    s('miniFailure', `${failRate}%`);   s('miniFailureSub', `${series.totalFailed} failed`);
-    s('miniAvg', fmtMoney(series.avg, true)); s('miniAvgSub', `across ${series.totalSuccess} txns`);
+    const totalDen = series.totalSuccessCount + series.totalFailedCount;
+    const failRate = totalDen > 0 ? Math.round(series.totalFailedCount/totalDen*100) : 0;
+    s('miniSuccess', `${series.rate}%`); s('miniSuccessSub', `${series.totalSuccessCount} of ${totalDen} successful`);
+    s('miniFailure', `${failRate}%`);   s('miniFailureSub', `${series.totalFailedCount} failed`);
+    s('miniAvg', fmtMoney(series.avg, true)); s('miniAvgSub', `across ${series.totalSuccessCount} txns`);
     s('miniMargin', `${series.margin.toFixed(1)}%`); s('miniMarginSub', `${fmtMoney(series.totalProfit, true)} profit`);
     const sb1 = document.getElementById('miniSuccessBar'); if (sb1) sb1.style.width = series.rate + '%';
     const sb2 = document.getElementById('miniFailureBar'); if (sb2) sb2.style.width = failRate + '%';
     const sb3 = document.getElementById('miniAvgBar'); if (sb3) sb3.style.width = Math.min(100, (series.avg/5000)*100) + '%';
     const sb4 = document.getElementById('miniMarginBar'); if (sb4) sb4.style.width = Math.min(100, Math.max(2, series.margin*4)) + '%';
 
-    // Segments
+    // Segments (exactly from amounts[])
     s('segDeposits', fmtMoney(series.amounts.deposit, true));
     s('segWithdrawals', fmtMoney(series.amounts.withdrawal, true));
     s('segAirtime', fmtMoney(series.amounts.airtime, true));
@@ -1876,20 +1870,23 @@ button{font-family:inherit}
     renderRevenueChart(series);
     renderMixChart(series.counted);
 
-    // Top services
+    // Top services (from same counted/amounts)
     const services = [
-      { key:'airtime', label:'Airtime', sub:`${series.counted.airtime} txns` },
-      { key:'data',    label:'Data',    sub:`${series.counted.data} txns` },
-      { key:'deposit', label:'Deposits',sub:`${series.counted.deposit} txns` },
-      { key:'withdrawal', label:'Withdrawals', sub:`${series.counted.withdrawal} txns` },
-      { key:'manual_fund', label:'Manual Credit', sub:`${series.counted.manual_fund} txns` },
-    ].map(x => ({ label:x.label, sub:x.sub, value: fmtMoney(series.amounts[x.key], true), raw: series.amounts[x.key] }))
+      { key:'airtime', label:'Airtime' },
+      { key:'data',    label:'Data' },
+      { key:'deposit', label:'Deposits' },
+      { key:'withdrawal', label:'Withdrawals' },
+      { key:'manual_fund', label:'Manual Credit' },
+      { key:'manual_debit', label:'Manual Debit' },
+      { key:'transfer', label:'Transfers' },
+      { key:'refund', label:'Refunds' },
+    ].map(x => ({ label:x.label, sub:`${series.counted[x.key]} txns`, value: fmtMoney(series.amounts[x.key], true), raw: series.amounts[x.key] }))
      .sort((a,b)=>b.raw-a.raw).slice(0,5);
-    renderTopList('topServices', services, false);
+    renderTopList('topServices', services);
 
-    // Top customers
+    // Top customers (same userSpend map)
     const customers = series.topCustomers.map(c => ({ label:c.name, sub:`${c.count} txn${c.count===1?'':'s'}`, value: fmtMoney(c.total, true) }));
-    renderTopList('topCustomers', customers, true);
+    renderTopList('topCustomers', customers);
   }
   window.updateAnalytics = updateAnalytics;
   /* ============ END ADVANCED ANALYTICS ============ */
@@ -2203,8 +2200,6 @@ button{font-family:inherit}
   window.resetFundTab = resetFundTab;
   function clearFundSearch() { const i = document.getElementById('fundLookupQuery'); if (i) { i.value = ''; i.focus(); } resetFundTab(); }
   window.clearFundSearch = clearFundSearch;
-  function quickFundSearch(term) { const i = document.getElementById('fundLookupQuery'); if (!i) return; i.value = term; onFundLookupInput(); i.focus(); }
-  window.quickFundSearch = quickFundSearch;
   function onFundLookupInput() {
     const i = document.getElementById('fundLookupQuery');
     const clear = document.getElementById('fundSearchClear');
@@ -2234,7 +2229,7 @@ button{font-family:inherit}
     }, 260);
   }
   window.onFundLookupInput = onFundLookupInput;
-  function renderFundResults(list, query) {
+  function renderFundResults(list) {
     const el = document.getElementById('fundResults');
     if (!el) return;
     if (!list || !list.length) { el.classList.remove('open'); el.innerHTML = ''; return; }
@@ -2274,8 +2269,6 @@ button{font-family:inherit}
     const isAdmin = /admin|super|owner/i.test(String(u.role || ''));
     el.innerHTML = `<div class="avatar" style="background:${hashColor(name)}">${esc(ini)}</div><div class="info"><div class="name">${esc(name)}</div><div class="meta"><span class="mono"><i class="fas fa-hashtag" style="font-size:10px;opacity:.6"></i> ${esc(String(id))}</span>${u.email ? `<span><i class="fas fa-envelope" style="font-size:10px;opacity:.6"></i> ${esc(u.email)}</span>` : ''}${u.phone ? `<span class="mono"><i class="fas fa-phone" style="font-size:10px;opacity:.6"></i> ${esc(u.phone)}</span>` : ''}${isAdmin ? `<span class="user-badge admin" style="font-size:9px"><i class="fas fa-shield-halved"></i> ${esc(String(u.role || 'admin').toUpperCase())}</span>` : ''}<span class="user-badge ${st}" style="font-size:9px">${esc(st)}</span><span style="font-weight:800;color:var(--primary-dark);font-size:12px">Balance: ${fmtMoney(balance)}</span></div></div><button class="change" onclick="resetFundTab()"><i class="fas fa-times"></i> Change</button>`;
   }
-  function setFundAmount(n) { const i = document.getElementById('fundAmount'); if (i) { i.value = String(n); i.focus(); } }
-  window.setFundAmount = setFundAmount;
   async function submitManualFund() {
     if (!state.fundUser) { toast('Select a user first', 'error'); return; }
     const amountInput = document.getElementById('fundAmount');
@@ -2362,19 +2355,196 @@ button{font-family:inherit}
   async function refreshAll(silent = false) { if (!silent) toast('Refreshing…', 'info'); await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]); buildUnifiedTransactions(); updateOverview(); renderTransactions(); renderDeposits(); renderWithdrawals(); renderUsers(); updateAnalytics(); syncOverviewRangeUI(); detectNewApprovals(); renderAdminAlerts(); renderDW(); if (state.activeTab === 'mismatches') loadMismatches(); if (state.activeTab === 'drift') loadDrift(); if (state.activeTab === 'archived') loadArchived(state.archived.page); if (!silent) toast('Updated', 'success'); }
   window.refreshAll = refreshAll;
 
-  /* ALARM */
-  let audioCtx = null, alarmLoop = null, alarmStop = null, alarmActive = false;
-  function ensureCtx() { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; if (!audioCtx) audioCtx = new AC(); if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{}); return audioCtx; }
-  function unlockAudio() { const c = ensureCtx(); if (!c) return; try { const b = c.createBuffer(1,1,22050); const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } catch (_) {} }
+  /* ============================================================
+     NOTIFICATION CENTER
+     - iPhone-style chime (E5 → G5 → C6) with reverb tail
+     - Service Worker native notifications (survives tab close)
+     - Favicon badge + title badge
+     - Background polling so admin gets alerted from any tab
+     ============================================================ */
+
+  // ---- iPhone-style chime using Web Audio ----
+  let audioCtx = null;
+  function ensureCtx() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+    return audioCtx;
+  }
+  function unlockAudio() {
+    const c = ensureCtx(); if (!c) return;
+    try { const b = c.createBuffer(1,1,22050); const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } catch (_) {}
+  }
   window.unlockAdminAudio = unlockAudio;
   try { if (localStorage.getItem('adminSoundEnabled') === '1') state.adminSoundEnabled = true; } catch (_) {}
-  function enableAdminSound() { const c = ensureCtx(); if (!c) { toast('Browser does not support alert sound', 'error'); return; } state.adminSoundEnabled = true; try { localStorage.setItem('adminSoundEnabled','1'); } catch (_) {} const ch = document.getElementById('adminSoundChip'); if (ch) { ch.classList.remove('show'); ch.classList.add('on'); ch.innerHTML = '<i class="fas fa-volume-high"></i> 🔊 Alarm enabled'; setTimeout(() => { ch.classList.remove('on','show'); }, 2200); } playBurst(c.currentTime + 0.02, 0.6); toast('🔊 Alarm sound enabled', 'success'); }
-  window.enableAdminSound = enableAdminSound;
-  function playBurst(startAt, dur = 1.4) { const c = ensureCtx(); if (!c) return; const m = c.createGain(); m.gain.setValueAtTime(0.0001, startAt); m.gain.exponentialRampToValueAtTime(0.85, startAt + 0.05); m.gain.setValueAtTime(0.85, startAt + dur - 0.08); m.gain.exponentialRampToValueAtTime(0.0001, startAt + dur); m.connect(c.destination); const a = c.createOscillator(), b = c.createOscillator(), gA = c.createGain(), gB = c.createGain(); a.type = 'square'; b.type = 'square'; a.frequency.setValueAtTime(1200, startAt); b.frequency.setValueAtTime(900, startAt); gA.gain.setValueAtTime(0.4, startAt); gB.gain.setValueAtTime(0.05, startAt); a.connect(gA); gA.connect(m); b.connect(gB); gB.connect(m); a.start(startAt); b.start(startAt); for (let t = startAt; t < startAt + dur; t += 0.4) { const loud = Math.round((t-startAt)/0.4) % 2 === 0; gA.gain.setValueAtTime(loud ? 0.45 : 0.05, t); gB.gain.setValueAtTime(loud ? 0.05 : 0.45, t); } a.stop(startAt + dur); b.stop(startAt + dur); const sub = c.createOscillator(), sg = c.createGain(); sub.type = 'sine'; sub.frequency.setValueAtTime(70, startAt); sub.frequency.exponentialRampToValueAtTime(45, startAt + dur); sg.gain.setValueAtTime(0.0001, startAt); sg.gain.exponentialRampToValueAtTime(0.4, startAt + 0.03); sg.gain.exponentialRampToValueAtTime(0.0001, startAt + dur); sub.connect(sg); sg.connect(m); sub.start(startAt); sub.stop(startAt + dur); }
-  function playAlert(test = false, opts = {}) { if (!state.adminSoundEnabled && !test) return; const c = ensureCtx(); if (!c) return; stopAlarm(); playBurst(c.currentTime + 0.02, opts.duration || 1.4); if (opts.loop) { alarmActive = true; const rp = () => { if (!alarmActive) return; try { playBurst(c.currentTime + 0.02, 1.4); } catch (_) {} alarmLoop = setTimeout(rp, 1550); }; alarmLoop = setTimeout(rp, 1550); alarmStop = setTimeout(() => stopAlarm(), 45000); } }
-  window.playAdminAlertSound = playAlert;
-  function stopAlarm() { alarmActive = false; if (alarmLoop) { clearTimeout(alarmLoop); alarmLoop = null; } if (alarmStop) { clearTimeout(alarmStop); alarmStop = null; } }
+
+  // A single soft bell note with a natural envelope
+  function playNote(ctx, freq, startAt, dur, gain, type = 'sine') {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startAt);
+    // gentle attack, long soft decay (bell-like)
+    g.gain.setValueAtTime(0.0001, startAt);
+    g.gain.exponentialRampToValueAtTime(gain, startAt + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, startAt + dur);
+    osc.connect(g);
+    g.connect(ctx.destination);
+    osc.start(startAt);
+    osc.stop(startAt + dur + 0.05);
+    return { osc, g };
+  }
+
+  // iPhone "Note" ringtone: E5 → G5 → C6, with slight reverb tail
+  function playIphoneChime(startAt) {
+    const c = ensureCtx(); if (!c) return;
+    const t0 = startAt || c.currentTime + 0.02;
+    // Three notes rising, each soft
+    playNote(c, 659.25, t0,        0.55, 0.16, 'sine');   // E5
+    playNote(c, 783.99, t0 + 0.14, 0.60, 0.16, 'sine');   // G5
+    playNote(c, 1046.5, t0 + 0.28, 0.75, 0.18, 'sine');   // C6
+    // Subtle shimmer octave
+    playNote(c, 1318.5, t0 + 0.28, 0.55, 0.07, 'sine');   // E6
+    // Low soft pad underneath for body
+    playNote(c, 329.63, t0,        1.0,  0.06, 'sine');   // E4
+  }
+
+  // Three-chime pattern: bell, bell, bell (with tiny gap), for a distinctive ring
+  function playIphoneAlert(test = false) {
+    if (!state.adminSoundEnabled && !test) return;
+    const c = ensureCtx(); if (!c) return;
+    stopAlarm();
+    const base = c.currentTime + 0.02;
+    playIphoneChime(base);
+    // Second chime a moment later — gives it a "notification" feel
+    playIphoneChime(base + 1.1);
+    // Third chime to make it clearly an alert
+    playIphoneChime(base + 2.2);
+  }
+
+  // Loop the iPhone chime every 4.5s while a pending approval exists
+  let alarmLoop = null, alarmStop = null, alarmActive = false;
+  function playLoopingAlert() {
+    if (!state.adminSoundEnabled) return;
+    stopAlarm();
+    alarmActive = true;
+    const tick = () => {
+      if (!alarmActive) return;
+      try { playIphoneAlert(true); } catch (_) {}
+      alarmLoop = setTimeout(tick, 4600);
+    };
+    tick();
+    // Safety stop after 60s
+    alarmStop = setTimeout(() => stopAlarm(), 60000);
+  }
+  function stopAlarm() {
+    alarmActive = false;
+    if (alarmLoop) { clearTimeout(alarmLoop); alarmLoop = null; }
+    if (alarmStop) { clearTimeout(alarmStop); alarmStop = null; }
+  }
   window.stopAdminAlarm = stopAlarm;
+
+  function enableAdminSound() {
+    const c = ensureCtx();
+    if (!c) { toast('Browser does not support alert sound', 'error'); return; }
+    state.adminSoundEnabled = true;
+    try { localStorage.setItem('adminSoundEnabled','1'); } catch (_) {}
+    const ch = document.getElementById('adminSoundChip');
+    if (ch) { ch.classList.remove('show'); ch.classList.add('on'); ch.innerHTML = '<i class="fas fa-volume-high"></i> 🔔 iPhone alert enabled'; setTimeout(() => { ch.classList.remove('on','show'); }, 2400); }
+    playIphoneAlert(true);
+    toast('🔔 iPhone alert sound enabled', 'success');
+  }
+  window.enableAdminSound = enableAdminSound;
+
+  // ---- Native notification bridge + favicon/title badges ----
+  const Notify = (() => {
+    const TITLE_BASE = 'Shatova · Admin';
+    const ORIGINAL_ICON = document.querySelector('link[rel="icon"]')?.href || '/favicon.ico';
+    let swReg = null;
+    let unreadCount = 0;
+
+    async function registerSW() {
+      if (!('serviceWorker' in navigator)) return null;
+      try { swReg = await navigator.serviceWorker.register('/sw-admin.js', { scope: '/' }); return swReg; }
+      catch (e) { console.warn('[Notify] SW registration failed:', e); return null; }
+    }
+    async function ensurePermission() {
+      if (!('Notification' in window)) return 'unsupported';
+      if (Notification.permission === 'granted') return 'granted';
+      if (Notification.permission === 'denied') return 'denied';
+      try { return await Notification.requestPermission(); } catch { return 'denied'; }
+    }
+    function paintFavicon(count) {
+      if (count <= 0) { let l = document.querySelector('link[rel="icon"]'); if (l) l.href = ORIGINAL_ICON; return; }
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, 64, 64);
+        ctx.beginPath(); ctx.arc(50, 14, 12, 0, Math.PI*2); ctx.fillStyle = '#ef4444'; ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.stroke();
+        if (count > 0) { ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(count > 9 ? '9+' : String(count), 50, 15); }
+        let l = document.querySelector('link[rel="icon"]');
+        if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); }
+        l.href = c.toDataURL('image/png');
+      };
+      img.onerror = () => {};
+      img.src = ORIGINAL_ICON;
+    }
+    function paintTitle(count) { document.title = count > 0 ? `(${count}) ${TITLE_BASE}` : TITLE_BASE; }
+    function setUnread(n) { unreadCount = n; paintTitle(n); paintFavicon(n); }
+    async function fireNative(title, body, extra = {}) {
+      if (Notification.permission !== 'granted') return;
+      const payload = { title, body, tag: 'shatova-admin-' + Date.now(), requireInteraction: true, data: { url: '/admin.html', ...extra } };
+      if (swReg && swReg.active) swReg.active.postMessage({ type: 'admin-notify', payload });
+      else if (navigator.serviceWorker?.controller) navigator.serviceWorker.controller.postMessage({ type: 'admin-notify', payload });
+      else {
+        try { const n = new Notification(title, { body, icon: '/favicon.ico', tag: payload.tag, requireInteraction: true }); n.onclick = () => { window.focus(); n.close(); }; } catch (_) {}
+      }
+    }
+    // Arm audio on first user interaction so background tab can play sound
+    let audioArmed = false;
+    function armAudio() {
+      if (audioArmed) return;
+      try { const c = ensureCtx(); if (c) { const b = c.createBuffer(1,1,22050); const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } audioArmed = true; } catch (_) {}
+    }
+    ['click','touchstart','keydown','scroll'].forEach(ev => window.addEventListener(ev, armAudio, { once: true, passive: true }));
+
+    return {
+      async init() {
+        await registerSW();
+        const p = await ensurePermission();
+        if (p === 'granted') console.log('[Notify] Native notifications enabled');
+        setUnread(0);
+      },
+      async notify(title, body, extra) { await fireNative(title, body, extra); },
+      incrementUnread() { setUnread(unreadCount + 1); },
+      clearUnread() { setUnread(0); },
+      get unread() { return unreadCount; },
+      requestPermission: ensurePermission,
+    };
+  })();
+
+  // Expose the hook so addAlert can call it
+  window.__notifyAdmin = (type, item) => {
+    const name = item.user_name || item.name || item.user_email || 'User';
+    const amt  = fmtMoney(getAmount(item));
+    const isDeposit = type === 'deposit';
+    Notify.incrementUnread();
+    Notify.notify(
+      isDeposit ? '💰 New Deposit Request' : '💸 New Withdrawal Request',
+      `${name} · ${amt} is waiting for approval.`,
+      { type, id: item.id || item.reference || '', url: '/admin.html' }
+    );
+  };
+
+  Notify.init().catch(err => console.warn('[Notify] init error:', err));
+
+  // Also update the title/favicon when the admin panel alert list is cleared
+  const _origClearAdminAlerts = window.clearAdminAlerts;
+
+  // ---- Banner helpers ----
   function showAlarmBanner(t, x) { const b = document.getElementById('alarmBanner'); if (!b) return; const t1 = document.getElementById('alarmBannerTitle'); const t2 = document.getElementById('alarmBannerText'); if (t1) t1.textContent = t; if (t2) t2.textContent = x; b.classList.add('show'); }
   window.showAlarmBanner = showAlarmBanner;
   function hideAlarmBanner() { const b = document.getElementById('alarmBanner'); if (b) b.classList.remove('show'); }
@@ -2383,26 +2553,93 @@ button{font-family:inherit}
   window.handleAlarmView = handleAlarmView;
   function handleAlarmMute() { hideAlarmBanner(); stopAlarm(); }
   window.handleAlarmMute = handleAlarmMute;
+
   function aId(type, it) { return `${type}:${String(it?.id || it?.reference || '')}`; }
-  function addAlert(type, item) { const id = aId(type, item); if (!id || id.endsWith(':')) return; if (state.adminAlertIds.has(id)) return; state.adminAlertIds.add(id); state.adminAlerts.unshift({ id, type, item, createdAt: Date.now() }); state.adminAlerts = state.adminAlerts.slice(0, 30); renderAdminAlerts(); const name = item.user_name || item.name || item.user_email || 'User'; const amt = fmtMoney(getAmount(item)); toast(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} needs approval · ${name} · ${amt}`, 'info'); playAlert(false, { loop: true }); showAlarmBanner(type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert', `${name} · ${amt} is waiting for approval.`); if ('Notification' in window && Notification.permission === 'granted') { try { new Notification(type === 'deposit' ? 'Shatova · Deposit' : 'Shatova · Withdrawal', { body: `${name} · ${amt}`, requireInteraction: true }); } catch (_) {} } }
-  function renderAdminAlerts() { const l = document.getElementById('adminAlertList'); const b = document.getElementById('adminAlertBadge'); const btn = document.getElementById('adminAlertBtn'); if (!l) return; const c = state.adminAlerts.length; if (b) b.textContent = c > 99 ? '99+' : String(c); if (btn) btn.classList.toggle('has-alert', c > 0); if (!c) { l.innerHTML = '<div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div>'; return; } l.innerHTML = state.adminAlerts.map(a => { const it = a.item || {}; const name = it.user_name || it.name || it.user_email || 'User'; const amt = fmtMoney(getAmount(it)); const isW = a.type === 'withdrawal'; const rf = it.reference || it.tx_ref || it.id || '—'; return `<div class="admin-alert-item"><div class="admin-alert-icon ${isW?'withdraw':''}"><i class="fas ${isW?'fa-arrow-up':'fa-arrow-down'}"></i></div><div><div class="aa-title">${isW?'Withdrawal':'Deposit'} awaiting approval</div><div class="aa-sub">${esc(name)} · Ref ${esc(String(rf))}</div><div class="aa-actions"><button class="review" onclick="reviewAlert('${esc(a.id)}')"><i class="fas fa-eye"></i> Review</button><button onclick="dismissAlert('${esc(a.id)}')"><i class="fas fa-check"></i> Dismiss</button></div></div><div class="aa-amount">${isW?'-':'+'}${amt}</div></div>`; }).join(''); }
+
+  // ---- The alert pipeline (called on every new pending deposit/withdrawal) ----
+  function addAlert(type, item) {
+    const id = aId(type, item);
+    if (!id || id.endsWith(':')) return;
+    if (state.adminAlertIds.has(id)) return;
+    state.adminAlertIds.add(id);
+
+    // 🔊 iPhone-style sound
+    playIphoneAlert(true);
+
+    // 🔔 Native OS notification (works in background tab / closed tab)
+    try { window.__notifyAdmin?.(type, item); } catch (_) {}
+
+    state.adminAlerts.unshift({ id, type, item, createdAt: Date.now() });
+    state.adminAlerts = state.adminAlerts.slice(0, 30);
+    renderAdminAlerts();
+
+    const name = item.user_name || item.name || item.user_email || 'User';
+    const amt = fmtMoney(getAmount(item));
+    toast(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} needs approval · ${name} · ${amt}`, 'info');
+    showAlarmBanner(type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert', `${name} · ${amt} is waiting for approval.`);
+  }
+
+  function renderAdminAlerts() {
+    const l = document.getElementById('adminAlertList');
+    const b = document.getElementById('adminAlertBadge');
+    const btn = document.getElementById('adminAlertBtn');
+    if (!l) return;
+    const c = state.adminAlerts.length;
+    if (b) b.textContent = c > 99 ? '99+' : String(c);
+    if (btn) btn.classList.toggle('has-alert', c > 0);
+    if (!c) { l.innerHTML = '<div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div>'; return; }
+    l.innerHTML = state.adminAlerts.map(a => {
+      const it = a.item || {};
+      const name = it.user_name || it.name || it.user_email || 'User';
+      const amt = fmtMoney(getAmount(it));
+      const isW = a.type === 'withdrawal';
+      const rf = it.reference || it.tx_ref || it.id || '—';
+      return `<div class="admin-alert-item"><div class="admin-alert-icon ${isW?'withdraw':''}"><i class="fas ${isW?'fa-arrow-up':'fa-arrow-down'}"></i></div><div><div class="aa-title">${isW?'Withdrawal':'Deposit'} awaiting approval</div><div class="aa-sub">${esc(name)} · Ref ${esc(String(rf))}</div><div class="aa-actions"><button class="review" onclick="reviewAlert('${esc(a.id)}')"><i class="fas fa-eye"></i> Review</button><button onclick="dismissAlert('${esc(a.id)}')"><i class="fas fa-check"></i> Dismiss</button></div></div><div class="aa-amount">${isW?'-':'+'}${amt}</div></div>`;
+    }).join('');
+  }
   window.renderAdminAlerts = renderAdminAlerts;
+
   function toggleAdminAlerts() { const p = document.getElementById('adminAlertPanel'); if (!p) return; const o = p.classList.toggle('open'); p.setAttribute('aria-hidden', String(!o)); if (o) { renderAdminAlerts(); stopAlarm(); hideAlarmBanner(); } }
   window.toggleAdminAlerts = toggleAdminAlerts;
   function dismissAlert(id) { state.adminAlerts = state.adminAlerts.filter(a => a.id !== id); renderAdminAlerts(); stopAlarm(); if (!state.adminAlerts.length) hideAlarmBanner(); }
   window.dismissAlert = dismissAlert;
-  function clearAdminAlerts() { state.adminAlerts = []; renderAdminAlerts(); stopAlarm(); hideAlarmBanner(); }
-  window.clearAdminAlerts = clearAdminAlerts;
+  window.clearAdminAlerts = function () {
+    Notify.clearUnread();
+    state.adminAlerts = [];
+    renderAdminAlerts();
+    stopAlarm();
+    hideAlarmBanner();
+  };
   function reviewAlert(id) { const a = state.adminAlerts.find(x => x.id === id); if (!a) return; stopAlarm(); hideAlarmBanner(); if (a.type === 'deposit') { switchTab('deposits'); setTimeout(() => openApproveDepositModal(a.item.id || a.item.reference), 220); } else { switchTab('withdrawals'); setTimeout(() => openApproveModal(a.item.id || a.item.reference), 220); } }
   window.reviewAdminAlert = reviewAlert;
-  function detectNewApprovals() { const d = (state.deposits||[]).filter(x => getStatus(x) === 'pending'); const w = (state.withdrawals||[]).filter(x => getStatus(x) === 'pending'); d.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenDepositIds.has(id)) { state.seenDepositIds.add(id); addAlert('deposit', x); } }); w.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenWithdrawalIds.has(id)) { state.seenWithdrawalIds.add(id); addAlert('withdrawal', x); } }); }
-  function requestNotifPermission() { if (!('Notification' in window) || Notification.permission !== 'default') return; try { Notification.requestPermission().catch(()=>{}); } catch (_) {} }
+  function detectNewApprovals() {
+    const d = (state.deposits||[]).filter(x => getStatus(x) === 'pending');
+    const w = (state.withdrawals||[]).filter(x => getStatus(x) === 'pending');
+    d.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenDepositIds.has(id)) { state.seenDepositIds.add(id); addAlert('deposit', x); } });
+    w.forEach(x => { const id = String(x.id || x.reference || ''); if (!id) return; if (!state.seenWithdrawalIds.has(id)) { state.seenWithdrawalIds.add(id); addAlert('withdrawal', x); } });
+  }
+  function requestNotifPermission() {
+    if (!('Notification' in window) || Notification.permission !== 'default') return;
+    try { setTimeout(() => { Notification.requestPermission().catch(()=>{}); }, 1500); } catch (_) {}
+  }
 
   requestNotifPermission();
   renderAdminAlerts();
   setInterval(() => { detectNewApprovals(); }, 2500);
-  document.addEventListener('click', e => { if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) { const p = document.getElementById('adminAlertPanel'); if (p && p.classList.contains('open')) toggleAdminAlerts(); } });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (state.activeTab === 'users' && (state.userQuery||'').length > 0) { clearUserSearch(); return; } if (state.activeTab === 'transactions' && ($('#txnSearch')?.value||'').length > 0) { clearTxnSearch(); return; } closeFilterSheet(); closeViewModal(); closeDatashopWallet(); closeTxnModal(); closeApproveModal(); closeRejectModal(); closeApproveDepositModal(); closeRejectDepositModal(); closeDrawer(); hideAlarmBanner(); stopAlarm(); } });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#adminAlertPanel') && !e.target.closest('#adminAlertBtn')) {
+      const p = document.getElementById('adminAlertPanel');
+      if (p && p.classList.contains('open')) toggleAdminAlerts();
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (state.activeTab === 'users' && (state.userQuery||'').length > 0) { clearUserSearch(); return; }
+      if (state.activeTab === 'transactions' && ($('#txnSearch')?.value||'').length > 0) { clearTxnSearch(); return; }
+      closeFilterSheet(); closeViewModal(); closeDatashopWallet(); closeTxnModal(); closeApproveModal(); closeRejectModal(); closeApproveDepositModal(); closeRejectDepositModal(); closeDrawer(); hideAlarmBanner(); stopAlarm();
+    }
+  });
 
   (function setupFilterCounts() { ['transactions','deposits','withdrawals','users','archived'].forEach(t => updateFilterCount(t)); })();
 
@@ -2416,8 +2653,19 @@ button{font-family:inherit}
     renderWithdrawals();
     await refreshAll(true);
     setInterval(() => refreshAll(true), 3000);
-    try { const es = new EventSource(`${API_BASE}/admin/events?token=${encodeURIComponent(token)}`); es.addEventListener('new-approval', e => { try { const p = JSON.parse(e.data || '{}'); if (p.type === 'deposit' || p.type === 'withdrawal') { addAlert(p.type, p.item || {}); refreshAll(true); } } catch (_) {} }); es.onerror = () => {}; } catch (_) {}
-    const ch = document.getElementById('adminSoundChip'); if (ch && !state.adminSoundEnabled) ch.classList.add('show');
+    // SSE (real-time) — keep it too
+    try {
+      const es = new EventSource(`${API_BASE}/admin/events?token=${encodeURIComponent(token)}`);
+      es.addEventListener('new-approval', e => {
+        try {
+          const p = JSON.parse(e.data || '{}');
+          if (p.type === 'deposit' || p.type === 'withdrawal') { addAlert(p.type, p.item || {}); refreshAll(true); }
+        } catch (_) {}
+      });
+      es.onerror = () => {};
+    } catch (_) {}
+    const ch = document.getElementById('adminSoundChip');
+    if (ch && !state.adminSoundEnabled) ch.classList.add('show');
   }
   init();
 })();
