@@ -1159,7 +1159,6 @@ button{font-family:inherit}
 <button class="admin-sound-chip" id="adminSoundChip" onclick="enableAdminSound()"><i class="fas fa-volume-high"></i> Tap to enable iPhone alert sound</button>
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- Preloaded audio element for iPhone alert — plays reliably in background -->
 <audio id="iphoneChime" preload="auto" playsinline></audio>
 
 <script>
@@ -1209,7 +1208,6 @@ button{font-family:inherit}
     charts: { revenue: null, mix: null },
     notificationBootstrapped: false,
     cache: { txns: [], deposits: [], withdrawals: [] },
-    _pagerBusy: false,
   };
 
   const $ = (s) => document.querySelector(s);
@@ -1474,7 +1472,10 @@ button{font-family:inherit}
     renderRecentTx();
   }
 
-  /* ============ PAGER (FIXED) ============ */
+  /* ============================================================
+     PAGER — numbered pages with prev / next chevrons
+     Uses inline onclick to call window.<fnName>GoTo(page)
+     ============================================================ */
   function renderPager(cid, cp, total, per, fnName) {
     const el = document.getElementById(cid);
     if (!el) return;
@@ -1488,46 +1489,79 @@ button{font-family:inherit}
     const safeCp = Math.min(Math.max(cp, 1), tp);
     const s = (safeCp-1)*per + 1;
     const e = Math.min(safeCp*per, total);
-    let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div><div class="pagination-controls">`;
-    h += `<button type="button" class="page-btn" data-page-fn="${fnName}" data-page-val="${safeCp-1}" ${safeCp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+
     const pages = [];
-    if (tp <= 6) { for (let i = 1; i <= tp; i++) pages.push(i); }
-    else {
+    if (tp <= 7) {
+      for (let i = 1; i <= tp; i++) pages.push(i);
+    } else {
       pages.push(1);
-      const l = Math.max(2, safeCp-1);
-      const r = Math.min(tp-1, safeCp+1);
+      let l = Math.max(2, safeCp - 1);
+      let r = Math.min(tp - 1, safeCp + 1);
+      if (safeCp <= 3) { l = 2; r = 4; }
+      if (safeCp >= tp - 2) { l = tp - 3; r = tp - 1; }
       if (l > 2) pages.push('…');
       for (let i = l; i <= r; i++) pages.push(i);
-      if (r < tp-1) pages.push('…');
+      if (r < tp - 1) pages.push('…');
       pages.push(tp);
     }
-    pages.forEach(x => {
-      if (x === '…') h += `<span class="page-btn ellipsis">…</span>`;
-      else h += `<button type="button" class="page-btn ${x===safeCp?'active':''}" data-page-fn="${fnName}" data-page-val="${x}">${x}</button>`;
-    });
-    h += `<button type="button" class="page-btn" data-page-fn="${fnName}" data-page-val="${safeCp+1}" ${safeCp===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button></div>`;
+
+    let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div>`;
+    h += `<div class="pagination-controls">`;
+    // PREV
+    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp-1})" ${safeCp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+    // Numbers
+    for (const p of pages) {
+      if (p === '…') h += `<span class="page-btn ellipsis">…</span>`;
+      else h += `<button type="button" class="page-btn${p===safeCp?' active':''}" onclick="window.${fnName}GoTo(${p})">${p}</button>`;
+    }
+    // NEXT
+    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp+1})" ${safeCp===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+    h += `</div>`;
     el.innerHTML = h;
     el.style.display = 'flex';
   }
 
-  // SINGLE delegated listener for ALL pager buttons
-  document.addEventListener('click', function(e) {
-    const btn = e.target.closest('button[data-page-fn]');
-    if (!btn || btn.disabled) return;
-    const fn = btn.getAttribute('data-page-fn');
-    const pg = parseInt(btn.getAttribute('data-page-val'), 10);
-    if (isNaN(pg)) return;
-    e.preventDefault();
-    const handlers = {
-      recentTx: window.goToRecentTxPage,
-      txn: window.goToTxnPage,
-      deposit: window.goToDepositPage,
-      withdrawal: window.goToWithdrawalPage,
-      archived: window.goToArchivedPage,
-    };
-    const h = handlers[fn];
-    if (typeof h === 'function') h(pg);
-  }, true);
+  /* ---- Numbered pagination handlers ---- */
+  window.recentTxGoTo = function(pg) {
+    const list = applyRange(state.unifiedTransactions, state.range)
+      .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
+    const tp = Math.max(1, Math.ceil(list.length / 5));
+    const np = Math.min(Math.max(pg, 1), tp);
+    if (np === state.recentTxPage) return;
+    state.recentTxPage = np;
+    renderRecentTx();
+    document.getElementById('panelRecentTx')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  window.txnGoTo = function(pg) {
+    const t = state.cache.txns.length;
+    const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
+    const np = Math.min(Math.max(pg, 1), tp);
+    if (np === state.txnPage) return;
+    state.txnPage = np;
+    renderTransactions();
+    document.getElementById('transactionsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  window.depositGoTo = function(pg) {
+    const t = state.cache.deposits.length;
+    const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
+    const np = Math.min(Math.max(pg, 1), tp);
+    if (np === state.depositPage) return;
+    state.depositPage = np;
+    renderDeposits();
+    document.getElementById('depositsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  window.withdrawalGoTo = function(pg) {
+    const t = state.cache.withdrawals.length;
+    const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
+    const np = Math.min(Math.max(pg, 1), tp);
+    if (np === state.withdrawalPage) return;
+    state.withdrawalPage = np;
+    renderWithdrawals();
+    document.getElementById('withdrawalsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  window.archivedGoTo = function(pg) {
+    loadArchived(pg);
+  };
 
   function renderRecentTx() {
     const c = $('#recentTxList');
@@ -1558,16 +1592,6 @@ button{font-family:inherit}
     }).join('');
     renderPager('recentTxPagination', cp, total, per, 'recentTx');
   }
-  window.goToRecentTxPage = (pg) => {
-    const list = applyRange(state.unifiedTransactions, state.range)
-      .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
-    const tp = Math.max(1, Math.ceil(list.length / 5));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.recentTxPage) return;
-    state.recentTxPage = np;
-    renderRecentTx();
-    document.getElementById('panelRecentTx')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   /* ============ ANALYTICS ============ */
   const CHART_COLORS = { primary:'#0a4534', info:'#3b82f6', success:'#10b981', warning:'#f59e0b' };
@@ -1871,13 +1895,6 @@ button{font-family:inherit}
   window.onTxnSearchInput = onTxnSearchInput;
   function clearTxnSearch() { const i = document.getElementById('txnSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('txnSearchClear'); if (c) c.classList.remove('visible'); state.txnPage = 1; renderTransactions(); }
   window.clearTxnSearch = clearTxnSearch;
-  window.goToTxnPage = (pg) => {
-    const t = state.cache.txns.length; const tp = Math.max(1, Math.ceil(t/state.PER_PAGE));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.txnPage) return;
-    state.txnPage = np; renderTransactions();
-    const c = document.getElementById('transactionsList'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   function findTxn(id) { if (!id) return null; const sid = String(id); for (const p of [state.unifiedTransactions, state.transactions, state.deposits, state.withdrawals, state.archived.items]) { const h = (p||[]).find(x => String(x.id||x._id||x.reference||x.tx_ref) === sid); if (h) return h; } return null; }
   function viewTransaction(id) { const t = findTxn(id); if (!t) { toast('Transaction not found', 'error'); return; } const m = t.metadata || {}; const k = txnKind(t); const nk = detectNetwork(t); const logo = (k === 'airtime' || k === 'data') ? NET_SVG[nk] : kindAvatarHtml(t); const pr = m.product_name || t.description || t.product || `${kindLabel(k)} Transaction`; const ph = t.phone || m.phone || t.recipient || '—'; const am = getAmount(t); const st = getStatus(t); const rf = t.reference || t.tx_ref || t.id || t._id || '—'; const nl = (k === 'airtime' || k === 'data') ? ({mtn:'MTN Nigeria',airtel:'Airtel Nigeria',glo:'Globacom',t2:'9mobile',generic:'VTU Service'}[nk]) : kindLabel(k); $('#txnBody').innerHTML = `<div class="txn-hero"><div class="txn-hero-logo txn-avatar ${kindAvatarClass(t)}" style="border:none">${logo}</div><div class="txn-hero-info"><div class="txn-hero-title">${esc(pr)}</div><div class="txn-hero-sub"><span>${esc(nl)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div></div><div class="txn-amount-block"><div class="amt-label">Amount</div><div class="amt-value">${fmtMoney(am)}</div></div><div class="row-detail"><span class="lbl">Recipient</span><span class="val mono">${esc(ph)}</span></div><div class="row-detail"><span class="lbl">Category</span><span class="val">${esc(kindLabel(k))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(rf)}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Created</span><span class="val">${fmtDate(getDate(t))}</span></div>`; $('#txnModal').classList.add('active'); }
@@ -1913,13 +1930,6 @@ button{font-family:inherit}
   window.onDepositSearchInput = onDepositSearchInput;
   function clearDepositSearch() { const i = document.getElementById('depositSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('depositSearchClear'); if (c) c.classList.remove('visible'); state.depositPage = 1; renderDeposits(); }
   window.clearDepositSearch = clearDepositSearch;
-  window.goToDepositPage = (pg) => {
-    const t = state.cache.deposits.length; const tp = Math.max(1, Math.ceil(t/state.PER_PAGE));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.depositPage) return;
-    state.depositPage = np; renderDeposits();
-    const c = document.getElementById('depositsList'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
   function viewDeposit(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">+${fmtMoney(getAmount(d))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(d.reference||d.tx_ref||'—')}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewDeposit = viewDeposit;
 
@@ -1951,46 +1961,46 @@ button{font-family:inherit}
   window.onWithdrawalSearchInput = onWithdrawalSearchInput;
   function clearWithdrawalSearch() { const i = document.getElementById('withdrawalSearch'); if (i) { i.value=''; i.focus(); } const c = document.getElementById('withdrawalSearchClear'); if (c) c.classList.remove('visible'); state.withdrawalPage = 1; renderWithdrawals(); }
   window.clearWithdrawalSearch = clearWithdrawalSearch;
-  window.goToWithdrawalPage = (pg) => {
-    const t = state.cache.withdrawals.length; const tp = Math.max(1, Math.ceil(t/state.PER_PAGE));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.withdrawalPage) return;
-    state.withdrawalPage = np; renderWithdrawals();
-    const c = document.getElementById('withdrawalsList'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
   function viewWithdrawal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; $('#viewBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(w.reference||'—')}</span></div><hr class="divider"><div class="row-detail"><span class="lbl">Bank</span><span class="val">${esc(w.bank_name||'—')}</span></div><div class="row-detail"><span class="lbl">Account No.</span><span class="val mono">${esc(w.account_number||'—')}</span></div>`; $('#viewModal').classList.add('active'); }
   window.viewWithdrawal = viewWithdrawal;
   function closeViewModal() { $('#viewModal').classList.remove('active'); }
   window.closeViewModal = closeViewModal;
 
   /* Approve/Reject */
+  function removeAlertForItem(type, idOrRef) {
+    const key = `${type}:${String(idOrRef)}`;
+    state.adminAlerts = state.adminAlerts.filter(a => a.id !== key);
+    renderAdminAlerts();
+  }
+  window.removeAlertForItem = removeAlertForItem;
+
   function openApproveModal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; state.currentApprove = w; stopAlarm(); $('#approveBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val primary">${fmtMoney(getAmount(w))}</span></div>`; $('#approveRef').value = ''; $('#approveNotes').value = ''; resetWAB(); $('#approveModal').classList.add('active'); }
   window.openApproveModal = openApproveModal;
   function resetWAB() { state.withdrawApprovePending = false; const b = $('#approveSubmitBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-check"></i> Approve'; } const c = $('#approveCancelBtn'); if (c) c.disabled = false; }
   function closeApproveModal() { if (state.withdrawApprovePending) return; $('#approveModal').classList.remove('active'); state.currentApprove = null; resetWAB(); }
   window.closeApproveModal = closeApproveModal;
-  async function submitApprove() { if (!state.currentApprove || state.withdrawApprovePending) return; stopAlarm(); const ref = $('#approveRef').value.trim(); const notes = $('#approveNotes').value.trim(); if (!ref) { toast('Please enter a reference', 'error'); return; } state.withdrawApprovePending = true; const b = $('#approveSubmitBtn'); const c = $('#approveCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…'; if (c) c.disabled = true; try { await api(`/wallet/admin/withdrawal/${state.currentApprove.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, provider_reference: ref, approval_notes: notes || null }) }); toast('Withdrawal approved', 'success'); state.withdrawApprovePending = false; $('#approveModal').classList.remove('active'); state.currentApprove = null; resetWAB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.withdrawApprovePending = false; } }
+  async function submitApprove() { if (!state.currentApprove || state.withdrawApprovePending) return; stopAlarm(); const ref = $('#approveRef').value.trim(); const notes = $('#approveNotes').value.trim(); if (!ref) { toast('Please enter a reference', 'error'); return; } state.withdrawApprovePending = true; const b = $('#approveSubmitBtn'); const c = $('#approveCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…'; if (c) c.disabled = true; try { const wid = state.currentApprove.id || state.currentApprove.reference; await api(`/wallet/admin/withdrawal/${state.currentApprove.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, provider_reference: ref, approval_notes: notes || null }) }); toast('Withdrawal approved', 'success'); removeAlertForItem('withdrawal', wid); state.withdrawApprovePending = false; $('#approveModal').classList.remove('active'); state.currentApprove = null; resetWAB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.withdrawApprovePending = false; } }
   window.submitApprove = submitApprove;
   function openRejectModal(id) { const w = (state.withdrawals||[]).find(x => String(x.id) === String(id)); if (!w) return; state.currentReject = w; stopAlarm(); $('#rejectBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(w.user_name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">${fmtMoney(getAmount(w))}</span></div>`; $('#rejectReason').value = ''; resetWRB(); $('#rejectModal').classList.add('active'); }
   window.openRejectModal = openRejectModal;
   function resetWRB() { state.withdrawRejectPending = false; const b = $('#rejectSubmitBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-ban"></i> Reject'; } const c = $('#rejectCancelBtn'); if (c) c.disabled = false; }
   function closeRejectModal() { if (state.withdrawRejectPending) return; $('#rejectModal').classList.remove('active'); state.currentReject = null; resetWRB(); }
   window.closeRejectModal = closeRejectModal;
-  async function submitReject() { if (!state.currentReject || state.withdrawRejectPending) return; stopAlarm(); const r = $('#rejectReason').value.trim(); if (r.length < 5) { toast('Please give a reason (min 5 chars)', 'error'); return; } state.withdrawRejectPending = true; const b = $('#rejectSubmitBtn'); const c = $('#rejectCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…'; if (c) c.disabled = true; try { await api(`/wallet/admin/withdrawal/${state.currentReject.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Withdrawal rejected', 'error'); state.withdrawRejectPending = false; $('#rejectModal').classList.remove('active'); state.currentReject = null; resetWRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.withdrawRejectPending = false; } }
+  async function submitReject() { if (!state.currentReject || state.withdrawRejectPending) return; stopAlarm(); const r = $('#rejectReason').value.trim(); if (r.length < 5) { toast('Please give a reason (min 5 chars)', 'error'); return; } state.withdrawRejectPending = true; const b = $('#rejectSubmitBtn'); const c = $('#rejectCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…'; if (c) c.disabled = true; try { const wid = state.currentReject.id || state.currentReject.reference; await api(`/wallet/admin/withdrawal/${state.currentReject.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Withdrawal rejected', 'error'); removeAlertForItem('withdrawal', wid); state.withdrawRejectPending = false; $('#rejectModal').classList.remove('active'); state.currentReject = null; resetWRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.withdrawRejectPending = false; } }
   window.submitReject = submitReject;
   function openApproveDepositModal(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; state.currentApproveDeposit = d; stopAlarm(); $('#approveDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val success">+${fmtMoney(getAmount(d))}</span></div>`; $('#approveDepositRef').value = ''; $('#approveDepositNotes').value = ''; resetDAB(); $('#approveDepositModal').classList.add('active'); }
   window.openApproveDepositModal = openApproveDepositModal;
   function resetDAB() { state.depositApprovePending = false; const b = $('#approveDepositBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-check"></i> Credit Wallet'; } const c = $('#approveDepositCancelBtn'); if (c) c.disabled = false; }
   function closeApproveDepositModal() { if (state.depositApprovePending) return; $('#approveDepositModal').classList.remove('active'); state.currentApproveDeposit = null; resetDAB(); }
   window.closeApproveDepositModal = closeApproveDepositModal;
-  async function submitApproveDeposit() { if (!state.currentApproveDeposit || state.depositApprovePending) return; stopAlarm(); const ref = $('#approveDepositRef').value.trim(); const notes = $('#approveDepositNotes').value.trim(); if (ref.length < 4) { toast('Enter bank reference', 'error'); return; } state.depositApprovePending = true; const b = $('#approveDepositBtn'); const c = $('#approveDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crediting…'; if (c) c.disabled = true; try { const r = await api(`/wallet/admin/deposit/${state.currentApproveDeposit.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, approval_notes: notes || null }) }); const cr = r?.data?.deposit?.amount || getAmount(state.currentApproveDeposit); toast(`Wallet credited — ${fmtMoney(cr)}`, 'success'); state.depositApprovePending = false; $('#approveDepositModal').classList.remove('active'); state.currentApproveDeposit = null; resetDAB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositApprovePending = false; } }
+  async function submitApproveDeposit() { if (!state.currentApproveDeposit || state.depositApprovePending) return; stopAlarm(); const ref = $('#approveDepositRef').value.trim(); const notes = $('#approveDepositNotes').value.trim(); if (ref.length < 4) { toast('Enter bank reference', 'error'); return; } state.depositApprovePending = true; const b = $('#approveDepositBtn'); const c = $('#approveDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crediting…'; if (c) c.disabled = true; try { const did = state.currentApproveDeposit.id || state.currentApproveDeposit.reference; const r = await api(`/wallet/admin/deposit/${state.currentApproveDeposit.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, approval_notes: notes || null }) }); const cr = r?.data?.deposit?.amount || getAmount(state.currentApproveDeposit); toast(`Wallet credited — ${fmtMoney(cr)}`, 'success'); removeAlertForItem('deposit', did); state.depositApprovePending = false; $('#approveDepositModal').classList.remove('active'); state.currentApproveDeposit = null; resetDAB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositApprovePending = false; } }
   window.submitApproveDeposit = submitApproveDeposit;
   function openRejectDepositModal(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; state.currentRejectDeposit = d; stopAlarm(); $('#rejectDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">+${fmtMoney(getAmount(d))}</span></div>`; $('#rejectDepositReason').value = ''; resetDRB(); $('#rejectDepositModal').classList.add('active'); }
   window.openRejectDepositModal = openRejectDepositModal;
   function resetDRB() { state.depositRejectPending = false; const b = $('#rejectDepositBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-ban"></i> Reject'; } const c = $('#rejectDepositCancelBtn'); if (c) c.disabled = false; }
   function closeRejectDepositModal() { if (state.depositRejectPending) return; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); }
   window.closeRejectDepositModal = closeRejectDepositModal;
-  async function submitRejectDeposit() { if (!state.currentRejectDeposit || state.depositRejectPending) return; stopAlarm(); const r = $('#rejectDepositReason').value.trim(); if (r.length < 5) { toast('Please give a reason', 'error'); return; } state.depositRejectPending = true; const b = $('#rejectDepositBtn'); const c = $('#rejectDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting…'; if (c) c.disabled = true; try { await api(`/wallet/admin/deposit/${state.currentRejectDeposit.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Deposit rejected', 'error'); state.depositRejectPending = false; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositRejectPending = false; } }
+  async function submitRejectDeposit() { if (!state.currentRejectDeposit || state.depositRejectPending) return; stopAlarm(); const r = $('#rejectDepositReason').value.trim(); if (r.length < 5) { toast('Please give a reason', 'error'); return; } state.depositRejectPending = true; const b = $('#rejectDepositBtn'); const c = $('#rejectDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting…'; if (c) c.disabled = true; try { const did = state.currentRejectDeposit.id || state.currentRejectDeposit.reference; await api(`/wallet/admin/deposit/${state.currentRejectDeposit.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Deposit rejected', 'error'); removeAlertForItem('deposit', did); state.depositRejectPending = false; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositRejectPending = false; } }
   window.submitRejectDeposit = submitRejectDeposit;
 
   /* MANUAL FUND */
@@ -2079,7 +2089,6 @@ button{font-family:inherit}
   /* ARCHIVED */
   async function loadArchived(page = 1) { const q = ($('#archSearch')?.value || '').trim(); const uid = state.filters.archived.userId; const params = new URLSearchParams({ page, limit: state.archived.perPage }); if (q) params.set('q', q); if (uid) params.set('user_id', uid); const c = $('#archivedList'); c.innerHTML = '<div class="loading"><div class="ring"></div><p>Loading…</p></div>'; try { const r = await api(`/admin/transactions/archived?${params}`); const items = r.data?.items || []; state.archived.items = items; state.archived.page = r.data?.page || 1; state.archived.total = r.data?.total || 0; if (!items.length) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-box-archive"></i></div><div class="title">No archived transactions</div><div class="desc">Nothing has been archived yet.</div></div>`; const p = $('#archivedPagination'); if (p) p.style.display = 'none'; return; } c.innerHTML = items.map(t => { const when = new Date(t.original_created_at || t.created_at).toLocaleString('en-NG'); const isC = String(t.direction||'').toUpperCase() === 'CREDIT'; const st = getStatus(t); return `<div class="row-item static"><div class="row-avatar ${kindAvatarClass(t)}">${kindAvatarHtml(t)}</div><div class="row-main"><div class="row-title">${esc(t.description || t.type || 'Transaction')}</div><div class="row-sub"><span>#${t.user_id}</span><span class="dot"></span><span class="ref">${esc(t.reference || '—')}</span><span class="dot"></span><span>${esc(when)}</span><span class="status ${st}">${esc(statusLabel(st))}</span></div></div><div class="row-right"><div class="row-amount ${isC?'credit':'debit'}">${isC?'+':'−'}${fmtMoney(getAmount(t))}</div></div></div>`; }).join(''); renderPager('archivedPagination', state.archived.page, state.archived.total, state.archived.perPage, 'archived'); } catch (e) { c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-box-archive"></i></div><div class="title">Archive empty or unavailable</div><div class="desc">${esc(e.message || 'The archive service did not respond.')}</div><button class="action-btn" onclick="loadArchived(1)"><i class="fas fa-rotate"></i> Retry</button></div>`; } }
   window.loadArchived = loadArchived;
-  window.goToArchivedPage = (pg) => loadArchived(pg);
   let archTimer;
   function onArchiveSearchInput() { const i = document.getElementById('archSearch'); const c = document.getElementById('archSearchClear'); if (i && c) c.classList.toggle('visible', i.value.length > 0); clearTimeout(archTimer); archTimer = setTimeout(() => loadArchived(1), 400); }
   window.onArchiveSearchInput = onArchiveSearchInput;
@@ -2327,8 +2336,7 @@ button{font-family:inherit}
   setInterval(() => { detectNewApprovals(); }, 2500);
 
   /* ============================================================
-     RETURN-CHECK: when admin returns to the tab after being away
-     — re-fetch pending items, alert if any new ones appeared.
+     RETURN CHECK — pending items populate alert panel on return
      ============================================================ */
   async function checkForPendingOnReturn() {
     try {
@@ -2405,6 +2413,25 @@ button{font-family:inherit}
     await refreshAll(true);
     detectNewApprovals();
     state.notificationBootstrapped = true;
+    // Hydrate alert panel with existing pending items (no sound)
+    (function hydrateAlertsFromPending() {
+      (state.deposits || []).filter(x => getStatus(x) === 'pending').forEach(x => {
+        const id = aId('deposit', x);
+        if (id && !state.adminAlertIds.has(id)) {
+          state.adminAlertIds.add(id);
+          state.adminAlerts.push({ id, type: 'deposit', item: x, createdAt: Date.now() });
+        }
+      });
+      (state.withdrawals || []).filter(x => getStatus(x) === 'pending').forEach(x => {
+        const id = aId('withdrawal', x);
+        if (id && !state.adminAlertIds.has(id)) {
+          state.adminAlertIds.add(id);
+          state.adminAlerts.push({ id, type: 'withdrawal', item: x, createdAt: Date.now() });
+        }
+      });
+      state.adminAlerts.sort((a,b) => b.createdAt - a.createdAt);
+      renderAdminAlerts();
+    })();
     setInterval(() => refreshAll(true), 3000);
     try { const es = new EventSource(`${API_BASE}/admin/events?token=${encodeURIComponent(token)}`); es.addEventListener('new-approval', e => { try { const p = JSON.parse(e.data || '{}'); if (p.type === 'deposit' || p.type === 'withdrawal') { addAlert(p.type, p.item || {}); refreshAll(true); } } catch (_) {} }); es.onerror = () => {}; } catch (_) {}
     const ch = document.getElementById('adminSoundChip'); if (ch && !state.adminSoundEnabled) ch.classList.add('show');
