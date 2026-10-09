@@ -2,8 +2,8 @@
 // ============================================================
 // Shatova — Admin Routes
 //   ⭐ Matches the actual exports in admin.controller.js
-//   ⭐ Now includes dashboard, manual fund/debit, archive,
-//     mismatches, and wallet drift endpoints
+//   ⭐ Includes dashboard, manual fund/debit, archive,
+//     mismatches, wallet drift, and datashop wallet endpoints
 //   ⭐ Protected by BOTH authenticate + requireAdmin
 // ============================================================
 
