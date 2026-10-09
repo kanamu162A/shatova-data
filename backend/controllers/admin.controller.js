@@ -263,6 +263,10 @@ export async function getStats(req, res) {
 /* ============================================================
    ⭐ GET /api/v1/admin/datashop/wallet
    Fetches LIVE Datashop balance + local funding history.
+   Default base URL is https://app.datashop.africa
+   Env vars:
+     DATASHOP_API_KEY  — bearer token from Datashop dashboard
+     DATASHOP_BASE_URL — optional; defaults to https://app.datashop.africa
    ============================================================ */
 export async function getDatashopWallet(req, res) {
   const fallback = {
@@ -301,17 +305,18 @@ export async function getDatashopWallet(req, res) {
     // ---------------------------------------------------------
     // 2. Live Datashop API balance
     // ---------------------------------------------------------
-    const apiKey  = process.env.DATASHOP_API_KEY;
-    const baseUrl = (process.env.DATASHOP_BASE_URL || 'https://datashop.ng').replace(/\/+$/, '');
+    const apiKey   = process.env.DATASHOP_API_KEY;
+    const baseUrl  = (process.env.DATASHOP_BASE_URL || 'https://app.datashop.africa').replace(/\/+$/, '');
     const endpoint = `${baseUrl}/api/v2/account/wallet-balance`;
 
     let liveBalance = 0;
     let liveSource  = 'local';
+    let debugInfo   = null;
 
     if (apiKey) {
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 8000);
+        const timeout = setTimeout(() => controller.abort(), 10000);
 
         const resp = await fetch(endpoint, {
           method: 'GET',
@@ -324,19 +329,44 @@ export async function getDatashopWallet(req, res) {
         });
         clearTimeout(timeout);
 
-        const json = await resp.json().catch(() => ({}));
+        const raw = await resp.text();
+        let json = {};
+        try { json = JSON.parse(raw); } catch (_) { json = { raw }; }
 
-        if (resp.ok && json?.status === true && json?.data) {
-          liveBalance = Number(json.data.balance || 0);
-          liveSource  = 'datashop_api';
+        console.log('[admin] Datashop wallet response', {
+          endpoint,
+          status: resp.status,
+          body: json,
+        });
+
+        if (resp.ok) {
+          // Tolerate multiple response shapes
+          const candidate =
+            json?.data?.balance ??
+            json?.data?.wallet?.balance ??
+            json?.balance ??
+            json?.wallet?.balance ??
+            json?.data?.available_balance ??
+            null;
+
+          if (candidate != null && !Number.isNaN(Number(candidate))) {
+            liveBalance = Number(candidate);
+            liveSource  = 'datashop_api';
+          } else {
+            console.warn('[admin] Datashop API returned 200 but no recognizable balance field. Body:', json);
+            debugInfo = { endpoint, status: resp.status, body: json };
+          }
         } else {
-          console.warn('[admin] Datashop API returned non-success:', resp.status, json);
+          console.warn('[admin] Datashop API returned non-OK:', resp.status, json);
+          debugInfo = { endpoint, status: resp.status, body: json };
         }
       } catch (apiErr) {
-        console.warn('[admin] Datashop API fetch failed:', apiErr.message);
+        console.warn('[admin] Datashop API fetch failed:', apiErr.message, { endpoint });
+        debugInfo = { endpoint, error: apiErr.message };
       }
     } else {
       console.warn('[admin] DATASHOP_API_KEY not set — returning local-only data.');
+      debugInfo = { error: 'DATASHOP_API_KEY not set' };
     }
 
     // ---------------------------------------------------------
@@ -350,6 +380,7 @@ export async function getDatashopWallet(req, res) {
         total_spent:     localSpent,
         last_funding_at: lastFundingAt,
         source:          liveSource,
+        debug:           process.env.NODE_ENV !== 'production' ? debugInfo : undefined,
       },
     });
   } catch (err) {
