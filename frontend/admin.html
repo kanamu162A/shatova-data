@@ -13,10 +13,10 @@
 :root{
   --primary:#0a4534;--primary-dark:#062f24;--primary-light:rgba(10,69,52,0.07);
   --primary-gradient:linear-gradient(135deg,#0d5a44 0%,#0a4534 45%,#062f24 100%);
-  --accent:#22c55e;a
+  --accent:#22c55e;
   --success:#10b981;--success-dark:#098658;--success-light:rgba(16,185,129,0.09);
   --warning:#f59e0b;--warning-dark:#b37308;--warning-light:rgba(245,158,11,0.09);
-  --danger:#ef4444;--danger-dark:#a12222;--danger-light:rgba(239,68,68,0.09);a
+  --danger:#ef4444;--danger-dark:#a12222;--danger-light:rgba(239,68,68,0.09);
   --info:#3b82f6;--info-dark:#1d4ed8;--info-light:rgba(59,130,246,0.09);
   --purple:#8b5cf6;--purple-dark:#7c3aed;--purple-light:rgba(139,92,246,0.09);
   --bg-main:#f5f7f9;--bg-card:#ffffff;--bg-input:#f1f4f8;--bg-hover:#f5f9f7;--bg-soft:#fbfcfd;
@@ -715,9 +715,22 @@ button{font-family:inherit}
 }
 .panel-body { padding: 16px 18px !important; }
 .panel-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
   padding: 14px 18px !important;
   background: var(--bg-soft) !important;
 }
+.panel-footer .pagination-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  flex-wrap: wrap !important;
+}
+.page-btn:not(:disabled) { cursor: pointer !important; }
+.page-btn:disabled { pointer-events: none !important; }
 
 /* ============================================================
    NUMBERED PAGINATION — professional page numbers
@@ -846,7 +859,7 @@ button{font-family:inherit}
   color: #fff;
   font-size: 9.5px;
   font-weight: 800;
-  display: inline-flex;
+  display: none; /* hidden when count is 0 */
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px -1px rgba(239, 68, 68, 0.5);
@@ -854,8 +867,14 @@ button{font-family:inherit}
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
+.admin-alert-btn.has-alert .alert-badge {
+  display: inline-flex !important; /* only show when there are alerts */
+}
 .admin-alert-btn.has-alert {
   animation: alertPulse 2s ease-in-out infinite;
+}
+.page-btn i {
+  pointer-events: none;
 }
 @keyframes alertPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
@@ -1997,12 +2016,12 @@ button{font-family:inherit}
 
     let h = `<div class="pagination-info">Showing <strong>${s}–${e}</strong> of <strong>${total.toLocaleString()}</strong></div>`;
     h += `<div class="pagination-controls">`;
-    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp-1})" ${safeCp===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+    h += `<button type="button" class="page-btn page-prev" data-page="${safeCp-1}" onclick="event.preventDefault();event.stopPropagation();window['${fnName}GoTo'](${safeCp-1})" ${safeCp===1?'disabled aria-disabled=\'true\'':''} title="Previous"><i class="fas fa-chevron-left"></i></button>`;
     for (const p of pages) {
-      if (p === '…') h += `<span class="page-btn ellipsis">…</span>`;
-      else h += `<button type="button" class="page-btn${p===safeCp?' active':''}" onclick="window.${fnName}GoTo(${p})">${p}</button>`;
+      if (p === '…') h += `<span class="page-btn ellipsis" aria-hidden="true">…</span>`;
+      else h += `<button type="button" class="page-btn${p===safeCp?' active':''}" data-page="${p}" onclick="event.preventDefault();event.stopPropagation();window['${fnName}GoTo'](${p})" ${p===safeCp?'aria-current=\'page\'':''}>${p}</button>`;
     }
-    h += `<button type="button" class="page-btn" onclick="window.${fnName}GoTo(${safeCp+1})" ${safeCp===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+    h += `<button type="button" class="page-btn page-next" data-page="${safeCp+1}" onclick="event.preventDefault();event.stopPropagation();window['${fnName}GoTo'](${safeCp+1})" ${safeCp===tp?'disabled aria-disabled=\'true\'':''} title="Next"><i class="fas fa-chevron-right"></i></button>`;
     h += `</div>`;
     el.innerHTML = h;
     el.style.display = 'flex';
@@ -2012,35 +2031,31 @@ button{font-family:inherit}
     const list = applyRange(state.unifiedTransactions, state.range)
       .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const tp = Math.max(1, Math.ceil(list.length / 5));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.recentTxPage) return;
+    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
     state.recentTxPage = np;
     renderRecentTx();
     document.getElementById('panelRecentTx')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   window.txnGoTo = function(pg) {
-    const t = state.cache.txns.length;
+    const t = (state.cache.txns || []).length || (typeof getFilteredTxns === 'function' ? getFilteredTxns().length : 0);
     const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.txnPage) return;
+    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
     state.txnPage = np;
     renderTransactions();
     document.getElementById('transactionsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   window.depositGoTo = function(pg) {
-    const t = state.cache.deposits.length;
+    const t = (state.cache.deposits || []).length;
     const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.depositPage) return;
+    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
     state.depositPage = np;
     renderDeposits();
     document.getElementById('depositsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   window.withdrawalGoTo = function(pg) {
-    const t = state.cache.withdrawals.length;
+    const t = (state.cache.withdrawals || []).length;
     const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
-    const np = Math.min(Math.max(pg, 1), tp);
-    if (np === state.withdrawalPage) return;
+    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
     state.withdrawalPage = np;
     renderWithdrawals();
     document.getElementById('withdrawalsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2792,7 +2807,15 @@ button{font-family:inherit}
     const l = document.getElementById('adminAlertList'); const b = document.getElementById('adminAlertBadge'); const btn = document.getElementById('adminAlertBtn');
     if (!l) return;
     const c = state.adminAlerts.length;
-    if (b) b.textContent = c > 99 ? '99+' : String(c);
+    if (b) {
+      if (c > 0) {
+        b.textContent = c > 99 ? '99+' : String(c);
+        b.style.display = '';
+      } else {
+        b.textContent = '';
+        b.style.display = 'none';
+      }
+    }
     if (btn) btn.classList.toggle('has-alert', c > 0);
     if (!c) { l.innerHTML = '<div class="admin-alert-empty"><div class="ae-icon"><i class="fas fa-check"></i></div><strong>No pending approval alerts</strong><span>New deposits and withdrawals will appear here automatically.</span></div>'; return; }
     l.innerHTML = state.adminAlerts.map(a => { const it = a.item || {}; const name = it.user_name || it.name || it.user_email || 'User'; const amt = fmtMoney(getAmount(it)); const isW = a.type === 'withdrawal'; const rf = it.reference || it.tx_ref || it.id || '—'; return `<div class="admin-alert-item"><div class="admin-alert-icon ${isW?'withdraw':''}"><i class="fas ${isW?'fa-arrow-up':'fa-arrow-down'}"></i></div><div><div class="aa-title">${isW?'Withdrawal':'Deposit'} awaiting approval</div><div class="aa-sub">${esc(name)} · Ref ${esc(String(rf))}</div><div class="aa-actions"><button class="review" onclick="reviewAlert('${esc(a.id)}')"><i class="fas fa-eye"></i> Review</button><button onclick="dismissAlert('${esc(a.id)}')"><i class="fas fa-check"></i> Dismiss</button></div></div><div class="aa-amount">${isW?'-':'+'}${amt}</div></div>`; }).join('');
