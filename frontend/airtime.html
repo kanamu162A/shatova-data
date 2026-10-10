@@ -10,6 +10,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/airtime.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/instant-nav.css">
+
   <style>
     /* ============================================================
        CSS VARIABLES & THEME
@@ -879,7 +884,7 @@
         </div>
       </div>
       
-      <!-- This container will be filled by JavaScript to create the exact card layout -->
+      <!-- This container is filled by JavaScript to create the exact card layout -->
       <div class="category-list" id="categoryList" role="list"></div>
 
     </section>
@@ -900,7 +905,7 @@
         </div>
       </div>
       <div class="bundles-list" id="bundlesList" role="list">
-        <!-- A default bundle card will be injected here by JS or airtime.js -->
+        <!-- A default bundle card will be injected here by JS -->
       </div>
     </section>
 
@@ -1101,6 +1106,128 @@
   </main>
 
   <!-- ============================================================
+       PURCHASE UPDATE MODAL
+       ============================================================ -->
+  <div class="purchase-modal-backdrop hidden" id="purchaseModal" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+    <div class="purchase-sheet">
+      <div class="purchase-sheet-grip" aria-hidden="true"></div>
+      <div class="purchase-sheet-head">
+        <div class="purchase-sheet-title" id="pm-title">Purchase Update</div>
+        <button type="button" class="purchase-sheet-close" id="pmClose" aria-label="Close">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="purchase-sheet-body">
+        <div class="pm-hero pm-hero-processing" id="pmHero">
+          <div class="pm-hero-icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <div class="pm-hero-title" id="pmHeroTitle">Processing</div>
+          <div class="pm-hero-sub" id="pmHeroSub">please wait…</div>
+        </div>
+        <div class="pm-tracker" id="pmTracker" aria-hidden="true">
+          <div class="pm-step" data-step="submitted">
+            <div class="pm-dot pm-dot-done">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="pm-step-label">Submitted</div>
+          </div>
+          <div class="pm-bar"></div>
+          <div class="pm-step" data-step="processing">
+            <div class="pm-dot pm-dot-processing">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="pm-step-label">Processing</div>
+          </div>
+          <div class="pm-bar"></div>
+          <div class="pm-step" data-step="completed">
+            <div class="pm-dot pm-dot-idle">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="pm-step-label">Completed</div>
+          </div>
+        </div>
+        <div class="pm-grid">
+          <div class="pm-cell">
+            <div class="pm-cell-label">Product</div>
+            <div class="pm-cell-value" id="pmProduct">—</div>
+          </div>
+          <div class="pm-cell">
+            <div class="pm-cell-label">Amount</div>
+            <div class="pm-cell-value" id="pmAmount">₦0.00</div>
+          </div>
+        </div>
+        <div class="pm-cell pm-cell-wide">
+          <div class="pm-cell-label">Remark</div>
+          <div class="pm-cell-row">
+            <div class="pm-cell-value" id="pmRemark">—</div>
+            <button type="button" class="pm-copy" id="pmCopy" aria-label="Copy remark">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="pm-grid pm-extra hidden" id="pmExtra">
+          <div class="pm-cell">
+            <div class="pm-cell-label">Recipient</div>
+            <div class="pm-cell-value" id="pmRecipient">—</div>
+          </div>
+          <div class="pm-cell">
+            <div class="pm-cell-label">Reference</div>
+            <div class="pm-cell-value" id="pmReference">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="purchase-sheet-foot">
+        <div class="pm-foot-row">
+          <button type="button" class="pm-btn pm-btn-ghost" id="pmShare">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            Share
+          </button>
+          <button type="button" class="pm-btn pm-btn-ghost" id="pmPrint">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 14h12v8H6z"/>
+            </svg>
+            Print
+          </button>
+        </div>
+        <button type="button" class="pm-btn pm-btn-blue" id="pmRefresh">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 3v5h5"/>
+          </svg>
+          Refresh Status
+        </button>
+        <button type="button" class="pm-btn pm-btn-primary" id="pmDone">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SITE SCRIPTS
+       ============================================================ -->
+  <script src="/js/auth-guard.js"></script>
+  <script src="/js/api.js"></script>
+  <script type="module" src="/js/components.js"></script>
+  <!-- We are NOT loading airtime.js anymore because we are building the UI in this file to match your screenshot -->
+  <!-- <script type="module" src="/js/airtime.js"></script> -->
+  <script src="/js/instant-nav.js?v=4" defer></script>
+
+  <!-- ============================================================
        MASTER SCRIPT: REAL IMAGE LOGOS + STRICT RECENT NUMBERS
        ============================================================ -->
   <script>
@@ -1154,7 +1281,7 @@
           img.src = LOGOS[p.id];
           img.alt = p.name + ' logo';
           img.loading = 'eager';
-          img.crossOrigin = 'anonymous'; // Helps with external images
+          img.crossOrigin = 'anonymous';
           
           // Fallback if image fails to load
           img.onerror = function() {
