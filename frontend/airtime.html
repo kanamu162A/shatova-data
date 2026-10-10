@@ -819,7 +819,101 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    /* SHATOVA PRO polish: narrower centered content, refined spacing and layered borders */
+    .airtime-page {
+      width: 75% !important;
+      max-width: 620px;
+      margin-inline: auto !important;
+      padding: 0 0 32px !important;
+      box-sizing: border-box;
+    }
+    .airtime-page .category-card,
+    .airtime-page .bundle-card,
+    .airtime-page .selected-bundle,
+    .airtime-page .form-card,
+    .airtime-page .payment-card,
+    .airtime-page .pay-card,
+    .airtime-page .recent-purchases,
+    .airtime-page .summary-card,
+    .airtime-page .confirm-card {
+      border: 1px solid rgba(15, 45, 35, .11);
+      box-shadow: 0 2px 5px rgba(15, 35, 28, .035),
+                  0 8px 22px rgba(15, 35, 28, .055),
+                  inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .airtime-page .form-card { padding: 22px 20px; }
+    .airtime-page .category-list,
+    .airtime-page .bundles-list { gap: 10px; padding-top: 14px; }
+    .airtime-page .category-card,
+    .airtime-page .bundle-card { padding: 13px 15px; border-radius: 16px; }
+    .airtime-page .selected-bundle { padding: 13px 15px; }
+    .airtime-page .btn-primary,
+    .airtime-page .pm-btn-primary {
+      width: 84%; max-width: 360px; height: 42px; min-height: 42px;
+      padding: 0 18px; margin: 16px auto 0; border-radius: 13px;
+      font-size: 13px; font-weight: 750; letter-spacing: .15px;
+      box-shadow: 0 3px 8px rgba(10, 69, 52, .13), inset 0 1px 0 rgba(255,255,255,.24);
+    }
+    .airtime-page input,
+    .airtime-page select,
+    .airtime-page textarea { box-shadow: inset 0 1px 2px rgba(10,25,18,.025); }
+    .airtime-page .phone-input:focus,
+    .airtime-page input:focus,
+    .airtime-page select:focus,
+    .airtime-page textarea:focus {
+      outline: none; border-color: var(--air-accent);
+      box-shadow: 0 0 0 3px var(--air-accent-ring), 0 3px 10px rgba(10,69,52,.06);
+    }
+    .airtime-page .page-head { margin-bottom: 4px; }
+    @media (max-width: 640px) {
+      .airtime-page { width: 90% !important; max-width: none; }
+      .airtime-page .form-card { padding: 18px 15px; }
+      .airtime-page .btn-primary,
+      .airtime-page .pm-btn-primary { width: 88%; }
+    }
+    @media (prefers-color-scheme: dark) {
+      .airtime-page .category-card,
+      .airtime-page .bundle-card,
+      .airtime-page .selected-bundle,
+      .airtime-page .form-card,
+      .airtime-page .payment-card,
+      .airtime-page .pay-card,
+      .airtime-page .recent-purchases,
+      .airtime-page .summary-card,
+      .airtime-page .confirm-card {
+        border-color: rgba(255,255,255,.09);
+        box-shadow: 0 3px 8px rgba(0,0,0,.16), 0 10px 26px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.025);
+      }
+    }
   </style>
+
+  <style>
+    .recent-purchases { margin: 18px 0 24px; padding: 16px; border: 1px solid var(--air-border, #e5e7eb); border-radius: 18px; background: var(--air-surface, #fff); box-shadow: var(--air-shadow-sm, 0 2px 8px rgba(0,0,0,.04)); }
+    .recent-purchases-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+    .recent-purchases-title { margin:0; font-size:15px; font-weight:800; color:var(--air-text,#111); }
+    .recent-purchases-subtitle { margin:4px 0 0; font-size:11px; color:var(--air-text-muted,#6b7280); }
+    .recent-refresh { border:1px solid var(--air-border,#e5e7eb); background:var(--air-surface,#fff); color:var(--air-accent,#0a4534); border-radius:10px; padding:8px 10px; font-weight:700; font-size:12px; cursor:pointer; }
+    .recent-provider-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; margin:12px 0; }
+    .recent-provider-tab { border:1px solid var(--air-border,#e5e7eb); background:var(--air-surface-muted,#f7f9f8); color:var(--air-text-muted,#6b7280); padding:9px 4px; border-radius:11px; font-size:11px; font-weight:800; cursor:pointer; }
+    .recent-provider-tab.active { background:var(--air-accent-soft,rgba(10,69,52,.08)); color:var(--air-accent,#0a4534); border-color:var(--air-accent,#0a4534); }
+    .recent-tx-list { display:grid; gap:8px; }
+    .recent-tx-row { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--air-border,#eee); }
+    .recent-tx-row:last-child { border-bottom:0; }
+    .recent-tx-logo { flex:0 0 38px; width:38px; height:38px; border-radius:12px; display:grid; place-items:center; font-size:11px; font-weight:900; color:#fff; }
+    .recent-tx-logo.mtn { background:#ffcb05; color:#111; } .recent-tx-logo.airtel { background:#e60000; } .recent-tx-logo.glo { background:#00a651; } .recent-tx-logo.t2 { background:#f26522; }
+    .recent-tx-info { min-width:0; flex:1; } .recent-tx-name { font-size:12px; font-weight:800; color:var(--air-text,#111); }
+    .recent-tx-meta { margin-top:4px; font-size:10px; color:var(--air-text-muted,#6b7280); overflow-wrap:anywhere; }
+    .recent-tx-amount { text-align:right; white-space:nowrap; font-size:12px; font-weight:800; color:var(--air-text,#111); }
+    .recent-tx-status { display:inline-block; margin-top:5px; padding:3px 6px; border-radius:6px; font-size:9px; font-weight:800; text-transform:capitalize; background:#f3f4f6; color:#4b5563; }
+    .recent-tx-status.successful,.recent-tx-status.success,.recent-tx-status.completed { background:#dcfce7; color:#166534; }
+    .recent-tx-status.pending,.recent-tx-status.processing { background:#fef3c7; color:#92400e; }
+    .recent-tx-status.failed,.recent-tx-status.refunded { background:#fee2e2; color:#991b1b; }
+    .recent-tx-empty { padding:18px 8px; text-align:center; font-size:12px; color:var(--air-text-muted,#6b7280); line-height:1.6; }
+    .recent-tx-error { color:#b91c1c; }
+    @media (max-width:360px) { .recent-purchases { padding:12px; } .recent-provider-tabs { gap:4px; } .recent-provider-tab { font-size:10px; } }
+  </style>
+
 </head>
 <body>
 
@@ -841,6 +935,26 @@
         </div>
       </div>
       <div class="category-list" id="categoryList" role="list"></div>
+
+      <!-- Recent purchases are fetched from the authenticated backend and filtered by provider. -->
+      <section class="recent-purchases" id="recentPurchases" aria-labelledby="recentPurchasesTitle">
+        <div class="recent-purchases-head">
+          <div>
+            <h2 class="recent-purchases-title" id="recentPurchasesTitle">Recent Airtime Purchases</h2>
+            <p class="recent-purchases-subtitle">Only your purchases for the selected network are shown.</p>
+          </div>
+          <button class="recent-refresh" id="refreshRecentPurchases" type="button">Refresh</button>
+        </div>
+        <div class="recent-provider-tabs" role="tablist" aria-label="Filter recent purchases by network">
+          <button type="button" class="recent-provider-tab active" data-recent-provider="mtn" role="tab" aria-selected="true">MTN</button>
+          <button type="button" class="recent-provider-tab" data-recent-provider="airtel" role="tab" aria-selected="false">Airtel</button>
+          <button type="button" class="recent-provider-tab" data-recent-provider="glo" role="tab" aria-selected="false">Glo</button>
+          <button type="button" class="recent-provider-tab" data-recent-provider="t2" role="tab" aria-selected="false">T2</button>
+        </div>
+        <div class="recent-tx-list" id="recentTransactionsList" aria-live="polite">
+          <div class="recent-tx-empty">Loading your recent purchases…</div>
+        </div>
+      </section>
     </section>
 
     <!-- STEP 2 — PRODUCTS -->
@@ -1201,10 +1315,10 @@
         <text x="50" y="68" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="-2">glo</text>
       </svg>`;
 
-      // T2 — orange provider badge with T2 branding
+      // T2 — orange circle with white T2 text
       const T2_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="50" fill="#f26522"/>
-        <text x="50" y="61" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="38" font-weight="900" fill="#ffffff" letter-spacing="-1">T2</text>
+        <text x="50" y="61" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="36" font-weight="900" fill="#ffffff" letter-spacing="-0.5">T2</text>
       </svg>`;
 
       const LOGOS = {
@@ -1244,7 +1358,7 @@
         if (txt.indexOf('mtn') !== -1) return 'mtn';
         if (txt.indexOf('airtel') !== -1) return 'airtel';
         if (txt.indexOf('glo') !== -1) return 'glo';
-        if (/(^|\W)t2($|\W)/i.test(txt)) return 't2';
+        if (txt.indexOf('t2') !== -1 || txt.indexOf('9mobile') !== -1) return 't2';
         return null;
       }
 
@@ -1280,56 +1394,9 @@
       /* ------------------------------------------------------------
          Scan entire document for logo containers
          ------------------------------------------------------------ */
-      function providerFromCard(card) {
-        if (!card) return null;
-        const declared = (card.getAttribute('data-provider') || '').trim().toLowerCase();
-        if (LOGOS[declared]) return declared;
-        const classes = typeof card.className === 'string' ? card.className.toLowerCase() : '';
-        const classMatch = classes.match(/\b(mtn|airtel|glo|t2)\b/);
-        if (classMatch) return classMatch[1];
-        const txt = (card.textContent || '').toLowerCase();
-        if (/\bmtn\b/.test(txt)) return 'mtn';
-        if (/\bairtel\b/.test(txt)) return 'airtel';
-        if (/\bglo\b/.test(txt)) return 'glo';
-        if (/(^|\W)t2($|\W)/i.test(txt)) return 't2';
-        return null;
-      }
-
-      function addLogoToCard(card, provider, type) {
-        if (!card || !provider || !LOGOS[provider]) return;
-        card.setAttribute('data-provider', provider);
-        const existing = card.querySelector('.cat-logo, .bundle-logo');
-        if (existing) {
-          if (!existing.dataset.provider) existing.dataset.provider = provider;
-          injectLogo(existing);
-          return;
-        }
-        const logo = document.createElement('div');
-        logo.className = type === 'bundle' ? 'bundle-logo' : 'cat-logo';
-        logo.dataset.provider = provider;
-        logo.setAttribute('aria-label', PROVIDER_LABELS[provider] + ' logo');
-        card.insertBefore(logo, card.firstChild);
-        injectLogo(logo);
-      }
-
       function injectAllLogos() {
-        // First repair the cards generated by airtime.js. This is important
-        // because some versions render provider cards without logo containers.
-        document.querySelectorAll('.category-card').forEach(function (card) {
-          addLogoToCard(card, providerFromCard(card), 'category');
-        });
-        document.querySelectorAll('.bundle-card').forEach(function (card) {
-          addLogoToCard(card, providerFromCard(card), 'bundle');
-        });
-
-        // Then handle logo containers used by selected-bundle and checkout UI.
-        document.querySelectorAll('.cat-logo, .bundle-logo, .sb-logo').forEach(function (logo) {
-          if (!logo.dataset.provider) {
-            const provider = providerFromCard(logo.closest('.category-card, .bundle-card, .selected-bundle, #selectedBundleCard, #payBundleCard')) || detectProvider(logo);
-            if (provider) logo.dataset.provider = provider;
-          }
-          injectLogo(logo);
-        });
+        const selectors = '.cat-logo, .bundle-logo, .sb-logo';
+        document.querySelectorAll(selectors).forEach(injectLogo);
       }
 
       /* ------------------------------------------------------------
@@ -1532,7 +1599,7 @@
                 const txt = (badge.textContent || '').toLowerCase();
                 if (txt.indexOf('airtel') !== -1) provider = 'airtel';
                 else if (txt.indexOf('glo') !== -1) provider = 'glo';
-                else if (/(^|\W)t2($|\W)/i.test(txt)) provider = 't2';
+                else if (txt.indexOf('t2') !== -1 || txt.indexOf('9mobile') !== -1) provider = 't2';
               }
               saveRecent(phone, provider);
             }
@@ -1549,7 +1616,7 @@
             let provider = 'mtn';
             if (txt.indexOf('airtel') !== -1) provider = 'airtel';
             else if (txt.indexOf('glo') !== -1) provider = 'glo';
-            else if (/(^|\W)t2($|\W)/i.test(txt)) provider = 't2';
+            else if (txt.indexOf('t2') !== -1 || txt.indexOf('9mobile') !== -1) provider = 't2';
             saveRecent(phone, provider);
           });
           badgeObserver.observe(badge, { attributes: true, childList: true, subtree: true });
@@ -1641,6 +1708,163 @@
         if (el) observer.observe(el, { childList: true, subtree: true });
       });
       schedule();
+    })();
+  </script>
+
+
+  <!-- Recent transactions: backend must scope results to the authenticated user. -->
+  <script>
+    (function () {
+      'use strict';
+      const API_URL = '/api/v1/transactions/my';
+      const PRODUCT = 'airtime';
+      const labels = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2' };
+      let selectedProvider = 'mtn';
+      let requestController = null;
+      const list = document.getElementById('recentTransactionsList');
+      const tabs = Array.from(document.querySelectorAll('[data-recent-provider]'));
+      const refresh = document.getElementById('refreshRecentPurchases');
+      if (!list || !tabs.length) return;
+
+      function escapeText(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+        });
+      }
+      function money(value) {
+        const amount = Number(value);
+        return Number.isFinite(amount) ? '₦' + amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+      }
+      function normalizeProvider(tx) {
+        const raw = String(tx.provider || tx.network || tx.operator || tx.service_provider || '').toLowerCase().trim();
+        if (raw === 'mtn' || raw.includes('mtn')) return 'mtn';
+        if (raw === 'airtel' || raw.includes('airtel')) return 'airtel';
+        if (raw === 'glo' || raw.includes('glo') || raw.includes('globacom')) return 'glo';
+        if (raw === 't2' || raw.includes('t2') || raw.includes('9mobile')) return 't2';
+        return '';
+      }
+      function showMessage(message, isError) {
+        list.innerHTML = '<div class="recent-tx-empty' + (isError ? ' recent-tx-error' : '') + '">' + escapeText(message) + '</div>';
+      }
+      function renderTransactions(transactions) {
+        // Strict client-side provider filter as an extra safeguard; backend must also filter.
+        const rows = transactions.filter(function (tx) {
+          return normalizeProvider(tx) === selectedProvider && String(tx.product || tx.product_type || tx.service || 'airtime').toLowerCase().includes('airtime');
+        }).slice(0, 8);
+        if (!rows.length) {
+          showMessage('No ' + labels[selectedProvider] + ' airtime purchases yet. Your purchases on other networks will not appear here.', false);
+          return;
+        }
+        list.innerHTML = rows.map(function (tx) {
+          const status = String(tx.status || 'pending').toLowerCase();
+          const phone = tx.phone || tx.phone_number || tx.recipient || tx.customer_id || 'Recipient';
+          const dateValue = tx.created_at || tx.createdAt || tx.date || tx.timestamp;
+          const date = dateValue ? new Date(dateValue) : null;
+          const dateText = date && !Number.isNaN(date.getTime()) ? date.toLocaleString('en-NG', { dateStyle: 'medium', timeStyle: 'short' }) : 'Date unavailable';
+          const amount = tx.amount ?? tx.total_amount ?? tx.price;
+          const reference = tx.reference || tx.transaction_reference || tx.transactionRef || '';
+          return '<article class="recent-tx-row">' +
+            '<div class="recent-tx-info"><div class="recent-tx-name recent-number-only">' + escapeText(phone) + '</div>' +
+            '<div class="recent-tx-meta">' + escapeText(dateText) + (reference ? ' · Ref: ' + escapeText(reference) : '') + '</div>' +
+            '<span class="recent-tx-status ' + escapeText(status.replace(/[^a-z-]/g, '')) + '">' + escapeText(status) + '</span></div>' +
+            '<div class="recent-tx-amount">' + money(amount) + '</div></article>';
+        }).join('');
+      }
+      async function loadTransactions() {
+        if (requestController) requestController.abort();
+        requestController = new AbortController();
+        showMessage('Loading your ' + labels[selectedProvider] + ' purchases…', false);
+        if (refresh) { refresh.disabled = true; refresh.textContent = 'Loading…'; }
+        try {
+          const url = new URL(API_URL, window.location.origin);
+          url.searchParams.set('product', PRODUCT);
+          url.searchParams.set('provider', selectedProvider);
+          url.searchParams.set('limit', '8');
+          const response = await fetch(url.toString(), {
+            method: 'GET', credentials: 'include', headers: { 'Accept': 'application/json' },
+            signal: requestController.signal
+          });
+          if (response.status === 401 || response.status === 403) {
+            showMessage('Please sign in to view your personal transaction history.', true);
+            return;
+          }
+          if (!response.ok) throw new Error('Transaction history endpoint returned ' + response.status);
+          const body = await response.json();
+          const transactions = Array.isArray(body) ? body : (body.transactions || body.data || body.results || []);
+          if (!Array.isArray(transactions)) throw new Error('Unexpected transaction history response');
+          renderTransactions(transactions);
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+          console.error('[Shatova recent transactions]', error);
+          showMessage('Could not load your purchases. Confirm the signed-in transaction history API is configured, then try Refresh.', true);
+        } finally {
+          if (refresh) { refresh.disabled = false; refresh.textContent = 'Refresh'; }
+        }
+      }
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          selectedProvider = tab.dataset.recentProvider;
+          tabs.forEach(function (other) {
+            const active = other === tab;
+            other.classList.toggle('active', active);
+            other.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          loadTransactions();
+        });
+      });
+      if (refresh) refresh.addEventListener('click', loadTransactions);
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTransactions);
+      else loadTransactions();
+    })();
+  </script>
+
+
+  <style>
+    .recent-number-only { font-size: 13px; font-weight: 800; letter-spacing: .25px; }
+    .recent-tx-row { padding: 12px 2px; }
+    .recent-tx-info { overflow: hidden; }
+    .recent-tx-meta { line-height: 1.5; }
+    .recent-tx-logo { display: none !important; }
+  </style>
+  <script>
+    /* Keep the recent-purchase network aligned with the category the user opens. */
+    (function () {
+      const providerNames = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2' };
+      function providerFromText(value) {
+        const text = String(value || '').toLowerCase();
+        if (text.includes('airtel')) return 'airtel';
+        if (text.includes('glo')) return 'glo';
+        if (text.includes('t2') || text.includes('9mobile')) return 't2';
+        if (text.includes('mtn')) return 'mtn';
+        return '';
+      }
+      function selectRecentProvider(provider) {
+        if (!provider || !providerNames[provider]) return;
+        const tab = document.querySelector('[data-recent-provider="' + provider + '"]');
+        if (tab) tab.click();
+      }
+      const categoryList = document.getElementById('categoryList');
+      if (categoryList) {
+        categoryList.addEventListener('click', function (event) {
+          const card = event.target.closest('[data-provider], .category-card, [role="listitem"]');
+          if (!card || !categoryList.contains(card)) return;
+          const provider = providerFromText((card.getAttribute('data-provider') || '') + ' ' + (card.textContent || '') + ' ' + (card.className || ''));
+          if (provider) {
+            window.shatovaSelectedAirtimeProvider = provider;
+            selectRecentProvider(provider);
+          }
+        }, true);
+      }
+      /* The active product step should never inherit a stale network title. */
+      const bundleList = document.getElementById('bundlesList');
+      if (bundleList) {
+        bundleList.addEventListener('click', function (event) {
+          const card = event.target.closest('[data-provider], .bundle-card, [role="listitem"]');
+          if (!card || !bundleList.contains(card)) return;
+          const provider = providerFromText((card.getAttribute('data-provider') || '') + ' ' + (card.textContent || '') + ' ' + (card.className || ''));
+          if (provider) window.shatovaSelectedAirtimeProvider = provider;
+        }, true);
+      }
     })();
   </script>
 
