@@ -17,15 +17,15 @@
 
   <style>
     :root {
-      --air-radius-sm: 14px;
-      --air-radius-md: 18px;
-      --air-radius-lg: 22px;
+      --air-radius-sm: 12px;
+      --air-radius-md: 15px;
+      --air-radius-lg: 16px;
       --air-radius-pill: 999px;
-      --air-shadow-xs: 0 1px 2px rgba(15, 35, 28, 0.04);
-      --air-shadow-sm: 0 2px 6px -1px rgba(15, 35, 28, 0.05), 0 4px 14px -4px rgba(15, 35, 28, 0.06);
-      --air-shadow-md: 0 6px 20px -6px rgba(15, 35, 28, 0.10), 0 12px 32px -10px rgba(15, 35, 28, 0.08);
-      --air-shadow-lg: 0 12px 36px -10px rgba(15, 35, 28, 0.14), 0 20px 48px -16px rgba(15, 35, 28, 0.10);
-      --air-shadow-hover: 0 10px 28px -8px rgba(15, 35, 28, 0.14), 0 4px 12px -4px rgba(10, 69, 52, 0.08);
+      --air-shadow-xs: 0 1px 3px rgba(15, 35, 28, 0.06);
+      --air-shadow-sm: 0 2px 8px -2px rgba(15, 35, 28, 0.08), 0 6px 18px -6px rgba(15, 35, 28, 0.10);
+      --air-shadow-md: 0 8px 24px -6px rgba(15, 35, 28, 0.12), 0 4px 12px -4px rgba(15, 35, 28, 0.08);
+      --air-shadow-lg: 0 14px 40px -10px rgba(15, 35, 28, 0.16), 0 6px 16px -6px rgba(15, 35, 28, 0.10);
+      --air-shadow-hover: 0 12px 32px -8px rgba(15, 35, 28, 0.16), 0 6px 16px -4px rgba(10, 69, 52, 0.10);
       --air-border: rgba(15, 45, 35, 0.09);
       --air-border-hover: rgba(10, 69, 52, 0.22);
       --air-surface: #ffffff;
@@ -70,8 +70,9 @@
       overflow: hidden;
       border: none;
       box-shadow:
-        0 2px 6px rgba(15, 35, 28, 0.08),
-        0 0 0 1px rgba(15, 45, 35, 0.06);
+        0 3px 10px -2px rgba(15, 35, 28, 0.14),
+        0 1px 3px rgba(15, 35, 28, 0.08),
+        0 0 0 1px rgba(15, 45, 35, 0.05);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -80,10 +81,10 @@
     }
     .cat-logo,
     .pro-logo-badge {
-      width: 48px; height: 48px; border-radius: 50%; padding: 0;
+      width: 40px; height: 40px; border-radius: 50%; padding: 0;
     }
-    .bundle-logo { width: 46px; height: 46px; border-radius: 50%; padding: 0; }
-    .sb-logo     { width: 42px; height: 42px; border-radius: 50%; padding: 0; }
+    .bundle-logo { width: 38px; height: 38px; border-radius: 50%; padding: 0; }
+    .sb-logo     { width: 36px; height: 36px; border-radius: 50%; padding: 0; }
 
     .cat-logo .isp-logo,
     .bundle-logo .isp-logo,
@@ -104,28 +105,28 @@
     [data-provider="mtn"].pro-logo-badge,
     .pro-logo-badge[data-provider="mtn"] {
       background: #ffcb05 !important;
-      box-shadow: 0 3px 10px -2px rgba(255, 203, 5, 0.45), 0 0 0 1px rgba(200, 160, 0, 0.2);
+      box-shadow: 0 4px 12px -2px rgba(255, 203, 5, 0.5), 0 2px 4px rgba(200, 160, 0, 0.2);
     }
     [data-provider="airtel"] .cat-logo,
     [data-provider="airtel"] .bundle-logo,
     [data-provider="airtel"] .sb-logo,
     .pro-logo-badge[data-provider="airtel"] {
       background: #ED1C24 !important;
-      box-shadow: 0 3px 10px -2px rgba(237, 28, 36, 0.38), 0 0 0 1px rgba(180, 20, 25, 0.15);
+      box-shadow: 0 4px 12px -2px rgba(237, 28, 36, 0.45), 0 2px 4px rgba(180, 20, 25, 0.18);
     }
     [data-provider="glo"] .cat-logo,
     [data-provider="glo"] .bundle-logo,
     [data-provider="glo"] .sb-logo,
     .pro-logo-badge[data-provider="glo"] {
       background: #00a651 !important;
-      box-shadow: 0 3px 10px -2px rgba(0, 166, 81, 0.35), 0 0 0 1px rgba(0, 130, 60, 0.15);
+      box-shadow: 0 4px 12px -2px rgba(0, 166, 81, 0.42), 0 2px 4px rgba(0, 130, 60, 0.16);
     }
     [data-provider="t2"] .cat-logo,
     [data-provider="t2"] .bundle-logo,
     [data-provider="t2"] .sb-logo,
     .pro-logo-badge[data-provider="t2"] {
       background: #f26522 !important;
-      box-shadow: 0 3px 10px -2px rgba(242, 101, 34, 0.35), 0 0 0 1px rgba(200, 80, 20, 0.15);
+      box-shadow: 0 4px 12px -2px rgba(242, 101, 34, 0.42), 0 2px 4px rgba(200, 80, 20, 0.16);
     }
 
     /* ---------- PAGE ---------- */
@@ -160,21 +161,21 @@
     }
 
     .category-list, .bundles-list {
-      display: flex; flex-direction: column; gap: 12px; padding: 20px 4px 12px;
+      display: flex; flex-direction: column; gap: 10px; padding: 14px 2px 8px;
     }
     /* Apply pro card look to any direct child of categoryList (in case JS uses plain divs) */
     #categoryList > *,
     .category-card,
     .bundle-card {
       position: relative;
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px;
       background: var(--air-surface);
       border: 1px solid rgba(15, 45, 35, 0.08);
-      border-radius: 18px;
+      border-radius: 15px;
       box-shadow:
-        0 2px 6px rgba(15, 35, 28, 0.04),
-        0 8px 24px -8px rgba(15, 35, 28, 0.06),
+        0 3px 10px -2px rgba(15, 35, 28, 0.08),
+        0 8px 22px -8px rgba(15, 35, 28, 0.10),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
       cursor: pointer;
       transition:
@@ -183,7 +184,7 @@
         border-color 0.24s ease,
         background-color 0.22s ease;
       -webkit-tap-highlight-color: transparent;
-      min-height: 64px;
+      min-height: 54px;
       box-sizing: border-box;
     }
     #categoryList > *:hover,
@@ -210,12 +211,12 @@
     #categoryList > * .cat-name,
     #categoryList > * strong,
     #categoryList > * b {
-      font-size: 15px; font-weight: 750; color: var(--air-text);
-      letter-spacing: -0.2px; margin-bottom: 3px; line-height: 1.25;
+      font-size: 13.5px; font-weight: 750; color: var(--air-text);
+      letter-spacing: -0.15px; margin-bottom: 2px; line-height: 1.25;
     }
     .cat-sub, .bundle-meta,
     #categoryList > * .cat-sub {
-      font-size: 12px; color: var(--air-text-muted); font-weight: 500; line-height: 1.4;
+      font-size: 11px; color: var(--air-text-muted); font-weight: 500; line-height: 1.35;
     }
     .cat-arrow {
       width: 18px; height: 18px; color: var(--air-text-subtle);
@@ -276,12 +277,12 @@
     .sb-price { font-size: 16px; font-weight: 800; color: var(--air-text); letter-spacing: -0.35px; }
 
     .form-card {
-      padding: 22px 20px;
+      padding: 18px 16px;
       background: var(--air-surface);
       border: 1px solid var(--air-border);
       border-radius: var(--air-radius-lg);
       box-shadow: var(--air-shadow-sm);
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
     .form-label-row {
       display: flex; align-items: center; gap: 8px; margin-bottom: 11px;
@@ -297,12 +298,12 @@
     .phone-input-wrap { position: relative; flex: 1; min-width: 0; }
     .phone-input-wrap .phone-input { width: 100%; flex: none; }
     .phone-input {
-      flex: 1; width: 100%; height: 50px; padding: 0 16px;
+      flex: 1; width: 100%; height: 44px; padding: 0 14px;
       border-radius: var(--air-radius-sm);
       border: 1.5px solid var(--air-border);
       background: var(--air-surface-muted);
-      font-family: inherit; font-size: 15px; font-weight: 550;
-      letter-spacing: 0.25px; color: var(--air-text); outline: none;
+      font-family: inherit; font-size: 14px; font-weight: 550;
+      letter-spacing: 0.2px; color: var(--air-text); outline: none;
       transition: background-color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
       box-shadow: inset 0 1px 2px rgba(15, 35, 28, 0.03);
     }
@@ -316,14 +317,14 @@
       border-color: var(--air-danger); background: rgba(220, 38, 38, 0.04);
       box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.12);
     }
-    .phone-input.amount-input { font-size: 20px; font-weight: 750; letter-spacing: -0.4px; }
+    .phone-input.amount-input { font-size: 17px; font-weight: 750; letter-spacing: -0.3px; }
 
     .pick-btn {
-      display: flex; align-items: center; gap: 7px; padding: 0 17px; height: 50px;
+      display: flex; align-items: center; gap: 6px; padding: 0 14px; height: 44px;
       border-radius: var(--air-radius-sm);
       border: 1.5px solid var(--air-border);
       background: var(--air-surface-muted);
-      font-family: inherit; font-size: 13px; font-weight: 750;
+      font-family: inherit; font-size: 12.5px; font-weight: 750;
       color: var(--air-accent); cursor: pointer; flex-shrink: 0;
       transition: background-color 0.22s ease, border-color 0.22s ease, transform 0.2s var(--air-ease-out), box-shadow 0.24s ease;
       -webkit-tap-highlight-color: transparent;
@@ -941,24 +942,29 @@
         0 10px 28px -8px rgba(15, 35, 28, 0.07),
         inset 0 1px 0 rgba(255, 255, 255, 0.85);
     }
-    .airtime-page .form-card { padding: 24px 22px; }
+    .airtime-page .form-card { padding: 18px 16px; }
     .airtime-page .category-list,
-    .airtime-page .bundles-list { gap: 12px; padding: 18px 2px 10px; }
+    .airtime-page .bundles-list { gap: 10px; padding: 12px 2px 8px; }
     .airtime-page #categoryList > *,
     .airtime-page .category-card,
     .airtime-page .bundle-card {
-      padding: 14px 16px;
-      border-radius: 18px;
-      min-height: 64px;
+      padding: 11px 14px;
+      border-radius: 15px;
+      min-height: 54px;
+      box-shadow:
+        0 3px 10px -2px rgba(15, 35, 28, 0.08),
+        0 8px 22px -8px rgba(15, 35, 28, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
-    .airtime-page .selected-bundle { padding: 15px 17px; }
+    .airtime-page .selected-bundle { padding: 12px 14px; }
     .airtime-page .btn-primary,
     .airtime-page .pm-btn-primary {
-      width: 86%; max-width: 380px; height: 48px; min-height: 48px;
-      padding: 0 22px; margin: 20px auto 0; border-radius: 15px;
-      font-size: 14px; font-weight: 800; letter-spacing: 0.2px;
+      width: 86%; max-width: 340px; height: 44px; min-height: 44px;
+      padding: 0 18px; margin: 16px auto 0; border-radius: 13px;
+      font-size: 13.5px; font-weight: 800; letter-spacing: 0.15px;
       box-shadow:
-        0 4px 12px -3px rgba(10, 69, 52, 0.18),
+        0 4px 14px -3px rgba(10, 69, 52, 0.20),
+        0 2px 6px rgba(15, 35, 28, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.22);
     }
     .airtime-page input,
@@ -1392,19 +1398,10 @@
         <text x="100" y="116" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="48" font-weight="900" fill="#000" letter-spacing="-1.5">MTN</text>
       </svg>`;
 
-      // Airtel — pro version of real brand mark: red field + white stylized "a" swoosh
+      // Airtel — red field + white "airtel" wordmark (same style as MTN / Glo / T2)
       const AIRTEL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
         <rect width="200" height="200" rx="100" fill="#ED1C24"/>
-        <!-- Stylized Airtel "a" mark (modern brand icon) -->
-        <path d="M72 138
-                 C72 108 92 88 116 88
-                 C138 88 152 102 152 118
-                 C152 134 140 146 124 146
-                 C112 146 104 138 104 128
-                 C104 118 112 112 122 112
-                 C128 112 132 116 132 122"
-              fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="132" cy="72" r="11" fill="#FFFFFF"/>
+        <text x="100" y="118" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="800" fill="#fff" letter-spacing="-1.2">airtel</text>
       </svg>`;
 
       // Glo — green field, white glo wordmark
