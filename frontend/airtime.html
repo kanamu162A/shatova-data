@@ -936,25 +936,6 @@
       </div>
       <div class="category-list" id="categoryList" role="list"></div>
 
-      <!-- Recent purchases are fetched from the authenticated backend and filtered by provider. -->
-      <section class="recent-purchases" id="recentPurchases" aria-labelledby="recentPurchasesTitle">
-        <div class="recent-purchases-head">
-          <div>
-            <h2 class="recent-purchases-title" id="recentPurchasesTitle">Recent Airtime Purchases</h2>
-            <p class="recent-purchases-subtitle">Only your purchases for the selected network are shown.</p>
-          </div>
-          <button class="recent-refresh" id="refreshRecentPurchases" type="button">Refresh</button>
-        </div>
-        <div class="recent-provider-tabs" role="tablist" aria-label="Filter recent purchases by network">
-          <button type="button" class="recent-provider-tab active" data-recent-provider="mtn" role="tab" aria-selected="true">MTN</button>
-          <button type="button" class="recent-provider-tab" data-recent-provider="airtel" role="tab" aria-selected="false">Airtel</button>
-          <button type="button" class="recent-provider-tab" data-recent-provider="glo" role="tab" aria-selected="false">Glo</button>
-          <button type="button" class="recent-provider-tab" data-recent-provider="t2" role="tab" aria-selected="false">T2</button>
-        </div>
-        <div class="recent-tx-list" id="recentTransactionsList" aria-live="polite">
-          <div class="recent-tx-empty">Loading your recent purchases…</div>
-        </div>
-      </section>
     </section>
 
     <!-- STEP 2 — PRODUCTS -->
@@ -1489,8 +1470,24 @@
       /* ------------------------------------------------------------
          RECENT RECIPIENTS STORE
          ------------------------------------------------------------ */
-      const STORAGE_KEY = 'shatova_recent_recipients_v1';
+      const STORAGE_KEY = 'shatova_recent_recipients_by_provider_v2';
       const MAX_RECENT = 8;
+
+      function getCurrentProvider() {
+        if (typeof window.shatovaGetActiveProvider === 'function') {
+          const active = window.shatovaGetActiveProvider();
+          if (active && PROVIDER_CLASSES[active]) return active;
+        }
+        const selected = window.shatovaSelectedAirtimeProvider;
+        if (selected && PROVIDER_CLASSES[selected]) return selected;
+        const badge = document.getElementById('networkBadge');
+        const text = (badge && !badge.classList.contains('hidden') ? badge.textContent : '').toLowerCase();
+        if (text.includes('airtel')) return 'airtel';
+        if (text.includes('glo')) return 'glo';
+        if (text.includes('t2') || text.includes('9mobile')) return 't2';
+        if (text.includes('mtn')) return 'mtn';
+        return 'mtn';
+      }
 
       function getRecent() {
         try {
@@ -1509,7 +1506,7 @@
         const clean = String(phone).replace(/\D/g, '').slice(0, 11);
         if (clean.length < 10) return;
         let recent = getRecent().filter(function (item) { return item.phone !== clean; });
-        recent.unshift({ phone: clean, provider: provider || 'mtn', ts: Date.now() });
+        recent.unshift({ phone: clean, provider: (provider && PROVIDER_CLASSES[provider]) ? provider : getCurrentProvider(), ts: Date.now() });
         recent = recent.slice(0, MAX_RECENT);
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(recent)); } catch (e) {}
       }
@@ -1520,7 +1517,8 @@
         if (!dropdown || !input) return;
         const value = input.value.trim();
         if (value.length >= 11) { dropdown.classList.add('hidden'); return; }
-        const all = getRecent();
+        const provider = getCurrentProvider();
+        const all = getRecent().filter(function (item) { return item.provider === provider; });
         if (all.length === 0) { dropdown.classList.add('hidden'); return; }
         const filtered = value.length === 0 ? all : all.filter(function (item) { return item.phone.indexOf(value) === 0; });
         if (filtered.length === 0) { dropdown.classList.add('hidden'); return; }
@@ -1538,21 +1536,10 @@
           btn.dataset.phone = item.phone;
           btn.setAttribute('role', 'option');
 
-          const dot = document.createElement('span');
-          dot.className = 'recent-network-dot ' + (PROVIDER_CLASSES[item.provider] || 'mtn');
-          dot.setAttribute('aria-hidden', 'true');
-
           const phone = document.createElement('span');
           phone.className = 'recent-phone';
           phone.textContent = item.phone;
-
-          const tag = document.createElement('span');
-          tag.className = 'recent-tag';
-          tag.textContent = PROVIDER_LABELS[item.provider] || 'RECENT';
-
-          btn.appendChild(dot);
           btn.appendChild(phone);
-          btn.appendChild(tag);
 
           btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
           btn.addEventListener('click', function () {
@@ -1593,15 +1580,7 @@
           continueBtn.addEventListener('click', function () {
             const phone = input.value.trim();
             if (phone.length === 11) {
-              const badge = document.getElementById('networkBadge');
-              let provider = 'mtn';
-              if (badge && !badge.classList.contains('hidden')) {
-                const txt = (badge.textContent || '').toLowerCase();
-                if (txt.indexOf('airtel') !== -1) provider = 'airtel';
-                else if (txt.indexOf('glo') !== -1) provider = 'glo';
-                else if (txt.indexOf('t2') !== -1 || txt.indexOf('9mobile') !== -1) provider = 't2';
-              }
-              saveRecent(phone, provider);
+              saveRecent(phone, getCurrentProvider());
             }
           });
         }
@@ -1612,12 +1591,7 @@
             if (badge.classList.contains('hidden')) return;
             const phone = input.value.trim();
             if (phone.length !== 11) return;
-            const txt = (badge.textContent || '').toLowerCase();
-            let provider = 'mtn';
-            if (txt.indexOf('airtel') !== -1) provider = 'airtel';
-            else if (txt.indexOf('glo') !== -1) provider = 'glo';
-            else if (txt.indexOf('t2') !== -1 || txt.indexOf('9mobile') !== -1) provider = 't2';
-            saveRecent(phone, provider);
+            saveRecent(phone, getCurrentProvider());
           });
           badgeObserver.observe(badge, { attributes: true, childList: true, subtree: true });
         }
@@ -1712,161 +1686,83 @@
   </script>
 
 
-  <!-- Recent transactions: backend must scope results to the authenticated user. -->
   <script>
+    /* Provider context: keep recent numbers and product headers isolated by network. */
     (function () {
       'use strict';
-      const API_URL = '/api/v1/transactions/my';
-      const PRODUCT = 'airtime';
-      const labels = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2' };
-      let selectedProvider = 'mtn';
-      let requestController = null;
-      const list = document.getElementById('recentTransactionsList');
-      const tabs = Array.from(document.querySelectorAll('[data-recent-provider]'));
-      const refresh = document.getElementById('refreshRecentPurchases');
-      if (!list || !tabs.length) return;
-
-      function escapeText(value) {
-        return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
-          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
-        });
-      }
-      function money(value) {
-        const amount = Number(value);
-        return Number.isFinite(amount) ? '₦' + amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
-      }
-      function normalizeProvider(tx) {
-        const raw = String(tx.provider || tx.network || tx.operator || tx.service_provider || '').toLowerCase().trim();
-        if (raw === 'mtn' || raw.includes('mtn')) return 'mtn';
-        if (raw === 'airtel' || raw.includes('airtel')) return 'airtel';
-        if (raw === 'glo' || raw.includes('glo') || raw.includes('globacom')) return 'glo';
-        if (raw === 't2' || raw.includes('t2') || raw.includes('9mobile')) return 't2';
-        return '';
-      }
-      function showMessage(message, isError) {
-        list.innerHTML = '<div class="recent-tx-empty' + (isError ? ' recent-tx-error' : '') + '">' + escapeText(message) + '</div>';
-      }
-      function renderTransactions(transactions) {
-        // Strict client-side provider filter as an extra safeguard; backend must also filter.
-        const rows = transactions.filter(function (tx) {
-          return normalizeProvider(tx) === selectedProvider && String(tx.product || tx.product_type || tx.service || 'airtime').toLowerCase().includes('airtime');
-        }).slice(0, 8);
-        if (!rows.length) {
-          showMessage('No ' + labels[selectedProvider] + ' airtime purchases yet. Your purchases on other networks will not appear here.', false);
-          return;
-        }
-        list.innerHTML = rows.map(function (tx) {
-          const status = String(tx.status || 'pending').toLowerCase();
-          const phone = tx.phone || tx.phone_number || tx.recipient || tx.customer_id || 'Recipient';
-          const dateValue = tx.created_at || tx.createdAt || tx.date || tx.timestamp;
-          const date = dateValue ? new Date(dateValue) : null;
-          const dateText = date && !Number.isNaN(date.getTime()) ? date.toLocaleString('en-NG', { dateStyle: 'medium', timeStyle: 'short' }) : 'Date unavailable';
-          const amount = tx.amount ?? tx.total_amount ?? tx.price;
-          const reference = tx.reference || tx.transaction_reference || tx.transactionRef || '';
-          return '<article class="recent-tx-row">' +
-            '<div class="recent-tx-info"><div class="recent-tx-name recent-number-only">' + escapeText(phone) + '</div>' +
-            '<div class="recent-tx-meta">' + escapeText(dateText) + (reference ? ' · Ref: ' + escapeText(reference) : '') + '</div>' +
-            '<span class="recent-tx-status ' + escapeText(status.replace(/[^a-z-]/g, '')) + '">' + escapeText(status) + '</span></div>' +
-            '<div class="recent-tx-amount">' + money(amount) + '</div></article>';
-        }).join('');
-      }
-      async function loadTransactions() {
-        if (requestController) requestController.abort();
-        requestController = new AbortController();
-        showMessage('Loading your ' + labels[selectedProvider] + ' purchases…', false);
-        if (refresh) { refresh.disabled = true; refresh.textContent = 'Loading…'; }
-        try {
-          const url = new URL(API_URL, window.location.origin);
-          url.searchParams.set('product', PRODUCT);
-          url.searchParams.set('provider', selectedProvider);
-          url.searchParams.set('limit', '8');
-          const response = await fetch(url.toString(), {
-            method: 'GET', credentials: 'include', headers: { 'Accept': 'application/json' },
-            signal: requestController.signal
-          });
-          if (response.status === 401 || response.status === 403) {
-            showMessage('Please sign in to view your personal transaction history.', true);
-            return;
-          }
-          if (!response.ok) throw new Error('Transaction history endpoint returned ' + response.status);
-          const body = await response.json();
-          const transactions = Array.isArray(body) ? body : (body.transactions || body.data || body.results || []);
-          if (!Array.isArray(transactions)) throw new Error('Unexpected transaction history response');
-          renderTransactions(transactions);
-        } catch (error) {
-          if (error.name === 'AbortError') return;
-          console.error('[Shatova recent transactions]', error);
-          showMessage('Could not load your purchases. Confirm the signed-in transaction history API is configured, then try Refresh.', true);
-        } finally {
-          if (refresh) { refresh.disabled = false; refresh.textContent = 'Refresh'; }
-        }
-      }
-      tabs.forEach(function (tab) {
-        tab.addEventListener('click', function () {
-          selectedProvider = tab.dataset.recentProvider;
-          tabs.forEach(function (other) {
-            const active = other === tab;
-            other.classList.toggle('active', active);
-            other.setAttribute('aria-selected', active ? 'true' : 'false');
-          });
-          loadTransactions();
-        });
-      });
-      if (refresh) refresh.addEventListener('click', loadTransactions);
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTransactions);
-      else loadTransactions();
-    })();
-  </script>
-
-
-  <style>
-    .recent-number-only { font-size: 13px; font-weight: 800; letter-spacing: .25px; }
-    .recent-tx-row { padding: 12px 2px; }
-    .recent-tx-info { overflow: hidden; }
-    .recent-tx-meta { line-height: 1.5; }
-    .recent-tx-logo { display: none !important; }
-  </style>
-  <script>
-    /* Keep the recent-purchase network aligned with the category the user opens. */
-    (function () {
-      const providerNames = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2' };
-      function providerFromText(value) {
-        const text = String(value || '').toLowerCase();
-        if (text.includes('airtel')) return 'airtel';
-        if (text.includes('glo')) return 'glo';
-        if (text.includes('t2') || text.includes('9mobile')) return 't2';
-        if (text.includes('mtn')) return 'mtn';
-        return '';
-      }
-      function selectRecentProvider(provider) {
-        if (!provider || !providerNames[provider]) return;
-        const tab = document.querySelector('[data-recent-provider="' + provider + '"]');
-        if (tab) tab.click();
-      }
+      const names = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2' };
+      const input = document.getElementById('phoneInput');
+      const badge = document.getElementById('networkBadge');
+      const title = document.getElementById('bundle-title');
+      const subtitle = document.getElementById('bundlesSub');
+      const dropdown = document.getElementById('recentRecipients');
       const categoryList = document.getElementById('categoryList');
-      if (categoryList) {
-        categoryList.addEventListener('click', function (event) {
-          const card = event.target.closest('[data-provider], .category-card, [role="listitem"]');
-          if (!card || !categoryList.contains(card)) return;
-          const provider = providerFromText((card.getAttribute('data-provider') || '') + ' ' + (card.textContent || '') + ' ' + (card.className || ''));
-          if (provider) {
-            window.shatovaSelectedAirtimeProvider = provider;
-            selectRecentProvider(provider);
-          }
-        }, true);
+      const bundlesList = document.getElementById('bundlesList');
+
+      function detectProvider(value) {
+        const text = String(value || '').toLowerCase();
+        if (/\bairtel\b/.test(text)) return 'airtel';
+        if (/\bglo\b|globacom/.test(text)) return 'glo';
+        if (/\bt2\b|9mobile/.test(text)) return 't2';
+        if (/\bmtn\b/.test(text)) return 'mtn';
+        return '';
       }
-      /* The active product step should never inherit a stale network title. */
-      const bundleList = document.getElementById('bundlesList');
-      if (bundleList) {
-        bundleList.addEventListener('click', function (event) {
-          const card = event.target.closest('[data-provider], .bundle-card, [role="listitem"]');
-          if (!card || !bundleList.contains(card)) return;
-          const provider = providerFromText((card.getAttribute('data-provider') || '') + ' ' + (card.textContent || '') + ' ' + (card.className || ''));
-          if (provider) window.shatovaSelectedAirtimeProvider = provider;
-        }, true);
+      function activeProvider() {
+        const current = window.shatovaSelectedAirtimeProvider;
+        if (current && names[current]) return current;
+        const headingProvider = detectProvider((title && title.textContent || '') + ' ' + (subtitle && subtitle.textContent || ''));
+        if (headingProvider) return headingProvider;
+        return detectProvider(badge && badge.textContent) || 'mtn';
       }
+      function refreshRecentNumbers() {
+        if (typeof window.shatovaRenderRecentNumbers === 'function') window.shatovaRenderRecentNumbers();
+        else if (input) input.dispatchEvent(new Event('focus'));
+      }
+      function setHeading(provider) {
+        const name = names[provider];
+        if (!name) return;
+        const wantedTitle = name + ' Airtime';
+        if (title && title.textContent.trim() !== wantedTitle) title.textContent = wantedTitle;
+        if (subtitle) {
+          const current = subtitle.textContent.trim();
+          const count = current.match(/(\s*[·•-]\s*\d+\s+products?\s*)$/i);
+          const wantedSubtitle = name.toUpperCase() + ' AIRTIME' + (count ? count[1] : '');
+          if (current !== wantedSubtitle) subtitle.textContent = wantedSubtitle;
+        }
+      }
+      function setProvider(provider) {
+        if (!names[provider]) return;
+        window.shatovaSelectedAirtimeProvider = provider;
+        refreshRecentNumbers();
+        setHeading(provider);
+      }
+      function handleCard(event, container) {
+        let node = event.target;
+        while (node && node !== container) {
+          const provider = detectProvider((node.getAttribute && node.getAttribute('data-provider') || '') + ' ' + (typeof node.className === 'string' ? node.className : '') + ' ' + (node.textContent || ''));
+          if (provider) { setProvider(provider); return; }
+          node = node.parentElement;
+        }
+      }
+      if (categoryList) categoryList.addEventListener('click', e => handleCard(e, categoryList), true);
+      if (bundlesList) bundlesList.addEventListener('click', e => handleCard(e, bundlesList), true);
+
+      // Product renderers may update titles asynchronously; keep the heading consistent with the selected network.
+      [title, subtitle].filter(Boolean).forEach(el => {
+        new MutationObserver(() => {
+          const selected = window.shatovaSelectedAirtimeProvider;
+          if (!selected || !names[selected]) return;
+          const titleProvider = detectProvider(title && title.textContent || '');
+          if (titleProvider !== selected) setHeading(selected);
+          else if (subtitle && detectProvider(subtitle.textContent || '') !== selected) setHeading(selected);
+        }).observe(el, { childList: true, characterData: true, subtree: true });
+      });
+
+      // A provider badge may detect the recipient's number; it must not override the section selected by the user.
+      window.shatovaGetActiveProvider = activeProvider;
+      window.shatovaSetAirtimeProvider = setProvider;
+      if (dropdown) dropdown.setAttribute('aria-label', 'Recent numbers for the selected network');
     })();
   </script>
 
 </body>
-</html>
