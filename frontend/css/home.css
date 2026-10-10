@@ -1,8 +1,8 @@
 /* frontend/css/home.css */
 /* ============================================================
-   SHATOVA HOME — v38 (CLEAN LOADING · NO TEXT SWAP)
+   SHATOVA HOME — v39
+   Plain service icons · clean transactions (no type icons)
    ============================================================ */
-
 :root {
   --brand-green: #0a4534;
   --brand-green-light: #0e5a41;
@@ -14,11 +14,9 @@
   --text-light: #94a3b8;
   --bg-app: #f6f9f7;
   --bg-card: #ffffff;
-
   --border-hairline: rgba(15, 23, 42, 0.045);
   --border-soft:     rgba(15, 23, 42, 0.055);
   --border-subtle:   rgba(15, 23, 42, 0.035);
-
   --shadow-sm: 0 1px 2px rgba(10, 69, 52, 0.035), 0 2px 6px -3px rgba(10, 69, 52, 0.05);
   --shadow-md: 0 6px 18px -6px rgba(10, 69, 52, 0.11), 0 2px 6px -2px rgba(10, 69, 52, 0.05);
   --shadow-wallet:
@@ -26,22 +24,17 @@
     0 10px 20px -8px rgba(10, 69, 52, 0.22),
     inset 0 1px 1px rgba(255, 255, 255, 0.18),
     inset 0 -1px 2px rgba(0, 0, 0, 0.2);
-
   --radius-sm: 12px;
   --radius-md: 16px;
   --radius-lg: 20px;
-
   --wallet-bg-image: url('/images/wallet-bg.jpg');
-
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-fast: 0.14s;
   --dur-base: 0.20s;
   --dur-slow: 0.28s;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: auto; }
-
 body.home {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: var(--bg-app);
@@ -52,7 +45,6 @@ body.home {
   min-height: 100dvh;
   overflow-x: hidden;
 }
-
 .app-container {
   width: 100%;
   min-height: auto;
@@ -64,12 +56,10 @@ body.home {
   padding-bottom: 16px;
   padding-top: 0;
 }
-
 body.short-page .app-container {
   min-height: 100vh;
   min-height: 100dvh;
 }
-
 @media (min-width: 768px) {
   body.home { display: block; background-color: #e2e8f0; }
   .app-container {
@@ -78,7 +68,6 @@ body.short-page .app-container {
     box-shadow: 0 0 80px rgba(10, 69, 52, 0.13);
   }
 }
-
 .hidden { display: none !important; }
 a { text-decoration: none; color: inherit; }
 button { font-family: inherit; border: none; background: none; cursor: pointer; }
@@ -149,7 +138,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   z-index: 0;
 }
 .balance-card > * { position: relative; z-index: 1; }
-
 .balance-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .balance-label-group { display: flex; align-items: center; gap: 6px; }
 .balance-ico {
@@ -161,10 +149,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 }
 .balance-ico svg { width: 10px; height: 10px; color: var(--gold); }
 .balance-label { font-size: 10.5px; font-weight: 600; opacity: 0.95; }
-
 .balance-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; padding-left: 20px; }
 .balance-amount { font-size: 25px; font-weight: 800; letter-spacing: -1.1px; line-height: 1.1; }
-
 .balance-toggle-btn {
   background: transparent;
   border: none;
@@ -177,7 +163,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 }
 .balance-toggle-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.16); transform: scale3d(1.08, 1.08, 1); }
 .balance-toggle-btn svg { width: 14px; height: 14px; stroke-width: 2.5; }
-
 .balance-actions {
   display: flex;
   gap: 10px;
@@ -204,7 +189,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   overflow: hidden;
 }
 .balance-actions button:active { transform: scale3d(0.97, 0.97, 1); }
-
 .btn-fund, .btn-send {
   background: rgba(255, 255, 255, 0.96);
   color: var(--brand-green);
@@ -217,7 +201,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 }
 
 /* ============================================================
-   SERVICES GRID
+   SERVICES GRID — plain neutral icons (not coloured)
    ============================================================ */
 .services-grid {
   display: grid;
@@ -225,7 +209,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   gap: 12px;
   padding: 0 20px;
 }
-
 .svc-card {
   position: relative;
   background: var(--bg-card);
@@ -244,7 +227,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   cursor: pointer;
   isolation: isolate;
 }
-
 .svc-card::before {
   content: '';
   position: absolute;
@@ -256,7 +238,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   transition: transform var(--dur-slow) var(--ease-out);
   z-index: 2;
 }
-
 .svc-card:hover {
   transform: translate3d(0, -3px, 0);
   box-shadow: var(--shadow-md);
@@ -272,9 +253,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   outline-offset: 2px;
 }
 
-/* ============================================================
-   SERVICE CARD LOADING — spinner on icon only, text untouched
-   ============================================================ */
+/* Loading — spinner on icon only, text untouched */
 .svc-card.is-loading {
   pointer-events: none !important;
   cursor: progress;
@@ -290,8 +269,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   background-size: 100% 200%;
   animation: accent-slide 1.2s linear infinite;
 }
-
-/* Fade out the SVG inside the icon, show a spinner ring */
 .svc-card.is-loading .svc-icon {
   position: relative;
 }
@@ -313,16 +290,12 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   border-radius: 50%;
   animation: svc-spin 0.7s linear infinite;
 }
-
-/* Title keeps its text and layout — no wrap */
 .svc-card.is-loading .svc-title {
   color: #0a4534;
 }
 .svc-card.is-loading .svc-sub {
   color: rgba(10, 69, 52, 0.6);
 }
-
-/* Animated "…" dots under the subtitle to show activity */
 .svc-card.is-loading .svc-sub::after {
   content: '…';
   display: inline-block;
@@ -330,7 +303,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   vertical-align: bottom;
   animation: dots 1.2s steps(4, end) infinite;
 }
-
 @keyframes dots {
   0%   { width: 0; }
   25%  { width: 0.4em; }
@@ -347,7 +319,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 }
 
 /* ============================================================
-   SERVICE ICON
+   SERVICE ICON — PLAIN / NEUTRAL (not coloured)
+   Soft grey-green wash · brand-tinted stroke only
    ============================================================ */
 .svc-icon {
   width: 42px; height: 42px;
@@ -357,16 +330,29 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   transition: transform var(--dur-base) var(--ease-out);
   position: relative;
   z-index: 2;
+  /* Plain neutral base for all services */
+  background: #f1f4f2 !important;
+  color: #0a4534 !important;
+  border: 1px solid rgba(15, 45, 35, 0.06);
 }
-.svc-card:hover .svc-icon { transform: scale3d(1.08, 1.08, 1) rotate(-4deg); }
-.svc-icon svg { width: 20px; height: 20px; }
-
-.svc-icon.data        { background: linear-gradient(145deg, #dbeafe, #bfdbfe); color: #2563eb; }
-.svc-icon.airtime     { background: linear-gradient(145deg, #e0e7ff, #c7d2fe); color: #4338ca; }
-.svc-icon.bills       { background: linear-gradient(145deg, #ede9fe, #ddd6fe); color: #7c3aed; }
-.svc-icon.cables      { background: linear-gradient(145deg, #e9d5ff, #d8b4fe); color: #6d28d9; }
-.svc-icon.exam        { background: linear-gradient(145deg, #e0e7ff, #c7d2fe); color: #4338ca; }
-.svc-icon.airtime-cash{ background: linear-gradient(145deg, #ede9fe, #ddd6fe); color: #7c3aed; }
+.svc-card:hover .svc-icon {
+  transform: scale3d(1.06, 1.06, 1);
+  background: #e8eeeb !important;
+  border-color: rgba(10, 69, 52, 0.12);
+}
+.svc-icon svg { width: 20px; height: 20px; stroke-width: 1.8; }
+/* Override any colour classes — keep plain */
+.svc-icon.data,
+.svc-icon.airtime,
+.svc-icon.bills,
+.svc-icon.cables,
+.svc-icon.exam,
+.svc-icon.airtime-cash,
+.svc-icon.electricity,
+.svc-icon.tv {
+  background: #f1f4f2 !important;
+  color: #0a4534 !important;
+}
 
 .svc-info { flex: 1; min-width: 0; position: relative; z-index: 2; }
 .svc-title {
@@ -416,10 +402,9 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .section-head a { font-size: 12px; color: var(--brand-green); font-weight: 700; }
 
 /* ============================================================
-   TRANSACTIONS
+   TRANSACTIONS — no type icons, clean professional rows
    ============================================================ */
 .tx-container { padding: 0 20px; margin-bottom: 0; }
-
 .tx-list {
   background: var(--bg-card);
   border: 1px solid var(--border-hairline);
@@ -427,12 +412,15 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
-
 .tx-item {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 15px 18px;
   border-bottom: 1px solid var(--border-subtle);
-  cursor: pointer; user-select: none; background: #fff;
+  cursor: pointer;
+  user-select: none;
+  background: #fff;
   transition: background var(--dur-fast) ease;
 }
 .tx-item:last-child { border-bottom: none; }
@@ -440,44 +428,61 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .tx-item:active { background: #f6faf8; }
 .tx-item:focus-visible { outline: 2px solid rgba(10, 69, 52, 0.35); outline-offset: -2px; }
 
+/* Hide transaction type icons — keep layout stable */
 .tx-icon {
-  width: 42px; height: 42px; border-radius: 13px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
 }
-.tx-icon svg { width: 20px; height: 20px; }
 
-.tx-icon.data        { background: linear-gradient(145deg, #dbeafe, #bfdbfe); color: #2563eb; }
-.tx-icon.airtime     { background: linear-gradient(145deg, #e0e7ff, #c7d2fe); color: #4338ca; }
-.tx-icon.electricity { background: linear-gradient(145deg, #ede9fe, #ddd6fe); color: #7c3aed; }
-.tx-icon.tv          { background: linear-gradient(145deg, #e9d5ff, #d8b4fe); color: #6d28d9; }
-.tx-icon.exam        { background: linear-gradient(145deg, #e0e7ff, #c7d2fe); color: #4338ca; }
-.tx-icon.funding     { background: linear-gradient(145deg, #d1fae5, #a7f3d0); color: #059669; }
-.tx-icon.withdrawal  { background: linear-gradient(145deg, #fef3c7, #fde68a); color: #d97706; }
-.tx-icon.transfer    { background: linear-gradient(145deg, #dbeafe, #bfdbfe); color: #2563eb; }
-.tx-icon.default     { background: linear-gradient(145deg, #f1f5f9, #e2e8f0); color: #64748b; }
-
-.tx-body { flex: 1; min-width: 0; }
+.tx-body {
+  flex: 1;
+  min-width: 0;
+  padding-right: 12px;
+}
 .tx-title {
-  font-size: 13.5px; font-weight: 700; margin-bottom: 3px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--text-main);
+  letter-spacing: -0.1px;
 }
 .tx-amount {
-  font-size: 13.5px; font-weight: 800;
-  letter-spacing: -0.2px; flex-shrink: 0;
-  text-align: right; color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.25px;
+  flex-shrink: 0;
+  text-align: right;
+  color: #0f172a;
+  white-space: nowrap;
 }
 .tx-meta {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px; color: var(--text-muted); font-weight: 500;
-  margin-top: 2px; flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+  flex-wrap: wrap;
 }
 .tx-status {
-  display: inline-flex; align-items: center;
-  padding: 2px 7px; border-radius: 999px;
-  font-size: 9.5px; font-weight: 800; letter-spacing: 0.3px;
-  text-transform: uppercase; line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  line-height: 1.4;
   border: 1px solid transparent;
 }
 .tx-status.success  { background: #d1fae5; color: #047857; border-color: rgba(4, 120, 87, 0.12); }
@@ -498,7 +503,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .empty-emoji { font-size: 46px; margin-bottom: 14px; }
 .empty-title { font-size: 14.5px; font-weight: 800; margin-bottom: 6px; }
 .empty-text { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
-
 .skeleton {
   background: linear-gradient(90deg, #f1f5f4 0%, #e2e8e6 50%, #f1f5f4 100%);
   background-size: 200% 100%;
@@ -508,13 +512,12 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .skel-line { height: 10px; }
 .skel-line.short { width: 60%; }
-
 .tx-list:last-child,
 .tx-container:last-child,
 main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
 
 /* ============================================================
-   BUTTON LOADING — Fund Wallet / Transfer / Modal buttons
+   BUTTON LOADING
    ============================================================ */
 .btn-loading {
   pointer-events: none !important;
@@ -602,7 +605,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 }
 .txm-backdrop.hidden { display: none !important; }
 .txm-backdrop.show   { opacity: 1; }
-
 .txm-sheet {
   width: 100%;
   max-width: 440px;
@@ -617,13 +619,11 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
   flex-direction: column;
 }
 .txm-backdrop.show .txm-sheet { transform: translate3d(0, 0, 0); }
-
 .txm-grip {
   width: 38px; height: 4px; border-radius: 4px;
   background: #dde2df; margin: 4px auto 6px;
   flex-shrink: 0;
 }
-
 .txm-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 2px 2px 10px; flex-shrink: 0;
@@ -643,7 +643,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 }
 .txm-close:hover { background: #f1f4f2; }
 .txm-close svg { width: 16px; height: 16px; }
-
 .txm-body {
   overflow-y: auto;
   flex: 1;
@@ -651,7 +650,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
-
 .txm-hero {
   border-radius: 14px;
   padding: 14px 14px 12px;
@@ -663,24 +661,20 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 .txm-hero.txm-processing { background: #fff7e6; }
 .txm-hero.txm-failed     { background: #fef2f2; }
 .txm-hero.txm-refunded   { background: #eef2ff; }
-
 .txm-hero-icon {
   width: 42px; height: 42px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   margin-bottom: 8px;
 }
 .txm-hero-icon svg { width: 22px; height: 22px; }
-
 .txm-hero.txm-success    .txm-hero-icon { background: #c9ecd7; color: #0a7d4f; }
 .txm-hero.txm-processing .txm-hero-icon { background: #fde9b5; color: #b45309; }
 .txm-hero.txm-failed     .txm-hero-icon { background: #fecaca; color: #b91c1c; }
 .txm-hero.txm-refunded   .txm-hero-icon { background: #c7d2fe; color: #3730a3; }
-
 .txm-hero-title {
   font-size: 12.5px; font-weight: 700;
   color: #0a4534; margin-bottom: 5px;
 }
-
 .txm-hero-amount {
   display: inline-block;
   font-size: 20px;
@@ -693,7 +687,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
   border: 1px solid var(--border-hairline);
   border-radius: 10px;
 }
-
 .txm-status {
   display: inline-flex; align-items: center;
   padding: 3px 10px; border-radius: 999px;
@@ -704,7 +697,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 .txm-status.failed   { background: #fee2e2; color: #b91c1c; }
 .txm-status.refunded { background: #e0e7ff; color: #3730a3; }
 .txm-status.pending  { background: #fef3c7; color: #b45309; }
-
 .txm-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -717,7 +709,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
   border: 1px solid var(--border-subtle);
 }
 .txm-cell-wide { grid-column: 1 / -1; }
-
 .txm-cell-label {
   font-size: 9.5px; font-weight: 700;
   letter-spacing: 0.06em; color: #7b8a83;
@@ -742,7 +733,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 }
 .txm-copy:hover { background: #e9edea; color: #0a7d4f; }
 .txm-copy svg { width: 14px; height: 14px; }
-
 .txm-foot {
   padding-top: 10px;
   flex-shrink: 0;
@@ -770,21 +760,18 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 }
 .txm-btn svg { width: 14px; height: 14px; stroke-width: 2.2; }
 .txm-btn:active { transform: scale3d(0.98, 0.98, 1); }
-
 .txm-btn-ghost {
   background: #f5f7f6;
   color: #0a4534;
   border: 1px solid var(--border-soft);
 }
 .txm-btn-ghost:hover { background: #eef2f0; box-shadow: 0 3px 10px -4px rgba(10, 69, 52, 0.11); }
-
 .txm-btn-primary {
   background: #0a4534;
   color: #ffffff;
   box-shadow: 0 4px 10px -4px rgba(10, 69, 52, 0.32);
 }
 .txm-btn-primary:hover { opacity: 0.94; box-shadow: 0 5px 14px -5px rgba(10, 69, 52, 0.42); }
-
 #balance.refreshing { opacity: 0.55; }
 
 /* ============================================================
@@ -793,7 +780,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 [data-theme="dark"] body.home,
 .theme-dark body.home,
 body.dark.home { background-color: #0d0f0e; }
-
 [data-theme="dark"] .app-container,
 .theme-dark .app-container,
 body.dark .app-container {
@@ -808,6 +794,31 @@ body.dark .svc-card { background: #161918; border-color: rgba(255, 255, 255, 0.0
 [data-theme="dark"] .svc-title,
 .theme-dark .svc-title,
 body.dark .svc-title { color: #f5f7f6; }
+[data-theme="dark"] .svc-icon,
+.theme-dark .svc-icon,
+body.dark .svc-icon,
+[data-theme="dark"] .svc-icon.data,
+[data-theme="dark"] .svc-icon.airtime,
+[data-theme="dark"] .svc-icon.bills,
+[data-theme="dark"] .svc-icon.cables,
+[data-theme="dark"] .svc-icon.exam,
+[data-theme="dark"] .svc-icon.airtime-cash,
+.theme-dark .svc-icon.data,
+.theme-dark .svc-icon.airtime,
+.theme-dark .svc-icon.bills,
+.theme-dark .svc-icon.cables,
+.theme-dark .svc-icon.exam,
+.theme-dark .svc-icon.airtime-cash,
+body.dark .svc-icon.data,
+body.dark .svc-icon.airtime,
+body.dark .svc-icon.bills,
+body.dark .svc-icon.cables,
+body.dark .svc-icon.exam,
+body.dark .svc-icon.airtime-cash {
+  background: #1c2420 !important;
+  color: #22c55e !important;
+  border-color: rgba(255, 255, 255, 0.06);
+}
 [data-theme="dark"] .tx-list,
 .theme-dark .tx-list,
 body.dark .tx-list { background: #161918; border-color: rgba(255, 255, 255, 0.05); }
