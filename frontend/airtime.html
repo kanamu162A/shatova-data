@@ -60,63 +60,72 @@
       --air-shadow-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.42), 0 4px 14px -4px rgba(34, 197, 94, 0.12);
     }
 
-    /* ---------- LOGO CONTAINERS (brand-first) ---------- */
+    /* ---------- LOGO CONTAINERS (brand-first, circular badges) ---------- */
     .cat-logo,
     .bundle-logo,
-    .sb-logo {
+    .sb-logo,
+    .pro-logo-badge {
       position: relative;
       background: #ffffff !important;
       overflow: hidden;
-      border: 1.5px solid rgba(15, 45, 35, 0.08);
+      border: none;
       box-shadow:
-        0 1px 2px rgba(15, 35, 28, 0.04),
-        0 4px 12px -4px rgba(15, 35, 28, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        0 2px 6px rgba(15, 35, 28, 0.08),
+        0 0 0 1px rgba(15, 45, 35, 0.06);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: transform 0.28s var(--air-ease-out), box-shadow 0.28s var(--air-ease), border-color 0.22s ease;
+      transition: transform 0.28s var(--air-ease-out), box-shadow 0.28s var(--air-ease);
     }
-    .cat-logo    { width: 54px; height: 54px; border-radius: 16px; padding: 5px; }
-    .bundle-logo { width: 50px; height: 50px; border-radius: 15px; padding: 5px; }
-    .sb-logo     { width: 46px; height: 46px; border-radius: 14px; padding: 4px; }
+    .cat-logo,
+    .pro-logo-badge {
+      width: 48px; height: 48px; border-radius: 50%; padding: 0;
+    }
+    .bundle-logo { width: 46px; height: 46px; border-radius: 50%; padding: 0; }
+    .sb-logo     { width: 42px; height: 42px; border-radius: 50%; padding: 0; }
 
     .cat-logo .isp-logo,
     .bundle-logo .isp-logo,
-    .sb-logo .isp-logo {
+    .sb-logo .isp-logo,
+    .pro-logo-badge .isp-logo {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       display: block;
-      border-radius: inherit;
-      background: #ffffff;
+      border-radius: 50%;
+      background: transparent;
     }
 
-    /* Subtle brand glow on logo containers when parent has provider */
-    .category-card[data-provider="mtn"] .cat-logo,
-    .bundle-card[data-provider="mtn"] .bundle-logo,
-    .selected-bundle[data-provider="mtn"] .sb-logo {
-      border-color: rgba(255, 203, 5, 0.45);
-      box-shadow: 0 2px 8px -2px rgba(255, 203, 5, 0.25), 0 0 0 1px rgba(255, 203, 5, 0.12);
+    /* Brand-colored circular badges */
+    [data-provider="mtn"] .cat-logo,
+    [data-provider="mtn"] .bundle-logo,
+    [data-provider="mtn"] .sb-logo,
+    [data-provider="mtn"].pro-logo-badge,
+    .pro-logo-badge[data-provider="mtn"] {
+      background: #ffcb05 !important;
+      box-shadow: 0 3px 10px -2px rgba(255, 203, 5, 0.45), 0 0 0 1px rgba(200, 160, 0, 0.2);
     }
-    .category-card[data-provider="airtel"] .cat-logo,
-    .bundle-card[data-provider="airtel"] .bundle-logo,
-    .selected-bundle[data-provider="airtel"] .sb-logo {
-      border-color: rgba(230, 0, 0, 0.28);
-      box-shadow: 0 2px 8px -2px rgba(230, 0, 0, 0.18), 0 0 0 1px rgba(230, 0, 0, 0.08);
+    [data-provider="airtel"] .cat-logo,
+    [data-provider="airtel"] .bundle-logo,
+    [data-provider="airtel"] .sb-logo,
+    .pro-logo-badge[data-provider="airtel"] {
+      background: #e60000 !important;
+      box-shadow: 0 3px 10px -2px rgba(230, 0, 0, 0.35), 0 0 0 1px rgba(180, 0, 0, 0.15);
     }
-    .category-card[data-provider="glo"] .cat-logo,
-    .bundle-card[data-provider="glo"] .bundle-logo,
-    .selected-bundle[data-provider="glo"] .sb-logo {
-      border-color: rgba(0, 166, 81, 0.32);
-      box-shadow: 0 2px 8px -2px rgba(0, 166, 81, 0.18), 0 0 0 1px rgba(0, 166, 81, 0.08);
+    [data-provider="glo"] .cat-logo,
+    [data-provider="glo"] .bundle-logo,
+    [data-provider="glo"] .sb-logo,
+    .pro-logo-badge[data-provider="glo"] {
+      background: #00a651 !important;
+      box-shadow: 0 3px 10px -2px rgba(0, 166, 81, 0.35), 0 0 0 1px rgba(0, 130, 60, 0.15);
     }
-    .category-card[data-provider="t2"] .cat-logo,
-    .bundle-card[data-provider="t2"] .bundle-logo,
-    .selected-bundle[data-provider="t2"] .sb-logo {
-      border-color: rgba(242, 101, 34, 0.32);
-      box-shadow: 0 2px 8px -2px rgba(242, 101, 34, 0.18), 0 0 0 1px rgba(242, 101, 34, 0.08);
+    [data-provider="t2"] .cat-logo,
+    [data-provider="t2"] .bundle-logo,
+    [data-provider="t2"] .sb-logo,
+    .pro-logo-badge[data-provider="t2"] {
+      background: #f26522 !important;
+      box-shadow: 0 3px 10px -2px rgba(242, 101, 34, 0.35), 0 0 0 1px rgba(200, 80, 20, 0.15);
     }
 
     /* ---------- PAGE ---------- */
@@ -151,16 +160,22 @@
     }
 
     .category-list, .bundles-list {
-      display: flex; flex-direction: column; gap: 11px; padding-top: 18px; padding-bottom: 8px;
+      display: flex; flex-direction: column; gap: 12px; padding: 20px 4px 12px;
     }
-    .category-card, .bundle-card {
+    /* Apply pro card look to any direct child of categoryList (in case JS uses plain divs) */
+    #categoryList > *,
+    .category-card,
+    .bundle-card {
       position: relative;
-      display: flex; align-items: center; gap: 16px;
-      padding: 15px 17px;
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
       background: var(--air-surface);
-      border: 1px solid var(--air-border);
-      border-radius: var(--air-radius-lg);
-      box-shadow: var(--air-shadow-sm);
+      border: 1px solid rgba(15, 45, 35, 0.08);
+      border-radius: 18px;
+      box-shadow:
+        0 2px 6px rgba(15, 35, 28, 0.04),
+        0 8px 24px -8px rgba(15, 35, 28, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
       cursor: pointer;
       transition:
         transform 0.28s var(--air-ease-out),
@@ -168,34 +183,48 @@
         border-color 0.24s ease,
         background-color 0.22s ease;
       -webkit-tap-highlight-color: transparent;
+      min-height: 64px;
+      box-sizing: border-box;
     }
-    .category-card:hover, .bundle-card:hover {
-      transform: translateY(-3px);
+    #categoryList > *:hover,
+    .category-card:hover,
+    .bundle-card:hover {
+      transform: translateY(-2px);
       box-shadow: var(--air-shadow-hover);
       border-color: var(--air-border-hover);
     }
+    #categoryList > *:hover .cat-logo,
+    #categoryList > *:hover .pro-logo-badge,
     .category-card:hover .cat-logo,
     .bundle-card:hover .bundle-logo {
-      transform: scale(1.04);
+      transform: scale(1.06);
     }
-    .category-card:active, .bundle-card:active {
-      transform: translateY(-1px) scale(0.992);
+    #categoryList > *:active,
+    .category-card:active,
+    .bundle-card:active {
+      transform: translateY(0) scale(0.99);
       box-shadow: var(--air-shadow-sm);
     }
     .cat-info, .bundle-info { flex: 1; min-width: 0; }
-    .cat-name, .bundle-name {
-      font-size: 14.5px; font-weight: 750; color: var(--air-text);
-      letter-spacing: -0.2px; margin-bottom: 4px; line-height: 1.25;
+    .cat-name, .bundle-name,
+    #categoryList > * .cat-name,
+    #categoryList > * strong,
+    #categoryList > * b {
+      font-size: 15px; font-weight: 750; color: var(--air-text);
+      letter-spacing: -0.2px; margin-bottom: 3px; line-height: 1.25;
     }
-    .cat-sub, .bundle-meta {
+    .cat-sub, .bundle-meta,
+    #categoryList > * .cat-sub {
       font-size: 12px; color: var(--air-text-muted); font-weight: 500; line-height: 1.4;
     }
     .cat-arrow {
       width: 18px; height: 18px; color: var(--air-text-subtle);
-      flex-shrink: 0;
+      flex-shrink: 0; margin-left: auto;
       transition: color 0.22s ease, transform 0.28s var(--air-ease-out);
     }
-    .category-card:hover .cat-arrow, .bundle-card:hover .cat-arrow {
+    #categoryList > *:hover .cat-arrow,
+    .category-card:hover .cat-arrow,
+    .bundle-card:hover .cat-arrow {
       color: var(--air-accent); transform: translateX(3px);
     }
     .cat-arrow svg { width: 100%; height: 100%; }
@@ -914,9 +943,14 @@
     }
     .airtime-page .form-card { padding: 24px 22px; }
     .airtime-page .category-list,
-    .airtime-page .bundles-list { gap: 11px; padding-top: 16px; }
+    .airtime-page .bundles-list { gap: 12px; padding: 18px 2px 10px; }
+    .airtime-page #categoryList > *,
     .airtime-page .category-card,
-    .airtime-page .bundle-card { padding: 15px 17px; border-radius: 18px; }
+    .airtime-page .bundle-card {
+      padding: 14px 16px;
+      border-radius: 18px;
+      min-height: 64px;
+    }
     .airtime-page .selected-bundle { padding: 15px 17px; }
     .airtime-page .btn-primary,
     .airtime-page .pm-btn-primary {
@@ -1442,8 +1476,79 @@
         container.appendChild(img);
       }
 
+      /* Force brand logo badge onto category / bundle cards that only have text */
+      function enhanceCardWithLogo(card) {
+        if (!card || card.querySelector('.cat-logo, .bundle-logo, .pro-logo-badge')) return;
+
+        const provider = detectProvider(card);
+        if (!provider || !LOGOS[provider]) return;
+
+        card.setAttribute('data-provider', provider);
+
+        const badge = document.createElement('div');
+        badge.className = 'cat-logo pro-logo-badge';
+        badge.setAttribute('data-provider', provider);
+
+        const img = document.createElement('img');
+        img.className = 'isp-logo';
+        img.alt = PROVIDER_LABELS[provider] + ' logo';
+        img.src = LOGOS[provider];
+        img.loading = 'eager';
+        img.decoding = 'sync';
+        img.setAttribute('data-isp', provider);
+        badge.appendChild(img);
+
+        /* Prefer insert before text/info area */
+        const info = card.querySelector('.cat-info, .bundle-info, .cat-name, h2, h3, strong, span');
+        if (info && info.parentElement === card) {
+          card.insertBefore(badge, info);
+        } else if (card.firstChild) {
+          card.insertBefore(badge, card.firstChild);
+        } else {
+          card.appendChild(badge);
+        }
+      }
+
+      function enhanceAllCards() {
+        document.querySelectorAll('#categoryList > *, #categoryList .category-card, #categoryList [role="listitem"], #categoryList button, #categoryList a, #categoryList div').forEach(function (el) {
+          if (el.closest && el.closest('#categoryList') && (el.parentElement === document.getElementById('categoryList') || el.classList.contains('category-card'))) {
+            enhanceCardWithLogo(el);
+          }
+        });
+        /* Also direct children of categoryList */
+        const list = document.getElementById('categoryList');
+        if (list) {
+          Array.prototype.forEach.call(list.children, function (child) {
+            enhanceCardWithLogo(child);
+          });
+        }
+        const blist = document.getElementById('bundlesList');
+        if (blist) {
+          Array.prototype.forEach.call(blist.children, function (child) {
+            if (child.querySelector('.bundle-logo, .pro-logo-badge')) return;
+            const provider = detectProvider(child);
+            if (!provider) return;
+            child.setAttribute('data-provider', provider);
+            if (!child.querySelector('.bundle-logo')) {
+              const badge = document.createElement('div');
+              badge.className = 'bundle-logo pro-logo-badge';
+              badge.setAttribute('data-provider', provider);
+              const img = document.createElement('img');
+              img.className = 'isp-logo';
+              img.alt = PROVIDER_LABELS[provider] + ' logo';
+              img.src = LOGOS[provider];
+              img.loading = 'eager';
+              badge.appendChild(img);
+              if (child.firstChild) child.insertBefore(badge, child.firstChild);
+              else child.appendChild(badge);
+            }
+          });
+        }
+      }
+
       function injectAllLogos() {
         document.querySelectorAll('.cat-logo, .bundle-logo, .sb-logo').forEach(injectLogo);
+        enhanceAllCards();
       }
 
       let injectionScheduled = false;
@@ -1485,8 +1590,8 @@
         const retry = setInterval(function () {
           injectAllLogos();
           tries++;
-          if (tries > 30) clearInterval(retry);
-        }, 100);
+          if (tries > 40) clearInterval(retry);
+        }, 80);
 
         ['categoryList', 'bundlesList', 'selectedBundleCard', 'payBundleCard'].forEach(observeContainer);
         ['step-categories', 'step-bundles', 'step-checkout', 'step-pay'].forEach(observeStep);
@@ -1506,8 +1611,9 @@
 
       window.addEventListener('load', function () {
         injectAllLogos();
-        setTimeout(injectAllLogos, 300);
-        setTimeout(injectAllLogos, 1000);
+        setTimeout(injectAllLogos, 200);
+        setTimeout(injectAllLogos, 600);
+        setTimeout(injectAllLogos, 1200);
         setTimeout(injectAllLogos, 2500);
       });
 
