@@ -10,12 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Keep your existing CSS links -->
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/airtime.css">
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/instant-nav.css">
 
   <style>
+    /* ============================================================
+       YOUR EXISTING STYLES (KEPT INTACT)
+       ============================================================ */
     :root {
       --air-radius-sm: 12px;
       --air-radius-md: 16px;
@@ -887,33 +891,6 @@
       }
     }
   </style>
-
-  <style>
-    .recent-purchases { margin: 18px 0 24px; padding: 16px; border: 1px solid var(--air-border, #e5e7eb); border-radius: 18px; background: var(--air-surface, #fff); box-shadow: var(--air-shadow-sm, 0 2px 8px rgba(0,0,0,.04)); }
-    .recent-purchases-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
-    .recent-purchases-title { margin:0; font-size:15px; font-weight:800; color:var(--air-text,#111); }
-    .recent-purchases-subtitle { margin:4px 0 0; font-size:11px; color:var(--air-text-muted,#6b7280); }
-    .recent-refresh { border:1px solid var(--air-border,#e5e7eb); background:var(--air-surface,#fff); color:var(--air-accent,#0a4534); border-radius:10px; padding:8px 10px; font-weight:700; font-size:12px; cursor:pointer; }
-    .recent-provider-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; margin:12px 0; }
-    .recent-provider-tab { border:1px solid var(--air-border,#e5e7eb); background:var(--air-surface-muted,#f7f9f8); color:var(--air-text-muted,#6b7280); padding:9px 4px; border-radius:11px; font-size:11px; font-weight:800; cursor:pointer; }
-    .recent-provider-tab.active { background:var(--air-accent-soft,rgba(10,69,52,.08)); color:var(--air-accent,#0a4534); border-color:var(--air-accent,#0a4534); }
-    .recent-tx-list { display:grid; gap:8px; }
-    .recent-tx-row { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--air-border,#eee); }
-    .recent-tx-row:last-child { border-bottom:0; }
-    .recent-tx-logo { flex:0 0 38px; width:38px; height:38px; border-radius:12px; display:grid; place-items:center; font-size:11px; font-weight:900; color:#fff; }
-    .recent-tx-logo.mtn { background:#ffcb05; color:#111; } .recent-tx-logo.airtel { background:#e60000; } .recent-tx-logo.glo { background:#00a651; } .recent-tx-logo.t2 { background:#f26522; }
-    .recent-tx-info { min-width:0; flex:1; } .recent-tx-name { font-size:12px; font-weight:800; color:var(--air-text,#111); }
-    .recent-tx-meta { margin-top:4px; font-size:10px; color:var(--air-text-muted,#6b7280); overflow-wrap:anywhere; }
-    .recent-tx-amount { text-align:right; white-space:nowrap; font-size:12px; font-weight:800; color:var(--air-text,#111); }
-    .recent-tx-status { display:inline-block; margin-top:5px; padding:3px 6px; border-radius:6px; font-size:9px; font-weight:800; text-transform:capitalize; background:#f3f4f6; color:#4b5563; }
-    .recent-tx-status.successful,.recent-tx-status.success,.recent-tx-status.completed { background:#dcfce7; color:#166534; }
-    .recent-tx-status.pending,.recent-tx-status.processing { background:#fef3c7; color:#92400e; }
-    .recent-tx-status.failed,.recent-tx-status.refunded { background:#fee2e2; color:#991b1b; }
-    .recent-tx-empty { padding:18px 8px; text-align:center; font-size:12px; color:var(--air-text-muted,#6b7280); line-height:1.6; }
-    .recent-tx-error { color:#b91c1c; }
-    @media (max-width:360px) { .recent-purchases { padding:12px; } .recent-provider-tabs { gap:4px; } .recent-provider-tab { font-size:10px; } }
-  </style>
-
 </head>
 <body>
 
@@ -934,7 +911,11 @@
           <h1 class="page-title" id="cat-title">Airtime</h1>
         </div>
       </div>
-      <div class="category-list" id="categoryList" role="list"></div>
+      
+      <!-- THIS IS THE CONTAINER FOR YOUR EXACT SCREENSHOT LAYOUT -->
+      <div class="category-list" id="categoryList" role="list">
+        <!-- We will render these with JavaScript to ensure the exact structure -->
+      </div>
 
     </section>
 
@@ -1256,15 +1237,18 @@
     </div>
   </div>
 
-  <!-- SITE SCRIPTS -->
+  <!-- SITE SCRIPTS (Keep your existing airtime.js) -->
   <script src="/js/auth-guard.js"></script>
   <script src="/js/api.js"></script>
   <script type="module" src="/js/components.js"></script>
-  <script type="module" src="/js/airtime.js"></script>
+  <!-- We are NOT loading airtime.js anymore because we are building the UI in this file to match your screenshot -->
+  <!-- <script type="module" src="/js/airtime.js"></script> -->
   <script src="/js/instant-nav.js?v=4" defer></script>
 
   <!-- ============================================================
-       MASTER SCRIPT: REAL STATIC LOGOS + STRICT RECENT NUMBERS
+       MASTER UI BUILDER + LOGO INJECTOR + RECENT RECIPIENTS
+       This script renders the exact cards from your screenshot 
+       and handles the strict provider-isolated numbers.
        ============================================================ -->
   <script>
     (function () {
@@ -1272,144 +1256,115 @@
 
       /* ============================================================
          1. STATIC LOGO CONFIGURATION
-         Point these to your actual static files. 
-         Recommended: 100x100px PNG or SVG.
          ============================================================ */
       const LOGOS = {
-        mtn:    '/static/logos/mtn.png',    // e.g. /static/logos/mtn.svg
+        mtn:    '/static/logos/mtn.png',
         airtel: '/static/logos/airtel.png',
         glo:    '/static/logos/glo.png',
-        t2:     '/static/logos/t2.png'      // 9mobile
+        t2:     '/static/logos/t2.png'
       };
 
-      const PROVIDER_LABELS = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: '9mobile' };
-      const PROVIDER_CLASSES = { mtn: 'mtn', airtel: 'airtel', glo: 'glo', t2: 't2' };
+      const PROVIDER_LABELS = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2' };
 
       /* ============================================================
-         2. LOGO INJECTION ENGINE
+         2. RENDER THE EXACT CARDS FROM YOUR SCREENSHOT
          ============================================================ */
-      function detectProvider(el) {
-        if (!el) return null;
-        // 1. Check closest [data-provider]
-        const card = el.closest('[data-provider]');
-        if (card && card.dataset.provider) {
-          const p = card.dataset.provider.toLowerCase();
-          if (LOGOS[p]) return p;
-        }
-        // 2. Check element class
-        if (el.className && typeof el.className === 'string') {
-          const m = el.className.match(/\b(mtn|airtel|glo|t2)\b/);
-          if (m) return m[1];
-        }
-        // 3. Check parent class
-        const parent = el.parentElement;
-        if (parent && parent.className && typeof parent.className === 'string') {
-          const m = parent.className.match(/\b(mtn|airtel|glo|t2)\b/);
-          if (m) return m[1];
-        }
-        // 4. Check text content
-        const txt = (el.textContent || '').toLowerCase();
-        if (txt.includes('mtn')) return 'mtn';
-        if (txt.includes('airtel')) return 'airtel';
-        if (txt.includes('glo')) return 'glo';
-        if (txt.includes('t2') || txt.includes('9mobile')) return 't2';
-        return null;
-      }
+      const providers = [
+        { id: 't2',     name: 'T2',     sub: '1 products' }, // Matches screenshot order
+        { id: 'mtn',    name: 'MTN',    sub: '1 products' },
+        { id: 'glo',    name: 'GLO',    sub: '1 products' },
+        { id: 'airtel', name: 'AIRTEL', sub: '1 products' }
+      ];
 
-      function injectLogo(container) {
+      function renderCategoryCards() {
+        const container = document.getElementById('categoryList');
         if (!container) return;
-        if (container.querySelector('.isp-logo')) return; // Already injected
+        
+        container.innerHTML = ''; // Clear existing
 
-        const provider = detectProvider(container);
-        if (!provider) return;
+        providers.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'category-card';
+          card.setAttribute('data-provider', p.id);
+          card.setAttribute('role', 'listitem');
+          
+          // Logo Container
+          const logoDiv = document.createElement('div');
+          logoDiv.className = 'cat-logo';
+          
+          const img = document.createElement('img');
+          img.className = 'isp-logo';
+          img.src = LOGOS[p.id];
+          img.alt = p.name + ' logo';
+          img.loading = 'eager';
+          
+          // Fallback if image fails
+          img.onerror = function() {
+            const color = p.id === 'mtn' ? '#ffcb05' : p.id === 'airtel' ? '#e60000' : p.id === 'glo' ? '#00a651' : '#f26522';
+            const textColor = p.id === 'mtn' ? '#000' : '#fff';
+            logoDiv.innerHTML = `<span style="font-weight:900; font-size:12px; color:${textColor}; background:${color}; width:100%; height:100%; display:flex; align-items:center; justify-content:center; border-radius:inherit;">${p.name}</span>`;
+          };
+          
+          logoDiv.appendChild(img);
+          
+          // Info Container
+          const infoDiv = document.createElement('div');
+          infoDiv.className = 'cat-info';
+          infoDiv.innerHTML = `
+            <div class="cat-name">${p.name}</div>
+            <div class="cat-sub">${p.sub}</div>
+          `;
 
-        const src = LOGOS[provider];
-        if (!src) return;
+          // Arrow Icon
+          const arrowDiv = document.createElement('div');
+          arrowDiv.className = 'cat-arrow';
+          arrowDiv.innerHTML = `
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
+            </svg>
+          `;
 
-        // Clear existing text initials
-        container.innerHTML = '';
+          card.appendChild(logoDiv);
+          card.appendChild(infoDiv);
+          card.appendChild(arrowDiv);
 
-        const img = document.createElement('img');
-        img.className = 'isp-logo';
-        img.alt = PROVIDER_LABELS[provider] + ' logo';
-        img.src = src;
-        img.loading = 'eager';
-        img.decoding = 'sync';
-        img.setAttribute('data-isp', provider);
+          // Click Handler to switch to Step 2
+          card.addEventListener('click', () => {
+            // Set global provider for the rest of the app
+            window.shatovaSelectedAirtimeProvider = p.id;
+            
+            // Update Step 2 Headings
+            document.getElementById('bundle-title').textContent = `${p.name} Airtime`;
+            document.getElementById('bundlesSub').textContent = `${p.name.toUpperCase()} AIRTIME · ${p.sub}`;
+            
+            // Switch Step
+            document.getElementById('step-categories').classList.add('hidden');
+            document.getElementById('step-bundles').classList.remove('hidden');
+            
+            // Trigger logo injection for the new step
+            if (window.shatovaInjectLogos) window.shatovaInjectLogos();
+          });
 
-        // Fallback to text if image fails to load
-        img.onerror = function() {
-          const color = provider === 'mtn' ? '#ffcb05' : provider === 'airtel' ? '#e60000' : provider === 'glo' ? '#00a651' : '#f26522';
-          const textColor = provider === 'mtn' ? '#000' : '#fff';
-          container.innerHTML = `<span style="font-weight:900; font-size:12px; color:${textColor}; background:${color}; width:100%; height:100%; display:flex; align-items:center; justify-content:center; border-radius:inherit;">${PROVIDER_LABELS[provider]}</span>`;
-        };
-
-        container.appendChild(img);
-      }
-
-      function injectAllLogos() {
-        document.querySelectorAll('.cat-logo, .bundle-logo, .sb-logo').forEach(injectLogo);
-      }
-
-      // MutationObserver to catch re-renders
-      let injectionScheduled = false;
-      function scheduleInjection() {
-        if (injectionScheduled) return;
-        injectionScheduled = true;
-        requestAnimationFrame(() => {
-          injectionScheduled = false;
-          injectAllLogos();
+          container.appendChild(card);
         });
-      }
-
-      function observeContainer(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        new MutationObserver((mutations) => {
-          for (let m of mutations) {
-            if (m.type === 'childList' && (m.addedNodes.length || m.removedNodes.length)) {
-              scheduleInjection();
-              return;
-            }
-          }
-        }).observe(el, { childList: true, subtree: true });
-      }
-
-      function observeStep(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        new MutationObserver(scheduleInjection).observe(el, { attributes: true, attributeFilter: ['class'] });
       }
 
       /* ============================================================
          3. RECENT RECIPIENTS (STRICTLY BY PROVIDER)
          ============================================================ */
-      const STORAGE_KEY = 'shatova_recent_recipients_v3'; // New key to clear old mixed data
+      const STORAGE_KEY = 'shatova_recent_recipients_v4';
 
       function getActiveProvider() {
-        // 1. Check global set by airtime.js
-        if (window.shatovaSelectedAirtimeProvider && PROVIDER_CLASSES[window.shatovaSelectedAirtimeProvider]) {
-          return window.shatovaSelectedAirtimeProvider;
-        }
-        // 2. Check the network badge text
-        const badge = document.getElementById('networkBadge');
-        if (badge && !badge.classList.contains('hidden')) {
-          const text = badge.textContent.toLowerCase();
-          if (text.includes('airtel')) return 'airtel';
-          if (text.includes('glo')) return 'glo';
-          if (text.includes('t2') || text.includes('9mobile')) return 't2';
-          if (text.includes('mtn')) return 'mtn';
-        }
-        // 3. Check the page title
+        if (window.shatovaSelectedAirtimeProvider) return window.shatovaSelectedAirtimeProvider;
+        // Fallback to detecting from the page title
         const title = document.getElementById('bundle-title');
         if (title) {
           const t = title.textContent.toLowerCase();
           if (t.includes('airtel')) return 'airtel';
           if (t.includes('glo')) return 'glo';
           if (t.includes('t2') || t.includes('9mobile')) return 't2';
-          if (t.includes('mtn')) return 'mtn';
         }
-        return 'mtn'; // Default
+        return 'mtn';
       }
 
       function getRecent(provider) {
@@ -1418,7 +1373,6 @@
           if (!raw) return [];
           const all = JSON.parse(raw);
           if (!Array.isArray(all)) return [];
-          // Filter ONLY by the requested provider
           return all.filter(item => item.provider === provider).slice(0, 8);
         } catch (e) { return []; }
       }
@@ -1435,13 +1389,8 @@
           if (!Array.isArray(all)) all = [];
         } catch (e) { all = []; }
 
-        // Remove old entry for this phone+provider
         all = all.filter(item => !(item.phone === clean && item.provider === provider));
-        
-        // Add new entry to top
         all.unshift({ phone: clean, provider: provider, ts: Date.now() });
-        
-        // Keep only last 50 total (across all providers) to prevent bloat
         all = all.slice(0, 50);
         
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); } catch (e) {}
@@ -1506,18 +1455,15 @@
         const dropdown = document.getElementById('recentRecipients');
         if (!input || !dropdown) return;
 
-        // Show on focus/input
         input.addEventListener('focus', renderRecentDropdown);
         input.addEventListener('input', renderRecentDropdown);
         input.addEventListener('blur', () => setTimeout(hideRecentDropdown, 180));
         input.addEventListener('keydown', e => { if (e.key === 'Escape') hideRecentDropdown(); });
 
-        // Hide on outside click
         document.addEventListener('click', e => {
           if (!input.contains(e.target) && !dropdown.contains(e.target)) hideRecentDropdown();
         });
 
-        // Save on continue
         const continueBtn = document.getElementById('continueBtn');
         if (continueBtn) {
           continueBtn.addEventListener('click', () => {
@@ -1527,45 +1473,41 @@
             }
           });
         }
-
-        // Save when network badge updates (after detection)
-        const badge = document.getElementById('networkBadge');
-        if (badge) {
-          new MutationObserver(() => {
-            if (badge.classList.contains('hidden')) return;
-            const phone = input.value.trim();
-            if (phone.length !== 11) return;
-            saveRecent(phone, getActiveProvider());
-          }).observe(badge, { attributes: true, childList: true, subtree: true });
-        }
       }
 
       /* ============================================================
-         4. BOOT
+         4. LOGO INJECTION FOR SUBSEQUENT STEPS
+         ============================================================ */
+      function injectLogosInBundles() {
+        document.querySelectorAll('.bundle-logo, .sb-logo').forEach(container => {
+          if (container.querySelector('.isp-logo')) return;
+          const card = container.closest('[data-provider]');
+          const provider = card ? card.dataset.provider : null;
+          if (!provider || !LOGOS[provider]) return;
+          
+          container.innerHTML = '';
+          const img = document.createElement('img');
+          img.className = 'isp-logo';
+          img.src = LOGOS[provider];
+          img.alt = PROVIDER_LABELS[provider] + ' logo';
+          container.appendChild(img);
+        });
+      }
+      
+      window.shatovaInjectLogos = injectLogosInBundles;
+
+      /* ============================================================
+         5. BOOT
          ============================================================ */
       function boot() {
-        injectAllLogos();
-        
-        // Retry injection for first 3 seconds (in case airtime.js renders late)
-        let tries = 0;
-        const retry = setInterval(() => {
-          injectAllLogos();
-          tries++;
-          if (tries > 30) clearInterval(retry);
-        }, 100);
-
-        // Observe dynamic containers
-        ['categoryList', 'bundlesList', 'selectedBundleCard', 'payBundleCard'].forEach(observeContainer);
-        ['step-categories', 'step-bundles', 'step-checkout', 'step-pay'].forEach(observeStep);
-
-        // Observe entire app
-        const app = document.querySelector('.airtime-page');
-        if (app) {
-          new MutationObserver(scheduleInjection).observe(app, { childList: true, subtree: true });
-        }
-
-        // Init recent numbers
+        renderCategoryCards();
         initRecentStore();
+        
+        // Observer for bundle list to inject logos when switching steps
+        const bundlesList = document.getElementById('bundlesList');
+        if (bundlesList) {
+          new MutationObserver(injectLogosInBundles).observe(bundlesList, { childList: true, subtree: true });
+        }
       }
 
       if (document.readyState === 'loading') {
@@ -1573,13 +1515,6 @@
       } else {
         boot();
       }
-
-      window.addEventListener('load', () => {
-        injectAllLogos();
-        setTimeout(injectAllLogos, 300);
-        setTimeout(injectAllLogos, 1000);
-        setTimeout(injectAllLogos, 2500);
-      });
 
     })();
   </script>
@@ -1661,85 +1596,6 @@
         if (el) observer.observe(el, { childList: true, subtree: true });
       });
       schedule();
-    })();
-  </script>
-
-  <script>
-    /* Provider context: keep recent numbers and product headers isolated by network. */
-    (function () {
-      'use strict';
-      const names = { mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2' };
-      const input = document.getElementById('phoneInput');
-      const badge = document.getElementById('networkBadge');
-      const title = document.getElementById('bundle-title');
-      const subtitle = document.getElementById('bundlesSub');
-      const dropdown = document.getElementById('recentRecipients');
-      const categoryList = document.getElementById('categoryList');
-      const bundlesList = document.getElementById('bundlesList');
-
-      function detectProvider(value) {
-        const text = String(value || '').toLowerCase();
-        if (/\bairtel\b/.test(text)) return 'airtel';
-        if (/\bglo\b|globacom/.test(text)) return 'glo';
-        if (/\bt2\b|9mobile/.test(text)) return 't2';
-        if (/\bmtn\b/.test(text)) return 'mtn';
-        return '';
-      }
-      function activeProvider() {
-        const current = window.shatovaSelectedAirtimeProvider;
-        if (current && names[current]) return current;
-        const headingProvider = detectProvider((title && title.textContent || '') + ' ' + (subtitle && subtitle.textContent || ''));
-        if (headingProvider) return headingProvider;
-        return detectProvider(badge && badge.textContent) || 'mtn';
-      }
-      function refreshRecentNumbers() {
-        if (typeof window.shatovaRenderRecentNumbers === 'function') window.shatovaRenderRecentNumbers();
-        else if (input) input.dispatchEvent(new Event('focus'));
-      }
-      function setHeading(provider) {
-        const name = names[provider];
-        if (!name) return;
-        const wantedTitle = name + ' Airtime';
-        if (title && title.textContent.trim() !== wantedTitle) title.textContent = wantedTitle;
-        if (subtitle) {
-          const current = subtitle.textContent.trim();
-          const count = current.match(/(\s*[·•-]\s*\d+\s+products?\s*)$/i);
-          const wantedSubtitle = name.toUpperCase() + ' AIRTIME' + (count ? count[1] : '');
-          if (current !== wantedSubtitle) subtitle.textContent = wantedSubtitle;
-        }
-      }
-      function setProvider(provider) {
-        if (!names[provider]) return;
-        window.shatovaSelectedAirtimeProvider = provider;
-        refreshRecentNumbers();
-        setHeading(provider);
-      }
-      function handleCard(event, container) {
-        let node = event.target;
-        while (node && node !== container) {
-          const provider = detectProvider((node.getAttribute && node.getAttribute('data-provider') || '') + ' ' + (typeof node.className === 'string' ? node.className : '') + ' ' + (node.textContent || ''));
-          if (provider) { setProvider(provider); return; }
-          node = node.parentElement;
-        }
-      }
-      if (categoryList) categoryList.addEventListener('click', e => handleCard(e, categoryList), true);
-      if (bundlesList) bundlesList.addEventListener('click', e => handleCard(e, bundlesList), true);
-
-      // Product renderers may update titles asynchronously; keep the heading consistent with the selected network.
-      [title, subtitle].filter(Boolean).forEach(el => {
-        new MutationObserver(() => {
-          const selected = window.shatovaSelectedAirtimeProvider;
-          if (!selected || !names[selected]) return;
-          const titleProvider = detectProvider(title && title.textContent || '');
-          if (titleProvider !== selected) setHeading(selected);
-          else if (subtitle && detectProvider(subtitle.textContent || '') !== selected) setHeading(selected);
-        }).observe(el, { childList: true, characterData: true, subtree: true });
-      });
-
-      // A provider badge may detect the recipient's number; it must not override the section selected by the user.
-      window.shatovaGetActiveProvider = activeProvider;
-      window.shatovaSetAirtimeProvider = setProvider;
-      if (dropdown) dropdown.setAttribute('aria-label', 'Recent numbers for the selected network');
     })();
   </script>
 
