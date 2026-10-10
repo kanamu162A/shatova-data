@@ -23,7 +23,7 @@ if (KEY) {
 }
 
 /* ============================================================
-   ERROR NORMALIZER
+   ERROR NORMALIZER  (unchanged — working)
    ============================================================ */
 export function normalizeProviderError(rawMessage) {
   const msg = String(rawMessage || '').toLowerCase();
@@ -63,25 +63,70 @@ export function normalizeProviderError(rawMessage) {
 }
 
 /* ============================================================
-   STATUS NORMALIZER
+   STATUS NORMALIZER — strict, terminal-biased  (REPLACED)
+   Returns ONLY: 'successful' | 'failed' | 'processing'
    ============================================================ */
+
+// Internal helper — returns 'successful' | 'failed' | 'processing' | 'unknown'
+function matchStatusString(raw) {
+  const s = String(raw == null ? '' : raw).toLowerCase().trim();
+  if (!s) return 'unknown';
+
+  // FAILED must be checked BEFORE success, so "not successful" → failed
+  const FAILED = [
+    'fail', 'failed', 'failure', 'reject', 'rejected', 'cancel', 'cancelled',
+    'canceled', 'decline', 'declined', 'error', 'refund', 'refunded',
+    'invalid', 'not successful', 'unsuccessful', 'expired', 'reversed',
+    'abandoned', 'aborted', 'denied', 'timeout', 'timed out',
+  ];
+  const SUCCESS = [
+    'success', 'successful', 'succeeded', 'complete', 'completed', 'delivered',
+    'approved', 'done', 'paid', 'processed', 'sent', 'credited', 'confirmed',
+  ];
+  const PENDING = [
+    'processing', 'pending', 'in_progress', 'in-progress', 'submitted',
+    'queued', 'initiated', 'awaiting', 'in progress', 'new', 'created',
+    'accepted', 'received',
+  ];
+
+  for (const k of FAILED)  if (s.includes(k)) return 'failed';
+  for (const k of SUCCESS) if (s.includes(k)) return 'successful';
+  for (const k of PENDING) if (s.includes(k)) return 'processing';
+
+  return 'unknown';
+}
+
 export function normalizeProviderStatus(payload) {
-  if (!payload) return 'failed';
-  if (typeof payload !== 'object') return 'processing';
+  // No payload → we cannot confirm → treat as failed.
+  // Caller decides whether to retry; default must NOT be 'processing'.
+  if (payload == null) return 'failed';
+
+  if (typeof payload === 'string') {
+    const v = matchStatusString(payload);
+    return v === 'unknown' ? 'failed' : v;
+  }
+
+  if (typeof payload !== 'object') return 'failed';
 
   const outer = payload;
-  const inner = (outer.data && typeof outer.data === 'object' && !Array.isArray(outer.data))
-    ? outer.data
-    : {};
+  const inner =
+    outer.data && typeof outer.data === 'object' && !Array.isArray(outer.data)
+      ? outer.data
+      : Array.isArray(outer.data) && outer.data[0]
+        ? outer.data[0]
+        : {};
 
+  // Every plausible status signal, in priority order
   const candidates = [
     inner.transaction_status,
     inner.transactionStatus,
     inner.payment_status,
     inner.paymentStatus,
+    inner.delivery_status,
     inner.state,
     inner.status,
     inner.result,
+    inner.transaction && inner.transaction.status,
     outer.transaction_status,
     outer.transactionStatus,
     outer.payment_status,
@@ -91,29 +136,33 @@ export function normalizeProviderStatus(payload) {
     outer.result,
   ];
 
-  const SUCCESS = ['success','successful','succeeded','completed','complete','delivered','approved','done','paid','processed','sent'];
-  const FAILED  = ['fail','failed','failure','rejected','cancelled','canceled','declined','error','refunded','invalid','not successful','expired'];
-  const PENDING = ['processing','pending','in_progress','in-progress','submitted','queued','initiated','awaiting','in progress','new'];
-
   for (const raw of candidates) {
-    if (raw == null) continue;
-    if (typeof raw === 'boolean') continue;
-    const s = String(raw).toLowerCase().trim();
-    if (!s) continue;
-
-    if (FAILED.some((k) => s.includes(k))) return 'failed';
-    if (SUCCESS.some((k) => s.includes(k))) return 'successful';
-    if (PENDING.some((k) => s.includes(k))) return 'processing';
+    if (raw == null || typeof raw === 'boolean') continue;
+    const verdict = matchStatusString(raw);
+    if (verdict !== 'unknown') return verdict;
   }
 
+  // Boolean status is authoritative
   if (typeof outer.status === 'boolean') {
     return outer.status ? 'successful' : 'failed';
   }
-  return 'processing';
+  if (typeof inner.status === 'boolean') {
+    return inner.status ? 'successful' : 'failed';
+  }
+
+  // HTTP-style code fallback
+  const code = Number(outer.code != null ? outer.code : inner.code);
+  if (Number.isFinite(code)) {
+    if (code >= 200 && code < 300) return 'successful';
+    if (code >= 400) return 'failed';
+  }
+
+  // ⚠️ Unknown → FAILED, never 'processing'
+  return 'failed';
 }
 
 /* ============================================================
-   SHARED CALLER
+   SHARED CALLER  (unchanged — working)
    ============================================================ */
 async function request(method, path, body) {
   const url = `${BASE}${path}`;
@@ -168,7 +217,7 @@ async function request(method, path, body) {
 }
 
 /* ============================================================
-   PROVIDER BALANCE
+   PROVIDER BALANCE  (unchanged — working)
    ============================================================ */
 const BALANCE_PATHS = [
   '/account/wallet-balance',
@@ -209,7 +258,7 @@ export async function getDatashopBalance() {
 export const getProviderBalance = getDatashopBalance;
 
 /* ============================================================
-   PRODUCTS
+   PRODUCTS  (unchanged — working)
    ============================================================ */
 const PRODUCT_PATHS = ['/list-products', '/products', '/get-products'];
 let _cachedProductPath = null;
@@ -262,7 +311,7 @@ export async function listProviders(service = 'data') {
 }
 
 /* ============================================================
-   AIRTIME PRODUCT NAMES — T2 only, no 9mobile anywhere
+   AIRTIME  (unchanged — working)
    ============================================================ */
 const AIRTIME_FALLBACKS = {
   mtn:    ['mtn-airtime', 'mtn'],
@@ -309,7 +358,7 @@ export async function buyAirtime({ network, product_name, phone, customer_id, am
 }
 
 /* ============================================================
-   PURCHASE — DATA
+   DATA  (unchanged — working)
    ============================================================ */
 export async function buyData({ planId, product_name, phone, customer_id, reference, amount, quantity }) {
   const body = {
@@ -324,7 +373,7 @@ export async function buyData({ planId, product_name, phone, customer_id, refere
 }
 
 /* ============================================================
-   STATUS CHECKS
+   STATUS CHECKS  (FIXED — no silent swallowing)
    ============================================================ */
 const STATUS_PATHS = [
   (ref) => `/transactions/${encodeURIComponent(ref)}`,
@@ -343,25 +392,49 @@ export async function checkTransactionStatus(reference) {
     ? [_cachedStatusPath, ...STATUS_PATHS.filter(fn => fn('x') !== _cachedStatusPath('x'))]
     : STATUS_PATHS;
 
+  let lastErr = null;
+
   for (const makePath of paths) {
     const path = makePath(reference);
-    try {
-      const res = await request('GET', path);
-      _cachedStatusPath = makePath;
+    let res;
 
-      const d = res.raw?.data;
-      if (Array.isArray(d) && d.length) {
-        return { ...res.raw, data: d[0] };
-      }
-      return res.raw;
+    try {
+      res = await request('GET', path);
+      _cachedStatusPath = makePath;
     } catch (err) {
+      lastErr = err;
+
+      // 404 = wrong path → try next path
       if (err.statusCode === 404) continue;
-      if (err.providerResponse && err.statusCode < 500) {
+
+      // Provider returned a body (even on 4xx) → that body IS the answer.
+      // DataShop often returns 200 with {status:false} for failed txns,
+      // or 400 with the failure reason. Return it so the caller can normalize.
+      if (err.providerResponse && typeof err.providerResponse === 'object') {
+        const d = err.providerResponse.data;
+        if (Array.isArray(d) && d.length) {
+          return { ...err.providerResponse, data: d[0] };
+        }
         return err.providerResponse;
       }
+
+      // Network / 5xx with no body → cannot determine → bubble up (caller retries)
+      throw err;
     }
+
+    const d = res.raw?.data;
+    if (Array.isArray(d) && d.length) {
+      return { ...res.raw, data: d[0] };
+    }
+    return res.raw;
   }
-  throw new Error('Transaction not found on DataShop');
+
+  // Every path 404'd — transaction is unknown to provider
+  const e = new Error('Transaction not found on DataShop');
+  e.code = 'PROVIDER_NOT_FOUND';
+  e.isUserSafe = true;
+  e.rawMessage = lastErr?.rawMessage || 'not found';
+  throw e;
 }
 
 export const checkAirtimeStatus   = checkTransactionStatus;
@@ -370,7 +443,7 @@ export const fetchTransaction     = checkTransactionStatus;
 export const getTransactionStatus = checkTransactionStatus;
 
 /* ============================================================
-   VERIFY CUSTOMER
+   VERIFY CUSTOMER  (unchanged — working)
    ============================================================ */
 export async function verifyCustomer({ customer_id, phone, product_name }) {
   const res = await request('POST', '/verify-customer', {
@@ -381,7 +454,7 @@ export async function verifyCustomer({ customer_id, phone, product_name }) {
 }
 
 /* ============================================================
-   REFERENCE
+   REFERENCE  (unchanged — working)
    ============================================================ */
 export function generateReference(prefix = 'SHAT') {
   const ts = Date.now().toString(36).toUpperCase();
