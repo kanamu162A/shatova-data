@@ -110,8 +110,8 @@
     [data-provider="airtel"] .bundle-logo,
     [data-provider="airtel"] .sb-logo,
     .pro-logo-badge[data-provider="airtel"] {
-      background: #e60000 !important;
-      box-shadow: 0 3px 10px -2px rgba(230, 0, 0, 0.35), 0 0 0 1px rgba(180, 0, 0, 0.15);
+      background: #ED1C24 !important;
+      box-shadow: 0 3px 10px -2px rgba(237, 28, 36, 0.38), 0 0 0 1px rgba(180, 20, 25, 0.15);
     }
     [data-provider="glo"] .cat-logo,
     [data-provider="glo"] .bundle-logo,
@@ -269,7 +269,7 @@
       font-size: 9.5px; font-weight: 800; letter-spacing: 0.45px; text-transform: uppercase;
     }
     .sb-badge.sb-mtn    { background: #ffcb05; color: #0a0a0a; }
-    .sb-badge.sb-airtel { background: #e60000; color: #fff; }
+    .sb-badge.sb-airtel { background: #ED1C24; color: #fff; }
     .sb-badge.sb-glo    { background: #00a651; color: #fff; }
     .sb-badge.sb-t2     { background: #f26522; color: #fff; }
     .sb-price-group { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
@@ -373,7 +373,7 @@
       width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-right: 10px;
     }
     .recent-network-dot.mtn    { background: #ffcb05; }
-    .recent-network-dot.airtel { background: #e60000; }
+    .recent-network-dot.airtel { background: #ED1C24; }
     .recent-network-dot.glo    { background: #00a651; }
     .recent-network-dot.t2     { background: #f26522; }
     .recent-phone { flex: 1; font-weight: 500; letter-spacing: 0.3px; color: inherit; }
@@ -497,8 +497,8 @@
       color: #0a0a0a; border-color: rgba(180, 140, 0, 0.45);
     }
     .btn-primary[data-provider="airtel"] {
-      background: linear-gradient(180deg, #ff1a1a 0%, #cc0000 100%);
-      color: #fff; border-color: rgba(150, 0, 0, 0.5);
+      background: linear-gradient(180deg, #ff2a32 0%, #c4121a 100%);
+      color: #fff; border-color: rgba(180, 20, 25, 0.5);
     }
     .btn-primary[data-provider="glo"] {
       background: linear-gradient(180deg, #00c462 0%, #008a44 100%);
@@ -879,8 +879,8 @@
       color: #0a0a0a; border-color: rgba(180, 140, 0, 0.45);
     }
     .pm-btn-primary[data-provider="airtel"] {
-      background: linear-gradient(180deg, #ff1a1a 0%, #cc0000 100%);
-      color: #ffffff; border-color: rgba(150, 0, 0, 0.5);
+      background: linear-gradient(180deg, #ff2a32 0%, #c4121a 100%);
+      color: #ffffff; border-color: rgba(180, 20, 25, 0.5);
     }
     .pm-btn-primary[data-provider="glo"] {
       background: linear-gradient(180deg, #00c462 0%, #008a44 100%);
@@ -1010,7 +1010,7 @@
     .recent-tx-row { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--air-border,#eee); }
     .recent-tx-row:last-child { border-bottom:0; }
     .recent-tx-logo { flex:0 0 38px; width:38px; height:38px; border-radius:12px; display:grid; place-items:center; font-size:11px; font-weight:900; color:#fff; }
-    .recent-tx-logo.mtn { background:#ffcb05; color:#111; } .recent-tx-logo.airtel { background:#e60000; } .recent-tx-logo.glo { background:#00a651; } .recent-tx-logo.t2 { background:#f26522; }
+    .recent-tx-logo.mtn { background:#ffcb05; color:#111; } .recent-tx-logo.airtel { background:#ED1C24; } .recent-tx-logo.glo { background:#00a651; } .recent-tx-logo.t2 { background:#F26522; }
     .recent-tx-info { min-width:0; flex:1; } .recent-tx-name { font-size:12px; font-weight:800; color:var(--air-text,#111); }
     .recent-tx-meta { margin-top:4px; font-size:10px; color:var(--air-text-muted,#6b7280); overflow-wrap:anywhere; }
     .recent-tx-amount { text-align:right; white-space:nowrap; font-size:12px; font-weight:800; color:var(--air-text,#111); }
@@ -1385,32 +1385,38 @@
          Actual brand colors and wordmarks. No network required.
          ------------------------------------------------------------ */
 
-      // MTN — yellow rounded square, black oval, black MTN wordmark
+      // MTN — yellow field, black oval ring + MTN wordmark (classic mark)
       const MTN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-        <rect width="200" height="200" rx="42" fill="#ffcb05"/>
-        <ellipse cx="100" cy="100" rx="72" ry="44" fill="none" stroke="#000" stroke-width="7"/>
-        <text x="100" y="118" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="52" font-weight="900" fill="#000" letter-spacing="-2">MTN</text>
+        <rect width="200" height="200" rx="100" fill="#ffcb05"/>
+        <ellipse cx="100" cy="100" rx="68" ry="42" fill="none" stroke="#000" stroke-width="8"/>
+        <text x="100" y="116" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="48" font-weight="900" fill="#000" letter-spacing="-1.5">MTN</text>
       </svg>`;
 
-      // Airtel — red rounded square, white curved "a" mark + airtel wordmark
+      // Airtel — pro version of real brand mark: red field + white stylized "a" swoosh
       const AIRTEL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-        <rect width="200" height="200" rx="42" fill="#e60000"/>
-        <path d="M62 128c0-22 14-40 34-40s28 12 28 26-9 22-20 22c-8 0-14-5-14-12 0-6 4-10 10-10" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
-        <circle cx="118" cy="76" r="7" fill="#fff"/>
-        <text x="100" y="168" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800" fill="#fff" letter-spacing="-1">airtel</text>
+        <rect width="200" height="200" rx="100" fill="#ED1C24"/>
+        <!-- Stylized Airtel "a" mark (modern brand icon) -->
+        <path d="M72 138
+                 C72 108 92 88 116 88
+                 C138 88 152 102 152 118
+                 C152 134 140 146 124 146
+                 C112 146 104 138 104 128
+                 C104 118 112 112 122 112
+                 C128 112 132 116 132 122"
+              fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="132" cy="72" r="11" fill="#FFFFFF"/>
       </svg>`;
 
-      // Glo — green rounded square, white "glo" wordmark
+      // Glo — green field, white glo wordmark
       const GLO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-        <rect width="200" height="200" rx="42" fill="#00a651"/>
-        <text x="100" y="128" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="78" font-weight="900" fill="#fff" letter-spacing="-4">glo</text>
+        <rect width="200" height="200" rx="100" fill="#00A651"/>
+        <text x="100" y="122" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="72" font-weight="900" fill="#fff" letter-spacing="-3">glo</text>
       </svg>`;
 
-      // T2 / 9mobile — orange rounded square, white "9" and "mobile"
+      // T2 — orange field, clean T2 wordmark (rebrand; not 9mobile)
       const T2_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-        <rect width="200" height="200" rx="42" fill="#f26522"/>
-        <text x="100" y="100" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="60" font-weight="900" fill="#fff" letter-spacing="-2">9</text>
-        <text x="100" y="150" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#fff" letter-spacing="-0.5">mobile</text>
+        <rect width="200" height="200" rx="100" fill="#F26522"/>
+        <text x="100" y="122" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="72" font-weight="900" fill="#fff" letter-spacing="-2">T2</text>
       </svg>`;
 
       const LOGOS = {
