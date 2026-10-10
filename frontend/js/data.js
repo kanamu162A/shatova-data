@@ -165,22 +165,42 @@ function networkClass(key = '') {
 function networkShort(key = '') {
   const k = String(key).toLowerCase();
   if (k.includes('mtn'))    return 'MTN';
-  if (k.includes('airtel')) return 'AIRTEL';
-  if (k.includes('glo'))    return 'GLO';
-  if (k.includes('t2'))     return 'T2';
-  if (k.includes('9mobile') || k.includes('etisalat')) return '9MOBILE';
+  if (k.includes('airtel')) return 'Airtel';
+  if (k.includes('glo'))    return 'Glo';
+  if (k.includes('t2') || k.includes('9mobile') || k.includes('etisalat')) return 'T2';
   if (k.includes('wallet')) return 'WALLET';
   return String(key).toUpperCase().slice(0, 6);
 }
 
 function networkDisplay(key) {
   const k = String(key || '').toLowerCase();
-  if (k === 't2' || k === 'etisalat') return '9mobile';
+  if (k === 't2' || k === 'etisalat' || k === '9mobile') return 'T2';
   if (k === 'mtn')    return 'MTN';
   if (k === 'airtel') return 'Airtel';
   if (k === 'glo')    return 'Glo';
-  if (k === '9mobile') return '9mobile';
   return k.toUpperCase();
+}
+
+/* ── Brand logos (inline SVG data-URIs — zero network, instant) ── */
+const BRAND_LOGOS = (() => {
+  const mtn = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" rx="100" fill="#ffcb05"/><ellipse cx="100" cy="100" rx="68" ry="42" fill="none" stroke="#000" stroke-width="8"/><text x="100" y="116" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="48" font-weight="900" fill="#000" letter-spacing="-1.5">MTN</text></svg>`;
+  const airtel = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" rx="100" fill="#ED1C24"/><text x="100" y="118" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="36" font-weight="800" fill="#fff" letter-spacing="-1.2">airtel</text></svg>`;
+  const glo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" rx="100" fill="#00A651"/><text x="100" y="122" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="72" font-weight="900" fill="#fff" letter-spacing="-3">glo</text></svg>`;
+  const t2 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" rx="100" fill="#F26522"/><text x="100" y="122" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="72" font-weight="900" fill="#fff" letter-spacing="-2">T2</text></svg>`;
+  const toData = (s) => 'data:image/svg+xml;base64,' + btoa(s);
+  return {
+    mtn: toData(mtn),
+    airtel: toData(airtel),
+    glo: toData(glo),
+    t2: toData(t2),
+  };
+})();
+
+function brandLogoHtml(providerKey, extraClass = '') {
+  const cls = networkClass(providerKey);
+  const src = BRAND_LOGOS[cls] || BRAND_LOGOS.mtn;
+  const label = networkShort(providerKey);
+  return `<div class="${extraClass} ${cls}" data-provider="${cls}"><img class="isp-logo" src="${src}" alt="${escapeHtml(label)} logo" width="40" height="40" decoding="async" loading="eager"/></div>`;
 }
 
 function spinButton(btn, label = 'Loading…') {
@@ -622,7 +642,7 @@ function renderCategories() {
     return `
       <div class="category-card ${isUnavailable ? 'unavailable' : ''}"
            data-provider="${escapeHtml(c.provider)}" data-category="${escapeHtml(c.category)}">
-        <div class="cat-logo ${networkClass(c.provider)}">${escapeHtml(networkShort(c.provider))}</div>
+        ${brandLogoHtml(c.provider, 'cat-logo')}
         <div class="cat-info">
           <div class="cat-name">${escapeHtml(c.category)}</div>
           <div class="cat-sub ${isUnavailable ? 'unavailable' : ''}">${escapeHtml(subText)}</div>
@@ -691,8 +711,8 @@ function renderBundles(list) {
     const available = b.available !== false;
     const cls = networkClass(key);
     return `
-      <div class="bundle-card ${available ? '' : 'unavailable'}" data-plan-id="${escapeHtml(b.plan_id)}">
-        <div class="bundle-logo ${cls}">${escapeHtml(networkShort(key))}</div>
+      <div class="bundle-card ${available ? '' : 'unavailable'}" data-plan-id="${escapeHtml(b.plan_id)}" data-provider="${cls}">
+        ${brandLogoHtml(key, 'bundle-logo')}
         <div class="bundle-info">
           <div class="bundle-name">${escapeHtml(b.name)}</div>
           <div class="bundle-meta">
@@ -736,7 +756,7 @@ function selectBundle(bundle) {
   if (selectedBundleCard) {
     selectedBundleCard.dataset.provider = cls;
     selectedBundleCard.innerHTML = `
-      <div class="sb-logo ${cls}">${escapeHtml(networkShort(key))}</div>
+      ${brandLogoHtml(key, 'sb-logo')}
       <div class="sb-info">
         <div class="sb-name">${escapeHtml(bundle.name)}</div>
         <div class="sb-meta">
