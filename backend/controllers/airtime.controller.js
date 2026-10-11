@@ -74,47 +74,71 @@ function isProductNotFound(err) {
 }
 
 /**
- * Extra safety net: if normalizeProviderStatus is too soft,
- * scan raw body for clear fail/success signals.
+ * Provider status interpreter — CONSERVATIVE.
+ * Rule: only SUCCESS when delivery is explicit.
+ * Ambiguous / pending-like → processing (keep hold).
+ * Never treat HTTP success:true alone as delivered.
  */
 function interpretProviderPayload(check) {
-  // Prefer official normalizer first
-  try {
-    const n = normalizeProviderStatus(check);
-    if (n === 'successful' || n === 'failed') return n;
-  } catch (_) { /* continue */ }
-
   const b = check?.data || check || {};
   const candidates = [
     b.transaction_status, b.transactionStatus,
     b.payment_status, b.paymentStatus,
     b.state, b.status, b.result,
     check?.status, check?.message, check?.remark,
-    b.message, b.remark,
+    b.message, b.remark, b.delivery_status, b.deliveryStatus,
   ].filter((v) => v != null && typeof v !== 'boolean');
 
+  // PENDING first — so "processing successful" etc. don't false-positive
+  const PENDING = [
+    'processing', 'pending', 'in_progress', 'in-progress', 'submitted',
+    'queued', 'initiated', 'awaiting', 'in progress', 'new', 'created',
+    'accepted', 'received', 'waiting',
+  ];
   const FAILED = [
     'fail', 'failed', 'failure', 'reject', 'rejected', 'cancel', 'cancelled',
     'decline', 'declined', 'error', 'refund', 'refunded', 'reversed', 'invalid',
     'not successful', 'unsuccessful', 'expired', 'abandoned', 'denied',
     'timeout', 'not found',
   ];
+  // STRICT success only — no "paid"/"processed"/"sent" (too often used while pending)
   const SUCCESS = [
-    'success', 'successful', 'succeeded', 'complete', 'completed', 'delivered',
-    'approved', 'done', 'paid', 'processed', 'sent', 'credited', 'confirmed',
+    'successful', 'succeeded', 'delivered', 'completed', 'complete',
+    'credited', 'confirmed',
   ];
 
   for (const raw of candidates) {
     const s = String(raw).toLowerCase().trim();
     if (!s) continue;
+    if (PENDING.some((k) => s === k || s.includes(k))) return 'processing';
     if (FAILED.some((k) => s.includes(k))) return 'failed';
-    if (SUCCESS.some((k) => s.includes(k))) return 'successful';
+  }
+  for (const raw of candidates) {
+    const s = String(raw).toLowerCase().trim();
+    if (!s) continue;
+    // exact-ish match preferred
+    if (SUCCESS.some((k) => s === k || s.includes(k))) return 'successful';
   }
 
-  if (typeof b.status === 'boolean') return b.status ? 'successful' : 'failed';
+  // Boolean status alone is NOT enough (many APIs return success:true with pending)
   if (check?.success === false) return 'failed';
-  if (check?.success === true && !candidates.length) return 'successful';
 
+  // Official normalizer last — but override soft "successful" if body says pending
+  try {
+    const n = normalizeProviderStatus(check);
+    if (n === 'failed') return 'failed';
+    if (n === 'successful') {
+      // Double-check no pending keyword in payload
+      const blob = JSON.stringify(check || {}).toLowerCase();
+      if (PENDING.some((k) => blob.includes(`"${k}"`) || blob.includes(`:${k}`))) {
+        return 'processing';
+      }
+      return 'successful';
+    }
+    if (n === 'processing' || n === 'pending') return 'processing';
+  } catch (_) { /* ignore */ }
+
+  // Default: keep money on hold
   return 'processing';
 }
 
@@ -692,6 +716,7 @@ export async function purchase(req, res) {
   );
 
   if (providerStatus === 'successful') {
+    console.log(`[airtime/purchase] ${reference} CONFIRM success payload:`, JSON.stringify(result?.data || result).slice(0, 500));
     await releaseHold({
       userId,
       reference,
