@@ -1075,3 +1075,431 @@ body.home .tx-item:hover {
     scroll-behavior: auto;
   }
 }
+
+/* ============================================================
+   SHATOVA PRO MAX — PREMIUM FINISHING LAYER
+   Refined surfaces · consistent spacing · premium depth
+   Accessible focus · responsive polish · light/dark support
+   ============================================================ */
+
+:root {
+  --sh-surface: #ffffff;
+  --sh-surface-soft: #f8fbf9;
+  --sh-line: rgba(17, 55, 42, 0.09);
+  --sh-line-strong: rgba(10, 69, 52, 0.15);
+  --sh-shadow-card: 0 2px 5px rgba(16, 42, 32, 0.025),
+                    0 8px 22px -14px rgba(10, 69, 52, 0.20);
+  --sh-shadow-hover: 0 5px 12px rgba(16, 42, 32, 0.045),
+                     0 15px 30px -19px rgba(10, 69, 52, 0.30);
+  --sh-ring: 0 0 0 3px rgba(10, 69, 52, 0.12);
+}
+
+body.home .app-container {
+  isolation: isolate;
+  scrollbar-width: none;
+}
+
+body.home .app-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* A little more breathing room without wasting small-screen space. */
+body.home .greeting-section {
+  padding: max(10px, env(safe-area-inset-top)) 18px 12px;
+  gap: 5px;
+}
+
+body.home .greet-line {
+  padding: 5px 9px;
+  border: 1px solid rgba(10, 69, 52, 0.07);
+  background: rgba(10, 69, 52, 0.045);
+  font-size: 9px;
+  letter-spacing: 0.7px;
+}
+
+body.home .greet-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+/* Premium wallet card: crisp outline and layered depth. */
+body.home .balance-card {
+  margin-right: 14px;
+  margin-left: 14px;
+  padding: 16px 17px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.19);
+  border-radius: 20px;
+  box-shadow: 0 12px 26px -14px rgba(5, 43, 32, 0.68),
+              0 4px 10px rgba(5, 43, 32, 0.12),
+              inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+body.home .balance-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.home .balance-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15px;
+}
+
+body.home .balance-amount {
+  font-size: clamp(25px, 7vw, 30px);
+  font-weight: 750;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+
+body.home .balance-actions {
+  gap: 9px;
+  width: 100%;
+  max-width: 320px;
+  padding-top: 12px;
+}
+
+body.home .balance-actions button {
+  min-height: 36px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05px;
+}
+
+body.home .btn-fund,
+body.home .btn-send {
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+/* Services: aligned cards, restrained borders and a polished hover. */
+body.home .services-grid {
+  padding-right: 16px;
+  padding-left: 16px;
+  gap: 10px;
+}
+
+body.home .svc-card {
+  min-width: 0;
+  min-height: 76px;
+  padding: 13px 12px;
+  gap: 11px;
+  border: 1px solid var(--sh-line);
+  border-radius: 15px;
+  background: linear-gradient(180deg, #ffffff 0%, #fcfdfc 100%);
+  box-shadow: var(--sh-shadow-card);
+  transition: border-color 180ms ease, box-shadow 180ms ease,
+              transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              background 180ms ease;
+}
+
+body.home .svc-card:hover {
+  border-color: var(--sh-line-strong);
+  box-shadow: var(--sh-shadow-hover);
+  transform: translateY(-2px);
+}
+
+body.home .svc-card:active {
+  transform: scale(0.985);
+  box-shadow: var(--sh-shadow-card);
+}
+
+body.home .svc-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #f4f7f5, #eaf0ec) !important;
+  border: 1px solid rgba(10, 69, 52, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+body.home .svc-icon svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.75;
+}
+
+body.home .svc-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.18px;
+  line-height: 1.35;
+}
+
+body.home .svc-sub {
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 450;
+  line-height: 1.4;
+}
+
+/* Section headings use a consistent typographic rhythm. */
+body.home .section-head {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding-right: 18px;
+  padding-left: 18px;
+}
+
+body.home .section-head h3 {
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: -0.3px;
+}
+
+body.home .section-head h3::before {
+  width: 3px;
+  height: 16px;
+  border-radius: 999px;
+}
+
+body.home .section-head a {
+  padding: 5px 0 5px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Transaction cards: light type, consistent edges and balanced spacing. */
+body.home .tx-container {
+  padding-right: 13px;
+  padding-left: 13px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  scrollbar-gutter: stable;
+}
+
+body.home .tx-list {
+  gap: 8px;
+  padding: 2px 2px 10px;
+}
+
+body.home .tx-item {
+  padding: 13px 14px;
+  border: 1px solid rgba(15, 45, 35, 0.075);
+  border-radius: 14px;
+  background: var(--sh-surface);
+  box-shadow: 0 1px 2px rgba(16, 42, 32, 0.025),
+              0 5px 14px -10px rgba(10, 69, 52, 0.20);
+}
+
+body.home .tx-item:hover {
+  border-color: rgba(10, 69, 52, 0.17);
+  box-shadow: 0 4px 10px rgba(16, 42, 32, 0.035),
+              0 12px 22px -17px rgba(10, 69, 52, 0.35);
+}
+
+body.home .tx-body {
+  padding-right: 10px;
+}
+
+body.home .tx-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: -0.12px;
+  margin-bottom: 4px;
+}
+
+body.home .tx-amount {
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+body.home .tx-meta {
+  gap: 6px;
+  margin-top: 3px;
+  color: #6b7771;
+  font-size: 10.5px;
+  font-weight: 450;
+  line-height: 1.5;
+}
+
+body.home .tx-status {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+}
+
+/* Cleaner empty state and skeleton cards. */
+body.home .empty-state {
+  margin: 2px;
+  padding: 32px 20px;
+  border: 1px solid var(--sh-line);
+  border-radius: 16px;
+  box-shadow: var(--sh-shadow-card);
+}
+
+body.home .empty-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+body.home .empty-text {
+  max-width: 260px;
+  margin: 0 auto;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* Receipt sheet: sharper separation and consistent details. */
+body.home .txm-sheet {
+  border: 1px solid rgba(10, 69, 52, 0.08);
+  border-bottom: 0;
+  box-shadow: 0 -12px 40px rgba(2, 20, 13, 0.16);
+}
+
+body.home .txm-cell {
+  border-color: rgba(15, 45, 35, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Visible keyboard focus without changing the layout. */
+body.home .svc-card:focus-visible,
+body.home .tx-item:focus-visible,
+body.home .section-head a:focus-visible,
+body.home .balance-actions button:focus-visible,
+body.home .balance-toggle-btn:focus-visible,
+body.home .txm-btn:focus-visible,
+body.home .txm-close:focus-visible {
+  outline: none;
+  box-shadow: var(--sh-ring), var(--sh-shadow-card);
+}
+
+/* Dark theme: preserve premium contrast, avoid bright white borders. */
+[data-theme="dark"] body.home,
+.theme-dark body.home,
+body.dark.home {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body.home .svc-card,
+.theme-dark body.home .svc-card,
+body.dark.home .svc-card {
+  background: linear-gradient(180deg, #171d1a, #141916);
+  border-color: rgba(255, 255, 255, 0.075);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.16),
+              0 12px 22px -18px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] body.home .svc-icon,
+.theme-dark body.home .svc-icon,
+body.dark.home .svc-icon {
+  background: linear-gradient(145deg, #202923, #19211c) !important;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] body.home .tx-item,
+.theme-dark body.home .tx-item,
+body.dark.home .tx-item {
+  border-color: rgba(255, 255, 255, 0.075);
+  background: #151a17;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.17);
+}
+
+[data-theme="dark"] body.home .tx-item:hover,
+.theme-dark body.home .tx-item:hover,
+body.dark.home .tx-item:hover {
+  border-color: rgba(52, 211, 153, 0.22);
+  background: #19201c;
+}
+
+[data-theme="dark"] body.home .tx-meta,
+.theme-dark body.home .tx-meta,
+body.dark.home .tx-meta {
+  color: #a2ada6;
+}
+
+[data-theme="dark"] body.home .empty-state,
+.theme-dark body.home .empty-state,
+body.dark.home .empty-state {
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Compact devices: maintain usable tap targets and avoid cramped cards. */
+@media (max-width: 360px) {
+  body.home .greeting-section {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  body.home .balance-card {
+    margin-right: 10px;
+    margin-left: 10px;
+    padding: 14px 13px 12px;
+  }
+
+  body.home .services-grid {
+    padding-right: 11px;
+    padding-left: 11px;
+    gap: 8px;
+  }
+
+  body.home .svc-card {
+    min-height: 70px;
+    padding: 10px 9px;
+    gap: 8px;
+  }
+
+  body.home .svc-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+  }
+
+  body.home .svc-title {
+    font-size: 11.5px;
+  }
+
+  body.home .svc-sub {
+    font-size: 9.5px;
+  }
+
+  body.home .section-head {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  body.home .tx-item {
+    padding: 11px 10px;
+  }
+
+  body.home .tx-title {
+    font-size: 11.5px;
+  }
+
+  body.home .tx-amount {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  body.home .app-container {
+    border-right: 1px solid rgba(10, 69, 52, 0.055);
+    border-left: 1px solid rgba(10, 69, 52, 0.055);
+    box-shadow: 0 0 70px rgba(10, 69, 52, 0.10);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.home .svc-card,
+  body.home .tx-item,
+  body.home .balance-actions button {
+    transition: none !important;
+  }
+}
