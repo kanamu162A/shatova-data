@@ -12,27 +12,25 @@
   <link rel="stylesheet" href="/css/theme.css">
 
   <!-- ============================================================
-       OVERRIDE — placed AFTER all imports so it always wins.
-       This kills whatever ugly invisible element from layout.css /
-       theme.css was bleeding through behind the transaction list.
+       FINAL OVERRIDE — loaded AFTER all imports so it always wins.
+       1) Kills hidden/ugly element bleeding behind the list.
+       2) Applies the slim, modern, day-by-day history look
+          (tighter padding, softer borders, lighter shadows,
+           thinner text weights, subtler transitions).
        ============================================================ -->
   <style>
+    /* ---------- 1. Neutralize stray global overlays ---------- */
     html, body {
       background: var(--tx-bg, #f4f5f7);
       overflow-x: hidden;
     }
 
-    body.tx-page {
-      overflow-x: hidden;
-      position: relative;
-    }
+    body.tx-page { overflow-x: hidden; position: relative; }
 
-    /* Any stray global child element not part of this page → hidden */
     body.tx-page > *:not(#app-header):not(.tx-app):not(.tx-filter-fab):not(.filter-backdrop):not(.txm-backdrop):not(script):not(style) {
       display: none !important;
     }
 
-    /* Kill global pseudo-elements that bleed through */
     body.tx-page::before,
     body.tx-page::after,
     .tx-app::before,
@@ -41,7 +39,6 @@
       content: none !important;
     }
 
-    /* Correct stacking so nothing covers the list */
     #app-header { position: relative; z-index: 5; }
     .tx-app      { position: relative; z-index: 1; }
 
@@ -52,6 +49,412 @@
     #txPagination {
       position: relative;
       z-index: 2;
+    }
+
+    /* ---------- 2. Slim modern typography & spacing ---------- */
+
+    /* App shell: slimmer bottom space, tighter page feel */
+    .tx-app {
+      padding: 0 0 92px !important;
+      max-width: 480px !important;
+    }
+
+    /* Header — slimmer, lighter weight, tighter padding */
+    .tx-header {
+      top: 46px !important;
+      padding: 11px 16px !important;
+      box-shadow: none !important;
+      border-bottom: 1px solid #eceef0 !important;
+    }
+
+    .tx-header-icon { width: 22px !important; height: 22px !important; }
+    .tx-header-icon svg { width: 18px !important; height: 18px !important; }
+
+    .tx-header-title {
+      font-size: 15px !important;
+      font-weight: 500 !important;
+      letter-spacing: -0.2px !important;
+      color: #1f2329 !important;
+    }
+
+    .tx-header-count {
+      min-width: 22px !important;
+      height: 18px !important;
+      padding: 0 6px !important;
+      font-size: 10.5px !important;
+      font-weight: 500 !important;
+      background: #eef0f3 !important;
+      color: #4b5563 !important;
+    }
+
+    .tx-header-close {
+      width: 30px !important;
+      height: 30px !important;
+      background: #f4f5f6 !important;
+    }
+
+    .tx-header-close svg { width: 13px !important; height: 13px !important; }
+
+    /* Toolbar / dropdown — slimmer */
+    .tx-toolbar {
+      padding: 9px 16px 6px !important;
+      background: #fff !important;
+    }
+
+    .tx-dropdown {
+      min-height: 32px !important;
+      padding: 6px 11px !important;
+      gap: 7px !important;
+      font-size: 11.5px !important;
+      font-weight: 500 !important;
+      border-radius: 9px !important;
+      border: 1px solid #e3e5e8 !important;
+      box-shadow: none !important;
+      color: #3a3f47 !important;
+      letter-spacing: -0.1px !important;
+    }
+
+    .tx-dropdown svg { width: 12px !important; height: 12px !important; }
+    .tx-dropdown-funnel { width: 11px !important; height: 11px !important; }
+
+    .tx-dropdown:hover {
+      background: #fafafa !important;
+      border-color: #cfd3d8 !important;
+      color: #17191c !important;
+      box-shadow: none !important;
+    }
+
+    /* Search — slimmer */
+    .tx-searchbar {
+      height: 40px !important;
+      min-height: 40px !important;
+      margin: 2px 16px 10px !important;
+      padding: 0 12px !important;
+      border-radius: 10px !important;
+      background: #f5f6f7 !important;
+      border: 1px solid #e7e9ec !important;
+      box-shadow: none !important;
+      gap: 8px !important;
+    }
+
+    .tx-searchbar:focus-within {
+      background: #fff !important;
+      border-color: #c7ccd2 !important;
+      box-shadow: 0 0 0 3px rgba(31, 35, 40, 0.05) !important;
+    }
+
+    .tx-searchbar-ico { width: 15px !important; height: 15px !important; color: #9aa0a6 !important; }
+
+    .tx-searchbar-input {
+      font-size: 12px !important;
+      font-weight: 400 !important;
+      color: #1f2329 !important;
+    }
+
+    .tx-searchbar-input::placeholder { color: #9aa0a6 !important; font-weight: 400 !important; }
+
+    .tx-searchbar-clear { width: 18px !important; height: 18px !important; }
+    .tx-searchbar-clear svg { width: 10px !important; height: 10px !important; }
+
+    /* Status chips — slimmer */
+    .tx-chips {
+      gap: 6px !important;
+      padding: 0 16px 10px !important;
+    }
+
+    .tx-chip {
+      min-height: 30px !important;
+      padding: 5px 11px !important;
+      gap: 6px !important;
+      font-size: 11px !important;
+      font-weight: 450 !important;
+      border-radius: 8px !important;
+      border: 1px solid #e5e7ea !important;
+      color: #5f646d !important;
+      box-shadow: none !important;
+      letter-spacing: 0 !important;
+    }
+
+    .tx-chip:hover {
+      background: #f8f9fa !important;
+      border-color: #d3d7dc !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .tx-chip.active {
+      background: #1f2329 !important;
+      border-color: #1f2329 !important;
+      color: #fff !important;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.14) !important;
+    }
+
+    .tx-chip-dot { width: 5px !important; height: 5px !important; }
+
+    /* ---------- 3. Transaction list — slim day-by-day look ---------- */
+
+    .tx-list-section {
+      margin: 4px 12px 0 !important;
+      gap: 6px !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .tx-item {
+      padding: 11px 13px !important;
+      border-radius: 11px !important;
+      border: 1px solid #eceef0 !important;
+      background: #fff !important;
+      box-shadow:
+        0 1px 2px rgba(16, 24, 40, 0.02),
+        0 2px 6px -2px rgba(16, 24, 40, 0.035) !important;
+      transition:
+        transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s ease,
+        border-color 0.18s ease,
+        background 0.15s ease !important;
+      gap: 0 !important;
+    }
+
+    .tx-item:hover {
+      border-color: #d7dbe0 !important;
+      transform: translateY(-1px) !important;
+      box-shadow:
+        0 2px 4px rgba(16, 24, 40, 0.03),
+        0 6px 14px -6px rgba(16, 24, 40, 0.07) !important;
+    }
+
+    .tx-item:active {
+      transform: translateY(0) scale(0.995) !important;
+      background: #fafbfc !important;
+    }
+
+    .tx-item:last-child { border-bottom: 1px solid #eceef0 !important; }
+
+    /* Text — much thinner, tighter */
+    .tx-title {
+      font-size: 12.5px !important;
+      font-weight: 500 !important;
+      letter-spacing: -0.08px !important;
+      color: #1f2329 !important;
+      margin-bottom: 3px !important;
+      line-height: 1.28 !important;
+    }
+
+    .tx-meta { gap: 6px !important; line-height: 1.3 !important; }
+    .tx-when { font-size: 10.5px !important; font-weight: 400 !important; color: #8b9098 !important; }
+
+    .tx-pill {
+      padding: 2px 7px !important;
+      font-size: 8px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.25px !important;
+      border-radius: 999px !important;
+    }
+
+    .tx-amount {
+      font-size: 12.5px !important;
+      font-weight: 500 !important;
+      letter-spacing: -0.2px !important;
+      color: #1f2329 !important;
+    }
+
+    .tx-main { padding-right: 10px !important; }
+
+    /* Empty state — slim */
+    .tx-empty {
+      padding: 44px 20px !important;
+      border-radius: 12px !important;
+      border: 1px solid #eceef0 !important;
+      box-shadow: 0 1px 3px rgba(16, 24, 40, 0.025) !important;
+      margin: 6px 0 !important;
+    }
+
+    .tx-empty-emoji { font-size: 34px !important; margin-bottom: 10px !important; }
+    .tx-empty-title { font-size: 13px !important; font-weight: 500 !important; color: #1f2329 !important; margin-bottom: 4px !important; }
+    .tx-empty-text  { font-size: 11.5px !important; color: #8b9098 !important; line-height: 1.5 !important; }
+
+    /* Pagination — slim */
+    .tx-pagination { gap: 5px !important; padding: 16px 16px 6px !important; }
+
+    .pg-btn,
+    .pg-num {
+      width: 30px !important;
+      min-width: 30px !important;
+      height: 30px !important;
+      border-radius: 8px !important;
+      border: 1px solid #e5e7ea !important;
+      background: #fff !important;
+      color: #5f646d !important;
+      font-size: 11.5px !important;
+      font-weight: 500 !important;
+      box-shadow: none !important;
+      transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .pg-btn svg { width: 13px !important; height: 13px !important; }
+
+    .pg-btn:hover:not(:disabled),
+    .pg-num:hover {
+      background: #f5f6f7 !important;
+      border-color: #cfd3d8 !important;
+      color: #1f2329 !important;
+      transform: none !important;
+    }
+
+    .pg-num.active {
+      background: #1f2329 !important;
+      border-color: #1f2329 !important;
+      color: #fff !important;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.14) !important;
+    }
+
+    .pg-ellipsis { font-size: 11.5px !important; font-weight: 500 !important; padding: 0 2px !important; }
+
+    /* ---------- 4. FAB — slim ---------- */
+    .tx-filter-fab {
+      min-height: 38px !important;
+      padding: 9px 15px !important;
+      gap: 7px !important;
+      border-radius: 11px !important;
+      font-size: 11.5px !important;
+      font-weight: 500 !important;
+      letter-spacing: -0.05px !important;
+      background: #1f2329 !important;
+      box-shadow:
+        0 4px 14px rgba(17, 24, 39, 0.16),
+        0 1px 3px rgba(17, 24, 39, 0.08) !important;
+      bottom: 22px !important;
+      right: 16px !important;
+    }
+
+    .tx-filter-fab svg { width: 13px !important; height: 13px !important; }
+
+    .tx-filter-fab:hover {
+      background: #111214 !important;
+      transform: translateY(-1px) !important;
+      box-shadow:
+        0 6px 18px rgba(17, 24, 39, 0.20),
+        0 2px 5px rgba(17, 24, 39, 0.10) !important;
+    }
+
+    .tx-filter-badge {
+      min-width: 16px !important;
+      height: 16px !important;
+      font-size: 9px !important;
+      font-weight: 600 !important;
+      border-width: 1.5px !important;
+    }
+
+    /* ---------- 5. Filter sheet — slim, premium ---------- */
+    .filter-sheet {
+      border-radius: 18px 18px 0 0 !important;
+      padding: 6px 15px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+      box-shadow: 0 -10px 34px rgba(20, 24, 22, 0.12) !important;
+    }
+
+    .filter-grip { width: 30px !important; height: 3px !important; margin: 4px auto 9px !important; }
+
+    .filter-head { padding: 1px 1px 10px !important; margin-bottom: 4px !important; }
+    .filter-head-icon { width: 28px !important; height: 28px !important; border-radius: 8px !important; }
+    .filter-head-icon svg { width: 14px !important; height: 14px !important; }
+    .filter-head-title { font-size: 13.5px !important; font-weight: 500 !important; letter-spacing: -0.15px !important; color: #1f2329 !important; }
+    .filter-head-close { width: 26px !important; height: 26px !important; border-radius: 8px !important; }
+    .filter-head-close svg { width: 12px !important; height: 12px !important; }
+
+    .filter-body { gap: 6px !important; padding: 2px 0 6px !important; }
+
+    .filter-card {
+      min-height: 50px !important;
+      gap: 10px !important;
+      padding: 8px 10px !important;
+      border-radius: 10px !important;
+      border: 1px solid #e7e8ea !important;
+      box-shadow: none !important;
+      background: #fff !important;
+    }
+
+    .filter-card:hover {
+      background: #fafafa !important;
+      border-color: #d5d8dc !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .filter-card.active {
+      background: #f6f6f7 !important;
+      border-color: #7a7e86 !important;
+      box-shadow: inset 0 0 0 1px rgba(35, 37, 40, 0.03) !important;
+    }
+
+    .filter-card-icon,
+    .filter-card-icon-all,
+    .filter-card-icon-deposit,
+    .filter-card-icon-withdraw,
+    .filter-card-icon-refund,
+    .filter-card-icon-transfer {
+      width: 30px !important;
+      height: 30px !important;
+      border-radius: 8px !important;
+      color: #555960 !important;
+      background: #f3f3f4 !important;
+      border: 1px solid #e8e8ea !important;
+    }
+
+    .filter-card-icon svg { width: 14px !important; height: 14px !important; }
+
+    .filter-card-info { gap: 1px !important; }
+    .filter-card-title { font-size: 11.5px !important; font-weight: 500 !important; line-height: 1.32 !important; color: #2a2e34 !important; letter-spacing: -0.05px !important; }
+    .filter-card.active .filter-card-title { color: #1f2329 !important; }
+    .filter-card-sub { font-size: 10px !important; font-weight: 400 !important; color: #8b9098 !important; line-height: 1.3 !important; }
+
+    .filter-card-check { width: 16px !important; height: 16px !important; background: #1f2329 !important; border-color: #1f2329 !important; box-shadow: none !important; }
+    .filter-card-check svg { width: 9px !important; height: 9px !important; }
+
+    .filter-foot { gap: 7px !important; padding-top: 9px !important; margin-top: 2px !important; border-top: 1px solid #eceef0 !important; }
+
+    .filter-btn {
+      min-height: 36px !important;
+      padding: 9px 12px !important;
+      border-radius: 9px !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .filter-btn svg { width: 13px !important; height: 13px !important; }
+    .filter-btn-reset { color: #454951 !important; background: #fff !important; border: 1px solid #dfe1e4 !important; }
+    .filter-btn-reset:hover { background: #f6f6f7 !important; box-shadow: none !important; }
+    .filter-btn-apply { color: #fff !important; background: #1f2329 !important; border: 1px solid #1f2329 !important; }
+    .filter-btn-apply:hover { background: #111214 !important; border-color: #111214 !important; transform: none !important; box-shadow: none !important; }
+
+    /* ---------- 6. Compact screens ---------- */
+    @media (max-width: 380px) {
+      .tx-list-section { margin: 4px 9px 0 !important; gap: 5px !important; }
+      .tx-item { padding: 10px 11px !important; border-radius: 10px !important; }
+      .tx-title { font-size: 12px !important; }
+      .tx-amount { font-size: 12px !important; }
+      .tx-pill { font-size: 7.5px !important; padding: 2px 6px !important; }
+      .tx-filter-fab { right: 12px !important; bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important; }
+      .filter-sheet { padding-left: 12px !important; padding-right: 12px !important; }
+      .filter-card { min-height: 46px !important; padding: 7px 9px !important; gap: 9px !important; }
+      .filter-card-icon,
+      .filter-card-icon-all,
+      .filter-card-icon-deposit,
+      .filter-card-icon-withdraw,
+      .filter-card-icon-refund,
+      .filter-card-icon-transfer { width: 28px !important; height: 28px !important; }
+      .filter-card-title { font-size: 11px !important; }
+      .filter-card-sub { font-size: 9.5px !important; }
+      .filter-btn { min-height: 34px !important; font-size: 10.5px !important; }
+    }
+
+    /* ---------- 7. Motion sensitivity ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      .tx-item, .tx-chip, .pg-btn, .pg-num, .filter-card, .filter-btn, .tx-filter-fab {
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
@@ -75,6 +478,7 @@
         </svg>
       </button>
     </header>
+
     <!-- TYPE DROPDOWN -->
     <div class="tx-toolbar">
       <button type="button" class="tx-dropdown" id="typeDropdownBtn">
@@ -87,6 +491,7 @@
         </svg>
       </button>
     </div>
+
     <!-- SEARCH -->
     <div class="tx-searchbar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tx-searchbar-ico">
@@ -106,6 +511,7 @@
         </svg>
       </button>
     </div>
+
     <!-- STATUS CHIPS -->
     <div class="tx-chips" id="txStatusChips">
       <button type="button" class="tx-chip active" data-status="all">
@@ -125,41 +531,45 @@
         Failed
       </button>
     </div>
+
     <!-- LIST -->
     <section class="tx-list-section">
       <div class="tx-list" id="txSkeleton">
         <div class="tx-item">
-          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="skeleton" style="width:38px;height:38px;border-radius:11px;"></div>
           <div class="tx-main">
-            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:6px;"></div>
             <div class="skeleton skel-line short" style="width:40%;"></div>
           </div>
-          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+          <div class="skeleton" style="width:56px;height:12px;border-radius:5px;"></div>
         </div>
         <div class="tx-item">
-          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="skeleton" style="width:38px;height:38px;border-radius:11px;"></div>
           <div class="tx-main">
-            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:6px;"></div>
             <div class="skeleton skel-line short" style="width:40%;"></div>
           </div>
-          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+          <div class="skeleton" style="width:56px;height:12px;border-radius:5px;"></div>
         </div>
         <div class="tx-item">
-          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="skeleton" style="width:38px;height:38px;border-radius:11px;"></div>
           <div class="tx-main">
-            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:6px;"></div>
             <div class="skeleton skel-line short" style="width:40%;"></div>
           </div>
-          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+          <div class="skeleton" style="width:56px;height:12px;border-radius:5px;"></div>
         </div>
       </div>
+
       <div class="tx-list hidden" id="txReal"></div>
+
       <div class="tx-empty hidden" id="txEmpty">
         <div class="tx-empty-emoji">📭</div>
         <div class="tx-empty-title" id="txEmptyTitle">No transactions yet</div>
         <div class="tx-empty-text" id="txEmptyText">Your transaction history will appear here.</div>
       </div>
     </section>
+
     <!-- PAGINATION -->
     <div class="tx-pagination hidden" id="txPagination">
       <button type="button" class="pg-btn" id="pgPrev" aria-label="Previous">
@@ -175,6 +585,7 @@
       </button>
     </div>
   </main>
+
   <!-- FILTER FAB -->
   <button type="button" class="tx-filter-fab" id="txFilterFab">
     <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -183,6 +594,7 @@
     <span>Filter</span>
     <span class="tx-filter-badge hidden" id="txFilterBadge">0</span>
   </button>
+
   <!-- FILTER BOTTOM SHEET -->
   <div class="filter-backdrop hidden" id="filterSheet">
     <div class="filter-sheet" role="dialog" aria-modal="true">
@@ -251,7 +663,6 @@
             </svg>
           </span>
         </button>
-        <!-- ⭐ REPLACED: Refunded (was Orders) -->
         <button type="button" class="filter-card" data-value="refunded">
           <span class="filter-card-icon filter-card-icon-refund">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -302,6 +713,7 @@
       </div>
     </div>
   </div>
+
   <!-- RECEIPT MODAL -->
   <div class="txm-backdrop hidden" id="txModal">
     <div class="txm-sheet" role="dialog" aria-modal="true">
@@ -375,12 +787,10 @@
       </div>
     </div>
   </div>
+
   <!-- ═══════════ SCRIPTS — order matters ═══════════ -->
-  <!-- 1. auth-guard first: no token → /login.html, no PIN → /pin.html -->
   <script src="/js/auth-guard.js"></script>
-  <!-- 2. api base -->
   <script src="/js/api.js"></script>
-  <!-- 3. page logic -->
   <script type="module" src="/js/components.js"></script>
   <script type="module" src="/js/transactions.js"></script>
   <script>
