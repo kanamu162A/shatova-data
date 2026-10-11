@@ -216,46 +216,60 @@ export async function reconcileWallets() {
          AND h.user_id = t.user_id
          AND h.status = 'HELD'
        WHERE UPPER(t.status) IN ('PROCESSING', 'PENDING')
-         AND t.created_at < NOW() - INTERVAL '15 minutes'
+         AND t.created_at < NOW() - INTERVAL '10 minutes'
        ORDER BY t.created_at ASC
        LIMIT 50
     `);
 
+    // STUCK auto-fail is ALWAYS on (customer protection).
+    // PROCESSING + open hold older than 15m → refund + FAILED.
+    // Does not require WALLET_AUTO_REPAIR.
     let stuckFailed = 0;
-    if (stuck.length && AUTO_REPAIR) {
+    if (stuck.length) {
       for (const s of stuck) {
-        await query(
-          `UPDATE wallets
-              SET balance = balance + $1,
-                  held_balance = GREATEST(COALESCE(held_balance, 0) - $1, 0),
-                  version = version + 1,
-                  updated_at = NOW()
-            WHERE user_id = $2`,
-          [Number(s.hold_amount), s.user_id]
-        );
-        await query(
-          `UPDATE wallet_holds
-              SET status = 'DROPPED', resolved_at = NOW()
-            WHERE id = $1 AND status = 'HELD'`,
-          [s.hold_id]
-        );
-        await query(
-          `UPDATE transactions
-              SET status = 'FAILED',
-                  description = COALESCE(description, '') || ' | Auto-fail: stuck >15m with open hold',
-                  updated_at = NOW()
-            WHERE id = $1 AND UPPER(status) IN ('PROCESSING','PENDING')`,
-          [s.id]
-        );
-        stuckFailed++;
-        console.warn(`[reconcile] STUCK auto-fail ref=${s.reference} age>15m`);
-      }
-    } else if (stuck.length) {
-      for (const s of stuck) {
-        console.warn(
-          `[reconcile] STUCK ref=${s.reference} status=${s.status} ` +
-          `hold=₦${Number(s.hold_amount).toFixed(2)} (enable WALLET_AUTO_REPAIR to auto-fail)`
-        );
+        try {
+          await query(
+            `UPDATE wallets
+                SET balance = balance + $1,
+                    held_balance = GREATEST(COALESCE(held_balance, 0) - $1, 0),
+                    version = version + 1,
+                    updated_at = NOW()
+              WHERE user_id = $2`,
+            [Number(s.hold_amount), s.user_id]
+          );
+          await query(
+            `UPDATE wallet_holds
+                SET status = 'DROPPED', resolved_at = NOW()
+              WHERE id = $1 AND status = 'HELD'`,
+            [s.hold_id]
+          );
+          // Ledger refund for continuity
+          await query(
+            `INSERT INTO wallet_ledger
+               (wallet_id, user_id, transaction_id, reference, type, direction,
+                amount, balance_before, balance_after, description,
+                status, metadata, created_at, updated_at)
+             SELECT w.id, w.user_id, $1, $2, 'HOLD_RELEASE', 'CREDIT',
+                    $3, w.balance - $3, w.balance,
+                    'Auto-fail: stuck PROCESSING >10m — refunded',
+                    'successful', '{}'::jsonb, NOW(), NOW()
+               FROM wallets w WHERE w.user_id = $4
+             LIMIT 1`,
+            [s.id, s.reference, Number(s.hold_amount), s.user_id]
+          );
+          await query(
+            `UPDATE transactions
+                SET status = 'FAILED',
+                    description = 'Auto-fail: stuck >10m (not confirmed on DataShop) — refunded',
+                    updated_at = NOW()
+              WHERE id = $1 AND UPPER(status) IN ('PROCESSING','PENDING')`,
+            [s.id]
+          );
+          stuckFailed++;
+          console.warn(`[reconcile] STUCK auto-fail REFUND ref=${s.reference} ₦${Number(s.hold_amount).toFixed(2)}`);
+        } catch (err) {
+          console.error(`[reconcile] STUCK fail error ref=${s.reference}:`, err.message);
+        }
       }
     }
 
