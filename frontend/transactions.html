@@ -1,1922 +1,399 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a4534">
-<title>Transaction History | SHATOVA</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700&display=swap" rel="stylesheet">
-
-<style>
-/* ==========================================================
-   SHATOVA TRANSACTIONS PRO MAX
-   Standalone HTML + CSS + JavaScript
-   Fixed page | Scrollable transaction list
-   ========================================================== */
-
-:root {
-  --brand: #0a4534;
-  --brand-dark: #062f24;
-  --brand-soft: #eaf3ee;
-  --bg: #f5f7f6;
-  --surface: #ffffff;
-  --text: #1d2c24;
-  --muted: #849087;
-  --line: #e7ede8;
-  --green: #168354;
-  --red: #cf4646;
-  --amber: #a96c12;
-  --shadow: 0 2px 8px rgba(17,46,34,.035);
-  --top: 0px;
-}
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-}
-
-html {
-  overflow: hidden;
-  overscroll-behavior: none;
-}
-
-body {
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-button, input, select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-button:focus-visible, input:focus-visible {
-  outline: 2px solid #8bb59c;
-  outline-offset: 2px;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* APP */
-
-.app {
-  height: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-  background: var(--bg);
-  border-inline: 1px solid #edf1ee;
-}
-
-/* HEADER */
-
-.header {
-  flex: 0 0 auto;
-  min-height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 9px 15px;
-  background: #fff;
-  border-bottom: 1px solid var(--line);
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-}
-
-.header-icon {
-  display: grid;
-  place-items: center;
-  width: 31px;
-  height: 31px;
-  flex: 0 0 31px;
-  color: var(--brand);
-  background: var(--brand-soft);
-  border: 1px solid #dcebe2;
-  border-radius: 10px;
-}
-
-.header-icon svg {
-  width: 16px;
-  height: 16px;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.3;
-  font-weight: 600;
-  letter-spacing: -.45px;
-  white-space: nowrap;
-}
-
-.count {
-  min-width: 23px;
-  height: 21px;
-  display: grid;
-  place-items: center;
-  padding: 0 5px;
-  font-size: 10px;
-  font-weight: 550;
-  color: var(--brand);
-  background: #f0f6f2;
-  border: 1px solid #e1ece5;
-  border-radius: 7px;
-  font-variant-numeric: tabular-nums;
-}
-
-.icon-button {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  color: #617168;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  transition: .16s ease;
-}
-
-.icon-button svg {
-  width: 15px;
-  height: 15px;
-}
-
-.icon-button:hover {
-  color: var(--brand);
-  background: var(--brand-soft);
-  border-color: #cbded2;
-}
-
-/* TOP CONTROLS */
-
-.toolbar {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  padding: 9px 13px 6px;
-}
-
-.dropdown {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 32px;
-  max-width: 100%;
-  padding: 0 10px;
-  font-size: 11px;
-  font-weight: 500;
-  color: #405247;
-  background: #fff;
-  border: 1px solid #e0e8e2;
-  border-radius: 9px;
-  transition: .16s ease;
-}
-
-.dropdown:hover {
-  border-color: #b9d2c3;
-  background: #f9fcfa;
-}
-
-.dropdown svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-}
-
-.search {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-height: 39px;
-  margin: 0 13px 9px;
-  padding: 0 11px;
-  background: #fff;
-  border: 1px solid #e1e8e3;
-  border-radius: 10px;
-  transition: border-color .16s, box-shadow .16s;
-}
-
-.search:focus-within {
-  border-color: #8bb29a;
-  box-shadow: 0 0 0 3px rgba(10,69,52,.06);
-}
-
-.search > svg {
-  width: 15px;
-  height: 15px;
-  flex: 0 0 15px;
-  color: #87948b;
-}
-
-.search input {
-  width: 100%;
-  min-width: 0;
-  height: 36px;
-  padding: 0;
-  color: var(--text);
-  background: transparent;
-  border: 0;
-  outline: none;
-  box-shadow: none;
-  font-size: 11px;
-  font-weight: 400;
-}
-
-.search input::placeholder {
-  color: #9aa49d;
-}
-
-.search-clear {
-  width: 25px;
-  height: 25px;
-  flex: 0 0 25px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  background: #f0f4f1;
-  border: 0;
-  border-radius: 7px;
-  color: #617168;
-}
-
-.search-clear svg {
-  width: 12px;
-  height: 12px;
-}
-
-/* STATUS CHIPS */
-
-.chips {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 13px 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-.chips::-webkit-scrollbar {
-  display: none;
-}
-
-.chip {
-  flex: 0 0 auto;
-  min-height: 29px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0 10px;
-  color: #6c7970;
-  background: #fff;
-  border: 1px solid #e3eae5;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: .16s ease;
-}
-
-.chip:hover {
-  color: var(--brand);
-  border-color: #c8dbcf;
-}
-
-.chip.active {
-  color: #fff;
-  background: var(--brand);
-  border-color: var(--brand);
-  box-shadow: 0 2px 5px rgba(10,69,52,.12);
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-/* TRANSACTION AREA
-   This is the only main vertical scroll container. */
-
-.list-section {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  margin: 0 10px;
-}
-
-.transaction-list {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 2px 3px 12px;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #cbd8cf transparent;
-  scrollbar-gutter: stable;
-  touch-action: pan-y;
-}
-
-.transaction-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.transaction-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.transaction-list::-webkit-scrollbar-thumb {
-  background: #d0ddd4;
-  border-radius: 20px;
-}
-
-/* DATE GROUPS */
-
-.day-group {
-  margin: 0 0 13px;
-}
-
-.day-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 9px 4px 7px;
-  color: #77857b;
-  font-size: 10px;
-  font-weight: 550;
-  letter-spacing: .1px;
-}
-
-.day-total {
-  font-size: 9px;
-  font-weight: 450;
-  color: #99a49c;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ROW */
-
-.tx-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  min-height: 64px;
-  padding: 10px 11px;
-  margin-bottom: 7px;
-  background: #fff;
-  border: 1px solid #e7ede8;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(19,47,34,.025);
-  transition: border-color .16s, box-shadow .16s, background .16s;
-  cursor: pointer;
-}
-
-.tx-row:hover {
-  background: #fcfefd;
-  border-color: #ccded2;
-  box-shadow: 0 4px 12px rgba(10,69,52,.055);
-}
-
-.tx-row:active {
-  background: #f8fbf9;
-}
-
-.tx-symbol {
-  width: 35px;
-  height: 35px;
-  flex: 0 0 35px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  border: 1px solid transparent;
-}
-
-.tx-symbol svg {
-  width: 16px;
-  height: 16px;
-}
-
-.tx-symbol.deposit {
-  color: #168354;
-  background: #eaf6ef;
-  border-color: #dcefe3;
-}
-
-.tx-symbol.withdraw {
-  color: #a96c12;
-  background: #fff5e5;
-  border-color: #f3e7cf;
-}
-
-.tx-symbol.transfer {
-  color: #5271a6;
-  background: #edf2fb;
-  border-color: #dfe7f6;
-}
-
-.tx-symbol.purchase {
-  color: #7056a6;
-  background: #f2edfb;
-  border-color: #e7def8;
-}
-
-.tx-symbol.refund {
-  color: #168354;
-  background: #eaf6ef;
-  border-color: #dcefe3;
-}
-
-.tx-symbol.other {
-  color: #617168;
-  background: #f0f3f1;
-  border-color: #e6ebe7;
-}
-
-.tx-main {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.tx-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-bottom: 5px;
-  color: #293a30;
-  font-size: 11px;
-  font-weight: 550;
-  line-height: 1.35;
-  letter-spacing: -.16px;
-}
-
-.tx-sub {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 5px;
-  color: #89958d;
-  font-size: 9px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-.tx-reference {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tx-right {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 5px;
-  max-width: 43%;
-}
-
-.tx-amount {
-  color: #24372c;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.35;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -.2px;
-}
-
-.tx-amount.credit {
-  color: var(--green);
-}
-
-.tx-amount.debit {
-  color: #344239;
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 6px;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  font-size: 8px;
-  line-height: 1;
-  font-weight: 550;
-  white-space: nowrap;
-}
-
-.status::before {
-  content: "";
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.status.success {
-  color: #168354;
-  background: #edf7f0;
-  border-color: #e0f0e5;
-}
-
-.status.processing {
-  color: #a16b14;
-  background: #fff7e9;
-  border-color: #f5e8ce;
-}
-
-.status.failed {
-  color: #c34545;
-  background: #fff0f0;
-  border-color: #f6dfdf;
-}
-
-/* EMPTY STATE */
-
-.empty {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 180px;
-  padding: 24px 16px;
-  text-align: center;
-  background: #fff;
-  border: 1px dashed #dce6df;
-  border-radius: 12px;
-}
-
-.empty-icon {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  margin-bottom: 12px;
-  color: var(--brand);
-  background: var(--brand-soft);
-  border: 1px solid #deebe2;
-  border-radius: 15px;
-}
-
-.empty-icon svg {
-  width: 22px;
-  height: 22px;
-}
-
-.empty-title {
-  margin-bottom: 6px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.empty-text {
-  max-width: 250px;
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.7;
-}
-
-/* PAGINATION */
-
-.pagination {
-  flex: 0 0 auto;
-  min-height: 43px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 5px 12px;
-  background: var(--bg);
-}
-
-.pg-btn, .pg-number {
-  min-width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  padding: 0 6px;
-  color: #5c6c62;
-  background: #fff;
-  border: 1px solid #e1e9e3;
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 500;
-}
-
-.pg-btn svg {
-  width: 13px;
-  height: 13px;
-}
-
-.pg-btn:disabled {
-  opacity: .35;
-  cursor: not-allowed;
-}
-
-.pg-number {
-  border-color: transparent;
-  background: transparent;
-}
-
-.pg-number.active {
-  color: #fff;
-  background: var(--brand);
-  border-color: var(--brand);
-}
-
-.pg-numbers {
-  display: flex;
-  gap: 3px;
-}
-
-/* FLOATING FILTER */
-
-.fab {
-  position: fixed;
-  z-index: 20;
-  right: max(15px, calc((100vw - 960px) / 2 + 15px));
-  bottom: max(15px, env(safe-area-inset-bottom));
-  min-height: 39px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 0 13px;
-  color: #fff;
-  background: var(--brand);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(6,47,36,.2);
-  font-size: 11px;
-  font-weight: 550;
-  transition: .16s ease;
-}
-
-.fab:hover {
-  background: var(--brand-dark);
-  box-shadow: 0 7px 19px rgba(6,47,36,.24);
-  transform: translateY(-1px);
-}
-
-.fab svg {
-  width: 14px;
-  height: 14px;
-}
-
-.fab-badge {
-  display: grid;
-  place-items: center;
-  min-width: 17px;
-  height: 17px;
-  padding: 0 4px;
-  color: var(--brand);
-  background: #fff;
-  border-radius: 5px;
-  font-size: 9px;
-  font-weight: 650;
-}
-
-/* MODALS */
-
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0;
-  background: rgba(9,25,17,.44);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-}
-
-.sheet {
-  width: min(100%, 540px);
-  max-height: min(88dvh, 760px);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-  background: #fff;
-  border: 1px solid #e5ece7;
-  border-bottom: 0;
-  border-radius: 21px 21px 0 0;
-  box-shadow: 0 -8px 35px rgba(10,35,22,.15);
-  animation: sheet-in .18s ease-out;
-}
-
-@keyframes sheet-in {
-  from { transform: translateY(18px); opacity: .8; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.grip {
-  width: 34px;
-  height: 4px;
-  flex: 0 0 4px;
-  margin: 9px auto 5px;
-  background: #dce4de;
-  border-radius: 20px;
-}
-
-.sheet-head {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 11px 17px 13px;
-  border-bottom: 1px solid var(--line);
-}
-
-.sheet-head h2 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -.3px;
-}
-
-.sheet-body {
-  min-height: 0;
-  padding: 12px 15px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-.filter-option {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 11px;
-  margin-bottom: 7px;
-  text-align: left;
-  background: #fff;
-  border: 1px solid #e6ece7;
-  border-radius: 12px;
-  transition: .15s;
-}
-
-.filter-option:hover {
-  border-color: #c8ddcf;
-  background: #fbfdfb;
-}
-
-.filter-option.selected {
-  border-color: #8eb49c;
-  background: #f5faf6;
-}
-
-.option-symbol {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  display: grid;
-  place-items: center;
-  color: var(--brand);
-  background: var(--brand-soft);
-  border-radius: 10px;
-}
-
-.option-symbol svg {
-  width: 16px;
-  height: 16px;
-}
-
-.option-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.option-title {
-  margin-bottom: 4px;
-  font-size: 11px;
-  font-weight: 550;
-}
-
-.option-sub {
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-.option-check {
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  display: grid;
-  place-items: center;
-  color: transparent;
-  border: 1px solid #d9e2db;
-  border-radius: 50%;
-}
-
-.selected .option-check {
-  color: #fff;
-  background: var(--brand);
-  border-color: var(--brand);
-}
-
-.option-check svg {
-  width: 11px;
-  height: 11px;
-}
-
-.sheet-foot {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 9px;
-  padding: 12px 15px max(14px, env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
-  background: #fff;
-}
-
-.action-btn {
-  min-height: 40px;
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 0 12px;
-  border: 1px solid #dfe7e1;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 550;
-  transition: .15s;
-}
-
-.action-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-.action-btn.secondary {
-  color: #586a5e;
-  background: #fff;
-}
-
-.action-btn.secondary:hover {
-  background: #f5f8f6;
-}
-
-.action-btn.primary {
-  color: #fff;
-  background: var(--brand);
-  border-color: var(--brand);
-}
-
-.action-btn.primary:hover {
-  background: var(--brand-dark);
-}
-
-/* RECEIPT */
-
-.receipt-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 21px 15px;
-  background: linear-gradient(180deg,#f3f8f4,#fff);
-  border-bottom: 1px solid #edf1ee;
-}
-
-.receipt-mark {
-  width: 43px;
-  height: 43px;
-  display: grid;
-  place-items: center;
-  margin-bottom: 10px;
-  color: var(--brand);
-  background: var(--brand-soft);
-  border: 1px solid #dcebe2;
-  border-radius: 14px;
-}
-
-.receipt-mark svg {
-  width: 21px;
-  height: 21px;
-}
-
-.receipt-title {
-  margin-bottom: 9px;
-  color: #66756b;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.receipt-amount {
-  margin-bottom: 10px;
-  font-size: 26px;
-  font-weight: 650;
-  letter-spacing: -1px;
-  font-variant-numeric: tabular-nums;
-}
-
-.receipt-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  padding: 4px 15px 14px;
-}
-
-.detail {
-  min-width: 0;
-  padding: 12px 7px;
-  border-bottom: 1px solid #edf1ee;
-}
-
-.detail.wide {
-  grid-column: 1 / -1;
-}
-
-.detail-label {
-  margin-bottom: 6px;
-  color: #89958d;
-  font-size: 9px;
-  font-weight: 450;
-}
-
-.detail-value {
-  overflow-wrap: anywhere;
-  color: #2c3b31;
-  font-size: 10px;
-  font-weight: 550;
-  line-height: 1.6;
-}
-
-.detail-value.mono {
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 9px;
-  font-weight: 450;
-}
-
-.detail-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.copy-btn {
-  flex: 0 0 29px;
-  width: 29px;
-  height: 29px;
-  display: grid;
-  place-items: center;
-  color: var(--brand);
-  background: #f0f6f2;
-  border: 1px solid #e0ebe3;
-  border-radius: 8px;
-}
-
-.copy-btn svg {
-  width: 13px;
-  height: 13px;
-}
-
-.receipt-actions {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 9px;
-  padding: 12px 15px max(14px, env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
-  background: #fff;
-}
-
-/* TOAST */
-
-.toast {
-  position: fixed;
-  z-index: 200;
-  left: 50%;
-  bottom: max(70px, calc(env(safe-area-inset-bottom) + 65px));
-  width: max-content;
-  max-width: calc(100vw - 36px);
-  padding: 10px 14px;
-  color: #fff;
-  background: #20382c;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,.12);
-  font-size: 11px;
-  line-height: 1.5;
-  text-align: center;
-  transform: translate(-50%, 8px);
-  opacity: 0;
-  pointer-events: none;
-  transition: .18s;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 380px) {
-  .header { padding-inline: 10px; }
-  .header h1 { font-size: 13px; }
-  .toolbar { padding-inline: 10px; }
-  .search { margin-inline: 10px; }
-  .chips { padding-inline: 10px; gap: 5px; }
-  .chip { padding-inline: 8px; font-size: 9px; }
-  .list-section { margin-inline: 6px; }
-  .tx-row { gap: 8px; padding: 9px; }
-  .tx-symbol { width: 32px; height: 32px; flex-basis: 32px; }
-  .tx-title { font-size: 10px; }
-  .tx-amount { font-size: 10px; }
-  .tx-right { max-width: 41%; }
-}
-
-@media (min-width: 700px) {
-  .header { padding-inline: 22px; }
-  .toolbar { padding-inline: 22px; }
-  .search { margin-inline: 22px; }
-  .chips { padding-inline: 22px; }
-  .list-section { margin-inline: 17px; }
-  .tx-row { min-height: 68px; padding: 12px 14px; }
-  .backdrop { align-items: center; padding: 20px; }
-  .sheet {
-    max-height: 85dvh;
-    border: 1px solid #e5ece7;
-    border-radius: 20px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Transaction History - Shatova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/transactions.css">
+  <link rel="stylesheet" href="/css/theme.css">
+
+  <!-- ============================================================
+       OVERRIDE — placed AFTER all imports so it always wins.
+       This kills whatever ugly invisible element from layout.css /
+       theme.css was bleeding through behind the transaction list.
+       ============================================================ -->
+  <style>
+    html, body {
+      background: var(--tx-bg, #f4f5f7);
+      overflow-x: hidden;
+    }
+
+    body.tx-page {
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Any stray global child element not part of this page → hidden */
+    body.tx-page > *:not(#app-header):not(.tx-app):not(.tx-filter-fab):not(.filter-backdrop):not(.txm-backdrop):not(script):not(style) {
+      display: none !important;
+    }
+
+    /* Kill global pseudo-elements that bleed through */
+    body.tx-page::before,
+    body.tx-page::after,
+    .tx-app::before,
+    .tx-app::after {
+      display: none !important;
+      content: none !important;
+    }
+
+    /* Correct stacking so nothing covers the list */
+    #app-header { position: relative; z-index: 5; }
+    .tx-app      { position: relative; z-index: 1; }
+
+    .tx-list-section,
+    #txReal,
+    #txSkeleton,
+    #txEmpty,
+    #txPagination {
+      position: relative;
+      z-index: 2;
+    }
+  </style>
 </head>
-
-<body>
-<main class="app">
-
-  <header class="header">
-    <div class="header-left">
-      <span class="header-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M4 6h16M4 12h10M4 18h16"/>
-        </svg>
-      </span>
-      <h1>Transaction History</h1>
-      <span class="count" id="txCount">0</span>
-    </div>
-    <button class="icon-button" id="closePage" aria-label="Close page">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-        <path d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </header>
-
-  <div class="toolbar">
-    <button class="dropdown" id="typeDropdown" aria-label="Choose transaction type">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.45.89l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
-      </svg>
-      <span id="typeLabel">All Types</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-        <path d="m6 9 6 6 6-6"/>
-      </svg>
-    </button>
-  </div>
-
-  <div class="search">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round">
-      <circle cx="11" cy="11" r="8"/>
-      <path d="m21 21-4.35-4.35"/>
-    </svg>
-    <input id="searchInput" type="search"
-      placeholder="Search reference, amount, recipient..."
-      autocomplete="off">
-    <button class="search-clear hidden" id="clearSearch" aria-label="Clear search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
-        <path d="M6 18 18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
-
-  <nav class="chips" id="statusChips" aria-label="Transaction status">
-    <button class="chip active" data-status="all"><span class="dot"></span>All</button>
-    <button class="chip" data-status="success"><span class="dot"></span>Successful</button>
-    <button class="chip" data-status="processing"><span class="dot"></span>Pending</button>
-    <button class="chip" data-status="failed"><span class="dot"></span>Failed</button>
-  </nav>
-
-  <section class="list-section" aria-label="Transactions">
-    <div class="transaction-list" id="transactionList" tabindex="0"
-      aria-label="Scrollable transaction list"></div>
-    <div class="empty hidden" id="emptyState">
-      <div class="empty-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="5" width="18" height="14" rx="3"/>
-          <path d="M3 10h18M7 15h4"/>
-        </svg>
+<body class="tx-page">
+  <div id="app-header"></div>
+  <main class="tx-app">
+    <!-- HEADER -->
+    <header class="tx-header">
+      <div class="tx-header-left">
+        <span class="tx-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6h16M4 12h10M4 18h16"/>
+          </svg>
+        </span>
+        <h1 class="tx-header-title">Transaction History</h1>
+        <span class="tx-header-count" id="txCount">0</span>
       </div>
-      <div class="empty-title" id="emptyTitle">No transactions yet</div>
-      <div class="empty-text" id="emptyText">Your transaction history will appear here.</div>
-    </div>
-  </section>
-
-  <nav class="pagination hidden" id="pagination" aria-label="Transaction pages">
-    <button class="pg-btn" id="prevPage" aria-label="Previous page">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 19-7-7 7-7"/></svg>
-    </button>
-    <div class="pg-numbers" id="pageNumbers"></div>
-    <button class="pg-btn" id="nextPage" aria-label="Next page">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>
-    </button>
-  </nav>
-
-</main>
-
-<button class="fab" id="filterButton">
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.45.89l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
-  </svg>
-  Filter
-  <span class="fab-badge hidden" id="filterBadge">0</span>
-</button>
-
-<!-- FILTER SHEET -->
-
-<div class="backdrop hidden" id="filterBackdrop">
-  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="filterHeading">
-    <div class="grip"></div>
-    <header class="sheet-head">
-      <h2 id="filterHeading">Filter Transactions</h2>
-      <button class="icon-button" data-close="filterBackdrop" aria-label="Close filter">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-          <path d="M6 18 18 6M6 6l12 12"/>
+      <button type="button" class="tx-header-close" onclick="location.href='/home.html'" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </header>
-    <div class="sheet-body" id="filterOptions">
-      <button class="filter-option selected" data-type="all">
-        <span class="option-symbol">☷</span>
-        <span class="option-info"><span class="option-title">All Transactions</span><br><span class="option-sub">Show all transaction types</span></span>
-        <span class="option-check">✓</span>
-      </button>
-      <button class="filter-option" data-type="deposits">
-        <span class="option-symbol">↓</span>
-        <span class="option-info"><span class="option-title">Deposits</span><br><span class="option-sub">Money added to your wallet</span></span>
-        <span class="option-check">✓</span>
-      </button>
-      <button class="filter-option" data-type="withdrawals">
-        <span class="option-symbol">↑</span>
-        <span class="option-info"><span class="option-title">Withdrawals</span><br><span class="option-sub">Money withdrawn from your wallet</span></span>
-        <span class="option-check">✓</span>
-      </button>
-      <button class="filter-option" data-type="refunded">
-        <span class="option-symbol">↶</span>
-        <span class="option-info"><span class="option-title">Refunds</span><br><span class="option-sub">Money returned to your wallet</span></span>
-        <span class="option-check">✓</span>
-      </button>
-      <button class="filter-option" data-type="transfers">
-        <span class="option-symbol">⇄</span>
-        <span class="option-info"><span class="option-title">Transfers</span><br><span class="option-sub">Wallet transfers</span></span>
-        <span class="option-check">✓</span>
-      </button>
-      <button class="filter-option" data-type="purchases">
-        <span class="option-symbol">⌁</span>
-        <span class="option-info"><span class="option-title">Purchases</span><br><span class="option-sub">Airtime, data and other services</span></span>
-        <span class="option-check">✓</span>
-      </button>
-    </div>
-    <footer class="sheet-foot">
-      <button class="action-btn secondary" id="resetFilter">Reset</button>
-      <button class="action-btn primary" id="applyFilter">Apply filters</button>
-    </footer>
-  </section>
-</div>
-
-<!-- RECEIPT SHEET -->
-
-<div class="backdrop hidden" id="receiptBackdrop">
-  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="receiptHeading">
-    <div class="grip"></div>
-    <header class="sheet-head">
-      <h2 id="receiptHeading">Transaction Receipt</h2>
-      <button class="icon-button" data-close="receiptBackdrop" aria-label="Close receipt">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-          <path d="M6 18 18 6M6 6l12 12"/>
+    <!-- TYPE DROPDOWN -->
+    <div class="tx-toolbar">
+      <button type="button" class="tx-dropdown" id="typeDropdownBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="tx-dropdown-funnel">
+          <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+        </svg>
+        <span class="tx-dropdown-label" id="typeDropdownLabel">All Types</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6"/>
         </svg>
       </button>
-    </header>
-    <div class="sheet-body" id="receiptContent">
-      <div class="receipt-hero">
-        <div class="receipt-mark">✓</div>
-        <div class="receipt-title" id="receiptTitle">Transaction</div>
-        <div class="receipt-amount" id="receiptAmount">₦0.00</div>
-        <span class="status success" id="receiptStatus">Successful</span>
-      </div>
-      <div class="receipt-details" id="receiptDetails"></div>
     </div>
-    <footer class="receipt-actions">
-      <button class="action-btn secondary" id="shareReceipt">Share</button>
-      <button class="action-btn secondary" id="printReceipt">Print</button>
-      <button class="action-btn primary" data-close="receiptBackdrop">Done</button>
-    </footer>
-  </section>
-</div>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script>
-"use strict";
-
-/* ==========================================================
-   SHATOVA TRANSACTION CONTROLLER
-
-   IMPORTANT:
-   The initial records below are DEMO records for previewing
-   the interface. Replace loadTransactions() with your actual
-   authenticated backend integration before production use.
-   ========================================================== */
-
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-
-const state = {
-  transactions: [],
-  status: "all",
-  type: "all",
-  draftType: "all",
-  query: "",
-  page: 1,
-  pageSize: 20,
-  selected: null
-};
-
-const icons = {
-  deposit: '<path d="M12 4v16m-7-7 7 7 7-7"/>',
-  withdraw: '<path d="M12 20V4m-7 7 7-7 7 7"/>',
-  transfer: '<path d="M4 8h15l-4-4m5 12H5l4 4"/>',
-  purchase: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/>',
-  refund: '<path d="M4 10h10a6 6 0 016 6v3M4 10l5-5m-5 5 5 5"/>',
-  other: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'
-};
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-function money(value) {
-  const amount = Number(value);
-  return "₦" + (Number.isFinite(amount) ? amount : 0).toLocaleString(
-    "en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-  );
-}
-
-function validDate(value) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? new Date() : date;
-}
-
-function statusName(status) {
-  const normalized = String(status || "").toLowerCase();
-
-  if (["success", "successful", "completed", "paid"].includes(normalized))
-    return "success";
-
-  if (["failed", "failure", "rejected", "cancelled", "canceled"].includes(normalized))
-    return "failed";
-
-  return "processing";
-}
-
-function statusLabel(status) {
-  return ({
-    success: "Successful",
-    failed: "Failed",
-    processing: "Pending"
-  })[statusName(status)];
-}
-
-function typeName(tx) {
-  const text = [
-    tx.type, tx.category, tx.service, tx.description, tx.title
-  ].filter(Boolean).join(" ").toLowerCase();
-
-  if (tx.categoryKey) return String(tx.categoryKey).toLowerCase();
-
-  if (/refund|reversal/.test(text)) return "refunded";
-  if (/deposit|funding|wallet credit|top.?up wallet/.test(text)) return "deposits";
-  if (/withdraw/.test(text)) return "withdrawals";
-  if (/transfer|send money/.test(text)) return "transfers";
-  if (/airtime|data|electricity|bill|cable|purchase|subscription/.test(text))
-    return "purchases";
-
-  return "other";
-}
-
-function direction(tx) {
-  const kind = typeName(tx);
-  if (["deposits", "refunded"].includes(kind)) return "credit";
-  if (["withdrawals", "transfers", "purchases"].includes(kind)) return "debit";
-
-  return String(tx.direction || "").toLowerCase() === "credit"
-    ? "credit" : "debit";
-}
-
-function iconType(tx) {
-  const kind = typeName(tx);
-  if (kind === "deposits") return "deposit";
-  if (kind === "withdrawals") return "withdraw";
-  if (kind === "transfers") return "transfer";
-  if (kind === "refunded") return "refund";
-  if (kind === "purchases") return "purchase";
-  return "other";
-}
-
-function normalizedTransaction(tx, index) {
-  return {
-    ...tx,
-    id: String(tx.id ?? tx.transaction_id ?? index),
-    title: tx.title || tx.description || tx.service || tx.type || "Transaction",
-    amount: Number(tx.amount ?? tx.total ?? 0),
-    status: statusName(tx.status),
-    reference: String(tx.reference ?? tx.transaction_reference ?? tx.id ?? "—"),
-    recipient: tx.recipient ?? tx.phone ?? tx.account_number ?? "—",
-    network: tx.network ?? tx.provider ?? "—",
-    remark: tx.remark ?? tx.description ?? tx.title ?? "—",
-    date: validDate(tx.created_at ?? tx.createdAt ?? tx.date ?? Date.now()),
-    categoryKey: tx.categoryKey || ""
-  };
-}
-
-/* Replace this demo loader with your real API call.
-   Do not rely on browser-stored demo transactions for money data. */
-
-async function loadTransactions() {
-  // Example integration point:
-  // Fetch from your authenticated transaction-history API here.
-  // Map the real API response into an array of transaction objects.
-  //
-  // Keep backend credentials and privileged API keys on the server.
-
-  state.transactions = [
-    {
-      id: "DEMO-1001", title: "Mobile Data Purchase",
-      type: "data", amount: 1500, status: "success",
-      reference: "SHV-DATA-1001", recipient: "08012345678",
-      network: "MTN", remark: "1GB data bundle",
-      created_at: new Date().toISOString()
-    },
-    {
-      id: "DEMO-1002", title: "Wallet Funding",
-      type: "deposit", amount: 5000, status: "success",
-      reference: "SHV-DEP-1002", recipient: "Wallet",
-      network: "Bank Transfer", remark: "Wallet funding",
-      created_at: new Date(Date.now() - 3600000).toISOString()
-    },
-    {
-      id: "DEMO-1003", title: "Airtime Purchase",
-      type: "airtime", amount: 1000, status: "processing",
-      reference: "SHV-AIR-1003", recipient: "08098765432",
-      network: "Airtel", remark: "Airtime recharge",
-      created_at: new Date(Date.now() - 7200000).toISOString()
-    },
-    {
-      id: "DEMO-1004", title: "Wallet Transfer",
-      type: "transfer", amount: 2500, status: "success",
-      reference: "SHV-TRF-1004", recipient: "Shatova user",
-      network: "Internal", remark: "Wallet transfer",
-      created_at: new Date(Date.now() - 86400000).toISOString()
-    },
-    {
-      id: "DEMO-1005", title: "Electricity Payment",
-      type: "electricity", amount: 3000, status: "failed",
-      reference: "SHV-BILL-1005", recipient: "Meter",
-      network: "Electricity", remark: "Payment unsuccessful",
-      created_at: new Date(Date.now() - 90000000).toISOString()
-    }
-  ].map(normalizedTransaction);
-}
-
-function typeLabel(type) {
-  return ({
-    all: "All Types",
-    deposits: "Deposits",
-    withdrawals: "Withdrawals",
-    refunded: "Refunded",
-    transfers: "Transfers",
-    purchases: "Purchases"
-  })[type] || "All Types";
-}
-
-function filteredTransactions() {
-  const q = state.query.trim().toLowerCase();
-
-  return state.transactions.filter(tx => {
-    if (state.status !== "all" && tx.status !== state.status) return false;
-
-    if (state.type !== "all" && typeName(tx) !== state.type) return false;
-
-    if (q) {
-      const searchable = [
-        tx.title, tx.amount, tx.reference, tx.recipient,
-        tx.network, tx.status, tx.remark, tx.type
-      ].join(" ").toLowerCase();
-
-      if (!searchable.includes(q)) return false;
-    }
-
-    return true;
-  }).sort((a, b) => b.date - a.date);
-}
-
-function dateKey(date) {
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-}
-
-function dateLabel(date) {
-  const now = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(now.getDate() - 1);
-
-  if (dateKey(date) === dateKey(now)) return "Today";
-  if (dateKey(date) === dateKey(yesterday)) return "Yesterday";
-
-  return date.toLocaleDateString("en-NG", {
-    day: "numeric", month: "short", year: "numeric"
-  });
-}
-
-function timeLabel(date) {
-  return date.toLocaleTimeString("en-NG", {
-    hour: "2-digit", minute: "2-digit"
-  });
-}
-
-function iconMarkup(type) {
-  return `<svg viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" stroke-width="1.8"
-    stroke-linecap="round" stroke-linejoin="round">
-    ${icons[type] || icons.other}
-  </svg>`;
-}
-
-function rowMarkup(tx) {
-  const sign = direction(tx) === "credit" ? "+" : "−";
-  const amountClass = direction(tx) === "credit" ? "credit" : "debit";
-
-  return `
-    <article class="tx-row" data-id="${escapeHTML(tx.id)}"
-      tabindex="0" role="button" aria-label="View ${escapeHTML(tx.title)} receipt">
-      <div class="tx-symbol ${iconType(tx)}">
-        ${iconMarkup(iconType(tx))}
-      </div>
-      <div class="tx-main">
-        <div class="tx-title">${escapeHTML(tx.title)}</div>
-        <div class="tx-sub">
-          <span>${escapeHTML(tx.network || tx.type || "Transaction")}</span>
-          <span>·</span>
-          <span class="tx-reference">${escapeHTML(tx.reference)}</span>
-        </div>
-      </div>
-      <div class="tx-right">
-        <div class="tx-amount ${amountClass}">${sign}${money(tx.amount)}</div>
-        <span class="status ${tx.status}">${statusLabel(tx.status)}</span>
-      </div>
-    </article>`;
-}
-
-function render() {
-  const filtered = filteredTransactions();
-  const totalPages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
-
-  state.page = Math.min(state.page, totalPages);
-
-  const start = (state.page - 1) * state.pageSize;
-  const pageRows = filtered.slice(start, start + state.pageSize);
-
-  $("#txCount").textContent = filtered.length.toLocaleString("en-NG");
-  $("#typeLabel").textContent = typeLabel(state.type);
-
-  const list = $("#transactionList");
-  const empty = $("#emptyState");
-
-  if (!filtered.length) {
-    list.innerHTML = "";
-    list.classList.add("hidden");
-    empty.classList.remove("hidden");
-
-    $("#emptyTitle").textContent = state.query
-      ? "No matching transactions" : "No transactions found";
-
-    $("#emptyText").textContent = state.query
-      ? "Try another search term or reset your filters."
-      : "Transactions matching these filters will appear here.";
-
-    $("#pagination").classList.add("hidden");
-  } else {
-    empty.classList.add("hidden");
-    list.classList.remove("hidden");
-
-    const groups = new Map();
-
-    pageRows.forEach(tx => {
-      const key = dateKey(tx.date);
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(tx);
-    });
-
-    list.innerHTML = [...groups.values()].map(group => {
-      const dayTotal = group.reduce((sum, tx) =>
-        sum + (direction(tx) === "credit" ? tx.amount : -tx.amount), 0);
-
-      return `
-        <div class="day-group">
-          <div class="day-heading">
-            <span>${escapeHTML(dateLabel(group[0].date))}</span>
-            <span class="day-total">${dayTotal >= 0 ? "+" : "−"}${money(Math.abs(dayTotal))}</span>
+    <!-- SEARCH -->
+    <div class="tx-searchbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tx-searchbar-ico">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        id="txSearchInput"
+        class="tx-searchbar-input"
+        placeholder="Search reference, amount, bank…"
+        autocomplete="off"
+      >
+      <button type="button" class="tx-searchbar-clear hidden" id="txSearchClear" aria-label="Clear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <!-- STATUS CHIPS -->
+    <div class="tx-chips" id="txStatusChips">
+      <button type="button" class="tx-chip active" data-status="all">
+        <span class="tx-chip-dot tx-chip-dot-all"></span>
+        All
+      </button>
+      <button type="button" class="tx-chip" data-status="success">
+        <span class="tx-chip-dot tx-chip-dot-success"></span>
+        Successful
+      </button>
+      <button type="button" class="tx-chip" data-status="processing">
+        <span class="tx-chip-dot tx-chip-dot-pending"></span>
+        Pending
+      </button>
+      <button type="button" class="tx-chip" data-status="failed">
+        <span class="tx-chip-dot tx-chip-dot-failed"></span>
+        Failed
+      </button>
+    </div>
+    <!-- LIST -->
+    <section class="tx-list-section">
+      <div class="tx-list" id="txSkeleton">
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
           </div>
-          ${group.map(rowMarkup).join("")}
-        </div>`;
-    }).join("");
-
-    list.scrollTop = 0;
-
-    $("#pagination").classList.toggle("hidden", filtered.length <= state.pageSize);
-    $("#prevPage").disabled = state.page <= 1;
-    $("#nextPage").disabled = state.page >= totalPages;
-
-    $("#pageNumbers").innerHTML = Array.from(
-      { length: Math.min(totalPages, 5) },
-      (_, i) => {
-        let page = i + 1;
-        if (totalPages > 5 && state.page > 3) {
-          page = Math.min(totalPages - 4, state.page - 2) + i;
-        }
-
-        return `<button class="pg-number ${page === state.page ? "active" : ""}"
-          data-page="${page}" aria-label="Page ${page}">${page}</button>`;
-      }
-    ).join("");
-  }
-
-  const activeCount = (state.type !== "all" ? 1 : 0);
-  $("#filterBadge").textContent = activeCount;
-  $("#filterBadge").classList.toggle("hidden", activeCount === 0);
-
-  $$(".filter-option").forEach(button => {
-    button.classList.toggle("selected", button.dataset.type === state.draftType);
-  });
-
-  $$(".chip").forEach(button => {
-    button.classList.toggle("active", button.dataset.status === state.status);
-  });
-
-  $("#clearSearch").classList.toggle("hidden", !state.query);
-}
-
-function openSheet(id) {
-  const backdrop = document.getElementById(id);
-  backdrop.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-
-  const close = backdrop.querySelector("[data-close]");
-  if (close) close.focus();
-}
-
-function closeSheet(id) {
-  document.getElementById(id).classList.add("hidden");
-  document.body.style.overflow = "";
-}
-
-function showToast(message) {
-  const toast = $("#toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove("show"), 2400);
-}
-
-function openReceipt(tx) {
-  state.selected = tx;
-
-  $("#receiptTitle").textContent = tx.title;
-  $("#receiptAmount").textContent =
-    (direction(tx) === "credit" ? "+" : "−") + money(tx.amount);
-
-  const receiptStatus = $("#receiptStatus");
-  receiptStatus.className = "status " + tx.status;
-  receiptStatus.textContent = statusLabel(tx.status);
-
-  const details = [
-    ["Recipient", tx.recipient],
-    ["Network / Provider", tx.network],
-    ["Transaction type", typeName(tx)],
-    ["Date & time", tx.date.toLocaleString("en-NG")],
-    ["Reference", tx.reference],
-    ["Remark", tx.remark]
-  ];
-
-  $("#receiptDetails").innerHTML = details.map(([label, value], index) => `
-    <div class="detail ${index >= 4 ? "wide" : ""}">
-      <div class="detail-label">${escapeHTML(label)}</div>
-      <div class="detail-row">
-        <div class="detail-value ${index === 4 ? "mono" : ""}">
-          ${escapeHTML(value ?? "—")}
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
         </div>
-        ${index === 4 ? `
-          <button class="copy-btn" id="copyReference" aria-label="Copy reference">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-              <rect x="8" y="8" width="12" height="12" rx="2"/>
-              <path d="M16 8V5a2 2 0 00-2-2H5a2 2 0 00-2 2v9a2 2 0 002 2h3"/>
-            </svg>
-          </button>` : ""}
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
       </div>
-    </div>`).join("");
-
-  $("#receiptMark").textContent = tx.status === "success" ? "✓" :
-    tx.status === "failed" ? "!" : "…";
-
-  openSheet("receiptBackdrop");
-
-  $("#copyReference")?.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(tx.reference);
-      showToast("Reference copied");
-    } catch {
-      showToast("Unable to copy reference on this device");
-    }
-  });
-}
-
-/* EVENTS */
-
-$("#statusChips").addEventListener("click", event => {
-  const button = event.target.closest("[data-status]");
-  if (!button) return;
-
-  state.status = button.dataset.status;
-  state.page = 1;
-  render();
-});
-
-$("#searchInput").addEventListener("input", event => {
-  state.query = event.target.value;
-  state.page = 1;
-  render();
-});
-
-$("#clearSearch").addEventListener("click", () => {
-  $("#searchInput").value = "";
-  state.query = "";
-  state.page = 1;
-  render();
-  $("#searchInput").focus();
-});
-
-$("#filterButton").addEventListener("click", () => {
-  state.draftType = state.type;
-  render();
-  openSheet("filterBackdrop");
-});
-
-$("#typeDropdown").addEventListener("click", () => {
-  state.draftType = state.type;
-  render();
-  openSheet("filterBackdrop");
-});
-
-$("#filterOptions").addEventListener("click", event => {
-  const button = event.target.closest("[data-type]");
-  if (!button) return;
-
-  state.draftType = button.dataset.type;
-  render();
-});
-
-$("#applyFilter").addEventListener("click", () => {
-  state.type = state.draftType;
-  state.page = 1;
-  closeSheet("filterBackdrop");
-  render();
-});
-
-$("#resetFilter").addEventListener("click", () => {
-  state.draftType = "all";
-  state.type = "all";
-  state.status = "all";
-  state.query = "";
-  state.page = 1;
-  $("#searchInput").value = "";
-  render();
-});
-
-$("#prevPage").addEventListener("click", () => {
-  if (state.page > 1) {
-    state.page--;
-    render();
-  }
-});
-
-$("#nextPage").addEventListener("click", () => {
-  if (state.page < Math.ceil(filteredTransactions().length / state.pageSize)) {
-    state.page++;
-    render();
-  }
-});
-
-$("#pageNumbers").addEventListener("click", event => {
-  const button = event.target.closest("[data-page]");
-  if (!button) return;
-
-  state.page = Number(button.dataset.page);
-  render();
-});
-
-$("#transactionList").addEventListener("click", event => {
-  const row = event.target.closest("[data-id]");
-  if (!row) return;
-
-  const tx = state.transactions.find(item => item.id === row.dataset.id);
-  if (tx) openReceipt(tx);
-});
-
-$("#transactionList").addEventListener("keydown", event => {
-  if (event.key !== "Enter" && event.key !== " ") return;
-  const row = event.target.closest("[data-id]");
-  if (!row) return;
-
-  event.preventDefault();
-  const tx = state.transactions.find(item => item.id === row.dataset.id);
-  if (tx) openReceipt(tx);
-});
-
-$$("[data-close]").forEach(button => {
-  button.addEventListener("click", () => closeSheet(button.dataset.close));
-});
-
-$$(".backdrop").forEach(backdrop => {
-  backdrop.addEventListener("click", event => {
-    if (event.target === backdrop) closeSheet(backdrop.id);
-  });
-});
-
-document.addEventListener("keydown", event => {
-  if (event.key !== "Escape") return;
-
-  $$(".backdrop:not(.hidden)").forEach(backdrop => closeSheet(backdrop.id));
-});
-
-$("#shareReceipt").addEventListener("click", async () => {
-  const tx = state.selected;
-  if (!tx) return;
-
-  const text = [
-    "SHATOVA TRANSACTION RECEIPT",
-    "Transaction: " + tx.title,
-    "Amount: " + money(tx.amount),
-    "Status: " + statusLabel(tx.status),
-    "Reference: " + tx.reference,
-    "Date: " + tx.date.toLocaleString("en-NG")
-  ].join("\n");
-
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: "SHATOVA Receipt", text });
-    } catch (error) {
-      if (error.name !== "AbortError") showToast("Sharing was unavailable");
-    }
-  } else {
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast("Receipt copied for sharing");
-    } catch {
-      showToast("Sharing is not supported on this device");
-    }
-  }
-});
-
-$("#printReceipt").addEventListener("click", () => {
-  const tx = state.selected;
-  if (!tx) return;
-
-  const receiptWindow = window.open("", "_blank", "width=480,height=700");
-  if (!receiptWindow) {
-    showToast("Allow pop-ups to print your receipt");
-    return;
-  }
-
-  const rows = [
-    ["Transaction", tx.title],
-    ["Amount", money(tx.amount)],
-    ["Status", statusLabel(tx.status)],
-    ["Recipient", tx.recipient],
-    ["Network", tx.network],
-    ["Date", tx.date.toLocaleString("en-NG")],
-    ["Reference", tx.reference],
-    ["Remark", tx.remark]
-  ];
-
-  receiptWindow.document.write(`
-    <!DOCTYPE html><html><head><title>SHATOVA Receipt</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <style>
-      body{font:14px Arial,sans-serif;color:#20372b;max-width:440px;margin:30px auto;padding:20px}
-      h1{color:#0a4534;font-size:22px}p{color:#718076;font-size:12px}
-      .row{padding:13px 0;border-bottom:1px solid #e5ece7}
-      .label{font-size:11px;color:#829087;margin-bottom:5px}
-      .value{font-size:13px;font-weight:600;overflow-wrap:anywhere}
-    </style></head><body>
-    <h1>SHATOVA</h1><p>TRANSACTION RECEIPT</p>
-    ${rows.map(([label, value]) => `
-      <div class="row"><div class="label">${escapeHTML(label)}</div>
-      <div class="value">${escapeHTML(value)}</div></div>`).join("")}
-    <p>Keep this receipt for your records.</p>
-    <script>window.onload=()=>window.print();<\/script>
-    </body></html>
-  `);
-
-  receiptWindow.document.close();
-});
-
-$("#closePage").addEventListener("click", () => {
-  if (history.length > 1) history.back();
-  else window.location.href = "/home.html";
-});
-
-/* INITIALIZE */
-
-(async function init() {
-  try {
-    await loadTransactions();
-    render();
-  } catch (error) {
-    console.error("Unable to initialize transaction history:", error);
-    $("#transactionList").classList.add("hidden");
-    $("#emptyState").classList.remove("hidden");
-    $("#emptyTitle").textContent = "Unable to load transactions";
-    $("#emptyText").textContent = "Please refresh the page and try again.";
-  }
-})();
-</script>
-
+      <div class="tx-list hidden" id="txReal"></div>
+      <div class="tx-empty hidden" id="txEmpty">
+        <div class="tx-empty-emoji">📭</div>
+        <div class="tx-empty-title" id="txEmptyTitle">No transactions yet</div>
+        <div class="tx-empty-text" id="txEmptyText">Your transaction history will appear here.</div>
+      </div>
+    </section>
+    <!-- PAGINATION -->
+    <div class="tx-pagination hidden" id="txPagination">
+      <button type="button" class="pg-btn" id="pgPrev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div class="pg-numbers" id="pgNumbers"></div>
+      <button type="button" class="pg-btn" id="pgNext" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+  </main>
+  <!-- FILTER FAB -->
+  <button type="button" class="tx-filter-fab" id="txFilterFab">
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+    </svg>
+    <span>Filter</span>
+    <span class="tx-filter-badge hidden" id="txFilterBadge">0</span>
+  </button>
+  <!-- FILTER BOTTOM SHEET -->
+  <div class="filter-backdrop hidden" id="filterSheet">
+    <div class="filter-sheet" role="dialog" aria-modal="true">
+      <div class="filter-grip"></div>
+      <div class="filter-head">
+        <div class="filter-head-left">
+          <span class="filter-head-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+            </svg>
+          </span>
+          <h2 class="filter-head-title">Filter Transactions</h2>
+        </div>
+        <button type="button" class="filter-head-close" id="filterClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="filter-body" id="filterBody">
+        <button type="button" class="filter-card" data-value="all">
+          <span class="filter-card-icon filter-card-icon-all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">All Transactions</span>
+            <span class="filter-card-sub">Show everything</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="filter-card" data-value="deposits">
+          <span class="filter-card-icon filter-card-icon-deposit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Deposits</span>
+            <span class="filter-card-sub">Money added to wallet</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="filter-card" data-value="withdrawals">
+          <span class="filter-card-icon filter-card-icon-withdraw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Withdrawals</span>
+            <span class="filter-card-sub">Money withdrawn</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <!-- ⭐ REPLACED: Refunded (was Orders) -->
+        <button type="button" class="filter-card" data-value="refunded">
+          <span class="filter-card-icon filter-card-icon-refund">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Refunded</span>
+            <span class="filter-card-sub">Money returned to wallet</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="filter-card" data-value="transfers">
+          <span class="filter-card-icon filter-card-icon-transfer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8h13l-3-3M20 16H7l3 3"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Transfers</span>
+            <span class="filter-card-sub">Money transfers</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div class="filter-foot">
+        <button type="button" class="filter-btn filter-btn-reset" id="filterReset">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          Reset
+        </button>
+        <button type="button" class="filter-btn filter-btn-apply" id="filterApply">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 13l4 4L19 7"/>
+          </svg>
+          Apply
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- RECEIPT MODAL -->
+  <div class="txm-backdrop hidden" id="txModal">
+    <div class="txm-sheet" role="dialog" aria-modal="true">
+      <div class="txm-grip"></div>
+      <div class="txm-head">
+        <div class="txm-head-title">Transaction Receipt</div>
+        <button type="button" class="txm-close" id="txmClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="txm-body">
+        <div class="txm-hero" id="txmHero">
+          <div class="txm-hero-icon" id="txmHeroIcon"></div>
+          <div class="txm-hero-title" id="txmTitle">Transaction</div>
+          <div class="txm-hero-amount" id="txmAmount">₦0.00</div>
+          <div class="txm-status" id="txmStatus">Successful</div>
+        </div>
+        <div class="txm-grid">
+          <div class="txm-cell">
+            <div class="txm-cell-label">Recipient</div>
+            <div class="txm-cell-value" id="txmRecipient">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Network</div>
+            <div class="txm-cell-value" id="txmNetwork">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Type</div>
+            <div class="txm-cell-value" id="txmType">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Date &amp; Time</div>
+            <div class="txm-cell-value" id="txmDate">—</div>
+          </div>
+          <div class="txm-cell txm-cell-wide">
+            <div class="txm-cell-label">Reference</div>
+            <div class="txm-cell-row">
+              <div class="txm-cell-value txm-mono" id="txmReference">—</div>
+              <button type="button" class="txm-copy" id="txmCopy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="txm-cell txm-cell-wide">
+            <div class="txm-cell-label">Remark</div>
+            <div class="txm-cell-value txm-remark" id="txmRemark">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="txm-foot">
+        <div class="txm-foot-row">
+          <button type="button" class="txm-btn txm-btn-ghost" id="txmShare">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            Share
+          </button>
+          <button type="button" class="txm-btn txm-btn-ghost" id="txmPrint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <path d="M6 14h12v8H6z"/>
+            </svg>
+            Print
+          </button>
+        </div>
+        <button type="button" class="txm-btn txm-btn-primary" id="txmDone">Done</button>
+      </div>
+    </div>
+  </div>
+  <!-- ═══════════ SCRIPTS — order matters ═══════════ -->
+  <!-- 1. auth-guard first: no token → /login.html, no PIN → /pin.html -->
+  <script src="/js/auth-guard.js"></script>
+  <!-- 2. api base -->
+  <script src="/js/api.js"></script>
+  <!-- 3. page logic -->
+  <script type="module" src="/js/components.js"></script>
+  <script type="module" src="/js/transactions.js"></script>
+  <script>
+    (function () {
+      const H = 46;
+      function freeze() {
+        const el = document.querySelector('.tx-header');
+        if (el) el.style.setProperty('top', H + 'px', 'important');
+      }
+      window.addEventListener('load', freeze);
+      window.addEventListener('resize', freeze);
+      freeze();
+    })();
+  </script>
 </body>
 </html>
