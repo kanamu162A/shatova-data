@@ -1,23 +1,32 @@
 // jobs/airtime-status.job.js
 // ============================================================
-// Poll PROCESSING airtime txs against DataShop.
-// Provider is source of truth.
+// Airtime status poller — MONEY-SAFE
 //
-// FIX: "Transaction not found on DataShop" is NO longer ignored.
-//   After GRACE → dropHold + FAILED.
+// RULES (provider is source of truth):
+//   1. DataShop SUCCESS/delivered  → releaseHold + Shatova SUCCESS
+//   2. DataShop FAILED (explicit)  → dropHold + Shatova FAILED
+//   3. DataShop PENDING/processing → Shatova stays PROCESSING
+//      (NO time-based fail while provider still says pending)
+//   4. Not found on DataShop:
+//        age < 6 hours  → wait (tx may still appear)
+//        age >= 6 hours → FAILED + refund (safe assumption)
+//   5. Provider unreachable (network errors):
+//        leave PROCESSING — never invent FAILED
+//
+// This prevents: refund on Shatova → later delivery on DataShop
+//                → free product + merchant loss
 // ============================================================
 import { query } from '../config/database.js';
 import { checkAirtimeStatus, normalizeProviderStatus } from '../services/datashop.service.js';
 import { releaseHold, dropHold } from '../services/wallet.service.js';
 import { buildRemark } from '../utils/remark.js';
 
-const INTERVAL_MS        = 60 * 1000;
-const GRACE_AFTER_SECS   = 90;    // wait 90s before first poll
-const RECHECK_AFTER_SECS = 60;    // min gap between polls of same tx
-const BATCH_SIZE         = 20;
-const MAX_TX_AGE_HOURS   = 24;
-const NOT_FOUND_FAIL_SECS = 120;  // not found → fail after 2 min age
-const HARD_FAIL_SECS      = 30 * 60; // 30 min absolute
+const INTERVAL_MS         = 60 * 1000;
+const GRACE_AFTER_SECS    = 90;           // first poll after 90s
+const RECHECK_AFTER_SECS  = 60;           // min gap between polls
+const BATCH_SIZE          = 30;
+const MAX_TX_AGE_HOURS    = 48;           // stop polling after 48h
+const NOT_FOUND_FAIL_SECS = 6 * 60 * 60;  // 6 hours — only then treat not-found as failed
 
 let timer = null;
 let running = false;
@@ -36,7 +45,10 @@ function isNotFoundError(err) {
   );
 }
 
-/** Conservative status — never treat vague payloads as success */
+/**
+ * Interpret provider payload.
+ * PENDING is checked first so we never false-success or false-fail.
+ */
 function interpret(check) {
   const b = check?.data || check || {};
   const candidates = [
@@ -44,7 +56,7 @@ function interpret(check) {
     b.payment_status, b.paymentStatus,
     b.state, b.status, b.result,
     check?.status, check?.message, check?.remark,
-    b.message, b.remark,
+    b.message, b.remark, b.delivery_status,
   ].filter((v) => v != null && typeof v !== 'boolean');
 
   const PENDING = [
@@ -56,8 +68,9 @@ function interpret(check) {
     'fail', 'failed', 'failure', 'reject', 'rejected', 'cancel', 'cancelled',
     'decline', 'declined', 'error', 'refund', 'refunded', 'reversed', 'invalid',
     'not successful', 'unsuccessful', 'expired', 'abandoned', 'denied',
-    'timeout', 'not found',
+    'timeout',
   ];
+  // Strict success only
   const SUCCESS = [
     'successful', 'succeeded', 'delivered', 'completed', 'complete',
     'credited', 'confirmed',
@@ -67,6 +80,7 @@ function interpret(check) {
     const s = String(raw).toLowerCase().trim();
     if (!s) continue;
     if (PENDING.some((k) => s === k || s.includes(k))) return 'processing';
+    if (s.includes('not found')) return 'not_found';
     if (FAILED.some((k) => s.includes(k))) return 'failed';
   }
   for (const raw of candidates) {
@@ -80,37 +94,50 @@ function interpret(check) {
     if (n === 'failed') return 'failed';
     if (n === 'successful') {
       const blob = JSON.stringify(check || {}).toLowerCase();
-      if (PENDING.some((k) => blob.includes(k))) return 'processing';
+      if (PENDING.some((k) => blob.includes(`"${k}"`) || blob.includes(`:${k}`))) {
+        return 'processing';
+      }
       return 'successful';
     }
+    if (n === 'processing' || n === 'pending') return 'processing';
   } catch (_) { /* ignore */ }
 
   if (check?.success === false) return 'failed';
+  // Ambiguous → processing (keep money on hold)
   return 'processing';
 }
 
 async function probe(tx) {
   const refs = [...new Set([tx.provider_reference, tx.reference].filter(Boolean))];
-  let lastNotFound = null;
+  let sawNotFound = false;
   let lastErr = null;
 
   for (const ref of refs) {
     try {
       const check = await checkAirtimeStatus(ref);
-      return { kind: interpret(check), check, ref, error: null };
+      const kind = interpret(check);
+      return { kind, check, ref, error: null };
     } catch (err) {
       lastErr = err;
       if (isNotFoundError(err)) {
-        lastNotFound = err;
-        continue; // try next ref
+        sawNotFound = true;
+        continue; // try other ref
       }
-      console.warn(`[airtime-status] ${tx.reference} probe ${ref}:`, err.message);
+      // Network / 5xx → do NOT fail the tx
+      console.warn(`[airtime-status] ${tx.reference} probe ${ref}: ${err.message}`);
     }
   }
 
-  if (lastNotFound) {
-    return { kind: 'not_found', check: null, ref: tx.reference, error: lastNotFound.message };
+  if (sawNotFound) {
+    return {
+      kind: 'not_found',
+      check: null,
+      ref: tx.reference,
+      error: lastErr?.message || 'not found',
+    };
   }
+
+  // Unreachable / unknown → treat as still processing (safe)
   return {
     kind: 'processing',
     check: null,
@@ -231,45 +258,56 @@ async function tick() {
           (result.error ? ` (${result.error})` : '')
         );
 
+        // ── Explicit SUCCESS ────────────────────────────────
         if (result.kind === 'successful') {
           await markSuccess(tx, result.check);
           continue;
         }
 
+        // ── Explicit FAILED ─────────────────────────────────
         if (result.kind === 'failed') {
-          await markFailed(tx, result.error || result.check?.message || 'Provider failed', result.check);
+          await markFailed(
+            tx,
+            result.error || result.check?.message || 'Provider failed',
+            result.check
+          );
           continue;
         }
 
+        // ── NOT FOUND ───────────────────────────────────────
+        // Only fail after 6 hours. Early not-found is common while
+        // DataShop is still ingesting the purchase.
         if (result.kind === 'not_found') {
           if (age >= NOT_FOUND_FAIL_SECS) {
             await markFailed(
               tx,
-              `Not found on DataShop after ${Math.round(NOT_FOUND_FAIL_SECS / 60)}m — auto-refunded`,
+              `Not found on DataShop after ${Math.round(NOT_FOUND_FAIL_SECS / 3600)}h — auto-refunded`,
               null
             );
           } else {
             console.log(
-              `[airtime-status] ${tx.reference} not found — waiting until ${NOT_FOUND_FAIL_SECS}s age`
+              `[airtime-status] ${tx.reference} not found — wait ` +
+              `(age ${Math.round(age / 60)}m / fail after ${Math.round(NOT_FOUND_FAIL_SECS / 3600)}h)`
             );
           }
           continue;
         }
 
-        // still processing
-        if (age >= HARD_FAIL_SECS) {
-          await markFailed(tx, `Hard timeout ${HARD_FAIL_SECS / 60}m — auto-refunded`, null);
-        }
+        // ── PENDING / PROCESSING / UNREACHABLE ──────────────
+        // DO NOT fail. Money stays on hold until provider settles.
+        console.log(
+          `[airtime-status] ${tx.reference} still pending/unknown on DataShop — leave PROCESSING`
+        );
       } catch (err) {
-        // Last resort: not-found style errors must not be swallowed
+        // Never turn random errors into FAILED
         if (isNotFoundError(err) && ageSecs(tx.created_at) >= NOT_FOUND_FAIL_SECS) {
           try {
-            await markFailed(tx, `Not found on DataShop — auto-refunded`, null);
+            await markFailed(tx, 'Not found on DataShop — auto-refunded', null);
           } catch (e2) {
-            console.error(`[airtime-status] markFailed failed ${tx.reference}:`, e2.message);
+            console.error(`[airtime-status] markFailed ${tx.reference}:`, e2.message);
           }
         } else {
-          console.warn(`[airtime-status] ${tx.reference} check failed:`, err.message);
+          console.warn(`[airtime-status] ${tx.reference} check error:`, err.message);
         }
       }
     }
@@ -283,7 +321,8 @@ async function tick() {
 export function startAirtimeStatusJob() {
   if (timer) return;
   console.log(
-    '[airtime-status] Job started — every 60s | not-found→FAIL after 2m | hard-fail 30m'
+    '[airtime-status] MONEY-SAFE mode | pending→stay PROCESSING | ' +
+    'not-found fail after 6h | no time-fail while pending'
   );
   timer = setInterval(tick, INTERVAL_MS);
   setTimeout(tick, 8_000);
