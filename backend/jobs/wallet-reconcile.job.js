@@ -1,14 +1,8 @@
 // jobs/wallet-reconcile.job.js
 // ============================================================
-// Wallet health job
-//   1. Balance drift (wallet.balance vs last ledger balance_after)
-//   2. Held-balance drift (wallet.held_balance vs open HELD holds)
-//   3. Negative balance / held checks
-//   4. Optional auto-repair (WALLET_AUTO_REPAIR=true)
-//
-// IMPORTANT: Do NOT ignore HOLD / HOLD_RELEASE ledger rows.
-//   place() writes HOLD with the post-hold balance_after.
-//   Ignoring HOLD makes every in-flight purchase look like drift.
+// Wallet health job — matches REAL schema:
+//   wallet_holds (wallet_id, user_id, reference, amount, status, ...)
+//   NO transaction_id column
 // ============================================================
 import cron from 'node-cron';
 import { query } from '../config/database.js';
@@ -18,7 +12,6 @@ const AUTO_REPAIR = process.env.WALLET_AUTO_REPAIR === 'true';
 export async function reconcileWallets() {
   try {
     // ── 1) Spendable balance drift ────────────────────────────
-    // Last ledger row (any type) is the source of truth for balance_after.
     const { rows: drift } = await query(`
       WITH last_ledger AS (
         SELECT DISTINCT ON (wallet_id)
@@ -71,12 +64,11 @@ export async function reconcileWallets() {
     }
 
     // ── 2) Held-balance vs open HELD rows ─────────────────────
-    // wallet.held_balance must equal SUM(amount) of status='HELD'
     const { rows: heldDrift } = await query(`
       SELECT
         w.id AS wallet_id,
         w.user_id,
-        w.held_balance AS wallet_held,
+        COALESCE(w.held_balance, 0) AS wallet_held,
         COALESCE(h.open_held, 0) AS open_held,
         (COALESCE(w.held_balance, 0) - COALESCE(h.open_held, 0)) AS held_drift
       FROM wallets w
@@ -117,11 +109,11 @@ export async function reconcileWallets() {
       }
     }
 
-    // ── 3) Negative balances (critical) ───────────────────────
+    // ── 3) Negative balances ──────────────────────────────────
     const { rows: negative } = await query(
       `SELECT id, user_id, balance, held_balance
          FROM wallets
-        WHERE balance < 0 OR held_balance < 0
+        WHERE balance < 0 OR COALESCE(held_balance, 0) < 0
         LIMIT 50`
     );
     if (negative.length) {
@@ -133,13 +125,19 @@ export async function reconcileWallets() {
       }
     }
 
-    // ── 4) Orphan HELD holds (tx already SUCCESS/FAILED) ──────
-    // If hold is still HELD but transaction is final, held_balance is wrong.
+    // ── 4) Orphan HELD holds (tx already final) — join by reference ─
     const { rows: orphanHolds } = await query(`
-      SELECT h.id AS hold_id, h.wallet_id, h.transaction_id, h.amount,
-             t.reference, t.status AS tx_status
+      SELECT h.id AS hold_id,
+             h.wallet_id,
+             h.user_id,
+             h.reference,
+             h.amount,
+             t.status AS tx_status,
+             t.id AS transaction_id
         FROM wallet_holds h
-        JOIN transactions t ON t.id = h.transaction_id
+        JOIN transactions t
+          ON t.reference = h.reference
+         AND t.user_id = h.user_id
        WHERE h.status = 'HELD'
          AND UPPER(t.status) IN ('SUCCESS', 'FAILED', 'REFUNDED')
        ORDER BY h.created_at ASC
@@ -150,42 +148,26 @@ export async function reconcileWallets() {
     if (orphanHolds.length) {
       for (const h of orphanHolds) {
         const txSt = String(h.tx_status || '').toUpperCase();
-        const newHoldStatus = txSt === 'SUCCESS' ? 'DEBITED' : 'RELEASED';
+        const newHoldStatus = txSt === 'SUCCESS' ? 'RELEASED' : 'DROPPED';
 
         if (AUTO_REPAIR) {
-          // Align hold row
           await query(
             `UPDATE wallet_holds
-                SET status = $1, updated_at = NOW()
+                SET status = $1, resolved_at = NOW()
               WHERE id = $2 AND status = 'HELD'`,
             [newHoldStatus, h.hold_id]
           );
 
-          // Recompute held_balance from remaining open holds
-          await query(
-            `UPDATE wallets w
-                SET held_balance = COALESCE((
-                      SELECT SUM(amount) FROM wallet_holds
-                       WHERE wallet_id = w.id AND status = 'HELD'
-                    ), 0),
-                    version = version + 1,
-                    updated_at = NOW()
-              WHERE w.id = $1`,
-            [h.wallet_id]
-          );
-
-          // If FAILED/REFUNDED and money was never returned, credit balance back
-          // Only when hold was still HELD (money still locked) — SUCCESS should not credit.
           if (txSt === 'FAILED' || txSt === 'REFUNDED') {
             await query(
               `UPDATE wallets
                   SET balance = balance + $1,
+                      held_balance = GREATEST(COALESCE(held_balance, 0) - $1, 0),
                       version = version + 1,
                       updated_at = NOW()
                 WHERE id = $2`,
               [Number(h.amount), h.wallet_id]
             );
-            // Ledger trail for audit
             await query(
               `INSERT INTO wallet_ledger
                  (wallet_id, user_id, transaction_id, reference, type, direction,
@@ -193,25 +175,87 @@ export async function reconcileWallets() {
                   status, metadata, created_at, updated_at)
                SELECT w.id, w.user_id, $1, $2, 'HOLD_RELEASE', 'CREDIT',
                       $3, w.balance - $3, w.balance,
-                      'Auto-repair: orphan hold released after tx ' || $4,
-                      'SUCCESS', '{}'::jsonb, NOW(), NOW()
+                      'Auto-repair: orphan hold after tx ' || $4,
+                      'successful', '{}'::jsonb, NOW(), NOW()
                  FROM wallets w WHERE w.id = $5`,
               [h.transaction_id, h.reference, Number(h.amount), txSt, h.wallet_id]
+            );
+          } else {
+            await query(
+              `UPDATE wallets
+                  SET held_balance = GREATEST(COALESCE(held_balance, 0) - $1, 0),
+                      version = version + 1,
+                      updated_at = NOW()
+                WHERE id = $2`,
+              [Number(h.amount), h.wallet_id]
             );
           }
 
           orphansFixed++;
           console.warn(
-            `[reconcile] ORPHAN hold fixed hold=${h.hold_id} tx=${h.reference} ` +
+            `[reconcile] ORPHAN hold fixed hold=${h.hold_id} ref=${h.reference} ` +
             `${txSt} → hold=${newHoldStatus}`
           );
         } else {
           console.warn(
             `[reconcile] ORPHAN hold hold=${h.hold_id} wallet=${h.wallet_id} ` +
-            `tx=${h.reference} status=${txSt} amount=₦${Number(h.amount).toFixed(2)} ` +
+            `ref=${h.reference} status=${txSt} amount=₦${Number(h.amount).toFixed(2)} ` +
             `(set WALLET_AUTO_REPAIR=true to fix)`
           );
         }
+      }
+    }
+
+    // ── 5) Stuck PROCESSING + open hold > 15m ─────────────────
+    const { rows: stuck } = await query(`
+      SELECT t.id, t.user_id, t.reference, t.status, t.created_at,
+             h.id AS hold_id, h.amount AS hold_amount
+        FROM transactions t
+        JOIN wallet_holds h
+          ON h.reference = t.reference
+         AND h.user_id = t.user_id
+         AND h.status = 'HELD'
+       WHERE UPPER(t.status) IN ('PROCESSING', 'PENDING')
+         AND t.created_at < NOW() - INTERVAL '15 minutes'
+       ORDER BY t.created_at ASC
+       LIMIT 50
+    `);
+
+    let stuckFailed = 0;
+    if (stuck.length && AUTO_REPAIR) {
+      for (const s of stuck) {
+        await query(
+          `UPDATE wallets
+              SET balance = balance + $1,
+                  held_balance = GREATEST(COALESCE(held_balance, 0) - $1, 0),
+                  version = version + 1,
+                  updated_at = NOW()
+            WHERE user_id = $2`,
+          [Number(s.hold_amount), s.user_id]
+        );
+        await query(
+          `UPDATE wallet_holds
+              SET status = 'DROPPED', resolved_at = NOW()
+            WHERE id = $1 AND status = 'HELD'`,
+          [s.hold_id]
+        );
+        await query(
+          `UPDATE transactions
+              SET status = 'FAILED',
+                  description = COALESCE(description, '') || ' | Auto-fail: stuck >15m with open hold',
+                  updated_at = NOW()
+            WHERE id = $1 AND UPPER(status) IN ('PROCESSING','PENDING')`,
+          [s.id]
+        );
+        stuckFailed++;
+        console.warn(`[reconcile] STUCK auto-fail ref=${s.reference} age>15m`);
+      }
+    } else if (stuck.length) {
+      for (const s of stuck) {
+        console.warn(
+          `[reconcile] STUCK ref=${s.reference} status=${s.status} ` +
+          `hold=₦${Number(s.hold_amount).toFixed(2)} (enable WALLET_AUTO_REPAIR to auto-fail)`
+        );
       }
     }
 
@@ -221,16 +265,19 @@ export async function reconcileWallets() {
       heldDrift: heldDrift.length,
       negative: negative.length,
       orphanHolds: orphanHolds.length,
+      stuckOpen: stuck.length,
       snapped,
       heldSnapped,
       orphansFixed,
+      stuckFailed,
     };
 
     if (
       drift.length ||
       heldDrift.length ||
       negative.length ||
-      orphanHolds.length
+      orphanHolds.length ||
+      stuck.length
     ) {
       console.warn('[reconcile] summary', summary);
     }
