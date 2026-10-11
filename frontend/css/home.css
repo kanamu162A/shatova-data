@@ -71,7 +71,6 @@ body.short-page .app-container {
 .hidden { display: none !important; }
 a { text-decoration: none; color: inherit; }
 button { font-family: inherit; border: none; background: none; cursor: pointer; }
-
 /* ============================================================
    GREETING
    ============================================================ */
@@ -104,7 +103,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   color: var(--text-main);
   opacity: 0.9;
 }
-
 /* ============================================================
    BALANCE CARD
    ============================================================ */
@@ -199,7 +197,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   transform: translate3d(0, -2px, 0);
   box-shadow: 0 8px 16px -4px rgba(255, 255, 255, 0.28), 0 3px 6px -2px rgba(0, 0, 0, 0.05);
 }
-
 /* ============================================================
    SERVICES GRID — plain neutral icons (not coloured)
    ============================================================ */
@@ -252,7 +249,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   outline: 2px solid rgba(10, 69, 52, 0.35);
   outline-offset: 2px;
 }
-
 /* Loading — spinner on icon only, text untouched */
 .svc-card.is-loading {
   pointer-events: none !important;
@@ -317,7 +313,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 @keyframes svc-spin {
   to { transform: rotate(360deg); }
 }
-
 /* ============================================================
    SERVICE ICON — PLAIN / NEUTRAL (not coloured)
    Soft grey-green wash · brand-tinted stroke only
@@ -353,7 +348,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   background: #f1f4f2 !important;
   color: #0a4534 !important;
 }
-
 .svc-info { flex: 1; min-width: 0; position: relative; z-index: 2; }
 .svc-title {
   font-size: 13.5px;
@@ -380,7 +374,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .svc-card:hover .svc-arrow { color: var(--brand-green); transform: translate3d(3px, 0, 0); }
 @media (min-width: 380px) { .svc-arrow { display: block; } }
 .svc-arrow svg { width: 14px; height: 14px; }
-
 /* ============================================================
    SECTION HEAD
    ============================================================ */
@@ -400,7 +393,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   border-radius: 2px;
 }
 .section-head a { font-size: 12px; color: var(--brand-green); font-weight: 700; }
-
 /* ============================================================
    TRANSACTIONS — mature professional history cards
    Border · shadow · padding · margin · hover lift
@@ -458,7 +450,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   outline: 2px solid rgba(10, 69, 52, 0.35);
   outline-offset: 2px;
 }
-
 /* Hide transaction type icons — keep layout stable */
 .tx-icon {
   display: none !important;
@@ -469,7 +460,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   border: none !important;
   overflow: hidden !important;
 }
-
 .tx-body {
   flex: 1;
   min-width: 0;
@@ -523,7 +513,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .tx-status.failed   { background: #fee2e2; color: #b91c1c; border-color: rgba(185, 28, 28, 0.14); }
 .tx-status.refunded { background: #e0e7ff; color: #3730a3; border-color: rgba(55, 48, 163, 0.14); }
 .tx-status.pending  { background: #fef3c7; color: #b45309; border-color: rgba(180, 83, 9, 0.14); }
-
 /* ============================================================
    EMPTY & SKELETON
    ============================================================ */
@@ -549,7 +538,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .tx-list:last-child,
 .tx-container:last-child,
 main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
-
 /* ============================================================
    BUTTON LOADING
    ============================================================ */
@@ -587,7 +575,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 .txm-btn-primary.btn-loading::after { border-color: #ffffff; border-right-color: transparent; color: #ffffff; }
 .txm-btn-primary .btn-loading-label { color: #ffffff; }
 @keyframes btn-spin { to { transform: rotate(360deg); } }
-
 /* ============================================================
    TOASTS
    ============================================================ */
@@ -625,7 +612,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 .toast.info    { border-left-color: #3b82f6; }
 .toast-icon { width: 18px; height: 18px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
 .toast-icon svg { width: 100%; height: 100%; }
-
 /* ============================================================
    RECEIPT MODAL
    ============================================================ */
@@ -807,7 +793,6 @@ main.app-container > *:last-child { margin-bottom: 0 !important; padding-bottom:
 }
 .txm-btn-primary:hover { opacity: 0.94; box-shadow: 0 5px 14px -5px rgba(10, 69, 52, 0.42); }
 #balance.refreshing { opacity: 0.55; }
-
 /* ============================================================
    DARK THEME
    ============================================================ */
@@ -900,7 +885,6 @@ body.dark .txm-btn-ghost { background: #1c2420; color: #d3f5e0; border-color: rg
 [data-theme="dark"] .txm-btn-primary,
 .theme-dark .txm-btn-primary,
 body.dark .txm-btn-primary { background: #22c55e; color: #0a0a0a; }
-
 /* ============================================================
    ACCESSIBILITY — reduce motion
    ============================================================ */
@@ -913,4 +897,181 @@ body.dark .txm-btn-primary { background: #22c55e; color: #0a0a0a; }
   .svc-card.is-loading::before,
   .svc-card.is-loading .svc-icon::after,
   .skeleton { animation: none !important; }
+}
+
+/* ============================================================
+   SHATOVA HOME — FIXED TOP + TRANSACTION-ONLY SCROLLING
+   Slim typography · responsive spacing · mobile-safe layout
+   ============================================================ */
+
+/* Keep the home screen viewport-sized; scroll only the transaction list. */
+html,
+body.home {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.home {
+  height: 100vh;
+  height: 100dvh;
+}
+
+body.home .app-container {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  overscroll-behavior: none;
+}
+
+/* Top content remains in place. */
+body.home .greeting-section,
+body.home .balance-card,
+body.home .services-grid,
+body.home > header,
+body.home .app-header,
+body.home .topbar,
+body.home .bottom-nav,
+body.home .bottom-navigation {
+  flex-shrink: 0;
+}
+
+body.home .balance-card {
+  margin-bottom: 14px;
+}
+
+body.home .services-grid {
+  gap: 10px;
+}
+
+/* Keep the Recent Transactions heading above the scroll region. */
+body.home .section-head {
+  flex-shrink: 0;
+  margin: 18px 0 10px;
+  padding: 0 18px;
+}
+
+/* This area alone scrolls. */
+body.home .tx-container {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 12px 12px;
+  margin: 0;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 69, 52, 0.24) transparent;
+}
+
+body.home .tx-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+body.home .tx-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body.home .tx-container::-webkit-scrollbar-thumb {
+  background: rgba(10, 69, 52, 0.22);
+  border-radius: 20px;
+}
+
+body.home .tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: visible;
+  padding: 1px 2px 8px;
+}
+
+/* Compact transaction cards. */
+body.home .tx-item {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: 12px 13px;
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: rgba(15, 45, 35, 0.065);
+  box-shadow: 0 2px 7px rgba(15, 35, 28, 0.035);
+  transform: none;
+}
+
+body.home .tx-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.15px;
+  line-height: 1.4;
+  margin-bottom: 3px;
+}
+
+body.home .tx-amount {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+}
+
+body.home .tx-meta {
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+body.home .tx-status {
+  padding: 2px 7px;
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: 0.25px;
+}
+
+body.home .tx-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 69, 52, 0.07);
+}
+
+/* Fit narrow phones without clipping transaction amounts. */
+@media (max-width: 380px) {
+  body.home .tx-container {
+    padding-right: 9px;
+    padding-left: 9px;
+  }
+
+  body.home .tx-item {
+    padding: 11px 10px;
+  }
+
+  body.home .tx-title {
+    font-size: 11.5px;
+  }
+
+  body.home .tx-amount {
+    font-size: 12px;
+  }
+
+  body.home .tx-meta {
+    font-size: 10px;
+  }
+}
+
+/* Let the desktop app frame keep its existing width. */
+@media (min-width: 768px) {
+  body.home .app-container {
+    max-width: 440px;
+    margin: 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.home .tx-container {
+    scroll-behavior: auto;
+  }
 }
