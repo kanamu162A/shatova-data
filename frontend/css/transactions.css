@@ -1240,3 +1240,89 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   }
 }
 
+
+/* ============================================================
+   SHATOVA TRANSACTIONS — SLIM MONOCHROME PRO FILTERS
+   Compact filter sheet · reduced boldness · quiet borders
+   ============================================================ */
+.tx-header { padding: 13px 18px; box-shadow: none; }
+.tx-header-title { font-size: 16px; font-weight: 550; letter-spacing: -0.2px; }
+.tx-header-count { font-weight: 500; }
+.tx-toolbar { padding: 11px 17px 8px; }
+.tx-dropdown { padding: 8px 12px; font-size: 12px; font-weight: 500; border-radius: 10px; box-shadow: none; }
+.tx-searchbar { height: 43px; margin: 3px 17px 11px; padding: 0 13px; border-radius: 11px; background: #f5f5f6; border-color: #e7e8ea; box-shadow: none; }
+.tx-searchbar-input { font-size: 12.5px; font-weight: 400; }
+.tx-chips { gap: 6px; padding: 0 17px 11px; }
+.tx-chip { padding: 7px 11px; font-size: 11.5px; font-weight: 450; box-shadow: none; border-radius: 9px; }
+.tx-chip.active { background: #24262a; border-color: #24262a; box-shadow: none; }
+.tx-list-section { margin: 7px 13px 0; gap: 7px; }
+.tx-item { padding: 12px 13px; border-radius: 11px; box-shadow: 0 1px 3px rgba(16,24,40,.025); }
+.tx-title { font-size: 12.5px; font-weight: 500; letter-spacing: -0.1px; }
+.tx-when { font-size: 10.5px; font-weight: 400; }
+.tx-amount { font-size: 13px; font-weight: 550; }
+.tx-pill { padding: 3px 7px; font-size: 8.5px; font-weight: 500; letter-spacing: .2px; }
+
+/* Slimmer bottom filter sheet */
+.filter-backdrop { background: rgba(18, 20, 22, .34); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.filter-sheet {
+  max-height: min(84dvh, 700px);
+  padding: 7px 17px calc(12px + env(safe-area-inset-bottom, 0px));
+  border: 1px solid #e8e9eb;
+  border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 34px rgba(20, 24, 22, .12);
+}
+.filter-grip { width: 34px; height: 3px; background: #d5d7da; margin: 5px auto 10px; }
+.filter-head { padding: 2px 2px 12px; border-bottom: 1px solid #eff0f1; margin-bottom: 5px; }
+.filter-head-icon { color: #52565c; }
+.filter-head-icon svg { width: 17px; height: 17px; }
+.filter-head-title { font-size: 15px; font-weight: 550; letter-spacing: -.15px; color: #24262a; }
+.filter-head-close { width: 30px; height: 30px; background: #f4f4f5; border: 1px solid #e9eaec; }
+.filter-body { gap: 7px; padding: 3px 1px 7px; }
+.filter-card {
+  min-height: 58px;
+  gap: 11px;
+  padding: 9px 11px;
+  border: 1px solid #e7e8ea;
+  border-radius: 11px;
+  box-shadow: none;
+  background: #fff;
+}
+.filter-card:hover { transform: none; background: #fafafa; border-color: #d7d9dc; box-shadow: none; }
+.filter-card.active { background: #f6f6f7; border-color: #777b82; box-shadow: inset 0 0 0 1px rgba(35,37,40,.025); }
+.filter-card-icon,
+.filter-card-icon-all,
+.filter-card-icon-deposit,
+.filter-card-icon-withdraw,
+.filter-card-icon-refund,
+.filter-card-icon-transfer {
+  width: 34px; height: 34px; border-radius: 9px;
+  color: #555960; background: #f3f3f4; border: 1px solid #e8e8ea;
+}
+.filter-card-icon svg { width: 16px; height: 16px; }
+.filter-card.active .filter-card-icon { color: #303238; background: #e9e9eb; border-color: #dedfe1; }
+.filter-card-info { gap: 2px; }
+.filter-card-title { font-size: 12px; font-weight: 500; line-height: 1.35; letter-spacing: -.05px; color: #303238; }
+.filter-card.active .filter-card-title { color: #202226; }
+.filter-card-sub { font-size: 10.5px; font-weight: 400; line-height: 1.35; color: #777b82; }
+.filter-card-check { width: 18px; height: 18px; color: #fff; background: #303238; border: 1px solid #303238; box-shadow: none; }
+.filter-card-check svg { width: 10px; height: 10px; }
+.filter-foot { gap: 8px; padding-top: 10px; margin-top: 2px; border-top: 1px solid #eceef0; }
+.filter-btn { min-height: 40px; padding: 10px 14px; border-radius: 10px; font-size: 11.5px; font-weight: 500; letter-spacing: 0; box-shadow: none; }
+.filter-btn-reset { color: #454951; background: #fff; border: 1px solid #dfe1e4; }
+.filter-btn-reset:hover { background: #f6f6f7; box-shadow: none; }
+.filter-btn-apply { color: #fff; background: #292b2f; border: 1px solid #292b2f; box-shadow: none; }
+.filter-btn-apply:hover { background: #17191c; border-color: #17191c; transform: none; box-shadow: none; }
+@media (max-width: 380px) {
+  .filter-sheet { padding-left: 13px; padding-right: 13px; border-radius: 18px 18px 0 0; }
+  .filter-card { min-height: 54px; padding: 8px 9px; gap: 9px; }
+  .filter-card-icon,
+  .filter-card-icon-all,
+  .filter-card-icon-deposit,
+  .filter-card-icon-withdraw,
+  .filter-card-icon-refund,
+  .filter-card-icon-transfer { width: 31px; height: 31px; }
+  .filter-card-title { font-size: 11.5px; }
+  .filter-card-sub { font-size: 10px; }
+  .filter-btn { min-height: 38px; padding: 9px 10px; font-size: 11px; }
+}
