@@ -778,3 +778,465 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ============================================================
+   SHATOVA TRANSACTIONS — PRO MAX FILTER EXPERIENCE
+   Quiet monochrome · Precision spacing · Premium surfaces
+   Additive refinement: keeps existing HTML and JavaScript hooks
+   ============================================================ */
+
+:root {
+  --tx-filter-ink: #17191c;
+  --tx-filter-muted: #737780;
+  --tx-filter-line: #e5e7eb;
+  --tx-filter-surface: #ffffff;
+  --tx-filter-soft: #f7f8f9;
+  --tx-filter-selected: #f0f1f2;
+  --tx-filter-shadow: 0 18px 54px rgba(17, 24, 39, 0.14);
+}
+
+/* Filter entry point and quick-filter row */
+.tx-toolbar {
+  padding: 14px 20px 10px;
+  background: #fff;
+}
+
+.tx-dropdown {
+  min-height: 40px;
+  padding: 9px 14px;
+  gap: 9px;
+  color: var(--tx-filter-ink);
+  background: #fff;
+  border: 1px solid #dfe2e6;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: -0.1px;
+}
+
+.tx-dropdown:hover {
+  background: #fafafa;
+  color: #111;
+  border-color: #c9cdd2;
+  box-shadow: 0 3px 9px rgba(16, 24, 40, 0.055);
+}
+
+.tx-dropdown:focus-visible,
+.tx-chip:focus-visible,
+.tx-filter-fab:focus-visible,
+.filter-head-close:focus-visible,
+.filter-card:focus-visible,
+.filter-btn:focus-visible {
+  outline: 3px solid rgba(31, 35, 40, 0.16);
+  outline-offset: 3px;
+}
+
+.tx-searchbar {
+  min-height: 48px;
+  background: #f6f7f8;
+  border: 1px solid #e7e9ec;
+  border-radius: 13px;
+  box-shadow: inset 0 1px 1px rgba(16, 24, 40, 0.015);
+}
+
+.tx-searchbar:focus-within {
+  background: #fff;
+  border-color: #b9bec5;
+  box-shadow: 0 0 0 3px rgba(31, 35, 40, 0.055),
+              0 4px 12px rgba(16, 24, 40, 0.045);
+}
+
+.tx-searchbar-input {
+  font-size: 13px;
+  font-weight: 450;
+}
+
+.tx-searchbar-input::placeholder {
+  color: #92969e;
+  font-weight: 400;
+}
+
+.tx-chips {
+  gap: 7px;
+  padding-bottom: 14px;
+}
+
+.tx-chip {
+  min-height: 35px;
+  padding: 8px 13px;
+  background: #fff;
+  border: 1px solid #e1e4e8;
+  border-radius: 10px;
+  box-shadow: none;
+  color: #5f646d;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.05px;
+}
+
+.tx-chip:hover {
+  background: #f8f9fa;
+  border-color: #cdd1d6;
+  box-shadow: none;
+  transform: none;
+}
+
+.tx-chip.active {
+  color: #fff;
+  background: #202226;
+  border-color: #202226;
+  box-shadow: 0 2px 5px rgba(17, 24, 39, 0.12);
+}
+
+.tx-chip-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.tx-chip-dot-all,
+.tx-chip.active .tx-chip-dot {
+  background: currentColor;
+}
+
+/* Floating filter button: restrained monochrome treatment */
+.tx-filter-fab {
+  min-height: 46px;
+  padding: 12px 17px;
+  gap: 9px;
+  color: #fff;
+  background: #202226;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: -0.1px;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.20),
+              0 2px 5px rgba(17, 24, 39, 0.10);
+}
+
+.tx-filter-fab:hover {
+  background: #101114;
+  transform: translateY(-1px);
+  box-shadow: 0 11px 28px rgba(17, 24, 39, 0.22);
+}
+
+.tx-filter-fab.tx-filter-fab-active {
+  background: #111214;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.22);
+}
+
+.tx-filter-badge {
+  color: #202226;
+  background: #fff;
+  border: 2px solid #202226;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Backdrop and bottom sheet */
+.filter-backdrop {
+  align-items: flex-end;
+  padding: 16px 0 0;
+  background: rgba(13, 15, 18, 0.42);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  overscroll-behavior: contain;
+}
+
+.filter-sheet {
+  width: min(100%, 480px);
+  max-height: min(88dvh, 760px);
+  padding: 9px 22px calc(18px + env(safe-area-inset-bottom, 0px));
+  color: var(--tx-filter-ink);
+  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-bottom: 0;
+  border-radius: 25px 25px 0 0;
+  box-shadow: 0 -18px 60px rgba(10, 12, 16, 0.17);
+  overflow: hidden;
+}
+
+.filter-grip {
+  width: 38px;
+  height: 4px;
+  margin: 5px auto 16px;
+  background: #d5d8dc;
+  border-radius: 999px;
+}
+
+.filter-head {
+  padding: 2px 1px 17px;
+  border-bottom: 1px solid #f0f1f3;
+  margin-bottom: 10px;
+}
+
+.filter-head-left {
+  gap: 11px;
+}
+
+.filter-head-icon {
+  width: 36px;
+  height: 36px;
+  color: #26282c;
+  background: #f2f3f4;
+  border: 1px solid #e8e9eb;
+  border-radius: 11px;
+}
+
+.filter-head-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.filter-head-title {
+  color: #191b1f;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.35px;
+}
+
+.filter-head-close {
+  width: 35px;
+  height: 35px;
+  color: #626771;
+  background: #f5f6f7;
+  border: 1px solid #e9eaec;
+  border-radius: 11px;
+}
+
+.filter-head-close:hover {
+  color: #17191c;
+  background: #eceef0;
+}
+
+.filter-body {
+  gap: 8px;
+  padding: 4px 1px 12px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #d7d9dd transparent;
+}
+
+.filter-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter-body::-webkit-scrollbar-thumb {
+  background: #d7d9dd;
+  border-radius: 99px;
+}
+
+/* Filter option cards — neutral, premium, and consistent */
+.filter-card {
+  min-height: 70px;
+  gap: 13px;
+  padding: 12px 13px;
+  color: #22252a;
+  background: #fff;
+  border: 1px solid #e5e7ea;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+}
+
+.filter-card:hover {
+  background: #fafafa;
+  border-color: #cfd2d7;
+  box-shadow: 0 3px 9px rgba(16, 24, 40, 0.045);
+  transform: translateY(-1px);
+}
+
+.filter-card.active {
+  color: #17191c;
+  background: #f7f7f8;
+  border-color: #24262a;
+  box-shadow: inset 0 0 0 1px rgba(36, 38, 42, 0.04),
+              0 3px 10px rgba(16, 24, 40, 0.045);
+}
+
+.filter-card-icon {
+  width: 40px;
+  height: 40px;
+  color: #50545c;
+  background: #f1f2f4;
+  border: 1px solid #e7e8eb;
+  border-radius: 11px;
+}
+
+.filter-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Remove bright category colours from the filter options */
+.filter-card-icon-all,
+.filter-card-icon-deposit,
+.filter-card-icon-withdraw,
+.filter-card-icon-refund,
+.filter-card-icon-transfer {
+  color: #50545c;
+  background: #f1f2f4;
+  border-color: #e7e8eb;
+}
+
+.filter-card.active .filter-card-icon {
+  color: #24262a;
+  background: #e9eaec;
+  border-color: #dfe1e4;
+}
+
+.filter-card-info {
+  gap: 4px;
+}
+
+.filter-card-title {
+  color: #22252a;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.12px;
+}
+
+.filter-card.active .filter-card-title {
+  color: #17191c;
+}
+
+.filter-card-sub {
+  color: #7a7e86;
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.filter-card-check {
+  width: 21px;
+  height: 21px;
+  color: #fff;
+  background: #24262a;
+  border: 1px solid #24262a;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.12);
+}
+
+.filter-card-check svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* Sticky action row, with clear hierarchy */
+.filter-foot {
+  gap: 10px;
+  padding: 14px 0 calc(2px + env(safe-area-inset-bottom, 0px));
+  margin-top: 2px;
+  background: #fff;
+  border-top: 1px solid #eceef0;
+}
+
+.filter-btn {
+  min-height: 46px;
+  padding: 13px 17px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: -0.05px;
+}
+
+.filter-btn-reset {
+  flex: 0.9;
+  color: #454951;
+  background: #fff;
+  border: 1px solid #dfe2e6;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+}
+
+.filter-btn-reset:hover {
+  color: #17191c;
+  background: #f7f8f9;
+  border-color: #c9cdd2;
+}
+
+.filter-btn-apply {
+  flex: 1.3;
+  color: #fff;
+  background: #202226;
+  border: 1px solid #202226;
+  box-shadow: 0 4px 10px rgba(17, 24, 39, 0.12);
+}
+
+.filter-btn-apply:hover {
+  background: #101114;
+  border-color: #101114;
+  transform: translateY(-1px);
+  box-shadow: 0 7px 15px rgba(17, 24, 39, 0.16);
+}
+
+/* Compact screens */
+@media (max-width: 380px) {
+  .filter-sheet {
+    padding-right: 16px;
+    padding-left: 16px;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .filter-card {
+    min-height: 64px;
+    padding: 10px 11px;
+    gap: 11px;
+  }
+
+  .filter-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .filter-card-title {
+    font-size: 12.5px;
+  }
+
+  .filter-card-sub {
+    font-size: 11px;
+  }
+
+  .filter-btn {
+    min-height: 44px;
+    padding: 12px 10px;
+  }
+
+  .tx-filter-fab {
+    right: 14px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Larger displays: centered sheet with complete rounded corners */
+@media (min-width: 768px) {
+  .filter-backdrop {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .filter-sheet {
+    max-height: min(82vh, 720px);
+    padding: 12px 24px 22px;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    box-shadow: 0 24px 80px rgba(10, 12, 16, 0.2);
+  }
+}
+
+/* Motion sensitivity */
+@media (prefers-reduced-motion: reduce) {
+  .filter-backdrop,
+  .filter-sheet,
+  .filter-card,
+  .filter-btn,
+  .tx-dropdown,
+  .tx-chip,
+  .tx-filter-fab {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
