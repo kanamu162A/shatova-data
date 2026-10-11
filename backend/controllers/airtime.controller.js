@@ -2,8 +2,8 @@
 // ============================================================
 // Airtime purchase — wallet-backed, race-safe, idempotent
 //   Networks: MTN · Airtel · Glo · T2
+//   Provider status is source of truth for PROCESSING/PENDING
 // ============================================================
-
 import { query, withTransaction } from '../config/database.js';
 import { env } from '../env/env.js';
 import {
@@ -16,31 +16,24 @@ import { holdFunds, releaseHold, dropHold } from '../services/wallet.service.js'
 import { generateReference } from '../utils/reference.js';
 import { buildRemark } from '../utils/remark.js';
 
-/* ============================================================
-   NETWORKS — T2 only. No 9mobile.
-   ============================================================ */
 const NETWORKS = [
   { key: 'mtn',    name: 'MTN',    product_name: 'mtn-airtime'    },
   { key: 'airtel', name: 'Airtel', product_name: 'airtel-airtime' },
   { key: 'glo',    name: 'Glo',    product_name: 'glo-airtime'    },
   { key: 't2',     name: 'T2',     product_name: 't2-airtime'     },
 ];
-
 const PRODUCT_NAME_FALLBACKS = {
   mtn:    ['mtn-airtime', 'mtn'],
   airtel: ['airtel-airtime', 'airtel'],
   glo:    ['glo-airtime', 'glo', 'globacom-airtime', 'glo-mobile'],
   t2:     ['t2-airtime', 't2'],
 };
-
 const MIN = 10;
 const MAX = 50000;
-
 const USER_DISCOUNT_PERCENT     = env.AIRTIME_USER_DISCOUNT     || 2;
 const USER_DISCOUNT_MIN_AMOUNT  = env.AIRTIME_USER_DISCOUNT_MIN || 100;
 const DATASHOP_DISCOUNT_PERCENT = env.AIRTIME_DATASHOP_DISCOUNT || 3;
 
-/* ⭐ T2 prefixes only — no 9mobile key */
 const NG_PREFIXES = {
   mtn:    ['0803','0806','0703','0706','0813','0816','0810','0814','0903','0906','0913','0916','0704'],
   airtel: ['0802','0808','0708','0812','0701','0902','0901','0907','0912','0911'],
@@ -60,7 +53,6 @@ function detectNetworkFromPrefix(phone) {
   }
   return null;
 }
-
 function calculateUserPrice(amount) {
   if (amount >= USER_DISCOUNT_MIN_AMOUNT) {
     const discount = amount * (USER_DISCOUNT_PERCENT / 100);
@@ -68,12 +60,10 @@ function calculateUserPrice(amount) {
   }
   return amount;
 }
-
 function calculateCost(userAmount) {
   const cost = userAmount * (1 - DATASHOP_DISCOUNT_PERCENT / 100);
   return Math.round(cost * 100) / 100;
 }
-
 function isProductNotFound(err) {
   const raw = String(err?.rawMessage || err?.message || '').toLowerCase();
   return raw.includes('product')
@@ -81,6 +71,84 @@ function isProductNotFound(err) {
       || raw.includes('invalid')
       || raw.includes('unknown')
       || raw.includes('service');
+}
+
+/**
+ * Extra safety net: if normalizeProviderStatus is too soft,
+ * scan raw body for clear fail/success signals.
+ */
+function interpretProviderPayload(check) {
+  // Prefer official normalizer first
+  try {
+    const n = normalizeProviderStatus(check);
+    if (n === 'successful' || n === 'failed') return n;
+  } catch (_) { /* continue */ }
+
+  const b = check?.data || check || {};
+  const candidates = [
+    b.transaction_status, b.transactionStatus,
+    b.payment_status, b.paymentStatus,
+    b.state, b.status, b.result,
+    check?.status, check?.message, check?.remark,
+    b.message, b.remark,
+  ].filter((v) => v != null && typeof v !== 'boolean');
+
+  const FAILED = [
+    'fail', 'failed', 'failure', 'reject', 'rejected', 'cancel', 'cancelled',
+    'decline', 'declined', 'error', 'refund', 'refunded', 'reversed', 'invalid',
+    'not successful', 'unsuccessful', 'expired', 'abandoned', 'denied',
+    'timeout', 'not found',
+  ];
+  const SUCCESS = [
+    'success', 'successful', 'succeeded', 'complete', 'completed', 'delivered',
+    'approved', 'done', 'paid', 'processed', 'sent', 'credited', 'confirmed',
+  ];
+
+  for (const raw of candidates) {
+    const s = String(raw).toLowerCase().trim();
+    if (!s) continue;
+    if (FAILED.some((k) => s.includes(k))) return 'failed';
+    if (SUCCESS.some((k) => s.includes(k))) return 'successful';
+  }
+
+  if (typeof b.status === 'boolean') return b.status ? 'successful' : 'failed';
+  if (check?.success === false) return 'failed';
+  if (check?.success === true && !candidates.length) return 'successful';
+
+  return 'processing';
+}
+
+/**
+ * Query DataShop with our ref AND provider_reference.
+ * First decisive answer wins.
+ */
+async function probeProviderStatus(ourRef, providerRef) {
+  const tried = [];
+  const refs = [...new Set([providerRef, ourRef].filter(Boolean))];
+
+  for (const ref of refs) {
+    try {
+      const check = await checkAirtimeStatus(ref);
+      const status = interpretProviderPayload(check);
+      tried.push({ ref, status, raw: check });
+      console.log(`[airtime/status] probe ref=${ref} → ${status}`);
+      if (status === 'successful' || status === 'failed') {
+        return { status, check, lookupRef: ref, tried };
+      }
+    } catch (err) {
+      console.warn(`[airtime/status] probe ref=${ref} error:`, err.message);
+      tried.push({ ref, error: err.message });
+    }
+  }
+
+  // Nothing decisive
+  const last = tried.find((t) => t.check) || tried[0];
+  return {
+    status: last?.status || 'processing',
+    check: last?.check || null,
+    lookupRef: last?.ref || ourRef,
+    tried,
+  };
 }
 
 /* ============================================================
@@ -93,14 +161,10 @@ export function getNetworks(req, res) {
   });
 }
 
-/* ============================================================
-   GET /airtime/products
-   ============================================================ */
 export function getProducts(req, res) {
   const key = String(req.query.network || '').toLowerCase();
   const net = NETWORKS.find((n) => n.key === key);
   if (!net) return res.status(404).json({ success: false, message: 'Unknown network' });
-
   res.json({
     success: true,
     data: {
@@ -117,9 +181,6 @@ export function getProducts(req, res) {
   });
 }
 
-/* ============================================================
-   GET /airtime/config
-   ============================================================ */
 export function getConfig(req, res) {
   res.json({
     success: true,
@@ -132,9 +193,6 @@ export function getConfig(req, res) {
   });
 }
 
-/* ============================================================
-   GET /airtime/balance
-   ============================================================ */
 export async function getBalance(req, res) {
   try {
     const { rows } = await query(
@@ -164,7 +222,7 @@ export async function getBalance(req, res) {
 }
 
 /* ============================================================
-   GET /airtime/status
+   GET /airtime/status  — provider is source of truth
    ============================================================ */
 export async function getTransactionStatus(req, res) {
   try {
@@ -175,7 +233,7 @@ export async function getTransactionStatus(req, res) {
 
     const { rows } = await query(
       `SELECT id, reference, status, description, metadata,
-              provider_reference, updated_at
+              provider_reference, updated_at, user_id
          FROM transactions
         WHERE reference = $1 AND user_id = $2`,
       [reference, req.user.id]
@@ -185,17 +243,22 @@ export async function getTransactionStatus(req, res) {
     }
 
     const tx = rows[0];
-    const dbStatus = String(tx.status || '').toUpperCase();
+    let dbStatus = String(tx.status || '').toUpperCase();
 
     if (dbStatus === 'PROCESSING' || dbStatus === 'PENDING') {
       try {
-        const check = await checkAirtimeStatus(reference);
-        const providerStatus = normalizeProviderStatus(check);
-
-        const meta       = tx.metadata || {};
+        const probe = await probeProviderStatus(reference, tx.provider_reference);
+        const providerStatus = probe.status;
+        const check = probe.check;
+        const meta = tx.metadata || {};
         const networkKey = meta.network || '';
-        const phone      = meta.phone || '';
-        const amount     = Number(meta.user_paid || 0);
+        const phone = meta.phone || '';
+        const amount = Number(meta.user_paid || 0);
+
+        console.log(
+          `[airtime/status] ${reference} db=${dbStatus} provider=${providerStatus} ` +
+          `lookup=${probe.lookupRef}`
+        );
 
         if (providerStatus === 'successful') {
           await releaseHold({
@@ -204,7 +267,6 @@ export async function getTransactionStatus(req, res) {
             transactionId: tx.id,
             description: tx.description,
           });
-
           const remark = buildRemark({
             status: 'success',
             network: networkKey,
@@ -213,25 +275,40 @@ export async function getTransactionStatus(req, res) {
             service: 'airtime',
             discount: Number(meta.user_discount_amt || 0),
           });
-
+          const provRef =
+            check?.data?.reference ||
+            check?.data?.provider_reference ||
+            check?.reference ||
+            tx.provider_reference ||
+            null;
           await query(
             `UPDATE transactions
                 SET status = 'SUCCESS',
                     provider_reference = COALESCE($1, provider_reference),
-                    metadata   = metadata || $2::jsonb,
+                    metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
                     description = $3,
-                    updated_at  = NOW()
+                    updated_at = NOW()
               WHERE id = $4`,
-            [check?.data?.reference || null, JSON.stringify({ status_check: check }), remark, tx.id]
+            [
+              provRef,
+              JSON.stringify({ status_check: check, probed: probe.tried }),
+              remark,
+              tx.id,
+            ]
           );
           tx.status = 'SUCCESS';
           tx.description = remark;
-
+          dbStatus = 'SUCCESS';
         } else if (providerStatus === 'failed') {
-          await dropHold({ userId: req.user.id, reference });
-
-          const safeMessage = normalizeProviderError(check?.message || check?.data?.remark);
-
+          // MUST refund hold
+          try {
+            await dropHold({ userId: req.user.id, reference });
+          } catch (dropErr) {
+            console.error(`[airtime/status] dropHold ${reference}:`, dropErr.message);
+          }
+          const safeMessage = normalizeProviderError(
+            check?.message || check?.data?.remark || check?.data?.message || 'Provider failed'
+          );
           const remark = buildRemark({
             status: 'failed',
             code: 'PROVIDER_FAILED',
@@ -241,19 +318,28 @@ export async function getTransactionStatus(req, res) {
             amount,
             service: 'airtime',
           });
-
           await query(
             `UPDATE transactions
                 SET status = 'FAILED',
-                    metadata   = metadata || $1::jsonb,
+                    metadata = COALESCE(metadata, '{}'::jsonb) || $1::jsonb,
                     description = $2,
-                    updated_at  = NOW()
+                    updated_at = NOW()
               WHERE id = $3`,
-            [JSON.stringify({ status_check: check, reason: check?.message }), remark, tx.id]
+            [
+              JSON.stringify({
+                status_check: check,
+                reason: safeMessage,
+                probed: probe.tried,
+              }),
+              remark,
+              tx.id,
+            ]
           );
           tx.status = 'FAILED';
           tx.description = remark;
+          dbStatus = 'FAILED';
         }
+        // else still processing at provider — leave DB as-is
       } catch (checkErr) {
         console.warn('[airtime/status] provider check failed:', checkErr.message);
       }
@@ -378,7 +464,6 @@ export async function purchase(req, res) {
     if (wallet.status !== 'ACTIVE') {
       return res.status(403).json({ success: false, code: 'WALLET_INACTIVE', message: 'Your wallet is not active.' });
     }
-
     const currentBalance = Number(wallet.balance);
     if (currentBalance < userPrice) {
       const shortfall = userPrice - currentBalance;
@@ -389,14 +474,12 @@ export async function purchase(req, res) {
         data: { balance: currentBalance, required: userPrice, shortfall },
       });
     }
-
     const lastReset = new Date(wallet.daily_reset_at);
     const now = new Date();
     const isNewDay =
       lastReset.getUTCFullYear() !== now.getUTCFullYear() ||
       lastReset.getUTCMonth()    !== now.getUTCMonth()    ||
       lastReset.getUTCDate()     !== now.getUTCDate();
-
     const dailySpent = isNewDay ? 0 : Number(wallet.daily_spent);
     const dailyLimit = Number(wallet.daily_limit);
     if (dailySpent + userPrice > dailyLimit) {
@@ -478,7 +561,7 @@ export async function purchase(req, res) {
             user_discount_amt: discountValue,
             datashop_cost: costPrice,
             datashop_discount: DATASHOP_DISCOUNT_PERCENT,
-            profit: profit,
+            profit,
             balance_before: holdResult.balance_before,
             balance_after:  holdResult.balance_after,
             held: true,
@@ -496,8 +579,7 @@ export async function purchase(req, res) {
   }
 
   const fallbackList = PRODUCT_NAME_FALLBACKS[net.key] || [baseProductName];
-  const productsToTry = [baseProductName, ...fallbackList.filter(p => p !== baseProductName)];
-
+  const productsToTry = [baseProductName, ...fallbackList.filter((p) => p !== baseProductName)];
   let result;
   let usedProductName = baseProductName;
   let lastErr;
@@ -515,7 +597,6 @@ export async function purchase(req, res) {
       break;
     } catch (err) {
       lastErr = err;
-
       if (isProductNotFound(err) && productsToTry.indexOf(pName) < productsToTry.length - 1) {
         console.warn(`[airtime] product "${pName}" rejected — trying next`);
         continue;
@@ -527,7 +608,6 @@ export async function purchase(req, res) {
   if (lastErr) {
     const apiErr = lastErr;
     const isAmbiguous = apiErr.isTimeout || apiErr.isNetworkError;
-
     if (isAmbiguous) {
       const remark = buildRemark({
         status: 'processing',
@@ -565,9 +645,7 @@ export async function purchase(req, res) {
     }
 
     await dropHold({ userId, reference });
-
     const safeMessage = normalizeProviderError(apiErr.rawMessage || apiErr.message);
-
     const remark = buildRemark({
       status: 'failed',
       code: 'PROVIDER_FAILED',
@@ -577,7 +655,6 @@ export async function purchase(req, res) {
       amount: userPrice,
       service: 'airtime',
     });
-
     await query(
       `UPDATE transactions
           SET status = 'FAILED',
@@ -594,7 +671,6 @@ export async function purchase(req, res) {
         transactionId,
       ]
     );
-
     return res.status(400).json({
       success: false,
       code: 'PROVIDER_FAILED',
@@ -603,8 +679,17 @@ export async function purchase(req, res) {
     });
   }
 
-  const providerStatus = normalizeProviderStatus(result);
-  const providerRef = result?.data?.reference;
+  // Use hardened interpreter (not only normalizeProviderStatus)
+  const providerStatus = interpretProviderPayload(result);
+  const providerRef =
+    result?.data?.reference ||
+    result?.data?.provider_reference ||
+    result?.reference ||
+    null;
+
+  console.log(
+    `[airtime/purchase] ${reference} providerStatus=${providerStatus} product=${usedProductName}`
+  );
 
   if (providerStatus === 'successful') {
     await releaseHold({
@@ -613,7 +698,6 @@ export async function purchase(req, res) {
       transactionId,
       description: internalDescription,
     });
-
     const remark = buildRemark({
       status: 'success',
       network: net.key,
@@ -622,24 +706,21 @@ export async function purchase(req, res) {
       service: 'airtime',
       discount: discountValue,
     });
-
     await query(
       `UPDATE transactions
           SET status = 'SUCCESS',
               provider_reference = $1,
-              provider_ref = $1,
               metadata = metadata || $2::jsonb,
               description = $3,
               updated_at = NOW()
         WHERE id = $4`,
       [
-        providerRef || null,
+        providerRef,
         JSON.stringify({ provider_response: result.data || result, product_used: usedProductName }),
         remark,
         transactionId,
       ]
     );
-
     return res.json({
       success: true,
       message: remark,
@@ -672,13 +753,12 @@ export async function purchase(req, res) {
       `UPDATE transactions
           SET status = 'PROCESSING',
               provider_reference = $1,
-              provider_ref = $1,
               metadata = metadata || $2::jsonb,
               description = $3,
               updated_at = NOW()
         WHERE id = $4`,
       [
-        providerRef || null,
+        providerRef,
         JSON.stringify({ provider_response: result.data || result, product_used: usedProductName }),
         remark,
         transactionId,
@@ -704,10 +784,9 @@ export async function purchase(req, res) {
     });
   }
 
+  // failed (or anything not success/processing)
   await dropHold({ userId, reference });
-
-  const safeMessage = normalizeProviderError(result?.message);
-
+  const safeMessage = normalizeProviderError(result?.message || result?.data?.message);
   const remark = buildRemark({
     status: 'failed',
     code: 'PROVIDER_FAILED',
@@ -729,12 +808,12 @@ export async function purchase(req, res) {
         provider_response: result.data || result,
         reason: result?.message,
         product_used: usedProductName,
+        interpreted: providerStatus,
       }),
       remark,
       transactionId,
     ]
   );
-
   return res.status(400).json({
     success: false,
     code: 'PROVIDER_FAILED',
