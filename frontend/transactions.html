@@ -1,355 +1,1084 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Transaction History - Shatova</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/layout.css">
-  <link rel="stylesheet" href="/css/transactions.css">
-  <link rel="stylesheet" href="/css/theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Transaction History - Shatova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       SHATOVA — TRANSACTION HISTORY (CLEAN, MODERN, NO HIDDEN ELEMENTS)
+       ============================================================ */
+    :root {
+      --tx-brand: #0a4534;
+      --tx-brand-dark: #062f24;
+      --tx-brand-light: #e8f2ee;
+      --tx-bg: #f4f5f7;
+      --tx-card: #ffffff;
+      --tx-border: #e8eaed;
+      --tx-text: #111827;
+      --tx-text-muted: #6b7280;
+      --tx-text-light: #9ca3af;
+      --tx-ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --tx-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.03);
+      --tx-shadow-md: 0 4px 12px -2px rgba(15, 35, 28, 0.06);
+      --tx-shadow-lg: 0 12px 28px -8px rgba(15, 35, 28, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: auto; }
+    body.tx-page {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--tx-bg);
+      color: var(--tx-text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    .tx-app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 0 100px;
+      background: var(--tx-bg);
+      min-height: 100vh;
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      body.tx-page { background: #e5e7eb; }
+      .tx-app { box-shadow: 0 0 60px rgba(0, 0, 0, 0.1); }
+    }
+    .hidden { display: none !important; }
+    button { font-family: inherit; border: none; background: none; cursor: pointer; }
+
+    /* HEADER */
+    .tx-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--tx-card);
+      border-bottom: 1px solid var(--tx-border);
+      box-shadow: var(--tx-shadow-sm);
+    }
+    .tx-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .tx-header-icon {
+      width: 26px; height: 26px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--tx-brand);
+      flex-shrink: 0;
+    }
+    .tx-header-icon svg { width: 22px; height: 22px; }
+    .tx-header-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--tx-text);
+      letter-spacing: -0.3px;
+      margin: 0;
+      white-space: nowrap;
+    }
+    .tx-header-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 28px; height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: var(--tx-brand-light);
+      color: var(--tx-brand);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .tx-header-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      color: #6b7280;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s ease, transform 0.18s var(--tx-ease);
+    }
+    .tx-header-close svg { width: 16px; height: 16px; }
+    .tx-header-close:hover { background: #e5e7eb; transform: scale(1.05); }
+
+    /* DROPDOWN */
+    .tx-toolbar { padding: 14px 18px 10px; background: var(--tx-card); }
+    .tx-dropdown {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--tx-border);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--tx-text);
+      transition: all 0.18s var(--tx-ease);
+      box-shadow: var(--tx-shadow-sm);
+    }
+    .tx-dropdown:hover {
+      border-color: var(--tx-brand);
+      color: var(--tx-brand);
+      box-shadow: 0 2px 8px -2px rgba(10, 69, 52, 0.12);
+    }
+    .tx-dropdown svg { width: 14px; height: 14px; }
+    .tx-dropdown-funnel { width: 13px !important; height: 13px !important; }
+
+    /* SEARCH */
+    .tx-searchbar {
+      display: flex; align-items: center; gap: 10px;
+      margin: 4px 18px 14px;
+      padding: 0 16px;
+      height: 48px;
+      background: #eef0f3;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .tx-searchbar:focus-within {
+      background: #ffffff;
+      border-color: rgba(10, 69, 52, 0.2);
+      box-shadow: 0 0 0 3px rgba(10, 69, 52, 0.1), 0 4px 12px -4px rgba(10, 69, 52, 0.15);
+    }
+    .tx-searchbar-ico { width: 18px; height: 18px; color: #9ca3af; flex-shrink: 0; }
+    .tx-searchbar-input {
+      flex: 1; min-width: 0;
+      border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: 13.5px; font-weight: 500;
+      color: var(--tx-text);
+    }
+    .tx-searchbar-input::placeholder { color: #9ca3af; font-weight: 400; }
+    .tx-searchbar-clear {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #d1d5db; color: #4b5563;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s ease;
+    }
+    .tx-searchbar-clear svg { width: 12px; height: 12px; }
+    .tx-searchbar-clear:hover { background: #fee2e2; color: #b91c1c; }
+
+    /* CHIPS */
+    .tx-chips {
+      display: flex; gap: 8px;
+      padding: 0 18px 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tx-chips::-webkit-scrollbar { display: none; }
+    .tx-chip {
+      flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--tx-border);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #4b5563;
+      transition: all 0.18s var(--tx-ease);
+      white-space: nowrap;
+      box-shadow: var(--tx-shadow-sm);
+    }
+    .tx-chip:hover {
+      border-color: #d1d5db;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px -2px rgba(0, 0, 0, 0.08);
+    }
+    .tx-chip:active { transform: scale(0.97); }
+    .tx-chip.active {
+      background: var(--tx-brand);
+      border-color: var(--tx-brand);
+      color: #ffffff;
+      box-shadow: 0 4px 12px -4px rgba(10, 69, 52, 0.5);
+    }
+    .tx-chip-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+    .tx-chip-dot-all      { background: #111827; }
+    .tx-chip-dot-success  { background: #10b981; }
+    .tx-chip-dot-pending  { background: #f59e0b; }
+    .tx-chip-dot-failed   { background: #ef4444; }
+    .tx-chip.active .tx-chip-dot { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4); }
+
+    /* ============================================================
+       LIST — card rows, clean layout, no hidden elements
+       ============================================================ */
+    .tx-list-section {
+      background: transparent;
+      border: none;
+      margin: 8px 14px 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tx-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border: 1px solid var(--tx-border);
+      border-radius: 14px;
+      background: #ffffff;
+      cursor: pointer;
+      box-shadow: var(--tx-shadow-sm);
+      transition:
+        transform 0.22s var(--tx-ease),
+        box-shadow 0.26s ease,
+        border-color 0.2s ease,
+        background 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tx-item:hover {
+      background: #ffffff;
+      border-color: rgba(10, 69, 52, 0.18);
+      transform: translateY(-2px);
+      box-shadow: var(--tx-shadow-md);
+    }
+    .tx-item:active {
+      transform: translateY(0) scale(0.992);
+      background: #f7faf8;
+    }
+
+    .tx-main {
+      flex: 1;
+      min-width: 0;
+    }
+    .tx-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0a0f0d;
+      letter-spacing: -0.15px;
+      margin-bottom: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .tx-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      line-height: 1.35;
+    }
+    .tx-when {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .tx-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.35px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+    .tx-pill-success  { background: #d1fae5; color: #047857; border-color: rgba(4, 120, 87, 0.14); }
+    .tx-pill-pending  { background: #fef3c7; color: #b45309; border-color: rgba(180, 83, 9, 0.14); }
+    .tx-pill-failed   { background: #fee2e2; color: #b91c1c; border-color: rgba(185, 28, 28, 0.14); }
+    .tx-pill-refunded { background: #e0e7ff; color: #3730a3; border-color: rgba(55, 48, 163, 0.14); }
+
+    .tx-amount {
+      flex-shrink: 0;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #0a0f0d;
+      letter-spacing: -0.3px;
+      text-align: right;
+      line-height: 1.1;
+      white-space: nowrap;
+      padding-left: 4px;
+    }
+
+    /* EMPTY / SKELETON */
+    .tx-empty {
+      padding: 60px 24px;
+      text-align: center;
+      background: var(--tx-card);
+      border-radius: 16px;
+      border: 1px solid var(--tx-border);
+      margin: 8px 0;
+      box-shadow: var(--tx-shadow-sm);
+    }
+    .tx-empty-emoji { font-size: 46px; margin-bottom: 14px; }
+    .tx-empty-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+    .tx-empty-text  { font-size: 13px; color: var(--tx-text-muted); line-height: 1.5; }
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f4 0%, #e5e7eb 50%, #f1f5f4 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skel-line { height: 12px; }
+    .skel-line.short { width: 60%; }
+
+    /* PAGINATION */
+    .tx-pagination {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 22px 18px 8px; flex-wrap: wrap;
+    }
+    .pg-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      border: 1px solid var(--tx-border);
+      background: #ffffff; color: #6b7280;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.18s var(--tx-ease);
+      box-shadow: var(--tx-shadow-sm);
+    }
+    .pg-btn svg { width: 15px; height: 15px; pointer-events: none; }
+    .pg-btn:hover:not(:disabled) {
+      background: var(--tx-brand-light);
+      border-color: var(--tx-brand);
+      color: var(--tx-brand);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px -3px rgba(10, 69, 52, 0.15);
+    }
+    .pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pg-numbers { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    .pg-num {
+      min-width: 36px; height: 36px; padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid var(--tx-border);
+      background: #ffffff;
+      color: #4b5563;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s var(--tx-ease);
+      box-shadow: var(--tx-shadow-sm);
+      font-variant-numeric: tabular-nums;
+    }
+    .pg-num:hover {
+      background: var(--tx-brand-light);
+      border-color: var(--tx-brand);
+      color: var(--tx-brand);
+      transform: translateY(-1px);
+    }
+    .pg-num.active {
+      background: var(--tx-brand);
+      border-color: var(--tx-brand);
+      color: #ffffff;
+      box-shadow: 0 4px 12px -4px rgba(10, 69, 52, 0.5);
+      cursor: default;
+      transform: none;
+    }
+    .pg-ellipsis {
+      padding: 0 4px;
+      color: var(--tx-text-light);
+      font-size: 13px; font-weight: 700;
+      user-select: none;
+    }
+
+    /* FAB */
+    .tx-filter-fab {
+      position: fixed;
+      bottom: 28px;
+      right: 20px;
+      z-index: 40;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: #111827;
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 700;
+      box-shadow: 0 10px 28px -8px rgba(0, 0, 0, 0.4), 0 4px 10px -2px rgba(0, 0, 0, 0.2);
+      transition: all 0.22s var(--tx-ease);
+    }
+    .tx-filter-fab:hover { transform: translateY(-2px); }
+    .tx-filter-fab:active { transform: translateY(0) scale(0.97); }
+    .tx-filter-fab svg { width: 16px; height: 16px; }
+    .tx-filter-fab.tx-filter-fab-active {
+      background: var(--tx-brand);
+      box-shadow: 0 10px 28px -8px rgba(10, 69, 52, 0.55), 0 4px 10px -2px rgba(10, 69, 52, 0.3);
+    }
+    .tx-filter-badge {
+      position: absolute;
+      top: -4px; right: -4px;
+      min-width: 20px; height: 20px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: #fbbf24;
+      color: #111827;
+      font-size: 10.5px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--tx-bg);
+    }
+
+    /* FILTER SHEET */
+    .filter-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 9998;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+    .filter-backdrop.hidden { display: none !important; }
+    .filter-backdrop.show   { opacity: 1; }
+    .filter-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border-radius: 24px 24px 0 0;
+      padding: 8px 20px 20px;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 -14px 40px rgba(0, 0, 0, 0.18);
+      max-height: 92vh;
+      display: flex; flex-direction: column;
+    }
+    .filter-backdrop.show .filter-sheet { transform: translateY(0); }
+    .filter-grip {
+      width: 42px; height: 4px;
+      border-radius: 4px;
+      background: #d1d5db;
+      margin: 6px auto 14px;
+      flex-shrink: 0;
+    }
+    .filter-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 4px 18px;
+      flex-shrink: 0;
+    }
+    .filter-head-left { display: flex; align-items: center; gap: 10px; }
+    .filter-head-icon {
+      width: 24px; height: 24px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--tx-brand);
+    }
+    .filter-head-icon svg { width: 20px; height: 20px; }
+    .filter-head-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #111827;
+      letter-spacing: -0.3px;
+      margin: 0;
+    }
+    .filter-head-close {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      color: #6b7280;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s ease;
+    }
+    .filter-head-close svg { width: 15px; height: 15px; }
+    .filter-head-close:hover { background: #e5e7eb; }
+    .filter-body {
+      overflow-y: auto;
+      flex: 1;
+      display: flex; flex-direction: column;
+      gap: 10px;
+      padding: 4px 0 8px;
+    }
+    .filter-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1.5px solid transparent;
+      background: #ffffff;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: all 0.18s var(--tx-ease);
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+    .filter-card:hover {
+      background: #fafbfc;
+      border-color: var(--tx-border);
+      transform: translateY(-1px);
+    }
+    .filter-card.active {
+      border-color: var(--tx-brand);
+      background: var(--tx-brand-light);
+      box-shadow: 0 4px 12px -4px rgba(10, 69, 52, 0.15);
+    }
+    .filter-card-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .filter-card-icon svg { width: 20px; height: 20px; }
+    .filter-card-icon-all      { background: var(--tx-brand-light); color: var(--tx-brand); }
+    .filter-card-icon-deposit  { background: #d1fae5; color: #10b981; }
+    .filter-card-icon-withdraw { background: #fee2e2; color: #ef4444; }
+    .filter-card-icon-refund   { background: #e0e7ff; color: #4f46e5; }
+    .filter-card-icon-transfer { background: #dbeafe; color: #3b82f6; }
+    .filter-card-info {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .filter-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      letter-spacing: -0.1px;
+    }
+    .filter-card.active .filter-card-title { color: var(--tx-brand); }
+    .filter-card-sub {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--tx-text-muted);
+    }
+    .filter-card-check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--tx-brand);
+      color: #ffffff;
+      display: none;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .filter-card-check svg { width: 12px; height: 12px; }
+    .filter-card.active .filter-card-check { display: flex; }
+    .filter-foot {
+      display: flex; gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid #f3f4f6;
+      flex-shrink: 0;
+    }
+    .filter-btn {
+      flex: 1;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px;
+      padding: 15px 20px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      transition: all 0.18s var(--tx-ease);
+    }
+    .filter-btn svg { width: 16px; height: 16px; }
+    .filter-btn:active { transform: scale(0.98); }
+    .filter-btn-reset {
+      background: #f3f4f6;
+      color: #4b5563;
+      flex: 1;
+    }
+    .filter-btn-reset:hover { background: #e5e7eb; }
+    .filter-btn-apply {
+      background: var(--tx-brand);
+      color: #ffffff;
+      flex: 1.4;
+      box-shadow: 0 4px 14px -4px rgba(10, 69, 52, 0.5);
+    }
+    .filter-btn-apply:hover {
+      background: var(--tx-brand-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px -5px rgba(10, 69, 52, 0.6);
+    }
+
+    /* RECEIPT MODAL */
+    .txm-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.45); z-index: 9999;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; transition: opacity 0.25s ease;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+    .txm-backdrop.hidden { display: none !important; }
+    .txm-backdrop.show   { opacity: 1; }
+    .txm-sheet {
+      width: 100%; max-width: 460px;
+      background: #ffffff;
+      border-radius: 24px 24px 0 0;
+      padding: 8px 18px 18px;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 -14px 40px rgba(0, 0, 0, 0.18);
+      max-height: 92vh;
+      display: flex; flex-direction: column;
+    }
+    .txm-backdrop.show .txm-sheet { transform: translateY(0); }
+    .txm-grip {
+      width: 42px; height: 4px; border-radius: 4px;
+      background: #d1d5db; margin: 6px auto 8px; flex-shrink: 0;
+    }
+    .txm-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 4px 14px; flex-shrink: 0;
+    }
+    .txm-head-title {
+      font-size: 12.5px; font-weight: 700;
+      letter-spacing: 0.06em; color: var(--tx-brand); text-transform: uppercase;
+    }
+    .txm-close {
+      width: 30px; height: 30px; border: none; background: transparent;
+      color: #6b7280; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      transition: background 0.15s ease;
+    }
+    .txm-close:hover { background: #f3f4f6; }
+    .txm-close svg { width: 18px; height: 18px; }
+    .txm-body { overflow-y: auto; flex: 1; padding-bottom: 6px; }
+    .txm-hero {
+      border-radius: 16px; padding: 22px 18px 18px;
+      text-align: center; margin-bottom: 14px;
+    }
+    .txm-hero.txm-success    { background: #ecfdf5; }
+    .txm-hero.txm-processing { background: #fef3c7; }
+    .txm-hero.txm-failed     { background: #fef2f2; }
+    .txm-hero.txm-refunded   { background: #eef2ff; }
+    .txm-hero-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+    .txm-hero-icon svg { width: 28px; height: 28px; }
+    .txm-hero.txm-success    .txm-hero-icon { background: #d1fae5; color: #047857; }
+    .txm-hero.txm-processing .txm-hero-icon { background: #fde68a; color: #b45309; }
+    .txm-hero.txm-failed     .txm-hero-icon { background: #fecaca; color: #b91c1c; }
+    .txm-hero.txm-refunded   .txm-hero-icon { background: #c7d2fe; color: #3730a3; }
+    .txm-hero-title {
+      font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 6px;
+    }
+    .txm-hero-amount {
+      font-size: 26px; font-weight: 800;
+      color: #111827;
+      letter-spacing: -1px; margin-bottom: 10px;
+    }
+    .txm-status {
+      display: inline-flex; align-items: center;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 800;
+      letter-spacing: 0.4px; text-transform: uppercase;
+    }
+    .txm-status.success  { background: #d1fae5; color: #047857; }
+    .txm-status.failed   { background: #fee2e2; color: #b91c1c; }
+    .txm-status.refunded { background: #e0e7ff; color: #3730a3; }
+    .txm-status.pending  { background: #fef3c7; color: #b45309; }
+    .txm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .txm-cell {
+      background: #f9fafb; border-radius: 12px;
+      padding: 12px 14px; border: 1px solid #f3f4f6;
+    }
+    .txm-cell-wide { grid-column: 1 / -1; }
+    .txm-cell-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.06em; color: #9ca3af;
+      text-transform: uppercase; margin-bottom: 5px;
+    }
+    .txm-cell-value {
+      font-size: 13.5px; font-weight: 700;
+      color: #111827; word-break: break-word;
+    }
+    .txm-cell-value.txm-mono {
+      font-family: 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 12.5px;
+    }
+    .txm-cell-value.txm-remark {
+      font-size: 13px; font-weight: 500;
+      color: #4b5563; line-height: 1.55;
+    }
+    .txm-cell-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .txm-copy {
+      border: none; background: transparent;
+      color: #6b7280; cursor: pointer;
+      padding: 4px; display: flex; align-items: center;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+    }
+    .txm-copy:hover { background: #e5e7eb; }
+    .txm-copy svg { width: 15px; height: 15px; }
+    .txm-foot {
+      padding-top: 14px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .txm-foot-row { display: flex; gap: 10px; }
+    .txm-btn {
+      flex: 1; padding: 13px 18px;
+      border-radius: 999px; font-size: 13.5px; font-weight: 700;
+      font-family: inherit; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 7px;
+      transition: all 0.18s var(--tx-ease);
+    }
+    .txm-btn svg { width: 15px; height: 15px; }
+    .txm-btn:active { transform: scale(0.98); }
+    .txm-btn-ghost {
+      background: #f3f4f6; color: #111827; border: 1px solid #e5e7eb;
+    }
+    .txm-btn-ghost:hover { background: #e5e7eb; }
+    .txm-btn-primary {
+      background: var(--tx-brand); color: #ffffff;
+      box-shadow: 0 4px 12px -4px rgba(10, 69, 52, 0.5);
+    }
+    .txm-btn-primary:hover { background: var(--tx-brand-dark); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tx-item, .tx-chip, .pg-btn, .pg-num, .filter-card {
+        transition-duration: 0.01ms !important;
+      }
+    }
+    /* Fix list spacing */
+    .tx-list-section + .tx-pagination { margin-top: 4px; }
+  </style>
 </head>
 <body class="tx-page">
-  <div id="app-header"></div>
-  <main class="tx-app">
-    <!-- HEADER -->
-    <header class="tx-header">
-      <div class="tx-header-left">
-        <span class="tx-header-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 6h16M4 12h10M4 18h16"/>
-          </svg>
-        </span>
-        <h1 class="tx-header-title">Transaction History</h1>
-        <span class="tx-header-count" id="txCount">0</span>
-      </div>
-      <button type="button" class="tx-header-close" onclick="location.href='/home.html'" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </header>
-    <!-- TYPE DROPDOWN -->
-    <div class="tx-toolbar">
-      <button type="button" class="tx-dropdown" id="typeDropdownBtn">
-        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="tx-dropdown-funnel">
-          <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
-        </svg>
-        <span class="tx-dropdown-label" id="typeDropdownLabel">All Types</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 9l6 6 6-6"/>
-        </svg>
-      </button>
-    </div>
-    <!-- SEARCH -->
-    <div class="tx-searchbar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tx-searchbar-ico">
-        <circle cx="11" cy="11" r="8"/>
-        <path d="M21 21l-4.35-4.35"/>
-      </svg>
-      <input
-        type="text"
-        id="txSearchInput"
-        class="tx-searchbar-input"
-        placeholder="Search reference, amount, bank…"
-        autocomplete="off"
-      >
-      <button type="button" class="tx-searchbar-clear hidden" id="txSearchClear" aria-label="Clear">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <!-- STATUS CHIPS -->
-    <div class="tx-chips" id="txStatusChips">
-      <button type="button" class="tx-chip active" data-status="all">
-        <span class="tx-chip-dot tx-chip-dot-all"></span>
-        All
-      </button>
-      <button type="button" class="tx-chip" data-status="success">
-        <span class="tx-chip-dot tx-chip-dot-success"></span>
-        Successful
-      </button>
-      <button type="button" class="tx-chip" data-status="processing">
-        <span class="tx-chip-dot tx-chip-dot-pending"></span>
-        Pending
-      </button>
-      <button type="button" class="tx-chip" data-status="failed">
-        <span class="tx-chip-dot tx-chip-dot-failed"></span>
-        Failed
-      </button>
-    </div>
-    <!-- LIST -->
-    <section class="tx-list-section">
-      <div class="tx-list" id="txSkeleton">
-        <div class="tx-item">
-          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
-          <div class="tx-main">
-            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
-            <div class="skeleton skel-line short" style="width:40%;"></div>
-          </div>
-          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
-        </div>
-        <div class="tx-item">
-          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
-          <div class="tx-main">
-            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
-            <div class="skeleton skel-line short" style="width:40%;"></div>
-          </div>
-          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
-        </div>
-        <div class="tx-item">
-          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
-          <div class="tx-main">
-            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
-            <div class="skeleton skel-line short" style="width:40%;"></div>
-          </div>
-          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
-        </div>
-      </div>
-      <div class="tx-list hidden" id="txReal"></div>
-      <div class="tx-empty hidden" id="txEmpty">
-        <div class="tx-empty-emoji">📭</div>
-        <div class="tx-empty-title" id="txEmptyTitle">No transactions yet</div>
-        <div class="tx-empty-text" id="txEmptyText">Your transaction history will appear here.</div>
-      </div>
-    </section>
-    <!-- PAGINATION -->
-    <div class="tx-pagination hidden" id="txPagination">
-      <button type="button" class="pg-btn" id="pgPrev" aria-label="Previous">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 19l-7-7 7-7"/>
-        </svg>
-      </button>
-      <div class="pg-numbers" id="pgNumbers"></div>
-      <button type="button" class="pg-btn" id="pgNext" aria-label="Next">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 5l7 7-7 7"/>
-        </svg>
-      </button>
-    </div>
-  </main>
-  <!-- FILTER FAB -->
-  <button type="button" class="tx-filter-fab" id="txFilterFab">
-    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
-      <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
-    </svg>
-    <span>Filter</span>
-    <span class="tx-filter-badge hidden" id="txFilterBadge">0</span>
-  </button>
-  <!-- FILTER BOTTOM SHEET -->
-  <div class="filter-backdrop hidden" id="filterSheet">
-    <div class="filter-sheet" role="dialog" aria-modal="true">
-      <div class="filter-grip"></div>
-      <div class="filter-head">
-        <div class="filter-head-left">
-          <span class="filter-head-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
-              <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
-            </svg>
-          </span>
-          <h2 class="filter-head-title">Filter Transactions</h2>
-        </div>
-        <button type="button" class="filter-head-close" id="filterClose" aria-label="Close">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="filter-body" id="filterBody">
-        <button type="button" class="filter-card" data-value="all">
-          <span class="filter-card-icon filter-card-icon-all">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </span>
-          <span class="filter-card-info">
-            <span class="filter-card-title">All Transactions</span>
-            <span class="filter-card-sub">Show everything</span>
-          </span>
-          <span class="filter-card-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 13l4 4L19 7"/>
-            </svg>
-          </span>
-        </button>
-        <button type="button" class="filter-card" data-value="deposits">
-          <span class="filter-card-icon filter-card-icon-deposit">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 5v14M5 12l7 7 7-7"/>
-            </svg>
-          </span>
-          <span class="filter-card-info">
-            <span class="filter-card-title">Deposits</span>
-            <span class="filter-card-sub">Money added to wallet</span>
-          </span>
-          <span class="filter-card-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 13l4 4L19 7"/>
-            </svg>
-          </span>
-        </button>
-        <button type="button" class="filter-card" data-value="withdrawals">
-          <span class="filter-card-icon filter-card-icon-withdraw">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 19V5M5 12l7-7 7 7"/>
-            </svg>
-          </span>
-          <span class="filter-card-info">
-            <span class="filter-card-title">Withdrawals</span>
-            <span class="filter-card-sub">Money withdrawn</span>
-          </span>
-          <span class="filter-card-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 13l4 4L19 7"/>
-            </svg>
-          </span>
-        </button>
-        <!-- ⭐ REPLACED: Refunded (was Orders) -->
-        <button type="button" class="filter-card" data-value="refunded">
-          <span class="filter-card-icon filter-card-icon-refund">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
-            </svg>
-          </span>
-          <span class="filter-card-info">
-            <span class="filter-card-title">Refunded</span>
-            <span class="filter-card-sub">Money returned to wallet</span>
-          </span>
-          <span class="filter-card-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 13l4 4L19 7"/>
-            </svg>
-          </span>
-        </button>
-        <button type="button" class="filter-card" data-value="transfers">
-          <span class="filter-card-icon filter-card-icon-transfer">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 8h13l-3-3M20 16H7l3 3"/>
-            </svg>
-          </span>
-          <span class="filter-card-info">
-            <span class="filter-card-title">Transfers</span>
-            <span class="filter-card-sub">Money transfers</span>
-          </span>
-          <span class="filter-card-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 13l4 4L19 7"/>
-            </svg>
-          </span>
-        </button>
-      </div>
-      <div class="filter-foot">
-        <button type="button" class="filter-btn filter-btn-reset" id="filterReset">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
-            <path d="M3 3v5h5"/>
-          </svg>
-          Reset
-        </button>
-        <button type="button" class="filter-btn filter-btn-apply" id="filterApply">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 13l4 4L19 7"/>
-          </svg>
-          Apply
-        </button>
-      </div>
-    </div>
-  </div>
-  <!-- RECEIPT MODAL -->
-  <div class="txm-backdrop hidden" id="txModal">
-    <div class="txm-sheet" role="dialog" aria-modal="true">
-      <div class="txm-grip"></div>
-      <div class="txm-head">
-        <div class="txm-head-title">Transaction Receipt</div>
-        <button type="button" class="txm-close" id="txmClose" aria-label="Close">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="txm-body">
-        <div class="txm-hero" id="txmHero">
-          <div class="txm-hero-icon" id="txmHeroIcon"></div>
-          <div class="txm-hero-title" id="txmTitle">Transaction</div>
-          <div class="txm-hero-amount" id="txmAmount">₦0.00</div>
-          <div class="txm-status" id="txmStatus">Successful</div>
-        </div>
-        <div class="txm-grid">
-          <div class="txm-cell">
-            <div class="txm-cell-label">Recipient</div>
-            <div class="txm-cell-value" id="txmRecipient">—</div>
-          </div>
-          <div class="txm-cell">
-            <div class="txm-cell-label">Network</div>
-            <div class="txm-cell-value" id="txmNetwork">—</div>
-          </div>
-          <div class="txm-cell">
-            <div class="txm-cell-label">Type</div>
-            <div class="txm-cell-value" id="txmType">—</div>
-          </div>
-          <div class="txm-cell">
-            <div class="txm-cell-label">Date &amp; Time</div>
-            <div class="txm-cell-value" id="txmDate">—</div>
-          </div>
-          <div class="txm-cell txm-cell-wide">
-            <div class="txm-cell-label">Reference</div>
-            <div class="txm-cell-row">
-              <div class="txm-cell-value txm-mono" id="txmReference">—</div>
-              <button type="button" class="txm-copy" id="txmCopy">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div class="txm-cell txm-cell-wide">
-            <div class="txm-cell-label">Remark</div>
-            <div class="txm-cell-value txm-remark" id="txmRemark">—</div>
-          </div>
-        </div>
-      </div>
-      <div class="txm-foot">
-        <div class="txm-foot-row">
-          <button type="button" class="txm-btn txm-btn-ghost" id="txmShare">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-            </svg>
-            Share
-          </button>
-          <button type="button" class="txm-btn txm-btn-ghost" id="txmPrint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
-              <path d="M6 14h12v8H6z"/>
-            </svg>
-            Print
-          </button>
-        </div>
-        <button type="button" class="txm-btn txm-btn-primary" id="txmDone">Done</button>
-      </div>
-    </div>
-  </div>
-  <!-- ═══════════ SCRIPTS — order matters ═══════════ -->
-  <!-- 1. auth-guard first: no token → /login.html, no PIN → /pin.html -->
-  <script src="/js/auth-guard.js"></script>
-  <!-- 2. api base -->
-  <script src="/js/api.js"></script>
-  <!-- 3. page logic -->
-  <script type="module" src="/js/components.js"></script>
-  <script type="module" src="/js/transactions.js"></script>
-  <script>
-    (function () {
-      const H = 46;
-      function freeze() {
-        const el = document.querySelector('.tx-header');
-        if (el) el.style.setProperty('top', H + 'px', 'important');
-      }
-      window.addEventListener('load', freeze);
-      window.addEventListener('resize', freeze);
-      freeze();
-    })();
-  </script>
+  <div id="app-header"></div>
+  <main class="tx-app">
+    <!-- HEADER -->
+    <header class="tx-header">
+      <div class="tx-header-left">
+        <span class="tx-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6h16M4 12h10M4 18h16"/>
+          </svg>
+        </span>
+        <h1 class="tx-header-title">Transaction History</h1>
+        <span class="tx-header-count" id="txCount">0</span>
+      </div>
+      <button type="button" class="tx-header-close" onclick="location.href='/home.html'" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- TYPE DROPDOWN -->
+    <div class="tx-toolbar">
+      <button type="button" class="tx-dropdown" id="typeDropdownBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="tx-dropdown-funnel">
+          <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+        </svg>
+        <span class="tx-dropdown-label" id="typeDropdownLabel">All Types</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="tx-searchbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tx-searchbar-ico">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        id="txSearchInput"
+        class="tx-searchbar-input"
+        placeholder="Search reference, amount, bank…"
+        autocomplete="off"
+      >
+      <button type="button" class="tx-searchbar-clear hidden" id="txSearchClear" aria-label="Clear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- STATUS CHIPS -->
+    <div class="tx-chips" id="txStatusChips">
+      <button type="button" class="tx-chip active" data-status="all">
+        <span class="tx-chip-dot tx-chip-dot-all"></span>
+        All
+      </button>
+      <button type="button" class="tx-chip" data-status="success">
+        <span class="tx-chip-dot tx-chip-dot-success"></span>
+        Successful
+      </button>
+      <button type="button" class="tx-chip" data-status="processing">
+        <span class="tx-chip-dot tx-chip-dot-pending"></span>
+        Pending
+      </button>
+      <button type="button" class="tx-chip" data-status="failed">
+        <span class="tx-chip-dot tx-chip-dot-failed"></span>
+        Failed
+      </button>
+    </div>
+
+    <!-- LIST -->
+    <section class="tx-list-section">
+      <div class="tx-list" id="txSkeleton">
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
+        <div class="tx-item">
+          <div class="skeleton" style="width:46px;height:46px;border-radius:14px;"></div>
+          <div class="tx-main">
+            <div class="skeleton skel-line" style="width:60%;margin-bottom:8px;"></div>
+            <div class="skeleton skel-line short" style="width:40%;"></div>
+          </div>
+          <div class="skeleton" style="width:60px;height:14px;border-radius:6px;"></div>
+        </div>
+      </div>
+      <div class="tx-list hidden" id="txReal"></div>
+      <div class="tx-empty hidden" id="txEmpty">
+        <div class="tx-empty-emoji">📭</div>
+        <div class="tx-empty-title" id="txEmptyTitle">No transactions yet</div>
+        <div class="tx-empty-text" id="txEmptyText">Your transaction history will appear here.</div>
+      </div>
+    </section>
+
+    <!-- PAGINATION -->
+    <div class="tx-pagination hidden" id="txPagination">
+      <button type="button" class="pg-btn" id="pgPrev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div class="pg-numbers" id="pgNumbers"></div>
+      <button type="button" class="pg-btn" id="pgNext" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+  </main>
+
+  <!-- FILTER FAB -->
+  <button type="button" class="tx-filter-fab" id="txFilterFab">
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+    </svg>
+    <span>Filter</span>
+    <span class="tx-filter-badge hidden" id="txFilterBadge">0</span>
+  </button>
+
+  <!-- FILTER BOTTOM SHEET -->
+  <div class="filter-backdrop hidden" id="filterSheet">
+    <div class="filter-sheet" role="dialog" aria-modal="true">
+      <div class="filter-grip"></div>
+      <div class="filter-head">
+        <div class="filter-head-left">
+          <span class="filter-head-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
+            </svg>
+          </span>
+          <h2 class="filter-head-title">Filter Transactions</h2>
+        </div>
+        <button type="button" class="filter-head-close" id="filterClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="filter-body" id="filterBody">
+        <button type="button" class="filter-card" data-value="all">
+          <span class="filter-card-icon filter-card-icon-all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">All Transactions</span>
+            <span class="filter-card-sub">Show everything</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="filter-card" data-value="deposits">
+          <span class="filter-card-icon filter-card-icon-deposit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Deposits</span>
+            <span class="filter-card-sub">Money added to wallet</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="filter-card" data-value="withdrawals">
+          <span class="filter-card-icon filter-card-icon-withdraw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Withdrawals</span>
+            <span class="filter-card-sub">Money withdrawn</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="filter-card" data-value="refunded">
+          <span class="filter-card-icon filter-card-icon-refund">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Refunded</span>
+            <span class="filter-card-sub">Money returned to wallet</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="filter-card" data-value="transfers">
+          <span class="filter-card-icon filter-card-icon-transfer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8h13l-3-3M20 16H7l3 3"/>
+            </svg>
+          </span>
+          <span class="filter-card-info">
+            <span class="filter-card-title">Transfers</span>
+            <span class="filter-card-sub">Money transfers</span>
+          </span>
+          <span class="filter-card-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div class="filter-foot">
+        <button type="button" class="filter-btn filter-btn-reset" id="filterReset">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          Reset
+        </button>
+        <button type="button" class="filter-btn filter-btn-apply" id="filterApply">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 13l4 4L19 7"/>
+          </svg>
+          Apply
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECEIPT MODAL -->
+  <div class="txm-backdrop hidden" id="txModal">
+    <div class="txm-sheet" role="dialog" aria-modal="true">
+      <div class="txm-grip"></div>
+      <div class="txm-head">
+        <div class="txm-head-title">Transaction Receipt</div>
+        <button type="button" class="txm-close" id="txmClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="txm-body">
+        <div class="txm-hero" id="txmHero">
+          <div class="txm-hero-icon" id="txmHeroIcon"></div>
+          <div class="txm-hero-title" id="txmTitle">Transaction</div>
+          <div class="txm-hero-amount" id="txmAmount">₦0.00</div>
+          <div class="txm-status" id="txmStatus">Successful</div>
+        </div>
+        <div class="txm-grid">
+          <div class="txm-cell">
+            <div class="txm-cell-label">Recipient</div>
+            <div class="txm-cell-value" id="txmRecipient">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Network</div>
+            <div class="txm-cell-value" id="txmNetwork">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Type</div>
+            <div class="txm-cell-value" id="txmType">—</div>
+          </div>
+          <div class="txm-cell">
+            <div class="txm-cell-label">Date &amp; Time</div>
+            <div class="txm-cell-value" id="txmDate">—</div>
+          </div>
+          <div class="txm-cell txm-cell-wide">
+            <div class="txm-cell-label">Reference</div>
+            <div class="txm-cell-row">
+              <div class="txm-cell-value txm-mono" id="txmReference">—</div>
+              <button type="button" class="txm-copy" id="txmCopy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="txm-cell txm-cell-wide">
+            <div class="txm-cell-label">Remark</div>
+            <div class="txm-cell-value txm-remark" id="txmRemark">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="txm-foot">
+        <div class="txm-foot-row">
+          <button type="button" class="txm-btn txm-btn-ghost" id="txmShare">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            Share
+          </button>
+          <button type="button" class="txm-btn txm-btn-ghost" id="txmPrint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <path d="M6 14h12v8H6z"/>
+            </svg>
+            Print
+          </button>
+        </div>
+        <button type="button" class="txm-btn txm-btn-primary" id="txmDone">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="/js/auth-guard.js"></script>
+  <script src="/js/api.js"></script>
+  <script type="module" src="/js/components.js"></script>
+  <script type="module" src="/js/transactions.js"></script>
+  <script>
+    (function () {
+      // Freeze header – but since header is sticky at top 0, it's already fine
+      // No need to adjust because we removed the global app-header offset
+    })();
+  </script>
 </body>
 </html>
