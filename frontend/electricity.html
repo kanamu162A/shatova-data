@@ -17,7 +17,6 @@
   <style>
     /* ============================================================
        ELECTRICITY — Advanced System UI
-       Premium surfaces · Independent scroll · Strong hierarchy
        ============================================================ */
     :root {
       --elx-blue:       #2563eb;
@@ -55,15 +54,13 @@
       background: var(--elx-bg);
       color: var(--elx-ink);
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       -webkit-tap-highlight-color: transparent;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       min-height: 100dvh;
     }
 
-    /* App shell: fixed header + scrollable body */
     .elx-shell {
       max-width: 520px;
       margin: 0 auto;
@@ -82,9 +79,6 @@
       }
     }
 
-    /* ============================================================
-       STICKY PAGE HEADER — centered title + home back
-       ============================================================ */
     .elx-hdr {
       display: grid;
       grid-template-columns: 40px 1fr 40px;
@@ -97,69 +91,45 @@
       z-index: 40;
       flex-shrink: 0;
     }
-
     .elx-hdr-back {
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       border-radius: 50%;
       background: #fff;
       border: 1px solid rgba(15, 23, 42, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
       transition: transform .15s var(--elx-ease), box-shadow .15s;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
       justify-self: start;
     }
-    .elx-hdr-back:hover {
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
-    }
+    .elx-hdr-back:hover { box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1); }
     .elx-hdr-back:active { transform: scale(.94); }
     .elx-hdr-back svg { width: 18px; height: 18px; color: var(--elx-ink); }
 
-    .elx-hdr-info {
-      text-align: center;
-      min-width: 0;
-    }
+    .elx-hdr-info { text-align: center; min-width: 0; }
     .elx-hdr-info .eyebrow {
-      font-size: 9.5px;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      font-weight: 600;
-      margin-bottom: 2px;
+      font-size: 9.5px; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: .14em;
+      font-weight: 600; margin-bottom: 2px;
     }
     .elx-hdr-info .title {
-      font-size: 17px;
-      font-weight: 700;
-      color: #0f172a;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: -.02em;
-      line-height: 1.2;
+      font-size: 17px; font-weight: 700; color: #0f172a;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      letter-spacing: -.02em; line-height: 1.2;
     }
 
     .elx-hdr-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      width: 40px; height: 40px; border-radius: 50%;
       background: linear-gradient(145deg, #10b981 0%, #059669 100%);
       color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
       box-shadow: 0 3px 12px rgba(5, 150, 105, .28);
       justify-self: end;
     }
     .elx-hdr-icon svg { width: 18px; height: 18px; }
 
-    /* ============================================================
-       SCROLLABLE MAIN AREA
-       ============================================================ */
     .elx-main {
       flex: 1;
       overflow-y: auto;
@@ -169,16 +139,12 @@
       padding: 4px 16px 120px;
     }
 
-    /* Scrollable list regions (discos + products) */
     .elx-scroll-region {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    /* ============================================================
-       CARDS — elevated surfaces
-       ============================================================ */
     .elx-card {
       background: var(--elx-card);
       border: 1px solid var(--elx-line);
@@ -188,7 +154,6 @@
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
     }
     .elx-card.tight { padding: 12px 14px; }
-    .elx-card.tight .elx-logo { border-radius: 50%; }
 
     .elx-label {
       font-size: 10.5px;
@@ -199,72 +164,40 @@
       margin-bottom: 10px;
     }
 
-    /* ============================================================
-       DISCO ROWS — soft pill cards (sample match)
-       ============================================================ */
+    /* ================= DISCO ROWS ================= */
     .elx-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 12px;
       background: #ffffff;
       border: 1px solid rgba(15, 23, 42, 0.06);
       border-radius: 18px;
       padding: 11px 14px 11px 12px;
       cursor: pointer;
       transition: transform .15s var(--elx-ease), box-shadow .2s, border-color .15s;
-      box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.03),
-        0 3px 10px rgba(15, 23, 42, 0.04);
-      -webkit-user-select: none;
-      user-select: none;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03), 0 3px 10px rgba(15, 23, 42, 0.04);
+      -webkit-user-select: none; user-select: none;
     }
     .elx-row:hover {
       border-color: rgba(15, 23, 42, 0.1);
-      box-shadow:
-        0 2px 6px rgba(15, 23, 42, 0.05),
-        0 8px 22px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05), 0 8px 22px rgba(15, 23, 42, 0.08);
       transform: translateY(-1px);
     }
-    .elx-row:active {
-      transform: scale(.985);
-      border-color: rgba(5, 150, 105, 0.35);
-    }
+    .elx-row:active { transform: scale(.985); border-color: rgba(5, 150, 105, 0.35); }
 
-    /* Brand logo badge — circular, colored */
     .elx-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
+      width: 42px; height: 42px; border-radius: 50%;
       background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      overflow: hidden;
-      border: none;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; overflow: hidden; border: none;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
     }
-    .elx-logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      padding: 6px;
-      background: #fff;
-    }
+    .elx-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; background: #fff; }
     .elx-logo .ini {
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 0.15px;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,0,.1);
+      font-weight: 700; font-size: 11px; letter-spacing: 0.15px;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.1);
     }
 
-    /* Brand colour presets for initials fallback */
     .elx-logo.ini-yola   { background: linear-gradient(145deg, #ef4444, #dc2626); }
     .elx-logo.ini-ph     { background: linear-gradient(145deg, #3b82f6, #2563eb); }
     .elx-logo.ini-kano   { background: linear-gradient(145deg, #0ea5e9, #0284c7); }
@@ -281,36 +214,16 @@
 
     .elx-info { flex: 1; min-width: 0; }
     .elx-info .name {
-      font-size: 13px;
-      font-weight: 650;
-      color: #0f172a;
-      margin-bottom: 2px;
-      letter-spacing: -.01em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 13px; font-weight: 650; color: #0f172a;
+      margin-bottom: 2px; letter-spacing: -.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       text-transform: uppercase;
     }
-    .elx-info .meta {
-      font-size: 11.5px;
-      color: #94a3b8;
-      font-weight: 450;
-    }
-    .elx-chev {
-      width: 16px;
-      height: 16px;
-      color: #cbd5e1;
-      flex-shrink: 0;
-      transition: color .15s, transform .15s;
-    }
-    .elx-row:active .elx-chev {
-      color: var(--elx-green);
-      transform: translateX(2px);
-    }
+    .elx-info .meta { font-size: 11.5px; color: #94a3b8; font-weight: 450; }
+    .elx-chev { width: 16px; height: 16px; color: #cbd5e1; flex-shrink: 0; transition: color .15s, transform .15s; }
+    .elx-row:active .elx-chev { color: var(--elx-green); transform: translateX(2px); }
 
-    /* ============================================================
-       PRODUCT CARDS — prepaid first, slimmer
-       ============================================================ */
+    /* ================= PRODUCT CARDS ================= */
     .elx-prod {
       background: #fff;
       border: 1px solid rgba(15, 23, 42, 0.07);
@@ -319,228 +232,135 @@
       cursor: pointer;
       transition: transform .15s var(--elx-ease), border-color .15s, box-shadow .2s;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
-      -webkit-user-select: none;
-      user-select: none;
+      -webkit-user-select: none; user-select: none;
     }
     .elx-prod:hover {
       border-color: #cbd5e1;
       box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05), 0 8px 20px rgba(15, 23, 42, 0.07);
       transform: translateY(-1px);
     }
-    .elx-prod:active {
-      transform: scale(.985);
-      border-color: var(--elx-green);
-    }
+    .elx-prod:active { transform: scale(.985); border-color: var(--elx-green); }
 
-    .elx-prod-top {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .elx-prod-top .elx-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-    }
+    .elx-prod-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .elx-prod-top .elx-logo { width: 40px; height: 40px; border-radius: 50%; }
 
     .elx-prod-name { flex: 1; min-width: 0; }
     .elx-prod-name .n {
-      font-size: 13.5px;
-      font-weight: 650;
-      color: var(--elx-ink);
-      margin-bottom: 2px;
-      letter-spacing: -.015em;
-      line-height: 1.25;
+      font-size: 13.5px; font-weight: 650; color: var(--elx-ink);
+      margin-bottom: 2px; letter-spacing: -.015em; line-height: 1.25;
     }
     .elx-prod-name .p {
-      font-size: 11px;
-      color: var(--elx-muted);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: .04em;
+      font-size: 11px; color: var(--elx-muted); font-weight: 500;
+      text-transform: uppercase; letter-spacing: .04em;
     }
     .elx-prod-name .tag {
-      display: inline-flex;
-      align-items: center;
-      font-size: 10px;
-      font-weight: 650;
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 650;
       color: var(--elx-green-dk);
       background: var(--elx-green-soft);
       border: 1px solid var(--elx-green-line);
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-top: 6px;
-      letter-spacing: .02em;
+      padding: 2px 8px; border-radius: 6px;
+      margin-top: 6px; letter-spacing: .02em;
     }
 
     .elx-prod-desc {
-      font-size: 12px;
-      color: var(--elx-muted);
-      font-weight: 450;
-      margin-bottom: 12px;
-      line-height: 1.45;
+      font-size: 12px; color: var(--elx-muted); font-weight: 450;
+      margin-bottom: 12px; line-height: 1.45;
     }
     .elx-prod-foot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 10px;
-      border-top: 1px solid var(--elx-line-2);
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 10px; border-top: 1px solid var(--elx-line-2);
     }
     .elx-prod-status {
-      font-size: 10.5px;
-      font-weight: 650;
-      color: var(--elx-green);
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      font-size: 10.5px; font-weight: 650; color: var(--elx-green);
+      text-transform: uppercase; letter-spacing: .05em;
+      display: inline-flex; align-items: center; gap: 5px;
     }
     .elx-prod-status::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
       background: var(--elx-green);
       box-shadow: 0 0 0 2px rgba(5, 150, 105, .18);
     }
     .elx-prod-buy {
-      background: var(--elx-blue);
-      color: #fff;
-      border: 0;
-      padding: 7px 16px;
-      border-radius: 9px;
-      font-size: 12px;
-      font-weight: 650;
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: .01em;
+      background: var(--elx-blue); color: #fff; border: 0;
+      padding: 7px 16px; border-radius: 9px;
+      font-size: 12px; font-weight: 650;
+      cursor: pointer; font-family: inherit; letter-spacing: .01em;
       transition: transform .12s, background .15s, box-shadow .15s;
       box-shadow: 0 2px 8px rgba(37, 99, 235, .22);
     }
     .elx-prod-buy:hover { background: var(--elx-blue-dk); }
     .elx-prod-buy:active { transform: scale(.96); }
 
-    /* ============================================================
-       INPUTS
-       ============================================================ */
+    /* ================= INPUTS ================= */
     .elx-input {
-      width: 100%;
-      background: #fff;
+      width: 100%; background: #fff;
       border: 1.5px solid var(--elx-line);
       color: var(--elx-ink);
-      padding: 13px 14px;
-      border-radius: 11px;
-      font-size: 15px;
-      outline: none;
-      font-family: inherit;
-      font-weight: 550;
+      padding: 13px 14px; border-radius: 11px;
+      font-size: 15px; outline: none;
+      font-family: inherit; font-weight: 550;
       transition: border-color .15s, box-shadow .15s;
       letter-spacing: .01em;
     }
-    .elx-input::placeholder {
-      color: var(--elx-muted-2);
-      font-weight: 500;
-      letter-spacing: 0;
-    }
-    .elx-input:focus {
-      border-color: var(--elx-blue);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
-    }
-    .elx-input:disabled {
-      background: #f8fafc;
-      color: var(--elx-muted);
-      cursor: not-allowed;
-    }
+    .elx-input::placeholder { color: var(--elx-muted-2); font-weight: 500; letter-spacing: 0; }
+    .elx-input:focus { border-color: var(--elx-blue); box-shadow: 0 0 0 4px rgba(37, 99, 235, .12); }
+    .elx-input:disabled { background: #f8fafc; color: var(--elx-muted); cursor: not-allowed; }
 
-    .elx-input-row {
-      display: flex;
-      gap: 10px;
-      align-items: stretch;
-    }
+    .elx-input-row { display: flex; gap: 10px; align-items: stretch; }
     .elx-input-row .elx-input { flex: 1; }
 
     .elx-pick-btn {
       padding: 0 14px;
       border: 1.5px solid var(--elx-line);
       border-radius: 11px;
-      background: #fff;
-      color: var(--elx-ink);
-      font-weight: 600;
-      font-size: 12.5px;
+      background: #fff; color: var(--elx-ink);
+      font-weight: 600; font-size: 12.5px;
       cursor: pointer;
       transition: border-color .15s, background .15s, box-shadow .15s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      white-space: nowrap;
-      font-family: inherit;
+      display: flex; align-items: center; gap: 5px;
+      white-space: nowrap; font-family: inherit;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
-    .elx-pick-btn:hover {
-      border-color: #cbd5e1;
-      background: #f8fafc;
-    }
+    .elx-pick-btn:hover { border-color: #cbd5e1; background: #f8fafc; }
     .elx-pick-btn:active { transform: scale(.97); }
     .elx-pick-btn svg { width: 15px; height: 15px; color: var(--elx-muted); }
 
-    /* ============================================================
-       BUTTONS — slim professional
-       ============================================================ */
+    /* ================= BUTTONS ================= */
     .elx-btn {
-      width: 100%;
-      border: 0;
-      padding: 13px 16px;
-      border-radius: 12px;
-      font-weight: 650;
-      font-size: 14px;
+      width: 100%; border: 0;
+      padding: 13px 16px; border-radius: 12px;
+      font-weight: 650; font-size: 14px;
       cursor: pointer;
       transition: transform .12s, opacity .15s, box-shadow .15s, background .15s;
       font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      letter-spacing: .005em;
+      display: flex; align-items: center; justify-content: center;
+      gap: 7px; letter-spacing: .005em;
     }
-    .elx-btn.blue {
-      background: var(--elx-blue);
-      color: #fff;
-      box-shadow: 0 3px 12px rgba(37, 99, 235, .25);
-    }
+    .elx-btn.blue { background: var(--elx-blue); color: #fff; box-shadow: 0 3px 12px rgba(37, 99, 235, .25); }
     .elx-btn.blue:hover:not(:disabled) { background: var(--elx-blue-dk); }
     .elx-btn.blue:active:not(:disabled) { transform: scale(.985); }
     .elx-btn.blue:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 
-    .elx-btn.green {
-      background: var(--elx-green);
-      color: #fff;
-      box-shadow: 0 3px 12px rgba(5, 150, 105, .25);
-    }
+    .elx-btn.green { background: var(--elx-green); color: #fff; box-shadow: 0 3px 12px rgba(5, 150, 105, .25); }
     .elx-btn.green:hover:not(:disabled) { background: var(--elx-green-dk); }
     .elx-btn.green:active:not(:disabled) { transform: scale(.985); }
     .elx-btn.green:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 
     .elx-btn.ghost {
-      background: #fff;
-      border: 1.5px solid var(--elx-line);
+      background: #fff; border: 1.5px solid var(--elx-line);
       color: var(--elx-ink);
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
     .elx-btn.ghost:hover { background: #f8fafc; border-color: #cbd5e1; }
     .elx-btn.ghost:active { transform: scale(.985); }
 
-    /* ============================================================
-       VERIFIED BANNER
-       ============================================================ */
+    /* ================= VERIFIED BANNER ================= */
     .elx-verified-banner {
       background: linear-gradient(145deg, #10b981 0%, #059669 100%);
       color: #fff;
       border-radius: var(--elx-radius);
-      padding: 28px 20px;
-      text-align: center;
+      padding: 28px 20px; text-align: center;
       margin-bottom: 16px;
       box-shadow: 0 8px 28px rgba(5, 150, 105, .28);
       animation: elx-pop .28s var(--elx-ease);
@@ -550,404 +370,516 @@
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
     .elx-verified-banner .vb-icon {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
+      width: 58px; height: 58px; border-radius: 50%;
       background: rgba(255,255,255,.2);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
       margin-bottom: 14px;
       border: 2px solid rgba(255,255,255,.25);
     }
     .elx-verified-banner .vb-icon svg { width: 28px; height: 28px; color: #fff; }
     .elx-verified-banner .vb-title {
-      font-size: 17px;
-      font-weight: 800;
-      margin-bottom: 6px;
+      font-size: 17px; font-weight: 800; margin-bottom: 6px;
       letter-spacing: -.015em;
     }
     .elx-verified-banner .vb-sub {
-      font-size: 13.5px;
-      opacity: .92;
-      font-weight: 500;
-      line-height: 1.5;
+      font-size: 13.5px; opacity: .92; font-weight: 500; line-height: 1.5;
     }
 
-    /* ============================================================
-       CUSTOMER DETAILS
-       ============================================================ */
+    /* ================= CUSTOMER DETAILS ================= */
     .elx-details-label {
-      font-size: 11px;
-      color: var(--elx-muted-2);
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      font-weight: 700;
-      margin: 4px 0 12px;
-      padding-left: 2px;
+      font-size: 11px; color: var(--elx-muted-2);
+      text-transform: uppercase; letter-spacing: .12em;
+      font-weight: 700; margin: 4px 0 12px; padding-left: 2px;
     }
-
     .elx-kv {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 14px 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 16px; padding: 14px 0;
       border-bottom: 1px solid var(--elx-line-2);
       font-size: 14px;
     }
     .elx-kv:last-child { border-bottom: 0; padding-bottom: 0; }
     .elx-kv:first-child { padding-top: 0; }
-    .elx-kv .k {
-      color: var(--elx-muted);
-      font-weight: 500;
-      flex-shrink: 0;
-    }
+    .elx-kv .k { color: var(--elx-muted); font-weight: 500; flex-shrink: 0; }
     .elx-kv .v {
-      font-weight: 650;
-      text-align: right;
-      color: var(--elx-ink);
-      word-break: break-word;
-      flex: 1;
-      min-width: 0;
-      letter-spacing: -.01em;
+      font-weight: 650; text-align: right; color: var(--elx-ink);
+      word-break: break-word; flex: 1; min-width: 0; letter-spacing: -.01em;
     }
 
-
-    /* ============================================================
-       CONFIRM / PAY PAGE (screenshot-matched)
-       ============================================================ */
+    /* ================= CONFIRM SCREEN ================= */
     .elx-confirm-product {
       background: #fff;
       border: 1px solid rgba(15, 23, 42, 0.07);
       border-radius: 16px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      padding: 14px 16px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 12px;
       box-shadow: 0 1px 3px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04);
     }
     .elx-confirm-product .cp-logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      overflow: hidden;
-      flex-shrink: 0;
-      background: #f8fafc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 48px; height: 48px; border-radius: 12px; overflow: hidden;
+      flex-shrink: 0; background: #f8fafc;
+      display: flex; align-items: center; justify-content: center;
     }
-    .elx-confirm-product .cp-logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      padding: 4px;
-    }
+    .elx-confirm-product .cp-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
     .elx-confirm-product .cp-info { flex: 1; min-width: 0; }
     .elx-confirm-product .cp-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 14px; font-weight: 700; color: #0f172a;
       letter-spacing: -.02em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .elx-confirm-product .cp-badge {
-      display: inline-flex;
-      align-items: center;
-      margin-top: 4px;
-      font-size: 10px;
-      font-weight: 650;
-      color: #64748b;
-      background: #f1f5f9;
-      border-radius: 6px;
-      padding: 2px 8px;
-      letter-spacing: .02em;
-      text-transform: uppercase;
+      display: inline-flex; align-items: center; margin-top: 4px;
+      font-size: 10px; font-weight: 650; color: #64748b;
+      background: #f1f5f9; border-radius: 6px; padding: 2px 8px;
+      letter-spacing: .02em; text-transform: uppercase;
     }
     .elx-confirm-product .cp-amount {
-      font-size: 16px;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -.02em;
-      flex-shrink: 0;
+      font-size: 16px; font-weight: 800; color: #0f172a;
+      letter-spacing: -.02em; flex-shrink: 0;
     }
 
     .elx-section-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: .12em;
+      font-size: 11px; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: .12em;
       margin: 6px 0 10px 2px;
     }
 
     .elx-purchasing-for {
       background: #fff;
       border: 1px solid rgba(15, 23, 42, 0.07);
-      border-radius: 16px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 12px;
       box-shadow: 0 1px 3px rgba(15,23,42,.04);
     }
     .elx-purchasing-for .pf-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #eff6ff;
-      color: #2563eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #eff6ff; color: #2563eb;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
     .elx-purchasing-for .pf-icon svg { width: 20px; height: 20px; }
     .elx-purchasing-for .pf-label {
-      font-size: 11px;
-      color: #94a3b8;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .06em;
+      font-size: 11px; color: #94a3b8; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .06em;
       margin-bottom: 2px;
     }
     .elx-purchasing-for .pf-meter {
-      font-size: 15px;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 15px; font-weight: 700; color: #0f172a;
       letter-spacing: -.01em;
     }
 
-    .elx-pay-methods {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+    .elx-pay-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     .elx-pay-method {
       background: #fff;
       border: 2px solid rgba(15, 23, 42, 0.08);
-      border-radius: 16px;
-      padding: 16px 12px;
-      text-align: center;
+      border-radius: 16px; padding: 16px 12px; text-align: center;
       cursor: pointer;
       transition: border-color .15s, box-shadow .15s, transform .12s;
-      position: relative;
-      min-height: 110px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      position: relative; min-height: 110px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 6px;
     }
-    .elx-pay-method.selected {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
-    }
-    .elx-pay-method.disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
+    .elx-pay-method.selected { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+    .elx-pay-method.disabled { opacity: .55; cursor: not-allowed; }
     .elx-pay-method .pm-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
       margin-bottom: 4px;
     }
-    .elx-pay-method .pm-icon.wallet {
-      background: #fee2e2;
-      color: #dc2626;
-    }
-    .elx-pay-method .pm-icon.invoice {
-      background: #f1f5f9;
-      color: #64748b;
-    }
+    .elx-pay-method .pm-icon.wallet { background: #fee2e2; color: #dc2626; }
+    .elx-pay-method .pm-icon.invoice { background: #f1f5f9; color: #64748b; }
     .elx-pay-method .pm-icon svg { width: 22px; height: 22px; }
-    .elx-pay-method .pm-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .elx-pay-method .pm-bal {
-      font-size: 12px;
-      font-weight: 650;
-      color: #0f172a;
-    }
+    .elx-pay-method .pm-name { font-size: 13px; font-weight: 700; color: #0f172a; }
+    .elx-pay-method .pm-bal  { font-size: 12px; font-weight: 650; color: #0f172a; }
     .elx-pay-method .pm-status {
-      font-size: 11px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
+      font-size: 11px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 4px;
     }
-    .elx-pay-method .pm-status.low {
-      color: #dc2626;
-    }
-    .elx-pay-method .pm-status.ok {
-      color: #059669;
-    }
-    .elx-pay-method .pm-status.soon {
-      color: #94a3b8;
-    }
-    .elx-pay-method .pm-status .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
+    .elx-pay-method .pm-status.low  { color: #dc2626; }
+    .elx-pay-method .pm-status.ok   { color: #059669; }
+    .elx-pay-method .pm-status.soon { color: #94a3b8; }
+    .elx-pay-method .pm-status .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
     .elx-total-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
       padding: 4px 4px 16px;
     }
-    .elx-total-row .t-label {
-      font-size: 14px;
-      font-weight: 600;
-      color: #64748b;
-    }
+    .elx-total-row .t-label { font-size: 14px; font-weight: 600; color: #64748b; }
     .elx-total-row .t-amount {
-      font-size: 20px;
-      font-weight: 800;
-      color: #0f172a;
+      font-size: 20px; font-weight: 800; color: #0f172a;
       letter-spacing: -.02em;
     }
 
     .elx-btn.pay-now {
-      background: #3b82f6;
-      color: #fff;
+      background: #3b82f6; color: #fff;
       border-radius: 14px;
       padding: 15px 16px;
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 15px; font-weight: 700;
       box-shadow: 0 4px 14px rgba(59, 130, 246, .28);
     }
     .elx-btn.pay-now:hover:not(:disabled) { background: #2563eb; }
-    .elx-btn.pay-now:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+    .elx-btn.pay-now:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 
     .elx-schedule {
-      text-align: center;
-      margin-top: 14px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #64748b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      text-align: center; margin-top: 14px;
+      font-size: 13px; font-weight: 600; color: #64748b;
+      display: flex; align-items: center; justify-content: center;
       gap: 6px;
     }
     .elx-schedule svg { width: 16px; height: 16px; }
 
-    /* legacy wallet class kept for JS */
-    .elx-wallet { display: none; }
-
     /* ============================================================
-       TOKEN
+       ⭐ PURCHASE UPDATE SCREEN (matches airtime receipt)
        ============================================================ */
+    .elx-update {
+      padding-top: 4px;
+    }
+    .elx-update-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .elx-update-head .uh-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+    }
+    .elx-update-head .uh-close {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: transparent; border: 0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #64748b;
+      transition: background .15s;
+    }
+    .elx-update-head .uh-close:hover { background: #f1f5f9; }
+    .elx-update-head .uh-close svg { width: 20px; height: 20px; }
+
+    /* Status card */
+    .elx-status-card {
+      border-radius: 20px;
+      padding: 32px 24px 28px;
+      text-align: center;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .elx-status-card.processing {
+      background: linear-gradient(180deg, #fef9e7 0%, #fdf3d3 100%);
+      border: 1px solid #fde68a;
+    }
+    .elx-status-card.success {
+      background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1px solid #a7f3d0;
+    }
+    .elx-status-card.failed {
+      background: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
+      border: 1px solid #fecaca;
+    }
+    .elx-status-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .elx-status-card.processing .elx-status-icon {
+      background: #fef3c7; color: #d97706;
+      border: 2px solid #fde68a;
+    }
+    .elx-status-card.success .elx-status-icon {
+      background: #d1fae5; color: #059669;
+      border: 2px solid #a7f3d0;
+    }
+    .elx-status-card.failed .elx-status-icon {
+      background: #fee2e2; color: #dc2626;
+      border: 2px solid #fecaca;
+    }
+    .elx-status-icon svg { width: 30px; height: 30px; }
+    .elx-status-card .sc-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      letter-spacing: -.02em;
+    }
+    .elx-status-card.processing .sc-title { color: #92400e; }
+    .elx-status-card.success .sc-title    { color: #065f46; }
+    .elx-status-card.failed .sc-title     { color: #991b1b; }
+    .elx-status-card .sc-sub {
+      font-size: 14px;
+      font-weight: 500;
+      opacity: .85;
+    }
+    .elx-status-card.processing .sc-sub { color: #a16207; }
+    .elx-status-card.success .sc-sub    { color: #047857; }
+    .elx-status-card.failed .sc-sub     { color: #b91c1c; }
+
+    /* Progress tracker */
+    .elx-tracker {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin: 8px 0 22px;
+      padding: 0 6px;
+      position: relative;
+    }
+    .elx-tracker-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+    .elx-tracker-dot {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 2;
+      transition: all .2s;
+    }
+    .elx-tracker-dot svg { width: 14px; height: 14px; color: #fff; opacity: 0; }
+    .elx-tracker-step.done .elx-tracker-dot {
+      background: #059669;
+      border-color: #059669;
+      box-shadow: 0 0 0 4px rgba(5, 150, 105, .12);
+    }
+    .elx-tracker-step.done .elx-tracker-dot svg { opacity: 1; }
+    .elx-tracker-step.active .elx-tracker-dot {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, .18);
+      animation: elx-pulse 1.6s ease-in-out infinite;
+    }
+    .elx-tracker-step.active .elx-tracker-dot::after {
+      content: '';
+      position: absolute; inset: -4px;
+      border-radius: 50%;
+      border: 2px solid rgba(245, 158, 11, .4);
+    }
+    @keyframes elx-pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.05); }
+    }
+    .elx-tracker-step .ts-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .elx-tracker-step.done .ts-label   { color: #059669; font-weight: 700; }
+    .elx-tracker-step.active .ts-label { color: #d97706; font-weight: 700; }
+
+    /* Connector line */
+    .elx-tracker-step:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      top: 13px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    .elx-tracker-step.done:not(:last-child)::before { background: #059669; }
+    .elx-tracker-step.active:not(:last-child)::before {
+      background: linear-gradient(90deg, #059669 0%, #059669 50%, #e2e8f0 50%);
+    }
+
+    /* Info grid — product + amount */
+    .elx-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .elx-info-cell {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .elx-info-cell .ic-label {
+      font-size: 10px; color: #94a3b8; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .12em;
+      margin-bottom: 6px;
+    }
+    .elx-info-cell .ic-value {
+      font-size: 14px; font-weight: 700; color: #0f172a;
+      letter-spacing: -.005em;
+      word-break: break-word;
+    }
+
+    /* Remark box */
+    .elx-remark {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .elx-remark .rk-label {
+      font-size: 10px; color: #94a3b8; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .12em;
+      margin-bottom: 8px;
+    }
+    .elx-remark .rk-text {
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.55;
+      padding-right: 32px;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    .elx-remark .rk-copy {
+      position: absolute;
+      right: 10px; bottom: 10px;
+      width: 30px; height: 30px; border-radius: 8px;
+      background: #fff; border: 1px solid #e2e8f0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #64748b;
+      transition: background .15s, color .15s;
+    }
+    .elx-remark .rk-copy:hover { background: #f1f5f9; color: #0f172a; }
+    .elx-remark .rk-copy.copied { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
+    .elx-remark .rk-copy svg { width: 15px; height: 15px; }
+
+    /* Action buttons row */
+    .elx-action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .elx-action-btn {
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: inherit;
+      font-weight: 650;
+      font-size: 13.5px;
+      color: #0f172a;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      transition: background .15s, border-color .15s, transform .12s;
+      box-shadow: 0 1px 3px rgba(15,23,42,.03);
+    }
+    .elx-action-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .elx-action-btn:active { transform: scale(.98); }
+    .elx-action-btn svg { width: 15px; height: 15px; color: #64748b; }
+
+    /* Primary action buttons */
+    .elx-refresh-btn {
+      width: 100%;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      transition: background .15s, transform .12s;
+    }
+    .elx-refresh-btn:hover { background: #dbeafe; }
+    .elx-refresh-btn:active { transform: scale(.985); }
+    .elx-refresh-btn:disabled { opacity: .55; cursor: not-allowed; }
+    .elx-refresh-btn svg { width: 15px; height: 15px; }
+    .elx-refresh-btn.spinning svg { animation: elx-r 1s linear infinite; }
+
+    .elx-done-btn {
+      width: 100%;
+      background: #dc2626;
+      color: #fff;
+      border: 0;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, .28);
+      transition: background .15s, transform .12s;
+    }
+    .elx-done-btn:hover { background: #b91c1c; }
+    .elx-done-btn:active { transform: scale(.985); }
+
+    .elx-countdown {
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-top: 12px;
+    }
+
+    /* Token block (for success) */
     .elx-token {
       background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%);
       border: 1.5px dashed #34d399;
       border-radius: var(--elx-radius);
-      padding: 26px 18px;
-      margin-top: 8px;
+      padding: 22px 18px;
+      margin: 0 0 14px;
       text-align: center;
       animation: elx-pop .3s var(--elx-ease);
       box-shadow: 0 4px 16px rgba(5, 150, 105, .08);
     }
     .elx-token .lbl {
-      font-size: 11px;
-      font-weight: 700;
-      color: #047857;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      margin-bottom: 12px;
+      font-size: 11px; font-weight: 700; color: #047857;
+      text-transform: uppercase; letter-spacing: .12em;
+      margin-bottom: 10px;
     }
     .elx-token .tok {
       font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 2.5px;
-      color: #065f46;
-      word-break: break-all;
-      line-height: 1.45;
+      font-size: 20px; font-weight: 800;
+      letter-spacing: 2.5px; color: #065f46;
+      word-break: break-all; line-height: 1.45;
     }
     .elx-token .units {
-      color: #047857;
-      font-size: 13px;
-      margin-top: 10px;
-      font-weight: 650;
+      color: #047857; font-size: 13px; margin-top: 8px; font-weight: 650;
     }
-    .elx-copy {
-      margin-top: 16px;
-      background: var(--elx-green);
-      border: 0;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 11px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: transform .12s, background .15s;
+    .elx-token .tk-copy {
+      margin-top: 14px;
+      background: var(--elx-green); border: 0; color: #fff;
+      padding: 10px 22px; border-radius: 10px;
+      font-size: 12.5px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
       letter-spacing: .02em;
       box-shadow: 0 3px 12px rgba(5, 150, 105, .28);
+      transition: background .15s, transform .12s;
     }
-    .elx-copy:hover { background: var(--elx-green-dk); }
-    .elx-copy:active { transform: scale(.96); }
+    .elx-token .tk-copy:hover { background: var(--elx-green-dk); }
+    .elx-token .tk-copy:active { transform: scale(.96); }
 
-    /* ============================================================
-       ALERTS
-       ============================================================ */
+    /* Alerts */
     .elx-alert {
-      padding: 13px 15px;
-      border-radius: 12px;
-      font-size: 13.5px;
-      margin-top: 12px;
-      font-weight: 550;
-      line-height: 1.5;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
+      padding: 13px 15px; border-radius: 12px;
+      font-size: 13.5px; margin-top: 12px;
+      font-weight: 550; line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 10px;
     }
     .elx-alert.err  { background: var(--elx-red-soft);   border: 1px solid var(--elx-red-line);   color: #991b1b; }
     .elx-alert.warn { background: var(--elx-amber-soft); border: 1px solid var(--elx-amber-line); color: #92400e; }
     .elx-alert.ok   { background: var(--elx-green-soft); border: 1px solid var(--elx-green-line); color: #065f46; }
 
-    /* ============================================================
-       SPINNER
-       ============================================================ */
     .elx-spin {
-      display: inline-block;
-      width: 15px;
-      height: 15px;
+      display: inline-block; width: 15px; height: 15px;
       border: 2px solid rgba(255,255,255,.35);
-      border-top-color: #fff;
-      border-radius: 50%;
+      border-top-color: #fff; border-radius: 50%;
       animation: elx-r .7s linear infinite;
-      flex-shrink: 0;
-      margin-top: 1px;
+      flex-shrink: 0; margin-top: 1px;
     }
     .elx-alert.ok .elx-spin,
     .elx-alert.warn .elx-spin { border-color: rgba(6,95,70,.25); border-top-color: #065f46; }
     .elx-alert.err .elx-spin { border-color: rgba(153,27,27,.3); border-top-color: #991b1b; }
     @keyframes elx-r { to { transform: rotate(360deg); } }
 
-    /* ============================================================
-       SKELETON
-       ============================================================ */
+    /* Skeleton */
     .elx-skel {
       background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
       background-size: 200% 100%;
@@ -959,67 +891,18 @@
       100% { background-position: -200% 0; }
     }
 
-    /* ============================================================
-       RECEIPT HERO
-       ============================================================ */
-    .elx-hero {
-      text-align: center;
-      padding: 8px 0 22px;
-      border-bottom: 1px solid var(--elx-line-2);
-      margin-bottom: 8px;
-    }
-    .elx-hero .badge-big {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      margin-bottom: 14px;
-      box-shadow: 0 4px 16px rgba(15,23,42,.08);
-    }
-    .elx-hero .badge-big.ok   { background: var(--elx-green-soft); color: var(--elx-green); }
-    .elx-hero .badge-big.err  { background: var(--elx-red-soft);   color: var(--elx-red); }
-    .elx-hero .badge-big.warn { background: var(--elx-amber-soft); color: var(--elx-amber); }
-    .elx-hero .badge-big svg  { width: 30px; height: 30px; }
-    .elx-hero .h-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--elx-ink);
-      margin-bottom: 6px;
-      letter-spacing: -.02em;
-    }
-    .elx-hero .h-sub {
-      font-size: 13.5px;
-      color: var(--elx-muted);
-      font-weight: 500;
-      line-height: 1.5;
-    }
-
-    /* ============================================================
-       PAGINATION
-       ============================================================ */
+    /* Pager */
     .elx-pager {
-      text-align: center;
-      font-size: 12.5px;
-      color: var(--elx-muted);
-      font-weight: 550;
-      padding: 18px 0 6px;
-      letter-spacing: .02em;
+      text-align: center; font-size: 12.5px; color: var(--elx-muted);
+      font-weight: 550; padding: 18px 0 6px; letter-spacing: .02em;
     }
-    .elx-pager .cur {
-      color: var(--elx-green);
-      font-weight: 750;
-    }
+    .elx-pager .cur { color: var(--elx-green); font-weight: 750; }
 
-    /* ============================================================
-       UTIL
-       ============================================================ */
+    /* Util */
     .elx-hidden { display: none !important; }
     .elx-muted  { color: var(--elx-muted); font-size: 13px; }
     .elx-mb-0   { margin-bottom: 0 !important; }
 
-    /* Focus visible for accessibility */
     .elx-hdr-back:focus-visible,
     .elx-btn:focus-visible,
     .elx-prod-buy:focus-visible,
@@ -1030,7 +913,8 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .elx-row, .elx-prod, .elx-btn, .elx-hdr-back, .elx-verified-banner, .elx-token {
+      .elx-row, .elx-prod, .elx-btn, .elx-hdr-back, .elx-verified-banner,
+      .elx-token, .elx-tracker-step.active .elx-tracker-dot {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
       }
@@ -1044,7 +928,6 @@
   <main class="app-container">
     <div class="elx-shell">
 
-      <!-- Sticky header -->
       <div class="elx-hdr">
         <button class="elx-hdr-back" id="btnBack" aria-label="Back">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
@@ -1058,52 +941,26 @@
         </div>
       </div>
 
-      <!-- Scrollable content -->
       <div class="elx-main">
 
         <!-- STEP 1 — Discos -->
         <div id="step1">
           <div class="elx-scroll-region" id="discoList">
-            <div class="elx-row">
-              <div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div>
-              <div style="flex:1">
-                <div class="elx-skel" style="width:65%;height:14px;margin-bottom:8px;"></div>
-                <div class="elx-skel" style="width:35%;height:11px;"></div>
-              </div>
-            </div>
-            <div class="elx-row">
-              <div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div>
-              <div style="flex:1">
-                <div class="elx-skel" style="width:55%;height:14px;margin-bottom:8px;"></div>
-                <div class="elx-skel" style="width:30%;height:11px;"></div>
-              </div>
-            </div>
-            <div class="elx-row">
-              <div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div>
-              <div style="flex:1">
-                <div class="elx-skel" style="width:60%;height:14px;margin-bottom:8px;"></div>
-                <div class="elx-skel" style="width:32%;height:11px;"></div>
-              </div>
-            </div>
-            <div class="elx-row">
-              <div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div>
-              <div style="flex:1">
-                <div class="elx-skel" style="width:50%;height:14px;margin-bottom:8px;"></div>
-                <div class="elx-skel" style="width:28%;height:11px;"></div>
-              </div>
-            </div>
+            <div class="elx-row"><div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div><div style="flex:1"><div class="elx-skel" style="width:65%;height:14px;margin-bottom:8px;"></div><div class="elx-skel" style="width:35%;height:11px;"></div></div></div>
+            <div class="elx-row"><div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div><div style="flex:1"><div class="elx-skel" style="width:55%;height:14px;margin-bottom:8px;"></div><div class="elx-skel" style="width:30%;height:11px;"></div></div></div>
+            <div class="elx-row"><div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div><div style="flex:1"><div class="elx-skel" style="width:60%;height:14px;margin-bottom:8px;"></div><div class="elx-skel" style="width:32%;height:11px;"></div></div></div>
+            <div class="elx-row"><div class="elx-skel" style="width:48px;height:48px;border-radius:13px;"></div><div style="flex:1"><div class="elx-skel" style="width:50%;height:14px;margin-bottom:8px;"></div><div class="elx-skel" style="width:28%;height:11px;"></div></div></div>
           </div>
           <div class="elx-pager" id="discoPager" style="display:none;"></div>
         </div>
 
-        <!-- STEP 2 — Products (scrollable list) -->
+        <!-- STEP 2 — Products -->
         <div id="step2" class="elx-hidden">
           <div class="elx-scroll-region" id="prodList"></div>
         </div>
 
         <!-- STEP 3 — Checkout -->
         <div id="step3" class="elx-hidden">
-
           <div class="elx-card tight" id="summaryCard">
             <div style="display:flex;align-items:center;gap:14px;">
               <div class="elx-logo" id="sumLogo"></div>
@@ -1117,8 +974,7 @@
           <div class="elx-card">
             <div class="elx-label">Customer ID</div>
             <div class="elx-input-row">
-              <input id="meter" class="elx-input" type="tel" inputmode="numeric"
-                     placeholder="Enter meter number" maxlength="13" autocomplete="off" />
+              <input id="meter" class="elx-input" type="tel" inputmode="numeric" placeholder="Enter meter number" maxlength="13" autocomplete="off" />
               <button class="elx-pick-btn" id="btnPick" title="Pick from contacts">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 Pick
@@ -1147,8 +1003,7 @@
 
             <div class="elx-card">
               <div class="elx-label">Amount (₦)</div>
-              <input id="amount" class="elx-input" type="tel" inputmode="numeric"
-                     placeholder="0" autocomplete="off" />
+              <input id="amount" class="elx-input" type="tel" inputmode="numeric" placeholder="0" autocomplete="off" />
               <div id="amountMsg" class="elx-muted" style="margin-top:12px;"></div>
             </div>
 
@@ -1158,10 +1013,8 @@
           <button class="elx-btn blue" id="btnVerify" disabled>Verify Customer</button>
         </div>
 
-        <!-- STEP 4 — Confirm & Pay (screenshot UI) -->
+        <!-- STEP 4 — Confirm -->
         <div id="step4" class="elx-hidden">
-
-          <!-- Product summary -->
           <div class="elx-confirm-product" id="confirmProduct">
             <div class="cp-logo" id="cLogo"></div>
             <div class="cp-info">
@@ -1171,7 +1024,6 @@
             <div class="cp-amount" id="cAmountTop">—</div>
           </div>
 
-          <!-- Purchasing for -->
           <div class="elx-section-label">Purchasing for</div>
           <div class="elx-purchasing-for">
             <div class="pf-icon">
@@ -1183,7 +1035,6 @@
             </div>
           </div>
 
-          <!-- Payment method -->
           <div class="elx-section-label">Payment method</div>
           <div class="elx-pay-methods">
             <div class="elx-pay-method selected" id="payWallet" data-method="wallet">
@@ -1203,7 +1054,6 @@
             </div>
           </div>
 
-          <!-- Total -->
           <div class="elx-total-row">
             <span class="t-label">Total Amount</span>
             <span class="t-amount" id="cAmount">—</span>
@@ -1216,17 +1066,108 @@
             Schedule
           </div>
 
-          <!-- hidden legacy ids for JS compatibility -->
           <span id="cDisco" class="elx-hidden">—</span>
           <span id="cType" class="elx-hidden">—</span>
           <span id="cName" class="elx-hidden">—</span>
           <div id="walletCard" class="elx-hidden"></div>
         </div>
 
-        <!-- STEP 5 — Receipt -->
+        <!-- ============================================================
+             STEP 5 — PURCHASE UPDATE (matches airtime receipt)
+             ============================================================ -->
         <div id="step5" class="elx-hidden">
-          <div class="elx-card" id="resultCard"></div>
-          <button class="elx-btn ghost" id="btnNew" style="margin-top:14px;">Buy another</button>
+          <div class="elx-update">
+
+            <!-- Header -->
+            <div class="elx-update-head">
+              <div class="uh-title">Purchase Update</div>
+              <button class="uh-close" id="btnUpdateClose" aria-label="Close">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <!-- Status hero card -->
+            <div class="elx-status-card processing" id="statusCard">
+              <div class="elx-status-icon" id="statusIcon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <div class="sc-title" id="statusTitle">processing</div>
+              <div class="sc-sub" id="statusSub">in progress</div>
+            </div>
+
+            <!-- Progress tracker -->
+            <div class="elx-tracker" id="tracker">
+              <div class="elx-tracker-step done" data-step="1">
+                <div class="elx-tracker-dot">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="ts-label">Submitted</div>
+              </div>
+              <div class="elx-tracker-step active" data-step="2">
+                <div class="elx-tracker-dot">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="ts-label">Processing</div>
+              </div>
+              <div class="elx-tracker-step" data-step="3">
+                <div class="elx-tracker-dot">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="ts-label">Completed</div>
+              </div>
+            </div>
+
+            <!-- Token block (success only) -->
+            <div id="tokenBlock" class="elx-hidden"></div>
+
+            <!-- Info grid -->
+            <div class="elx-info-grid">
+              <div class="elx-info-cell">
+                <div class="ic-label">Product</div>
+                <div class="ic-value" id="infoProduct">—</div>
+              </div>
+              <div class="elx-info-cell">
+                <div class="ic-label">Amount</div>
+                <div class="ic-value" id="infoAmount">—</div>
+              </div>
+            </div>
+
+            <!-- Remark -->
+            <div class="elx-remark">
+              <div class="rk-label">Remark</div>
+              <div class="rk-text" id="infoRemark">—</div>
+              <button class="rk-copy" id="btnCopyRemark" aria-label="Copy remark">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+            </div>
+
+            <!-- Share / Print -->
+            <div class="elx-action-row">
+              <button class="elx-action-btn" id="btnShare">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342A3 3 0 106.316 10.658m2.368 2.684a3 3 0 100 2.316m0 0l6.632 3.684a3 3 0 100-2.684m0 0l-6.632-3.684"/></svg>
+                Share
+              </button>
+              <button class="elx-action-btn" id="btnPrint">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V4a1 1 0 011-1h10a1 1 0 011 1v5M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v7H6z"/></svg>
+                Print
+              </button>
+            </div>
+
+            <!-- Refresh status (only when processing) -->
+            <button class="elx-refresh-btn" id="btnRefresh">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span id="refreshLabel">Refresh Status</span>
+            </button>
+
+            <!-- Done -->
+            <button class="elx-done-btn" id="btnDone">Done</button>
+
+            <!-- Countdown -->
+            <div class="elx-countdown" id="countdown" style="display:none;">
+              returning to home in <span id="countdownSec">30</span>s...
+            </div>
+
+          </div>
         </div>
 
       </div><!-- /.elx-main -->
@@ -1248,59 +1189,19 @@
     var WALLET_API = '/api/v1/wallet';
     var TOKEN_KEYS = ['token','authToken','access_token','accessToken','shatova_token','jwt'];
 
-    /* Real brand logos (Wikimedia) + multi-fallback + brand colour class */
     var DISCO_LOGOS = {
-      'Aba Power': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/abapower.png'],
-        cls: 'ini-aba', short: 'ABA'
-      },
-      'Abuja Electric': {
-        urls: [
-          'https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/aedc.png',
-          'https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/aedc.jpeg'
-        ],
-        cls: 'ini-abuja', short: 'AEDC'
-      },
-      'Benin Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/bedc.png'],
-        cls: 'ini-benin', short: 'BEDC'
-      },
-      'Eko Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ekedc.png'],
-        cls: 'ini-eko', short: 'EKEDC'
-      },
-      'Enugu Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/eedc.png'],
-        cls: 'ini-enugu', short: 'EEDC'
-      },
-      'Ibadan Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ibedc.png'],
-        cls: 'ini-ibadan', short: 'IBEDC'
-      },
-      'Ikeja Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ikedc.png'],
-        cls: 'ini-ikeja', short: 'IKEDC'
-      },
-      'Jos Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/jed-logo.png'],
-        cls: 'ini-jos', short: 'JED'
-      },
-      'Kaduna Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/kaedco.png'],
-        cls: 'ini-kaduna', short: 'KAEDCO'
-      },
-      'Kano Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/kedco.webp'],
-        cls: 'ini-kano', short: 'KEDCO'
-      },
-      'Portharcourt Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/phed.png'],
-        cls: 'ini-ph', short: 'PHED'
-      },
-      'Yola Electric': {
-        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/yedc.png'],
-        cls: 'ini-yola', short: 'YEDC'
-      }
+      'Aba Power': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/abapower.png'], cls: 'ini-aba', short: 'ABA' },
+      'Abuja Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/aedc.png','https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/aedc.jpeg'], cls: 'ini-abuja', short: 'AEDC' },
+      'Benin Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/bedc.png'], cls: 'ini-benin', short: 'BEDC' },
+      'Eko Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ekedc.png'], cls: 'ini-eko', short: 'EKEDC' },
+      'Enugu Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/eedc.png'], cls: 'ini-enugu', short: 'EEDC' },
+      'Ibadan Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ibedc.png'], cls: 'ini-ibadan', short: 'IBEDC' },
+      'Ikeja Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ikedc.png'], cls: 'ini-ikeja', short: 'IKEDC' },
+      'Jos Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/jed-logo.png'], cls: 'ini-jos', short: 'JED' },
+      'Kaduna Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/kaedco.png'], cls: 'ini-kaduna', short: 'KAEDCO' },
+      'Kano Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/kedco.webp'], cls: 'ini-kano', short: 'KEDCO' },
+      'Portharcourt Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/phed.png'], cls: 'ini-ph', short: 'PHED' },
+      'Yola Electric': { urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/yedc.png'], cls: 'ini-yola', short: 'YEDC' }
     };
 
     function $(id) { return document.getElementById(id); }
@@ -1333,17 +1234,14 @@
       if (opts.body) init.body = JSON.stringify(opts.body);
 
       var res;
-      try {
-        res = await fetch(API + path, init);
-      } catch (netErr) {
-        throw new Error('Cannot reach server. Check your connection.');
-      }
+      try { res = await fetch(API + path, init); }
+      catch (netErr) { throw new Error('Cannot reach server. Check your connection.'); }
+
       var text = await res.text();
       var json = {};
       try { json = text ? JSON.parse(text) : {}; }
-      catch (_) {
-        throw new Error('Server returned an unexpected response (HTTP ' + res.status + ').');
-      }
+      catch (_) { throw new Error('Server returned an unexpected response (HTTP ' + res.status + ').'); }
+
       if (!res.ok || json.success === false) {
         var e = new Error(json.message || json.error || ('Request failed (HTTP ' + res.status + ')'));
         e.code = json.code; e.status = res.status;
@@ -1363,15 +1261,25 @@
       amount: null,
       reference: null,
       pollTimer: null,
-      walletBalance: null
+      walletBalance: null,
+      lastResponse: null,
+      countdownTimer: null
     };
+
+    /* 1% discount */
+    var DISCOUNT_RATE = 0.01;
+    function computeWalletDebit(amt) {
+      return Math.round(Number(amt || 0) * (1 - DISCOUNT_RATE));
+    }
+    function computeDiscount(amt) {
+      return Math.round(Number(amt || 0) - computeWalletDebit(amt));
+    }
 
     function showStep(n) {
       [1,2,3,4,5].forEach(function (i) {
         var el = $('step' + i);
         if (el) el.classList.toggle('elx-hidden', i !== n);
       });
-      /* Back always visible — on step 1 it goes home */
       $('btnBack').style.display = 'flex';
       var main = document.querySelector('.elx-main');
       if (main) main.scrollTop = 0;
@@ -1381,23 +1289,15 @@
       $('hdrTitle').textContent = title;
     }
     function goHome() {
-      /* Prefer SPA home if present, else common routes */
       if (window.navigateTo) { window.navigateTo('/home'); return; }
       window.location.href = '/';
     }
 
     $('btnBack').addEventListener('click', function () {
       if (!$('step5').classList.contains('elx-hidden')) { resetAll(); return; }
-      if (!$('step4').classList.contains('elx-hidden')) {
-        setHeader(state.productName, 'Checkout'); showStep(3); return;
-      }
-      if (!$('step3').classList.contains('elx-hidden')) {
-        setHeader(state.provider.toUpperCase(), 'Choose meter type'); showStep(2); return;
-      }
-      if (!$('step2').classList.contains('elx-hidden')) {
-        setHeader('SERVICE', 'Electricity'); showStep(1); return;
-      }
-      /* Step 1 → home */
+      if (!$('step4').classList.contains('elx-hidden')) { setHeader(state.productName, 'Checkout'); showStep(3); return; }
+      if (!$('step3').classList.contains('elx-hidden')) { setHeader(state.provider.toUpperCase(), 'Choose meter type'); showStep(2); return; }
+      if (!$('step2').classList.contains('elx-hidden')) { setHeader('SERVICE', 'Electricity'); showStep(1); return; }
       goHome();
     });
 
@@ -1424,33 +1324,24 @@
       if (!name) return null;
       var n = String(name).trim();
       if (DISCO_LOGOS[n]) return n;
-      /* case-insensitive exact */
       var lower = n.toLowerCase();
-      for (var k in DISCO_LOGOS) {
-        if (k.toLowerCase() === lower) return k;
-      }
-      /* common aliases / short codes */
+      for (var k in DISCO_LOGOS) if (k.toLowerCase() === lower) return k;
       var aliases = {
-        'jed': 'Jos Electric', 'jedc': 'Jos Electric', 'jos': 'Jos Electric',
-        'jos electricity': 'Jos Electric', 'jos electric': 'Jos Electric',
-        'aedc': 'Abuja Electric', 'abuja': 'Abuja Electric', 'abuja electricity': 'Abuja Electric',
-        'bedc': 'Benin Electric', 'benin': 'Benin Electric',
-        'ekedc': 'Eko Electric', 'eko': 'Eko Electric',
-        'eedc': 'Enugu Electric', 'enugu': 'Enugu Electric',
-        'ibedc': 'Ibadan Electric', 'ibadan': 'Ibadan Electric',
-        'ikedc': 'Ikeja Electric', 'ikeja': 'Ikeja Electric', 'ie': 'Ikeja Electric',
-        'kaedco': 'Kaduna Electric', 'kaduna': 'Kaduna Electric',
-        'kedco': 'Kano Electric', 'kano': 'Kano Electric',
-        'phed': 'Portharcourt Electric', 'phedc': 'Portharcourt Electric',
-        'port harcourt': 'Portharcourt Electric', 'portharcourt': 'Portharcourt Electric',
-        'yedc': 'Yola Electric', 'yola': 'Yola Electric',
-        'aba': 'Aba Power', 'aba power': 'Aba Power', 'apl': 'Aba Power'
+        'jed':'Jos Electric','jedc':'Jos Electric','jos':'Jos Electric','jos electricity':'Jos Electric','jos electric':'Jos Electric',
+        'aedc':'Abuja Electric','abuja':'Abuja Electric','abuja electricity':'Abuja Electric',
+        'bedc':'Benin Electric','benin':'Benin Electric',
+        'ekedc':'Eko Electric','eko':'Eko Electric',
+        'eedc':'Enugu Electric','enugu':'Enugu Electric',
+        'ibedc':'Ibadan Electric','ibadan':'Ibadan Electric',
+        'ikedc':'Ikeja Electric','ikeja':'Ikeja Electric','ie':'Ikeja Electric',
+        'kaedco':'Kaduna Electric','kaduna':'Kaduna Electric',
+        'kedco':'Kano Electric','kano':'Kano Electric',
+        'phed':'Portharcourt Electric','phedc':'Portharcourt Electric','port harcourt':'Portharcourt Electric','portharcourt':'Portharcourt Electric',
+        'yedc':'Yola Electric','yola':'Yola Electric',
+        'aba':'Aba Power','aba power':'Aba Power','apl':'Aba Power'
       };
       if (aliases[lower]) return aliases[lower];
-      /* contains match */
-      for (var k2 in DISCO_LOGOS) {
-        if (lower.indexOf(k2.toLowerCase().split(' ')[0]) !== -1) return k2;
-      }
+      for (var k2 in DISCO_LOGOS) if (lower.indexOf(k2.toLowerCase().split(' ')[0]) !== -1) return k2;
       return null;
     }
 
@@ -1506,7 +1397,6 @@
     function renderProducts(provider) {
       var prov = state.products.providers.find(function (p) { return p.provider === provider; });
       if (!prov) return;
-      /* PREPAID always first, then POSTPAID */
       var list = (prov.products || []).slice().sort(function (a, b) {
         function rank(t) {
           t = String(t || '').toLowerCase();
@@ -1519,7 +1409,6 @@
       $('prodList').innerHTML = list.map(function (p) {
         var typeStr = String(p.bill_type || '').toLowerCase();
         var isPre = typeStr === 'prepaid' || typeStr.indexOf('pre') === 0;
-        var title = p.product_name;
         var typeLabel = isPre ? 'PREPAID' : 'POSTPAID';
         var logoProvider = p.provider || provider || state.provider;
         return '' +
@@ -1527,7 +1416,7 @@
             '<div class="elx-prod-top">' +
               logoHtml(logoProvider, 44) +
               '<div class="elx-prod-name">' +
-                '<div class="n">' + esc(title) + '</div>' +
+                '<div class="n">' + esc(p.product_name) + '</div>' +
                 '<div class="p">' + esc(logoProvider) + ' · ' + typeLabel + '</div>' +
                 '<div class="tag">' + (isPre ? 'PREPAID · 1% off' : 'POSTPAID · 1% off') + '</div>' +
               '</div>' +
@@ -1602,10 +1491,7 @@
 
       var key = cacheKey(state.productName, state.meterNumber);
       var hit = verifyCache.get(key);
-      if (hit && Date.now() < hit.exp) {
-        finishVerify(hit.value);
-        return;
-      }
+      if (hit && Date.now() < hit.exp) { finishVerify(hit.value); return; }
 
       try {
         var v = await callApi('/verify', {
@@ -1657,11 +1543,14 @@
       if (!a) { $('amountMsg').textContent = ''; $('btnPay').disabled = true; return; }
       if (a < min) { $('amountMsg').textContent = 'Minimum is ' + fmt(min); $('btnPay').disabled = true; return; }
       if (a > max) { $('amountMsg').textContent = 'Maximum is ' + fmt(max); $('btnPay').disabled = true; return; }
-      $('amountMsg').textContent = 'You will pay ' + fmt(a);
+      var debit = computeWalletDebit(a);
+      var save  = computeDiscount(a);
+      $('amountMsg').innerHTML =
+        'You will pay <b>' + fmt(debit) + '</b> · Meter gets ' + fmt(a) +
+        ' <span style="color:#059669;font-weight:700;">(save ' + fmt(save) + ')</span>';
       $('btnPay').disabled = false;
     }
 
-    
     async function callWallet(path, opts) {
       opts = opts || {};
       var token = getToken();
@@ -1670,17 +1559,12 @@
       var init = { method: opts.method || 'GET', headers: headers };
       if (opts.body) init.body = JSON.stringify(opts.body);
       var res;
-      try {
-        res = await fetch(WALLET_API + path, init);
-      } catch (netErr) {
-        throw new Error('Cannot reach wallet service.');
-      }
+      try { res = await fetch(WALLET_API + path, init); }
+      catch (netErr) { throw new Error('Cannot reach wallet service.'); }
       var text = await res.text();
       var json = {};
       try { json = text ? JSON.parse(text) : {}; }
-      catch (_) {
-        throw new Error('Wallet service returned an unexpected response (HTTP ' + res.status + ').');
-      }
+      catch (_) { throw new Error('Wallet service returned an unexpected response (HTTP ' + res.status + ').'); }
       if (!res.ok || json.success === false) {
         var e = new Error(json.message || json.error || ('Wallet request failed (HTTP ' + res.status + ')'));
         e.code = json.code; e.status = res.status;
@@ -1696,7 +1580,6 @@
         try {
           var data = await callWallet(paths[i]);
           if (data == null) continue;
-          /* unwrap nested wallet objects */
           if (data.wallet && typeof data.wallet === 'object') data = data.wallet;
           if (data.data && typeof data.data === 'object' && data.balance == null) data = data.data;
           var bal = data.balance != null ? data.balance
@@ -1709,11 +1592,8 @@
           if (bal == null) continue;
           state.walletBalance = Number(bal) || 0;
           return state.walletBalance;
-        } catch (err) {
-          lastErr = err;
-        }
+        } catch (err) { lastErr = err; }
       }
-      /* also try /api/v1/user/wallet and /api/v1/account/balance via absolute paths */
       var altBases = ['/api/v1/user/wallet', '/api/v1/account', '/api/v1/me/wallet'];
       for (var j = 0; j < altBases.length; j++) {
         try {
@@ -1742,9 +1622,8 @@
       var balEl = $('walletBal');
       var statusEl = $('walletStatus');
       var btn = $('btnConfirm');
-      var walletBox = $('payWallet');
       var bal = state.walletBalance;
-      var amount = state.amount || 0;
+      var debit = computeWalletDebit(state.amount || 0);
 
       if (bal === null) {
         balEl.textContent = '—';
@@ -1752,13 +1631,11 @@
         statusEl.className = 'pm-status';
         btn.disabled = false;
         btn.textContent = 'Pay Now';
-        if (walletBox) walletBox.classList.remove('insufficient');
         return;
       }
-
       balEl.textContent = fmt(bal);
 
-      if (bal < amount) {
+      if (bal < debit) {
         statusEl.innerHTML = '<span class="dot"></span> Low balance';
         statusEl.className = 'pm-status low';
         btn.disabled = true;
@@ -1773,22 +1650,21 @@
       }
     }
 
-$('btnPay').addEventListener('click', async function () {
+    $('btnPay').addEventListener('click', async function () {
       var v = state.verified;
       var disco = v.disco || v.service_name || state.provider || '—';
       var meter = v.meter_number || state.meterNumber;
-      var amt = fmt(state.amount);
+      var debit = fmt(computeWalletDebit(state.amount));
 
       $('cDisco').textContent  = disco;
       $('cType').textContent   = v.bill_type || state.billType || '—';
       $('cMeter').textContent  = meter;
       $('cName').textContent   = v.customer_name || '—';
-      $('cAmount').textContent = amt;
-      $('cAmountTop').textContent = amt;
+      $('cAmount').textContent = debit;
+      $('cAmountTop').textContent = debit;
       $('cProductName').textContent = state.productName || disco;
       $('cDiscoBadge').textContent = String(disco).toUpperCase();
 
-      /* brand logo on confirm card */
       var logoWrap = $('cLogo');
       if (logoWrap) {
         logoWrap.innerHTML = '';
@@ -1819,10 +1695,8 @@ $('btnPay').addEventListener('click', async function () {
       $('payMsg').innerHTML = '<div class="elx-alert ok"><span class="elx-spin"></span>Checking balance &amp; processing…</div>';
 
       var bal = await fetchWalletBalance();
-      if (bal !== null && bal < (state.amount || 0)) {
-        updateWalletUI();
-        return;
-      }
+      var debit = computeWalletDebit(state.amount || 0);
+      if (bal !== null && bal < debit) { updateWalletUI(); return; }
 
       try {
         var r = await callApi('/purchase', {
@@ -1835,134 +1709,292 @@ $('btnPay').addEventListener('click', async function () {
           }
         });
         state.reference = r.reference;
-        if (r.status === 'success')         renderSuccess(r);
-        else if (r.status === 'processing') renderProcessing(r);
-        else                                renderFailure(r);
+        state.lastResponse = r;
+
+        if (r.status === 'success')         renderUpdateSuccess(r);
+        else if (r.status === 'processing') renderUpdateProcessing(r);
+        else                                renderUpdateFailed(r);
       } catch (err) {
         $('payMsg').innerHTML = '';
-        renderFailure({ remark: err.message, reference: null });
+        renderUpdateFailed({ remark: err.message, reference: null });
       } finally {
         $('btnConfirm').disabled = false;
       }
     });
 
-    function renderSuccess(r) {
-      setHeader('RECEIPT', 'Payment successful');
-      showStep(5);
-      var token = r.token || r.Token || r.pin || r.PIN || '';
-      var units = r.units || r.Units || r.kwh || r.kWh || '';
-      var tokenBlock = token
-        ? '<div class="elx-token">' +
-            '<div class="lbl">Your electricity token</div>' +
-            '<div class="tok" id="tokText">' + esc(token) + '</div>' +
-            (units ? '<div class="units">' + esc(units) + ' kWh</div>' : '') +
-            '<button class="elx-copy" id="copyTok" type="button">Copy token</button>' +
-          '</div>'
-        : '<div class="elx-alert warn" style="margin-top:12px;">Token will appear here shortly. Check SMS or transaction history if it does not show.</div>';
+    /* ============================================================
+       STEP 5 — PURCHASE UPDATE RENDERERS
+       ============================================================ */
 
-      var disco = r.disco || r.provider || state.provider || '';
-      var meter = r.meter_number || state.meterNumber || '';
-      var cust = r.customer_name || (state.verified && state.verified.customer_name) || '—';
-      var addr = r.customer_address || (state.verified && (state.verified.customer_address || state.verified.address)) || '';
-      var amt = fmt(r.amount || state.amount);
-      var ref = r.reference || state.reference || '—';
-      var billType = r.bill_type || state.billType || '';
+    function setTrackerState(step) {
+      /* step: 1 = Submitted, 2 = Processing, 3 = Completed */
+      var nodes = document.querySelectorAll('.elx-tracker-step');
+      nodes.forEach(function (n) {
+        var idx = Number(n.dataset.step);
+        n.classList.toggle('done',   idx < step);
+        n.classList.toggle('active', idx === step);
+      });
+    }
 
-      $('resultCard').innerHTML =
-        '<div class="elx-hero">' +
-          '<div class="badge-big ok">' +
-            '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' +
-          '</div>' +
-          '<div class="h-title">Payment successful</div>' +
-          '<div class="h-sub">Your meter has been credited</div>' +
-        '</div>' +
-        tokenBlock +
-        '<div style="margin-top:18px;">' +
-          '<div class="elx-kv"><span class="k">Disco</span><span class="v">' + esc(disco) + '</span></div>' +
-          (billType ? '<div class="elx-kv"><span class="k">Meter type</span><span class="v">' + esc(String(billType).toUpperCase()) + '</span></div>' : '') +
-          '<div class="elx-kv"><span class="k">Meter</span><span class="v">' + esc(meter) + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Customer</span><span class="v">' + esc(cust) + '</span></div>' +
-          (addr ? '<div class="elx-kv"><span class="k">Address</span><span class="v">' + esc(addr) + '</span></div>' : '') +
-          '<div class="elx-kv"><span class="k">Amount paid</span><span class="v">' + amt + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Payment method</span><span class="v">Wallet</span></div>' +
-          '<div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:12px;font-weight:600;">' + esc(ref) + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Status</span><span class="v" style="color:var(--elx-green);">SUCCESS</span></div>' +
+    function setStatusCard(kind, title, sub) {
+      var card = $('statusCard');
+      card.classList.remove('processing', 'success', 'failed');
+      card.classList.add(kind);
+
+      var icon = $('statusIcon');
+      if (kind === 'processing') {
+        icon.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M5 13l4 4L19 7"/></svg>';
+      } else if (kind === 'success') {
+        icon.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M5 13l4 4L19 7"/></svg>';
+      } else {
+        icon.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M6 18L18 6M6 6l12 12"/></svg>';
+      }
+
+      $('statusTitle').textContent = title;
+      $('statusSub').textContent   = sub;
+    }
+
+    function setInfoCells(product, amount) {
+      $('infoProduct').textContent = product || '—';
+      $('infoAmount').textContent  = amount  || '—';
+    }
+
+    function setRemark(text) {
+      $('infoRemark').textContent = text || '—';
+    }
+
+    function showTokenBlockIfAny(r) {
+      var block = $('tokenBlock');
+      var token = r.token || r.Token || '';
+      var units = r.units || r.kWh || '';
+
+      if (!token) { block.classList.add('elx-hidden'); block.innerHTML = ''; return; }
+
+      block.classList.remove('elx-hidden');
+      block.innerHTML =
+        '<div class="elx-token">' +
+          '<div class="lbl">Your electricity token</div>' +
+          '<div class="tok" id="tokText">' + esc(token) + '</div>' +
+          (units ? '<div class="units">' + esc(units) + ' kWh</div>' : '') +
+          '<button class="tk-copy" id="copyTok" type="button">Copy token</button>' +
         '</div>';
 
       var btn = $('copyTok');
-      if (btn && token) btn.addEventListener('click', function () {
+      if (btn) btn.addEventListener('click', function () {
         try {
           navigator.clipboard.writeText(token);
           btn.textContent = 'Copied ✓';
           setTimeout(function () { btn.textContent = 'Copy token'; }, 2000);
-        } catch (_) {
-          window.prompt('Copy your token:', token);
-        }
+        } catch (_) { window.prompt('Copy your token:', token); }
       });
     }
 
-    function renderProcessing(r) {
-      setHeader('RECEIPT', 'Confirming with provider');
-      showStep(5);
-      $('resultCard').innerHTML =
-        '<div class="elx-hero">' +
-          '<div class="badge-big warn">' +
-            '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
-          '</div>' +
-          '<div class="h-title">Confirming with provider</div>' +
-          '<div class="h-sub">This is taking a bit longer than usual.<br>We\'ll update this screen automatically.</div>' +
-        '</div>' +
-        '<div style="margin-top:16px;">' +
-          '<div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:12px;font-weight:600;">' + esc(r.reference) + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Status</span><span class="v" id="pollStatus">processing</span></div>' +
-        '</div>';
-      pollStatus(r.reference);
+    function setRefreshVisible(visible) {
+      $('btnRefresh').style.display = visible ? 'flex' : 'none';
     }
 
-    function renderFailure(r) {
-      setHeader('RECEIPT', 'Payment failed');
+    function startCountdown(seconds) {
+      stopCountdown();
+      var el = $('countdown');
+      var secEl = $('countdownSec');
+      var remaining = seconds;
+      el.style.display = 'block';
+      secEl.textContent = remaining;
+
+      state.countdownTimer = setInterval(function () {
+        remaining--;
+        secEl.textContent = remaining;
+        if (remaining <= 0) {
+          stopCountdown();
+          goHome();
+        }
+      }, 1000);
+    }
+    function stopCountdown() {
+      if (state.countdownTimer) { clearInterval(state.countdownTimer); state.countdownTimer = null; }
+      var el = $('countdown');
+      if (el) el.style.display = 'none';
+    }
+
+    function renderUpdateProcessing(r) {
+      setHeader('PURCHASE UPDATE', 'Processing');
+      setStatusCard('processing', 'processing', 'in progress');
+      setTrackerState(2);
+      showTokenBlockIfAny({}); /* hide token */
+      setInfoCells(r.product_name || state.productName, fmt(r.amount || state.amount));
+      setRemark(r.remark || 'Your request is being processed by the provider. This usually takes a few seconds.');
+      setRefreshVisible(true);
       showStep(5);
-      $('resultCard').innerHTML =
-        '<div class="elx-hero">' +
-          '<div class="badge-big err">' +
-            '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M6 18L18 6M6 6l12 12"/></svg>' +
-          '</div>' +
-          '<div class="h-title">Payment failed</div>' +
-          '<div class="h-sub">' + esc(r.remark || 'Please try again.') + '</div>' +
-        '</div>' +
-        (r.reference
-          ? '<div style="margin-top:16px;"><div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:12px;font-weight:600;">' + esc(r.reference) + '</span></div></div>'
-          : '');
+
+      /* Auto-poll status */
+      if (r.reference) pollStatus(r.reference);
+    }
+
+    function renderUpdateSuccess(r) {
+      setHeader('PURCHASE UPDATE', 'Successful');
+      setStatusCard('success', 'successful', 'completed');
+      setTrackerState(3); /* all done */
+      showTokenBlockIfAny(r);
+      setInfoCells(r.product_name || state.productName, fmt(r.amount || state.amount));
+      setRemark(r.remark || 'Your electricity purchase was successful.');
+      setRefreshVisible(false);
+      showStep(5);
+
+      /* Auto-return home in 30s */
+      startCountdown(30);
+    }
+
+    function renderUpdateFailed(r) {
+      setHeader('PURCHASE UPDATE', 'Failed');
+      setStatusCard('failed', 'failed', 'not completed');
+      setTrackerState(2); /* stopped at processing */
+      showTokenBlockIfAny({});
+      setInfoCells(r.product_name || state.productName, fmt(r.amount || state.amount));
+      setRemark(r.remark || 'We could not complete this purchase. If you were debited, the amount will be reversed automatically.');
+      setRefreshVisible(false);
+      showStep(5);
     }
 
     function pollStatus(reference) {
       if (state.pollTimer) clearInterval(state.pollTimer);
       var tries = 0, MAX = 72;
+
       state.pollTimer = setInterval(async function () {
         tries++;
         if (tries > MAX) { clearInterval(state.pollTimer); return; }
         try {
           var s = await callApi('/status?reference=' + encodeURIComponent(reference));
-          var el = $('pollStatus');
-          if (el) el.textContent = s.status;
           if (s.status === 'success') {
             clearInterval(state.pollTimer);
-            renderSuccess(Object.assign({}, s, { reference: reference }));
+            renderUpdateSuccess(Object.assign({}, s, { reference: reference }));
           } else if (s.status === 'failed') {
             clearInterval(state.pollTimer);
-            renderFailure(Object.assign({}, s, { reference: reference }));
+            renderUpdateFailed(Object.assign({}, s, { reference: reference }));
           }
         } catch (err) { console.warn('[elec] poll:', err.message); }
       }, 5000);
     }
 
+    /* Refresh button — manual poll */
+    $('btnRefresh').addEventListener('click', async function () {
+      if (!state.reference) return;
+      var btn = this;
+      btn.disabled = true;
+      btn.classList.add('spinning');
+      $('refreshLabel').textContent = 'Checking…';
+      try {
+        var s = await callApi('/status?reference=' + encodeURIComponent(state.reference));
+        if (s.status === 'success') {
+          renderUpdateSuccess(Object.assign({}, s, { reference: state.reference }));
+        } else if (s.status === 'failed') {
+          renderUpdateFailed(Object.assign({}, s, { reference: state.reference }));
+        } else {
+          $('refreshLabel').textContent = 'Still processing — try again';
+          setTimeout(function () { $('refreshLabel').textContent = 'Refresh Status'; }, 2500);
+        }
+      } catch (err) {
+        $('refreshLabel').textContent = 'Could not check — tap to retry';
+        setTimeout(function () { $('refreshLabel').textContent = 'Refresh Status'; }, 2500);
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('spinning');
+      }
+    });
+
+    /* Copy remark */
+    $('btnCopyRemark').addEventListener('click', function () {
+      var text = $('infoRemark').textContent || '';
+      if (!text) return;
+      try {
+        navigator.clipboard.writeText(text);
+        var b = this;
+        b.classList.add('copied');
+        setTimeout(function () { b.classList.remove('copied'); }, 1500);
+      } catch (_) { window.prompt('Copy:', text); }
+    });
+
+    /* Close button — go home */
+    $('btnUpdateClose').addEventListener('click', function () {
+      stopCountdown();
+      if (state.pollTimer) clearInterval(state.pollTimer);
+      goHome();
+    });
+
+    /* Done button — same as close */
+    $('btnDone').addEventListener('click', function () {
+      stopCountdown();
+      if (state.pollTimer) clearInterval(state.pollTimer);
+      goHome();
+    });
+
+    /* Share */
+    $('btnShare').addEventListener('click', function () {
+      if (!state.lastResponse) return;
+      var r = state.lastResponse;
+      var lines = [
+        'Shatova Electricity Purchase',
+        '─────────────',
+        'Product: ' + (r.product_name || state.productName || '—'),
+        'Amount: ' + fmt(r.amount || state.amount),
+        'Meter: ' + (r.meter_number || state.meterNumber || '—'),
+        'Customer: ' + (r.customer_name || (state.verified && state.verified.customer_name) || '—'),
+        'Status: ' + (r.status || '—'),
+        'Reference: ' + (r.reference || '—'),
+        r.token ? ('Token: ' + r.token) : '',
+        r.units ? ('Units: ' + r.units + ' kWh') : ''
+      ].filter(Boolean);
+      var text = lines.join('\n');
+      if (navigator.share) {
+        navigator.share({ title: 'Shatova Receipt', text: text }).catch(function () {});
+      } else {
+        navigator.clipboard.writeText(text)
+          .then(function () { if (window.showToast) window.showToast('Receipt copied', 'success'); })
+          .catch(function () {});
+      }
+    });
+
+    /* Print */
+    $('btnPrint').addEventListener('click', function () {
+      if (!state.lastResponse) return;
+      var r = state.lastResponse;
+      var w = window.open('', '_blank', 'width=400,height=600');
+      if (!w) return;
+      w.document.write(
+        '<!DOCTYPE html><html><head><title>Shatova Receipt</title>' +
+        '<style>body{font-family:-apple-system,sans-serif;padding:24px;color:#0f172a;max-width:340px;margin:0 auto}' +
+        '.brand{text-align:center;font-size:20px;font-weight:800;color:#0a4534;margin-bottom:4px}' +
+        '.sub{text-align:center;font-size:11px;color:#64748b;margin-bottom:20px}' +
+        '.row{display:flex;justify-content:space-between;padding:10px 0;font-size:13px;border-bottom:1px solid #f1f5f9}' +
+        '.label{color:#64748b;font-weight:500}.value{font-weight:700;text-align:right;max-width:60%;word-break:break-word}' +
+        '.tok{margin-top:16px;padding:16px;background:#ecfdf5;border:1.5px dashed #34d399;border-radius:12px;text-align:center}' +
+        '.tok .t{font-family:ui-monospace,monospace;font-size:18px;font-weight:800;letter-spacing:2px;color:#065f46}' +
+        '</style></head><body>' +
+        '<div class="brand">SHATOVA</div><div class="sub">Electricity Receipt</div>' +
+        '<div class="row"><span class="label">Product</span><span class="value">' + esc(r.product_name || state.productName || '—') + '</span></div>' +
+        '<div class="row"><span class="label">Amount</span><span class="value">' + fmt(r.amount || state.amount) + '</span></div>' +
+        '<div class="row"><span class="label">Meter</span><span class="value">' + esc(r.meter_number || state.meterNumber || '—') + '</span></div>' +
+        '<div class="row"><span class="label">Customer</span><span class="value">' + esc(r.customer_name || (state.verified && state.verified.customer_name) || '—') + '</span></div>' +
+        '<div class="row"><span class="label">Reference</span><span class="value">' + esc(r.reference || '—') + '</span></div>' +
+        '<div class="row"><span class="label">Status</span><span class="value">' + esc(r.status || '—') + '</span></div>' +
+        (r.token ? '<div class="tok"><div class="t">' + esc(r.token) + '</div>' + (r.units ? '<div style="margin-top:8px;color:#047857;font-weight:700">' + esc(r.units) + ' kWh</div>' : '') + '</div>' : '') +
+        '<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script>' +
+        '</body></html>'
+      );
+      w.document.close();
+    });
+
+    /* ============================================================
+       RESET
+       ============================================================ */
     function resetAll() {
       if (state.pollTimer) clearInterval(state.pollTimer);
+      stopCountdown();
       state = {
         products: state.products,
         provider: null, billType: null, productName: null,
         meterNumber: '', verified: null, amount: null,
-        reference: null, pollTimer: null, walletBalance: null
+        reference: null, pollTimer: null, walletBalance: null,
+        lastResponse: null, countdownTimer: null
       };
       $('meter').value = '';
       $('amount').value = '';
@@ -1973,10 +2005,12 @@ $('btnPay').addEventListener('click', async function () {
       $('verifyMsg').innerHTML = '';
       $('payMsg').innerHTML = '';
       $('amountMsg').textContent = '';
+      $('tokenBlock').classList.add('elx-hidden');
+      $('tokenBlock').innerHTML = '';
       setHeader('SERVICE', 'Electricity');
       showStep(1);
     }
-    $('btnNew').addEventListener('click', resetAll);
+    $('btnNew') && $('btnNew').addEventListener('click', resetAll);
 
     setHeader('SERVICE', 'Electricity');
     showStep(1);
