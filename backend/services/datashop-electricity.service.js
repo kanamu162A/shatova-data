@@ -1,9 +1,9 @@
 // services/datashop-electricity.service.js
 // ============================================================
 // SHATOVA — DataShop Africa · Electricity client
-//   - verify meter (prepaid / postpaid) — multi-path probe
-//   - purchase electricity
-//   - status check (reuses shared /transactions/:ref path family)
+//   - verify meter   → POST /verification
+//   - purchase       → POST /purchase
+//   - status check   → GET  /transactions/:ref (with fallbacks)
 //
 //   ⚠️  NO database writes in this file. Pure HTTP.
 //   ⚠️  NO product-name fallback loop. Electricity products map
@@ -64,8 +64,15 @@ export function normalizeProviderError(rawMessage) {
     return 'This product is temporarily unavailable. Please try another option.';
   }
   if (msg.includes('below minimum') || msg.includes('minimum amount') ||
-      msg.includes('amount too low')) {
+      msg.includes('amount too low') || msg.includes('min_purchase')) {
     return 'The amount entered is below the minimum for this disco.';
+  }
+  if (msg.includes('above maximum') || msg.includes('maximum amount') ||
+      msg.includes('amount too high') || msg.includes('max_purchase')) {
+    return 'The amount entered is above the maximum for this meter.';
+  }
+  if (msg.includes('arrears') || msg.includes('outstanding')) {
+    return 'This meter has outstanding arrears. Please settle them before purchasing.';
   }
   if (msg.includes('provider') || msg.includes('upstream') ||
       msg.includes('datashop') || msg.includes('internal') ||
@@ -134,97 +141,56 @@ async function request(method, path, body) {
 }
 
 /* ============================================================
-   VERIFY METER — multi-path probe
-   Tries candidate paths until one returns non-404.
-   Caches the winner for process lifetime.
+   VERIFY METER
+   POST /verification
+   Body: { customer_id: <meter>, product_name: <string> }
+
+   Confirmed DataShop response (200):
+     {
+       status: true,
+       message: "Verification completed successfully.",
+       data: {
+         service_name, customer_id, customer_name, customer_address,
+         customer_arrears, outstanding, meter_number, account_number,
+         district, service_band, min_purchase_amount,
+         max_purchase_amount, business_unit, customer_account_type
+       }
+     }
    ============================================================ */
-const VERIFY_PATHS = [
-  '/verify-customer',
-  '/electricity/verify',
-  '/electricity/verify-customer',
-  '/bill/verify',
-  '/bills/verify',
-  '/verify-meter',
-  '/meter/verify',
-  '/electricity/meter/verify',
-  '/validate-meter',
-  '/validate-customer',
-];
-
-let _cachedVerifyPath = null;
-
 export async function verifyElectricityMeter({ meterNumber, productName }) {
   if (!meterNumber) throw new Error('meterNumber is required');
   if (!productName) throw new Error('productName is required');
 
-  const body = {
+  const res = await request('POST', '/verification', {
     customer_id:  String(meterNumber),
-    meter_number: String(meterNumber),
     product_name: String(productName),
-  };
+  });
 
-  const paths = _cachedVerifyPath
-    ? [_cachedVerifyPath, ...VERIFY_PATHS.filter(p => p !== _cachedVerifyPath)]
-    : VERIFY_PATHS;
+  const d = res.data || {};
+  /* Some responses nest the payload one level deeper */
+  const payload = d.data && typeof d.data === 'object' ? d.data : d;
 
-  let lastErr = null;
+  /* Trim — DataShop pads customer_name with trailing spaces */
+  const trim = (v) => (typeof v === 'string' ? v.trim() : v);
 
-  for (const path of paths) {
-    try {
-      console.log(`[elec-datashop] verify probe → ${path}`);
-      const res = await request('POST', path, body);
-      _cachedVerifyPath = path;
-      console.log(`[elec-datashop] ✅ verify path found: ${path}`);
-
-      const d = res.data || {};
-      const payload = d.data && typeof d.data === 'object' ? d.data : d;
-
-      const minimumRaw = payload.minimum_amount ?? payload.minimumAmount ?? null;
-      const outstandingRaw =
-        payload.outstanding_balance ?? payload.outstandingBalance ??
-        payload.balance ?? null;
-
-      return {
-        verified:            true,
-        meter_number:        payload.meter_number || String(meterNumber),
-        customer_name:       payload.customer_name || null,
-        customer_address:    payload.customer_address || null,
-        disco:               payload.disco || null,
-        product_name:        payload.product_name || productName,
-        minimum_amount:      minimumRaw != null ? Number(minimumRaw) : null,
-        outstanding_balance: outstandingRaw != null ? Number(outstandingRaw) : null,
-        raw:                 payload,
-      };
-    } catch (err) {
-      lastErr = err;
-
-      /* 404 = wrong path → try next */
-      if (err.statusCode === 404) {
-        console.warn(`[elec-datashop] verify 404: ${path}`);
-        continue;
-      }
-
-      /* Any other status means the path exists but rejected our payload.
-         Bubble up — no point trying more paths. */
-      console.error(`[elec-datashop] verify error at ${path}:`, err.rawMessage || err.message);
-      throw err;
-    }
-  }
-
-  /* All paths 404'd. DataShop doesn't expose a verify endpoint for
-     electricity. Return a soft-verified stub so purchase can proceed.
-     The real customer name will arrive with the purchase response. */
-  console.warn('[elec-datashop] all verify paths 404 — soft verify fallback');
   return {
-    verified:            true,
-    meter_number:        String(meterNumber),
-    customer_name:       null,
-    customer_address:    null,
-    disco:               null,
-    product_name:        productName,
-    minimum_amount:      null,
-    outstanding_balance: null,
-    raw:                 { soft_verify: true, last_error: lastErr?.rawMessage || null },
+    verified:              true,
+    meter_number:          trim(payload.meter_number) || String(meterNumber),
+    customer_name:         trim(payload.customer_name) || null,
+    customer_address:      trim(payload.customer_address) || null,
+    service_name:          trim(payload.service_name) || null,           // "Jos (JED)"
+    customer_account_type: trim(payload.customer_account_type) || null,  // "NMD"
+    account_number:        trim(payload.account_number) || null,
+    district:              trim(payload.district) || null,
+    business_unit:         trim(payload.business_unit) || null,
+    service_band:          trim(payload.service_band) || null,
+
+    /* Numbers — DataShop may return strings, numbers, or "" */
+    minimum_amount:        Number(payload.min_purchase_amount || 0) || null,
+    maximum_amount:        Number(payload.max_purchase_amount || 0) || null,
+    customer_arrears:      Number(payload.customer_arrears || 0) || 0,
+
+    raw:                   payload,
   };
 }
 
@@ -269,21 +235,23 @@ export async function buyElectricity({
     payload.standard_token ||
     null;
 
+  const trim = (v) => (typeof v === 'string' ? v.trim() : v);
+
   return {
     ok:                 true,
     provider_reference: payload.reference || res.provider_reference || reference,
-    token:              token ? String(token) : null,
+    token:              token ? String(token).trim() : null,
     units:              payload.units != null ? String(payload.units) : null,
     quantity:           Number(payload.quantity ?? amt),
     paid_amount:        Number(payload.paid_amount ?? 0),
-    customer_name:      payload.customer_name    || null,
-    customer_address:   payload.customer_address || null,
-    disco:              payload.disco            || null,
-    provider:           payload.provider         || null,
-    meter_number:       payload.meter_number     || String(meterNumber),
-    product_name:       payload.product_name     || productName,
-    transaction_status: payload.transaction_status || null,
-    remark:             payload.remark           || null,
+    customer_name:      trim(payload.customer_name)    || null,
+    customer_address:   trim(payload.customer_address) || null,
+    disco:              trim(payload.disco)            || null,
+    provider:           trim(payload.provider)         || null,
+    meter_number:       trim(payload.meter_number)     || String(meterNumber),
+    product_name:       trim(payload.product_name)     || productName,
+    transaction_status: trim(payload.transaction_status) || null,
+    remark:             trim(payload.remark)           || null,
     raw:                payload,
   };
 }
@@ -291,8 +259,7 @@ export async function buyElectricity({
 /* ============================================================
    STATUS CHECK
    Reuses the same path family as vtu.service.js. Electricity
-   purchases are stored in DataShop under the same /transactions
-   endpoint, keyed by our merchant reference.
+   purchases are keyed by our merchant reference.
    ============================================================ */
 const STATUS_PATHS = [
   (ref) => `/transactions/${encodeURIComponent(ref)}`,
@@ -355,7 +322,6 @@ export async function checkElectricityStatus(reference) {
 
 /* ============================================================
    STATUS NORMALIZER
-   Same logic as vtu.service.js, scoped for electricity
    Returns: 'successful' | 'failed' | 'processing'
    ============================================================ */
 function matchStatusString(raw) {
@@ -431,7 +397,7 @@ export function normalizeProviderStatus(payload) {
 }
 
 /* ============================================================
-   REFERENCE GENERATOR — prefixed for easy identification
+   REFERENCE GENERATOR
    ============================================================ */
 export function generateReference(prefix = 'SHATOVA-ELEC') {
   const ts   = Date.now().toString(36).toUpperCase();
