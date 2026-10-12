@@ -83,17 +83,14 @@
     }
 
     /* ============================================================
-       STICKY PAGE HEADER
+       STICKY PAGE HEADER — matches sample
        ============================================================ */
     .elx-hdr {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 14px 18px 16px;
-      background: rgba(241, 245, 249, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      gap: 12px;
+      padding: 12px 16px 14px;
+      background: transparent;
       position: sticky;
       top: 0;
       z-index: 40;
@@ -101,22 +98,21 @@
     }
 
     .elx-hdr-back {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       background: #fff;
-      border: 1px solid var(--elx-line);
+      border: 1px solid rgba(15, 23, 42, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      transition: transform .15s var(--elx-ease), border-color .15s, box-shadow .15s;
-      box-shadow: var(--elx-shadow);
+      transition: transform .15s var(--elx-ease), box-shadow .15s;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
     }
     .elx-hdr-back:hover {
-      border-color: #cbd5e1;
-      box-shadow: var(--elx-shadow-md);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
     }
     .elx-hdr-back:active { transform: scale(.94); }
     .elx-hdr-back svg { width: 18px; height: 18px; color: var(--elx-ink); }
@@ -124,36 +120,36 @@
     .elx-hdr-info { flex: 1; min-width: 0; }
     .elx-hdr-info .eyebrow {
       font-size: 10px;
-      color: var(--elx-muted-2);
+      color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: .14em;
       font-weight: 700;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .elx-hdr-info .title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 800;
-      color: var(--elx-ink);
+      color: #0f172a;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: -.02em;
-      line-height: 1.2;
+      letter-spacing: -.025em;
+      line-height: 1.15;
     }
 
     .elx-hdr-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
       background: linear-gradient(145deg, #10b981 0%, #059669 100%);
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 14px rgba(5, 150, 105, .32);
+      box-shadow: 0 4px 14px rgba(5, 150, 105, .3);
     }
-    .elx-hdr-icon svg { width: 22px; height: 22px; }
+    .elx-hdr-icon svg { width: 20px; height: 20px; }
 
     /* ============================================================
        SCROLLABLE MAIN AREA
@@ -164,14 +160,14 @@
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
-      padding: 12px 16px 120px;
+      padding: 4px 16px 120px;
     }
 
     /* Scrollable list regions (discos + products) */
     .elx-scroll-region {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     /* ============================================================
@@ -186,6 +182,7 @@
       box-shadow: var(--elx-shadow);
     }
     .elx-card.tight { padding: 14px 16px; }
+    .elx-card.tight .elx-logo { border-radius: 50%; }
 
     .elx-label {
       font-size: 11px;
@@ -197,91 +194,112 @@
     }
 
     /* ============================================================
-       DISCO ROWS
+       DISCO ROWS — soft pill cards (sample match)
        ============================================================ */
     .elx-row {
       display: flex;
       align-items: center;
       gap: 14px;
-      background: #fff;
-      border: 1px solid var(--elx-line);
-      border-radius: var(--elx-radius);
-      padding: 14px 16px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 22px;
+      padding: 14px 16px 14px 14px;
       cursor: pointer;
-      transition: transform .15s var(--elx-ease), border-color .15s, box-shadow .2s;
-      box-shadow: var(--elx-shadow);
+      transition: transform .15s var(--elx-ease), box-shadow .2s, border-color .15s;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 4px 14px rgba(15, 23, 42, 0.05);
       -webkit-user-select: none;
       user-select: none;
     }
     .elx-row:hover {
-      border-color: #cbd5e1;
-      box-shadow: var(--elx-shadow-md);
+      border-color: rgba(15, 23, 42, 0.1);
+      box-shadow:
+        0 2px 6px rgba(15, 23, 42, 0.05),
+        0 8px 22px rgba(15, 23, 42, 0.08);
       transform: translateY(-1px);
     }
     .elx-row:active {
       transform: scale(.985);
-      border-color: var(--elx-green);
+      border-color: rgba(5, 150, 105, 0.35);
     }
 
+    /* Brand logo badge — circular, colored */
     .elx-logo {
       width: 48px;
       height: 48px;
-      border-radius: 13px;
-      background: #f8fafc;
+      border-radius: 50%;
+      background: #f1f5f9;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       overflow: hidden;
-      border: 1px solid var(--elx-line);
-      box-shadow: inset 0 1px 2px rgba(15,23,42,.03);
+      border: none;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
     }
     .elx-logo img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 6px;
+      padding: 7px;
       background: #fff;
     }
     .elx-logo .ini {
       font-weight: 800;
-      font-size: 14px;
-      color: #1e40af;
-      letter-spacing: .3px;
-      background: linear-gradient(145deg, #e0f2fe 0%, #dbeafe 100%);
+      font-size: 13px;
+      letter-spacing: 0.2px;
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,.12);
     }
+
+    /* Brand colour presets for initials fallback */
+    .elx-logo.ini-yola   { background: linear-gradient(145deg, #ef4444, #dc2626); }
+    .elx-logo.ini-ph     { background: linear-gradient(145deg, #3b82f6, #2563eb); }
+    .elx-logo.ini-kano   { background: linear-gradient(145deg, #0ea5e9, #0284c7); }
+    .elx-logo.ini-kaduna { background: linear-gradient(145deg, #22c55e, #16a34a); }
+    .elx-logo.ini-jos    { background: linear-gradient(145deg, #f59e0b, #d97706); }
+    .elx-logo.ini-ikeja  { background: linear-gradient(145deg, #1e293b, #0f172a); }
+    .elx-logo.ini-ibadan { background: linear-gradient(145deg, #f97316, #ea580c); }
+    .elx-logo.ini-abuja  { background: linear-gradient(145deg, #6366f1, #4f46e5); }
+    .elx-logo.ini-eko    { background: linear-gradient(145deg, #14b8a6, #0d9488); }
+    .elx-logo.ini-enugu  { background: linear-gradient(145deg, #8b5cf6, #7c3aed); }
+    .elx-logo.ini-benin  { background: linear-gradient(145deg, #eab308, #ca8a04); }
+    .elx-logo.ini-aba    { background: linear-gradient(145deg, #ec4899, #db2777); }
+    .elx-logo.ini-default{ background: linear-gradient(145deg, #64748b, #475569); }
 
     .elx-info { flex: 1; min-width: 0; }
     .elx-info .name {
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 750;
-      color: var(--elx-ink);
-      margin-bottom: 3px;
-      letter-spacing: -.015em;
+      color: #0f172a;
+      margin-bottom: 2px;
+      letter-spacing: -.01em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-transform: uppercase;
     }
     .elx-info .meta {
       font-size: 12.5px;
-      color: var(--elx-muted);
+      color: #94a3b8;
       font-weight: 500;
     }
     .elx-chev {
-      width: 20px;
-      height: 20px;
-      color: var(--elx-muted-2);
+      width: 18px;
+      height: 18px;
+      color: #cbd5e1;
       flex-shrink: 0;
       transition: color .15s, transform .15s;
     }
     .elx-row:active .elx-chev {
       color: var(--elx-green);
-      transform: translateX(3px);
+      transform: translateX(2px);
     }
 
     /* ============================================================
@@ -317,7 +335,7 @@
     .elx-prod-top .elx-logo {
       width: 44px;
       height: 44px;
-      border-radius: 12px;
+      border-radius: 50%;
     }
 
     .elx-prod-name { flex: 1; min-width: 0; }
@@ -930,45 +948,59 @@
     var API = '/api/v1/electricity';
     var TOKEN_KEYS = ['token','authToken','access_token','accessToken','shatova_token','jwt'];
 
-    /* Real brand logos (Wikimedia) + multi-fallback */
+    /* Real brand logos (Wikimedia) + multi-fallback + brand colour class */
     var DISCO_LOGOS = {
-      'Aba Power': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/Aba_Power_logo.png/120px-Aba_Power_logo.png'
-      ],
-      'Abuja Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/AEDC_logo.png/120px-AEDC_logo.png',
-        'https://upload.wikimedia.org/wikipedia/en/thumb/3/3d/Abuja_Electricity_Distribution_Company_logo.png/120px-Abuja_Electricity_Distribution_Company_logo.png'
-      ],
-      'Benin Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/BEDC_logo.png/120px-BEDC_logo.png'
-      ],
-      'Eko Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Eko_Electricity_Distribution_Company_logo.png/120px-Eko_Electricity_Distribution_Company_logo.png'
-      ],
-      'Enugu Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Enugu_Electricity_Distribution_Company_logo.png/120px-Enugu_Electricity_Distribution_Company_logo.png'
-      ],
-      'Ibadan Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/IBEDC_logo.png/120px-IBEDC_logo.png'
-      ],
-      'Ikeja Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/1/1e/Ikeja_Electric_logo.png/120px-Ikeja_Electric_logo.png'
-      ],
-      'Jos Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Jos_Electricity_Distribution_Company_logo.png/120px-Jos_Electricity_Distribution_Company_logo.png'
-      ],
-      'Kaduna Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/6/6d/Kaduna_Electricity_Company_logo.png/120px-Kaduna_Electricity_Company_logo.png'
-      ],
-      'Kano Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Kano_Electricity_Distribution_Company_logo.png/120px-Kano_Electricity_Distribution_Company_logo.png'
-      ],
-      'Portharcourt Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/5/5c/Port_Harcourt_Electricity_Distribution_Company_logo.png/120px-Port_Harcourt_Electricity_Distribution_Company_logo.png'
-      ],
-      'Yola Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/2/2e/Yola_Electricity_Distribution_Company_logo.png/120px-Yola_Electricity_Distribution_Company_logo.png'
-      ]
+      'Aba Power': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/Aba_Power_logo.png/120px-Aba_Power_logo.png'],
+        cls: 'ini-aba', short: 'ABA'
+      },
+      'Abuja Electric': {
+        urls: [
+          'https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/AEDC_logo.png/120px-AEDC_logo.png',
+          'https://upload.wikimedia.org/wikipedia/en/thumb/3/3d/Abuja_Electricity_Distribution_Company_logo.png/120px-Abuja_Electricity_Distribution_Company_logo.png'
+        ],
+        cls: 'ini-abuja', short: 'AEDC'
+      },
+      'Benin Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/BEDC_logo.png/120px-BEDC_logo.png'],
+        cls: 'ini-benin', short: 'BEDC'
+      },
+      'Eko Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Eko_Electricity_Distribution_Company_logo.png/120px-Eko_Electricity_Distribution_Company_logo.png'],
+        cls: 'ini-eko', short: 'EKEDC'
+      },
+      'Enugu Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Enugu_Electricity_Distribution_Company_logo.png/120px-Enugu_Electricity_Distribution_Company_logo.png'],
+        cls: 'ini-enugu', short: 'EEDC'
+      },
+      'Ibadan Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/IBEDC_logo.png/120px-IBEDC_logo.png'],
+        cls: 'ini-ibadan', short: 'IBEDC'
+      },
+      'Ikeja Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/1/1e/Ikeja_Electric_logo.png/120px-Ikeja_Electric_logo.png'],
+        cls: 'ini-ikeja', short: 'IKEDC'
+      },
+      'Jos Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Jos_Electricity_Distribution_Company_logo.png/120px-Jos_Electricity_Distribution_Company_logo.png'],
+        cls: 'ini-jos', short: 'JED'
+      },
+      'Kaduna Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/6/6d/Kaduna_Electricity_Company_logo.png/120px-Kaduna_Electricity_Company_logo.png'],
+        cls: 'ini-kaduna', short: 'KAEDCO'
+      },
+      'Kano Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Kano_Electricity_Distribution_Company_logo.png/120px-Kano_Electricity_Distribution_Company_logo.png'],
+        cls: 'ini-kano', short: 'KEDCO'
+      },
+      'Portharcourt Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/5/5c/Port_Harcourt_Electricity_Distribution_Company_logo.png/120px-Port_Harcourt_Electricity_Distribution_Company_logo.png'],
+        cls: 'ini-ph', short: 'PHED'
+      },
+      'Yola Electric': {
+        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/2/2e/Yola_Electricity_Distribution_Company_logo.png/120px-Yola_Electricity_Distribution_Company_logo.png'],
+        cls: 'ini-yola', short: 'YEDC'
+      }
     };
 
     function $(id) { return document.getElementById(id); }
@@ -1080,16 +1112,20 @@
     }
 
     function logoHtml(provider, size) {
-      var urls = DISCO_LOGOS[provider] || [];
+      var meta = DISCO_LOGOS[provider] || { urls: [], cls: 'ini-default', short: initials(provider) };
+      var urls = meta.urls || [];
       var first = urls[0] || '';
       var rest  = urls.slice(1).join('|');
       var style = size ? ' style="width:' + size + 'px;height:' + size + 'px;"' : '';
-      return '<div class="elx-logo"' + style + '>' +
+      var cls = meta.cls || 'ini-default';
+      var short = meta.short || initials(provider);
+      return '<div class="elx-logo ' + cls + '"' + style +
+               ' data-short="' + esc(short) + '" data-cls="' + esc(cls) + '">' +
                (first
                  ? '<img src="' + esc(first) + '" alt="' + esc(provider) + '" ' +
                    'data-fallbacks="' + esc(rest) + '" ' +
                    'onerror="elxLogoFallback(this)" />'
-                 : '<div class="ini">' + esc(initials(provider)) + '</div>') +
+                 : '<div class="ini">' + esc(short) + '</div>') +
              '</div>';
     }
     window.elxLogoFallback = function (imgEl) {
@@ -1100,7 +1136,8 @@
         return;
       }
       var wrap = imgEl.parentNode;
-      wrap.innerHTML = '<div class="ini">' + esc(initials(imgEl.alt || '')) + '</div>';
+      var short = wrap.getAttribute('data-short') || initials(imgEl.alt || '');
+      wrap.innerHTML = '<div class="ini">' + esc(short) + '</div>';
     };
 
     function renderDiscos(providers) {
