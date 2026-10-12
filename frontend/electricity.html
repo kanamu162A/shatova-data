@@ -16,129 +16,241 @@
 
   <style>
     /* ============================================================
-       ELECTRICITY — page-specific styles (all namespaced .elec-)
+       ELECTRICITY — page styles (light theme, Shatova palette)
+       Namespaced .elec- to avoid collisions.
        ============================================================ */
+    :root {
+      --elec-brand:   #16a34a;
+      --elec-brand-2: #15803d;
+      --elec-brand-soft: #ecfdf5;
+      --elec-text:    #0f172a;
+      --elec-muted:   #64748b;
+      --elec-line:    #e2e8f0;
+      --elec-card:    #ffffff;
+      --elec-bg:      #f7f9fc;
+      --elec-bg-soft: #f8fafc;
+    }
+
+    body.elec-body {
+      background: var(--elec-bg);
+      color: var(--elec-text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .elec-wrap {
       max-width: 520px;
       margin: 0 auto;
-      padding: 16px 16px 120px;
+      padding: 12px 16px 140px;
     }
 
-    .elec-title {
-      font-size: 22px;
+    /* ---------- Top bar (back arrow + title) ---------- */
+    .elec-topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0 14px;
+    }
+    .elec-back {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid var(--elec-line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: .15s;
+    }
+    .elec-back:active { transform: scale(.94); }
+    .elec-back svg { width: 18px; height: 18px; color: var(--elec-text); }
+
+    .elec-heading {
+      flex: 1;
+      min-width: 0;
+    }
+    .elec-heading .eyebrow {
+      font-size: 10.5px;
+      color: var(--elec-muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .elec-heading .title {
+      font-size: 17px;
       font-weight: 800;
-      margin: 4px 0 4px;
-      color: var(--text, #0f172a);
-    }
-    .elec-sub {
-      font-size: 13px;
-      color: var(--muted, #64748b);
-      margin-bottom: 18px;
+      color: var(--elec-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
+    /* ---------- Card ---------- */
     .elec-card {
-      background: var(--card, #ffffff);
-      border: 1px solid var(--line, #e2e8f0);
+      background: var(--elec-card);
+      border: 1px solid var(--elec-line);
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 14px;
-      box-shadow: 0 1px 2px rgba(0,0,0,.03);
+      box-shadow: 0 1px 2px rgba(15,23,42,.03);
     }
 
-    .elec-label {
+    .elec-section-label {
       font-size: 11px;
-      color: var(--muted, #64748b);
+      color: var(--elec-muted);
       text-transform: uppercase;
       letter-spacing: .08em;
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
-    /* ---------- Disco grid ---------- */
-    .elec-discos {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .elec-disco {
-      background: var(--bg-soft, #f8fafc);
-      border: 1.5px solid var(--line, #e2e8f0);
-      border-radius: 12px;
-      padding: 14px 10px;
-      text-align: center;
+    /* ---------- Product list (rows, like DataShop) ---------- */
+    .elec-product-list { display: flex; flex-direction: column; gap: 10px; }
+    .elec-product {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--elec-card);
+      border: 1px solid var(--elec-line);
+      border-radius: 14px;
+      padding: 14px;
       cursor: pointer;
       transition: .15s;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text, #0f172a);
-      -webkit-tap-highlight-color: transparent;
     }
-    .elec-disco:active { transform: scale(.97); }
-    .elec-disco.active {
-      border-color: var(--brand, #16a34a);
-      background: var(--brand-soft, #ecfdf5);
-      color: var(--brand, #16a34a);
+    .elec-product:active { transform: scale(.985); background: #fbfcfe; }
+    .elec-product.selected {
+      border-color: var(--elec-brand);
+      box-shadow: 0 0 0 3px rgba(22,163,74,.12);
     }
-    .elec-disco .ini {
-      display: block;
-      width: 34px; height: 34px;
-      line-height: 34px;
+    .elec-product .logo {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      background: var(--line, #e2e8f0);
-      color: var(--muted, #64748b);
-      margin: 0 auto 6px;
+      background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 800;
       font-size: 13px;
-      transition: .15s;
+      flex-shrink: 0;
+      letter-spacing: .5px;
+      overflow: hidden;
     }
-    .elec-disco.active .ini {
-      background: var(--brand, #16a34a);
-      color: #fff;
+    .elec-product .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .elec-product .info { flex: 1; min-width: 0; }
+    .elec-product .name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--elec-text);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .elec-product .meta {
+      font-size: 12px;
+      color: var(--elec-muted);
+      font-weight: 500;
+    }
+    .elec-product .chev {
+      width: 20px;
+      height: 20px;
+      color: var(--elec-muted);
+      flex-shrink: 0;
     }
 
-    /* ---------- Bill-type toggle ---------- */
-    .elec-toggle {
-      display: flex;
-      gap: 6px;
-      background: var(--bg-soft, #f1f5f9);
-      padding: 4px;
-      border-radius: 12px;
-    }
-    .elec-toggle button {
-      flex: 1;
-      background: transparent;
-      border: 0;
-      color: var(--muted, #64748b);
-      padding: 11px;
-      font-weight: 700;
-      border-radius: 9px;
+    /* ---------- Bill-type list ---------- */
+    .elec-bill-list { display: flex; flex-direction: column; gap: 10px; }
+    .elec-bill {
+      background: #fff;
+      border: 1px solid var(--elec-line);
+      border-radius: 14px;
+      padding: 16px 14px;
       cursor: pointer;
-      font-size: 13px;
       transition: .15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .elec-toggle button.on {
-      background: var(--brand, #16a34a);
-      color: #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,.15);
+    .elec-bill:active { transform: scale(.985); }
+    .elec-bill.selected {
+      border-color: var(--elec-brand);
+      background: var(--elec-brand-soft);
+    }
+    .elec-bill .ic {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: var(--elec-brand-soft);
+      color: var(--elec-brand);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .elec-bill.selected .ic { background: var(--elec-brand); color: #fff; }
+    .elec-bill .info { flex: 1; }
+    .elec-bill .name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--elec-text);
+      margin-bottom: 2px;
+    }
+    .elec-bill .sub {
+      font-size: 12px;
+      color: var(--elec-muted);
     }
 
     /* ---------- Inputs ---------- */
     .elec-input {
       width: 100%;
-      background: var(--bg-soft, #f8fafc);
-      border: 1.5px solid var(--line, #e2e8f0);
-      color: var(--text, #0f172a);
-      padding: 14px 14px;
+      background: #fff;
+      border: 1.5px solid var(--elec-line);
+      color: var(--elec-text);
+      padding: 15px 14px;
       border-radius: 12px;
       font-size: 16px;
       outline: none;
       font-family: inherit;
+      font-weight: 600;
       transition: .15s;
       box-sizing: border-box;
     }
-    .elec-input:focus { border-color: var(--brand, #16a34a); }
+    .elec-input::placeholder { color: #94a3b8; font-weight: 500; }
+    .elec-input:focus { border-color: var(--elec-brand); box-shadow: 0 0 0 3px rgba(22,163,74,.1); }
 
-    /* ---------- Quick amount chips ---------- */
+    .elec-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .elec-input-row .elec-input { flex: 1; }
+    .elec-verify-inline {
+      padding: 0 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--elec-brand);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: .15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .elec-verify-inline:active:not(:disabled) { transform: scale(.97); }
+    .elec-verify-inline:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ---------- Amount chips ---------- */
     .elec-chips {
       display: flex;
       gap: 8px;
@@ -146,24 +258,25 @@
       margin-top: 10px;
     }
     .elec-chip {
-      background: var(--bg-soft, #f8fafc);
-      border: 1.5px solid var(--line, #e2e8f0);
+      background: #fff;
+      border: 1.5px solid var(--elec-line);
       padding: 8px 14px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
-      color: var(--text, #0f172a);
+      color: var(--elec-text);
       transition: .15s;
+      font-family: inherit;
     }
-    .elec-chip:active { transform: scale(.96); }
+    .elec-chip:active { transform: scale(.95); }
     .elec-chip.active {
-      background: var(--brand-soft, #ecfdf5);
-      border-color: var(--brand, #16a34a);
-      color: var(--brand, #16a34a);
+      background: var(--elec-brand);
+      border-color: var(--elec-brand);
+      color: #fff;
     }
 
-    /* ---------- Buttons ---------- */
+    /* ---------- Primary / ghost buttons ---------- */
     .elec-btn {
       width: 100%;
       border: 0;
@@ -175,96 +288,122 @@
       transition: .15s;
       font-family: inherit;
       margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .elec-btn.primary {
-      background: var(--brand, #16a34a);
+      background: var(--elec-brand);
       color: #fff;
-      box-shadow: 0 4px 12px rgba(22,163,74,.25);
+      box-shadow: 0 4px 14px rgba(22,163,74,.28);
     }
-    .elec-btn.primary:active:not(:disabled) { transform: scale(.98); }
-    .elec-btn.primary:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+    .elec-btn.primary:active:not(:disabled) { transform: scale(.985); }
+    .elec-btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
     .elec-btn.ghost {
       background: transparent;
-      border: 1.5px solid var(--line, #e2e8f0);
-      color: var(--text, #0f172a);
+      border: 1.5px solid var(--elec-line);
+      color: var(--elec-text);
     }
+    .elec-btn.ghost:active { transform: scale(.985); background: #f8fafc; }
 
-    /* ---------- Key-value rows ---------- */
+    /* ---------- Key-value rows (receipt) ---------- */
     .elec-kv {
       display: flex;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px dashed var(--line, #e2e8f0);
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #f1f5f9;
       font-size: 13.5px;
     }
     .elec-kv:last-child { border-bottom: 0; }
-    .elec-kv .k { color: var(--muted, #64748b); font-weight: 500; }
+    .elec-kv .k { color: var(--elec-muted); font-weight: 500; }
     .elec-kv .v {
       font-weight: 700;
       text-align: right;
-      max-width: 60%;
-      color: var(--text, #0f172a);
+      color: var(--elec-text);
       word-break: break-word;
+      flex: 1;
+      min-width: 0;
     }
 
-    /* ---------- Verified box ---------- */
+    /* ---------- Verified customer block ---------- */
     .elec-verified {
-      background: #ecfdf5;
+      background: var(--elec-brand-soft);
       border: 1.5px solid #86efac;
       padding: 14px;
       border-radius: 12px;
       margin-top: 12px;
     }
+    .elec-verified .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--elec-brand);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .elec-verified .badge svg { width: 13px; height: 13px; }
     .elec-verified .name {
       color: #065f46;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 15px;
       margin-bottom: 4px;
+      line-height: 1.3;
     }
     .elec-verified .addr {
       color: #047857;
-      font-size: 12px;
+      font-size: 12.5px;
       line-height: 1.5;
     }
 
     /* ---------- Token display ---------- */
     .elec-tokenbox {
-      background: #f0fdf4;
-      border: 1.5px dashed #16a34a;
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1.5px dashed var(--elec-brand);
       border-radius: 14px;
-      padding: 18px 14px;
-      margin-top: 12px;
+      padding: 20px 14px;
+      margin-top: 14px;
       text-align: center;
     }
-    .elec-tokenbox .tok {
-      font-family: ui-monospace, Menlo, monospace;
-      font-size: 19px;
+    .elec-tokenbox .lbl {
+      font-size: 10.5px;
       font-weight: 800;
-      letter-spacing: 2.5px;
+      color: #047857;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 10px;
+    }
+    .elec-tokenbox .tok {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 3px;
       color: #065f46;
       word-break: break-all;
       line-height: 1.4;
     }
     .elec-tokenbox .units {
       color: #047857;
-      font-size: 12px;
-      margin-top: 8px;
-      font-weight: 600;
+      font-size: 12.5px;
+      margin-top: 10px;
+      font-weight: 700;
     }
     .elec-copy {
-      margin-top: 12px;
-      background: #16a34a;
+      margin-top: 14px;
+      background: var(--elec-brand);
       border: 0;
       color: #fff;
-      padding: 9px 18px;
+      padding: 10px 20px;
       border-radius: 10px;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
+      font-family: inherit;
     }
     .elec-copy:active { transform: scale(.96); }
 
@@ -275,147 +414,154 @@
       font-size: 13px;
       margin-top: 10px;
       font-weight: 600;
-      line-height: 1.45;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
     }
-    .elec-alert.err   { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-    .elec-alert.warn  { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
-    .elec-alert.ok    { background: #ecfdf5; border: 1px solid #86efac; color: #065f46; }
+    .elec-alert.err  { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .elec-alert.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .elec-alert.ok   { background: var(--elec-brand-soft); border: 1px solid #86efac; color: #065f46; }
 
     /* ---------- Spinner ---------- */
     .elec-spinner {
       display: inline-block;
-      width: 15px; height: 15px;
-      border: 2px solid rgba(255,255,255,.45);
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.4);
       border-top-color: #fff;
       border-radius: 50%;
-      animation: elec-spin .8s linear infinite;
+      animation: elec-spin .7s linear infinite;
       vertical-align: middle;
-      margin-right: 8px;
-      position: relative;
-      top: -1px;
+      flex-shrink: 0;
     }
     .elec-alert.ok .elec-spinner {
-      border-color: rgba(6,95,70,.35);
+      border-color: rgba(6,95,70,.25);
       border-top-color: #065f46;
     }
     @keyframes elec-spin { to { transform: rotate(360deg); } }
 
-    /* ---------- Step dots ---------- */
-    .elec-dots {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      margin: 4px 0 18px;
+    /* ---------- Skeleton ---------- */
+    .elec-skel {
+      background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+      background-size: 200% 100%;
+      animation: elec-shimmer 1.4s infinite;
+      border-radius: 8px;
     }
-    .elec-dots i {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--line, #e2e8f0);
-      transition: .2s;
-    }
-    .elec-dots i.on { background: var(--brand, #16a34a); }
+    @keyframes elec-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
     .elec-hidden { display: none !important; }
-    .elec-muted  { color: var(--muted, #64748b); font-size: 12.5px; }
+    .elec-muted  { color: var(--elec-muted); font-size: 12.5px; }
     .elec-center { text-align: center; }
+    .elec-mb-0   { margin-bottom: 0 !important; }
+    .elec-mt-12  { margin-top: 12px; }
   </style>
 </head>
-<body class="home">
+<body class="home elec-body">
 
   <div id="app-header"></div>
 
   <main class="app-container">
     <div class="elec-wrap">
 
-      <h1 class="elec-title">Electricity</h1>
-      <div class="elec-sub">Pay any Nigerian disco — prepaid or postpaid</div>
-
-      <div class="elec-dots">
-        <i id="d1" class="on"></i><i id="d2"></i><i id="d3"></i><i id="d4"></i>
+      <!-- ============================================================
+           TOP BAR — back + title (changes per step)
+           ============================================================ -->
+      <div class="elec-topbar">
+        <button class="elec-back" id="btnTopBack" aria-label="Back" style="display:none;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="elec-heading">
+          <div class="eyebrow" id="topEyebrow">SERVICE</div>
+          <div class="title" id="topTitle">Electricity</div>
+        </div>
       </div>
 
       <!-- ============================================================
-           STEP 1 — Provider + bill type
+           STEP 1 — Provider list
            ============================================================ -->
       <div id="step1">
-        <div class="elec-card">
-          <div class="elec-label">Choose disco</div>
-          <div id="discos" class="elec-discos">
-            <div class="elec-muted">Loading…</div>
+        <div class="elec-card elec-mb-0" style="padding:0; border:0; box-shadow:none; background:transparent;">
+          <div id="productList" class="elec-product-list">
+            <!-- skeletons -->
+            <div class="elec-product"><div class="elec-skel" style="width:42px;height:42px;border-radius:50%;"></div><div style="flex:1"><div class="elec-skel" style="width:60%;height:14px;margin-bottom:6px;"></div><div class="elec-skel" style="width:35%;height:11px;"></div></div></div>
+            <div class="elec-product"><div class="elec-skel" style="width:42px;height:42px;border-radius:50%;"></div><div style="flex:1"><div class="elec-skel" style="width:55%;height:14px;margin-bottom:6px;"></div><div class="elec-skel" style="width:30%;height:11px;"></div></div></div>
+            <div class="elec-product"><div class="elec-skel" style="width:42px;height:42px;border-radius:50%;"></div><div style="flex:1"><div class="elec-skel" style="width:50%;height:14px;margin-bottom:6px;"></div><div class="elec-skel" style="width:28%;height:11px;"></div></div></div>
           </div>
         </div>
-
-        <div class="elec-card elec-hidden" id="typeCard">
-          <div class="elec-label">Meter type</div>
-          <div class="elec-toggle" id="typeToggle">
-            <button data-type="prepaid">Prepaid</button>
-            <button data-type="postpaid">Postpaid</button>
-          </div>
-        </div>
-
-        <button class="elec-btn primary" id="btnContinue" disabled>Continue</button>
       </div>
 
       <!-- ============================================================
-           STEP 2 — Meter + verify + amount
+           STEP 2 — Bill type
            ============================================================ -->
       <div id="step2" class="elec-hidden">
+        <div class="elec-card elec-mb-0" style="padding:0; border:0; box-shadow:none; background:transparent;">
+          <div id="billList" class="elec-bill-list"></div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           STEP 3 — Meter + amount
+           ============================================================ -->
+      <div id="step3" class="elec-hidden">
+
         <div class="elec-card">
-          <div class="elec-label">Meter number</div>
-          <input id="meter" class="elec-input" type="tel" inputmode="numeric"
-                 placeholder="e.g. 45705225097" maxlength="13" autocomplete="off" />
-          <button class="elec-btn primary" id="btnVerify" disabled style="margin-top:12px;">
-            Verify Meter
-          </button>
+          <div class="elec-section-label">Meter number</div>
+          <div class="elec-input-row">
+            <input id="meter" class="elec-input" type="tel" inputmode="numeric"
+                   placeholder="Enter meter number" maxlength="13" autocomplete="off" />
+            <button class="elec-verify-inline" id="btnVerify" disabled>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              Verify
+            </button>
+          </div>
           <div id="verifyMsg"></div>
           <div id="verifiedBox" class="elec-verified elec-hidden">
+            <div class="badge">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              Verified
+            </div>
             <div class="name" id="vName"></div>
             <div class="addr" id="vAddr"></div>
-            <div class="addr" id="vDisco"></div>
           </div>
         </div>
 
         <div class="elec-card elec-hidden" id="amountCard">
-          <div class="elec-label">Amount (₦)</div>
+          <div class="elec-section-label">Amount (₦)</div>
           <input id="amount" class="elec-input" type="tel" inputmode="numeric"
-                 placeholder="1000" autocomplete="off" />
+                 placeholder="0" autocomplete="off" />
           <div class="elec-chips" id="chips">
-            <div class="elec-chip" data-amt="1000">₦1,000</div>
-            <div class="elec-chip" data-amt="2000">₦2,000</div>
-            <div class="elec-chip" data-amt="5000">₦5,000</div>
-            <div class="elec-chip" data-amt="10000">₦10,000</div>
-            <div class="elec-chip" data-amt="20000">₦20,000</div>
+            <div class="elec-chip" data-amt="1000">1,000</div>
+            <div class="elec-chip" data-amt="2000">2,000</div>
+            <div class="elec-chip" data-amt="5000">5,000</div>
+            <div class="elec-chip" data-amt="10000">10,000</div>
+            <div class="elec-chip" data-amt="20000">20,000</div>
           </div>
           <div id="amountMsg" class="elec-muted" style="margin-top:10px;"></div>
         </div>
 
-        <button class="elec-btn ghost" id="btnBack2">Back</button>
         <button class="elec-btn primary elec-hidden" id="btnPay" disabled>Pay</button>
       </div>
 
       <!-- ============================================================
-           STEP 3 — Confirm
+           STEP 4 — Confirm
            ============================================================ -->
-      <div id="step3" class="elec-hidden">
+      <div id="step4" class="elec-hidden">
         <div class="elec-card">
-          <div class="elec-label">Confirm payment</div>
-          <div class="elec-kv"><span class="k">Disco</span><span class="v" id="cDisco"></span></div>
-          <div class="elec-kv"><span class="k">Meter type</span><span class="v" id="cType"></span></div>
-          <div class="elec-kv"><span class="k">Meter</span><span class="v" id="cMeter"></span></div>
-          <div class="elec-kv"><span class="k">Customer</span><span class="v" id="cName"></span></div>
-          <div class="elec-kv"><span class="k">Amount</span><span class="v" id="cAmount"></span></div>
-          <div class="elec-kv"><span class="k">You pay</span><span class="v" id="cPay"></span></div>
+          <div class="elec-kv"><span class="k">Disco</span><span class="v" id="cDisco">—</span></div>
+          <div class="elec-kv"><span class="k">Meter type</span><span class="v" id="cType">—</span></div>
+          <div class="elec-kv"><span class="k">Meter</span><span class="v" id="cMeter">—</span></div>
+          <div class="elec-kv"><span class="k">Customer</span><span class="v" id="cName">—</span></div>
+          <div class="elec-kv"><span class="k">Amount</span><span class="v" id="cAmount">—</span></div>
         </div>
         <div id="payMsg"></div>
-        <button class="elec-btn ghost" id="btnBack3">Back</button>
         <button class="elec-btn primary" id="btnConfirm">Confirm &amp; Pay</button>
       </div>
 
       <!-- ============================================================
-           STEP 4 — Result
+           STEP 5 — Result
            ============================================================ -->
-      <div id="step4" class="elec-hidden">
-        <div class="elec-card elec-center" id="resultCard"></div>
+      <div id="step5" class="elec-hidden">
+        <div class="elec-card" id="resultCard"></div>
         <button class="elec-btn ghost" id="btnNew">Buy another</button>
       </div>
 
@@ -428,55 +574,81 @@
 
   <script>
   /* ============================================================
-     ELECTRICITY PAGE
-     Uses window.api helper if available, falls back to fetch.
+     ELECTRICITY — page controller
+     - Token from any known key
+     - Event delegation (survives re-renders)
+     - Real errors visible on screen AND in console
      ============================================================ */
   (function () {
     'use strict';
 
-    const API_BASE = '/api/v1/electricity';
-    const TOKEN_KEY_CANDIDATES = ['token', 'authToken', 'access_token', 'shatova_token'];
+    var API_BASE = '/api/v1/electricity';
+    var TOKEN_KEYS = ['token','authToken','access_token','accessToken','shatova_token','jwt'];
 
-    /* ---------- Auth token lookup ---------- */
     function getToken() {
-      for (const k of TOKEN_KEY_CANDIDATES) {
-        const v = localStorage.getItem(k);
+      for (var i = 0; i < TOKEN_KEYS.length; i++) {
+        var v = localStorage.getItem(TOKEN_KEYS[i]);
         if (v) return v;
       }
       return null;
     }
 
-    /* ---------- HTTP helper ---------- */
     async function callApi(path, opts) {
       opts = opts || {};
-      const token = getToken();
-      const headers = { 'Content-Type': 'application/json' };
+      var token = getToken();
+      var headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = 'Bearer ' + token;
 
-      const res = await fetch(API_BASE + path, {
-        method: opts.method || 'GET',
-        headers,
-        body: opts.body ? JSON.stringify(opts.body) : undefined,
-      });
+      var url = API_BASE + path;
+      var init = { method: opts.method || 'GET', headers: headers };
+      if (opts.body) init.body = JSON.stringify(opts.body);
 
-      let json = {};
-      try { json = await res.json(); } catch (_) {}
+      console.log('[elec] →', init.method, url, token ? '(auth ✓)' : '(NO AUTH TOKEN!)');
+
+      var res;
+      try {
+        res = await fetch(url, init);
+      } catch (netErr) {
+        console.error('[elec] network error:', netErr);
+        throw new Error('Cannot reach server. Check your connection.');
+      }
+
+      var text = await res.text();
+      var json = {};
+      try { json = text ? JSON.parse(text) : {}; }
+      catch (parseErr) {
+        console.error('[elec] non-JSON response:', res.status, text.slice(0, 300));
+        throw new Error('Server returned an unexpected response (HTTP ' + res.status + ').');
+      }
+
+      console.log('[elec] ←', res.status, json);
 
       if (!res.ok || json.success === false) {
-        const err = new Error(json.message || ('Request failed (' + res.status + ')'));
+        var msg = json.message || json.error || ('Request failed (HTTP ' + res.status + ')');
+        var err = new Error(msg);
         err.code = json.code;
+        err.status = res.status;
         err.data = json.data;
         throw err;
       }
       return json.data;
     }
 
-    /* ---------- DOM shortcuts ---------- */
-    const $ = (id) => document.getElementById(id);
-    const fmt = (n) => '₦' + Number(n || 0).toLocaleString('en-NG', { minimumFractionDigits: 0 });
+    var $ = function (id) { return document.getElementById(id); };
+    var esc = function (s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    };
+    var fmt = function (n) {
+      return '₦' + Number(n || 0).toLocaleString('en-NG', { minimumFractionDigits: 0 });
+    };
+    var initials = function (name) {
+      return String(name || '').split(/\s+/).map(function (w) { return w[0] || ''; })
+        .join('').slice(0, 2).toUpperCase();
+    };
 
-    /* ---------- State ---------- */
-    const state = {
+    var state = {
       products: null,
       provider: null,
       billType: null,
@@ -488,109 +660,148 @@
       pollTimer: null,
     };
 
-    /* ---------- Step navigation ---------- */
+    /* ============================================================
+       Navigation
+       ============================================================ */
     function showStep(n) {
-      ['step1','step2','step3','step4'].forEach(function (id, i) {
-        $(id).classList.toggle('elec-hidden', i + 1 !== n);
+      [1,2,3,4,5].forEach(function (i) {
+        var el = $('step' + i);
+        if (el) el.classList.toggle('elec-hidden', i !== n);
       });
-      ['d1','d2','d3','d4'].forEach(function (id, i) {
-        $(id).classList.toggle('on', i + 1 <= n);
-      });
+      $('btnTopBack').style.display = (n === 1) ? 'none' : 'flex';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function initials(name) {
-      return String(name || '').split(/\s+/).map(function (w) { return w[0]; })
-        .join('').slice(0, 2).toUpperCase();
+    function setTitle(eyebrow, title) {
+      $('topEyebrow').textContent = eyebrow;
+      $('topTitle').textContent   = title;
     }
+
+    $('btnTopBack').addEventListener('click', function () {
+      if (!$('step5').classList.contains('elec-hidden')) { resetAll(); return; }
+      if (!$('step4').classList.contains('elec-hidden')) { showStep(3); return; }
+      if (!$('step3').classList.contains('elec-hidden')) {
+        setTitle('SERVICE', state.provider || 'Electricity');
+        showStep(2);
+        return;
+      }
+      if (!$('step2').classList.contains('elec-hidden')) {
+        setTitle('SERVICE', 'Electricity');
+        showStep(1);
+        return;
+      }
+    });
 
     /* ============================================================
        STEP 1 — Load products
        ============================================================ */
     async function loadProducts() {
       try {
-        const data = await callApi('/products');
+        var data = await callApi('/products');
+        console.log('[elec] products data:', data);
         state.products = data;
-        renderDiscos(data.providers || []);
+
+        var providers = (data && data.providers) || [];
+        if (!providers.length) {
+          $('productList').innerHTML =
+            '<div class="elec-alert warn">No discos available right now. Please try again later.</div>';
+          return;
+        }
+        renderProviders(providers);
       } catch (err) {
-        $('discos').innerHTML = '<div class="elec-alert err">' + err.message + '</div>';
+        console.error('[elec] loadProducts failed:', err);
+        var hint = '';
+        if (err.status === 401) hint = '<br><span style="font-size:11px">You are not signed in. Please log in again.</span>';
+        if (err.status === 404) hint = '<br><span style="font-size:11px">Backend route not mounted. Check app.js.</span>';
+        $('productList').innerHTML =
+          '<div class="elec-alert err">' + esc(err.message) + hint + '</div>';
       }
     }
 
-    function renderDiscos(providers) {
-      if (!providers.length) {
-        $('discos').innerHTML = '<div class="elec-muted">No products available</div>';
-        return;
-      }
-      $('discos').innerHTML = providers.map(function (p) {
-        return '<div class="elec-disco" data-provider="' + p.provider + '">' +
-                 '<span class="ini">' + initials(p.provider) + '</span>' +
-                 p.provider +
-               '</div>';
+    function renderProviders(providers) {
+      var html = providers.map(function (p) {
+        var count = (p.products || []).length;
+        return '' +
+          '<div class="elec-product" data-provider="' + esc(p.provider) + '">' +
+            '<div class="logo">' + esc(initials(p.provider)) + '</div>' +
+            '<div class="info">' +
+              '<div class="name">' + esc(p.provider.toUpperCase()) + '</div>' +
+              '<div class="meta">' + count + ' product' + (count === 1 ? '' : 's') + '</div>' +
+            '</div>' +
+            '<svg class="chev" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>' +
+          '</div>';
       }).join('');
-
-      document.querySelectorAll('.elec-disco').forEach(function (el) {
-        el.addEventListener('click', function () {
-          document.querySelectorAll('.elec-disco').forEach(function (x) {
-            x.classList.remove('active');
-          });
-          el.classList.add('active');
-          state.provider = el.dataset.provider;
-          showTypeToggle();
-        });
-      });
+      $('productList').innerHTML = html;
     }
-
-    function showTypeToggle() {
-      const prov = state.products.providers.find(function (p) {
-        return p.provider === state.provider;
-      });
-      if (!prov) return;
-
-      const hasPre  = prov.products.some(function (p) { return p.bill_type === 'prepaid'; });
-      const hasPost = prov.products.some(function (p) { return p.bill_type === 'postpaid'; });
-
-      $('typeCard').classList.remove('elec-hidden');
-
-      const btns = $('typeToggle').querySelectorAll('button');
-      btns.forEach(function (b) {
-        const t = b.dataset.type;
-        const show = (t === 'prepaid' && hasPre) || (t === 'postpaid' && hasPost);
-        b.style.display = show ? 'block' : 'none';
-      });
-
-      setBillType(hasPre ? 'prepaid' : 'postpaid');
-    }
-
-    function setBillType(t) {
-      state.billType = t;
-      document.querySelectorAll('#typeToggle button').forEach(function (b) {
-        b.classList.toggle('on', b.dataset.type === t);
-      });
-
-      const prov = state.products.providers.find(function (p) {
-        return p.provider === state.provider;
-      });
-      const prod = prov.products.find(function (p) { return p.bill_type === t; });
-      state.productName = prod ? prod.product_name : null;
-
-      $('btnContinue').disabled = !state.productName;
-    }
-
-    document.querySelectorAll('#typeToggle button').forEach(function (b) {
-      b.addEventListener('click', function () { setBillType(b.dataset.type); });
-    });
-
-    $('btnContinue').addEventListener('click', function () {
-      showStep(2);
-      setTimeout(function () { $('meter').focus(); }, 200);
-    });
-
-    $('btnBack2').addEventListener('click', function () { showStep(1); });
-    $('btnBack3').addEventListener('click', function () { showStep(2); });
 
     /* ============================================================
-       STEP 2 — Meter input
+       STEP 2 — Bill type selection
+       ============================================================ */
+    function renderBillTypes(provider) {
+      var prov = state.products.providers.find(function (p) { return p.provider === provider; });
+      if (!prov) return;
+
+      var html = (prov.products || []).map(function (p) {
+        var isPre = p.bill_type === 'prepaid';
+        return '' +
+          '<div class="elec-bill" data-product="' + esc(p.product_name) + '" data-type="' + esc(p.bill_type) + '">' +
+            '<div class="ic">' +
+              (isPre
+                ? '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'
+                : '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>'
+              ) +
+            '</div>' +
+            '<div class="info">' +
+              '<div class="name">' + esc(isPre ? 'Prepaid' : 'Postpaid') + '</div>' +
+              '<div class="sub">' + esc(isPre ? 'Pay before use — instant token' : 'Pay after use — settle your bill') + '</div>' +
+            '</div>' +
+            '<svg class="chev" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:#94a3b8;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>' +
+          '</div>';
+      }).join('');
+
+      $('billList').innerHTML = html;
+    }
+
+    /* ============================================================
+       Event delegation — works even after re-renders
+       ============================================================ */
+    document.addEventListener('click', function (e) {
+      var prodEl = e.target.closest('.elec-product');
+      if (prodEl && prodEl.dataset.provider) {
+        state.provider = prodEl.dataset.provider;
+        setTitle(state.provider.toUpperCase(), 'Choose meter type');
+        renderBillTypes(state.provider);
+        showStep(2);
+        return;
+      }
+
+      var billEl = e.target.closest('.elec-bill');
+      if (billEl && billEl.dataset.product) {
+        state.productName = billEl.dataset.product;
+        state.billType    = billEl.dataset.type;
+        setTitle(state.productName, 'Enter meter & amount');
+        $('meter').value = '';
+        $('amount').value = '';
+        state.meterNumber = '';
+        state.amount = null;
+        state.verified = null;
+        $('verifiedBox').classList.add('elec-hidden');
+        $('amountCard').classList.add('elec-hidden');
+        $('btnPay').classList.add('elec-hidden');
+        $('btnVerify').disabled = true;
+        $('verifyMsg').innerHTML = '';
+        $('amountMsg').textContent = '';
+        document.querySelectorAll('#chips .elec-chip').forEach(function (x) {
+          x.classList.remove('active');
+        });
+        showStep(3);
+        setTimeout(function () { $('meter').focus(); }, 250);
+        return;
+      }
+    });
+
+    /* ============================================================
+       STEP 3 — Meter input + verify
        ============================================================ */
     $('meter').addEventListener('input', function (e) {
       e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
@@ -602,48 +813,52 @@
       $('verifyMsg').innerHTML = '';
     });
 
-    /* ---------- Verify meter ---------- */
     $('btnVerify').addEventListener('click', async function () {
+      if (!state.productName) {
+        $('verifyMsg').innerHTML = '<div class="elec-alert err">Product not selected. Please go back.</div>';
+        return;
+      }
       $('verifyMsg').innerHTML =
         '<div class="elec-alert ok"><span class="elec-spinner"></span>Verifying meter…</div>';
       $('btnVerify').disabled = true;
 
       try {
-        const v = await callApi('/verify', {
+        var v = await callApi('/verify', {
           method: 'POST',
           body: { product_name: state.productName, meter_number: state.meterNumber },
         });
         state.verified = v;
 
         $('vName').textContent = v.customer_name || 'Verified';
-        const addrLine = [v.customer_address, v.district, v.business_unit]
+        var addrLine = [v.customer_address, v.district, v.business_unit]
           .filter(Boolean).join(' · ');
-        $('vAddr').textContent  = addrLine || '';
-        $('vDisco').textContent = v.disco || v.service_name || v.provider || '';
+        $('vAddr').textContent = addrLine || (v.disco || v.service_name || '');
         $('verifiedBox').classList.remove('elec-hidden');
 
-        let msg = '<div class="elec-alert ok">✓ Meter verified</div>';
+        var msg = '<div class="elec-alert ok">Meter verified successfully.</div>';
         if (v.customer_arrears > 0) {
-          msg += '<div class="elec-alert warn" style="margin-top:8px">⚠ Outstanding arrears: '
-               + fmt(v.customer_arrears) + '</div>';
+          msg += '<div class="elec-alert warn">⚠ Outstanding arrears: ' + fmt(v.customer_arrears) + '</div>';
         }
         $('verifyMsg').innerHTML = msg;
 
         $('amountCard').classList.remove('elec-hidden');
         $('btnPay').classList.remove('elec-hidden');
 
-        const min = v.minimum_amount || 1000;
-        const max = v.maximum_amount || 200000;
+        var min = v.minimum_amount || 1000;
+        var max = v.maximum_amount || 200000;
         $('amountMsg').textContent = 'Minimum ' + fmt(min) + ' · Maximum ' + fmt(max);
         $('amount').placeholder = String(min);
       } catch (err) {
-        $('verifyMsg').innerHTML = '<div class="elec-alert err">' + err.message + '</div>';
+        console.error('[elec] verify failed:', err);
+        $('verifyMsg').innerHTML = '<div class="elec-alert err">' + esc(err.message) + '</div>';
       } finally {
         $('btnVerify').disabled = false;
       }
     });
 
-    /* ---------- Amount input ---------- */
+    /* ============================================================
+       Amount input
+       ============================================================ */
     $('amount').addEventListener('input', function (e) {
       e.target.value = e.target.value.replace(/\D/g, '');
       state.amount = Number(e.target.value) || 0;
@@ -665,40 +880,32 @@
     });
 
     function validateAmount() {
-      const v = state.verified;
+      var v = state.verified;
       if (!v) return;
-      const min = v.minimum_amount || 1000;
-      const max = v.maximum_amount || 200000;
-      const a   = state.amount || 0;
+      var min = v.minimum_amount || 1000;
+      var max = v.maximum_amount || 200000;
+      var a   = state.amount || 0;
 
-      if (!a) { $('btnPay').disabled = true; return; }
-      if (a < min) {
-        $('amountMsg').textContent = 'Minimum is ' + fmt(min);
-        $('btnPay').disabled = true;
-        return;
-      }
-      if (a > max) {
-        $('amountMsg').textContent = 'Maximum is ' + fmt(max);
-        $('btnPay').disabled = true;
-        return;
-      }
+      if (!a) { $('amountMsg').textContent = ''; $('btnPay').disabled = true; return; }
+      if (a < min) { $('amountMsg').textContent = 'Minimum is ' + fmt(min); $('btnPay').disabled = true; return; }
+      if (a > max) { $('amountMsg').textContent = 'Maximum is ' + fmt(max); $('btnPay').disabled = true; return; }
       $('amountMsg').textContent = 'You will pay ' + fmt(a);
       $('btnPay').disabled = false;
     }
 
     $('btnPay').addEventListener('click', function () {
-      const v = state.verified;
-      $('cDisco').textContent  = v.disco || v.service_name || v.provider || '—';
-      $('cType').textContent   = v.bill_type || '—';
-      $('cMeter').textContent  = v.meter_number || '—';
+      var v = state.verified;
+      $('cDisco').textContent  = v.disco || v.service_name || state.provider || '—';
+      $('cType').textContent   = v.bill_type || state.billType || '—';
+      $('cMeter').textContent  = v.meter_number || state.meterNumber;
       $('cName').textContent   = v.customer_name || '—';
       $('cAmount').textContent = fmt(state.amount);
-      $('cPay').textContent    = fmt(state.amount);
-      showStep(3);
+      setTitle('CONFIRM', 'Review payment');
+      showStep(4);
     });
 
     /* ============================================================
-       STEP 3 — Purchase
+       STEP 4 — Purchase
        ============================================================ */
     $('btnConfirm').addEventListener('click', async function () {
       $('btnConfirm').disabled = true;
@@ -706,7 +913,7 @@
         '<div class="elec-alert ok"><span class="elec-spinner"></span>Processing payment…</div>';
 
       try {
-        const r = await callApi('/purchase', {
+        var r = await callApi('/purchase', {
           method: 'POST',
           body: {
             product_name:   state.productName,
@@ -718,14 +925,11 @@
 
         state.reference = r.reference;
 
-        if (r.status === 'success') {
-          renderSuccess(r);
-        } else if (r.status === 'processing') {
-          renderProcessing(r);
-        } else {
-          renderFailure(r);
-        }
+        if (r.status === 'success') { renderSuccess(r); }
+        else if (r.status === 'processing') { renderProcessing(r); }
+        else { renderFailure(r); }
       } catch (err) {
+        console.error('[elec] purchase failed:', err);
         $('payMsg').innerHTML = '';
         renderFailure({ remark: err.message, reference: null });
       } finally {
@@ -734,76 +938,78 @@
     });
 
     /* ============================================================
-       STEP 4 — Result renderers
+       STEP 5 — Result renderers
        ============================================================ */
     function renderSuccess(r) {
-      showStep(4);
-      const tokenBlock = r.token
+      setTitle('RECEIPT', 'Payment successful');
+      showStep(5);
+
+      var tokenBlock = r.token
         ? '<div class="elec-tokenbox">' +
-            '<div class="tok" id="tokText">' + r.token + '</div>' +
-            (r.units ? '<div class="units">' + r.units + ' kWh</div>' : '') +
+            '<div class="lbl">Your token</div>' +
+            '<div class="tok" id="tokText">' + esc(r.token) + '</div>' +
+            (r.units ? '<div class="units">' + esc(r.units) + ' kWh</div>' : '') +
             '<button class="elec-copy" id="copyTok">Copy token</button>' +
           '</div>'
         : '';
 
       $('resultCard').innerHTML =
-        '<div class="elec-alert ok" style="font-size:15px;font-weight:800;text-align:center;">✓ Payment successful</div>' +
-        '<div style="margin-top:14px;text-align:left;">' +
-          '<div class="elec-kv"><span class="k">Disco</span><span class="v">' + (r.disco || r.provider || '') + '</span></div>' +
-          '<div class="elec-kv"><span class="k">Meter</span><span class="v">' + (r.meter_number || '') + '</span></div>' +
-          '<div class="elec-kv"><span class="k">Customer</span><span class="v">' + (r.customer_name || '—') + '</span></div>' +
-          '<div class="elec-kv"><span class="k">Amount</span><span class="v">' + fmt(r.amount) + '</span></div>' +
-          '<div class="elec-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;">' + r.reference + '</span></div>' +
+        '<div class="elec-alert ok" style="font-size:14px;font-weight:800;justify-content:center;">✓ Payment successful</div>' +
+        '<div style="margin-top:6px;">' +
+          '<div class="elec-kv"><span class="k">Disco</span><span class="v">' + esc(r.disco || r.provider || state.provider || '') + '</span></div>' +
+          '<div class="elec-kv"><span class="k">Meter</span><span class="v">' + esc(r.meter_number || state.meterNumber) + '</span></div>' +
+          '<div class="elec-kv"><span class="k">Customer</span><span class="v">' + esc(r.customer_name || state.verified && state.verified.customer_name || '—') + '</span></div>' +
+          '<div class="elec-kv"><span class="k">Amount</span><span class="v">' + fmt(r.amount || state.amount) + '</span></div>' +
+          '<div class="elec-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;font-weight:600;">' + esc(r.reference) + '</span></div>' +
         '</div>' +
         tokenBlock;
 
-      if (r.token) {
-        const btn = $('copyTok');
-        if (btn) {
-          btn.addEventListener('click', function () {
-            try {
-              navigator.clipboard.writeText(r.token);
-              btn.textContent = 'Copied ✓';
-            } catch (_) {
-              prompt('Copy your token:', r.token);
-            }
-          });
-        }
+      var btn = $('copyTok');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          try {
+            navigator.clipboard.writeText(r.token);
+            btn.textContent = 'Copied ✓';
+          } catch (_) {
+            window.prompt('Copy your token:', r.token);
+          }
+        });
       }
     }
 
     function renderProcessing(r) {
-      showStep(4);
+      setTitle('RECEIPT', 'Confirming with provider');
+      showStep(5);
       $('resultCard').innerHTML =
         '<div class="elec-alert warn" style="font-weight:800;font-size:14px;">⏳ Confirming with provider</div>' +
-        '<p class="elec-muted" style="margin:12px 0;">This is taking a bit longer than usual. We\'ll update this screen automatically.</p>' +
-        '<div class="elec-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;">' + r.reference + '</span></div>' +
+        '<p class="elec-muted" style="margin:12px 0;line-height:1.5;">This is taking a bit longer than usual. We\'ll update this screen automatically.</p>' +
+        '<div class="elec-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;font-weight:600;">' + esc(r.reference) + '</span></div>' +
         '<div class="elec-kv"><span class="k">Status</span><span class="v" id="pollStatus">processing</span></div>';
       pollStatus(r.reference);
     }
 
     function renderFailure(r) {
-      showStep(4);
+      setTitle('RECEIPT', 'Payment failed');
+      showStep(5);
       $('resultCard').innerHTML =
         '<div class="elec-alert err" style="font-weight:800;font-size:14px;">✕ Payment failed</div>' +
-        '<p class="elec-muted" style="margin:12px 0;">' + (r.remark || 'Please try again.') + '</p>' +
+        '<p class="elec-muted" style="margin:12px 0;line-height:1.5;">' + esc(r.remark || 'Please try again.') + '</p>' +
         (r.reference
-          ? '<div class="elec-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;">' + r.reference + '</span></div>'
+          ? '<div class="elec-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;font-weight:600;">' + esc(r.reference) + '</span></div>'
           : '');
     }
 
     function pollStatus(reference) {
       if (state.pollTimer) clearInterval(state.pollTimer);
-      let attempts = 0;
-      const MAX = 60; // ~5 minutes at 5s interval
+      var attempts = 0;
+      var MAX = 72;
 
       state.pollTimer = setInterval(async function () {
         attempts++;
         if (attempts > MAX) { clearInterval(state.pollTimer); return; }
-
         try {
-          const s = await callApi('/status?reference=' + encodeURIComponent(reference));
-          const el = $('pollStatus');
+          var s = await callApi('/status?reference=' + encodeURIComponent(reference));
+          var el = $('pollStatus');
           if (el) el.textContent = s.status;
 
           if (s.status === 'success') {
@@ -814,7 +1020,7 @@
             renderFailure(Object.assign({}, s, { reference: reference }));
           }
         } catch (err) {
-          console.warn('[electricity] poll error:', err.message);
+          console.warn('[elec] poll error:', err.message);
         }
       }, 5000);
     }
@@ -822,17 +1028,14 @@
     /* ============================================================
        Reset
        ============================================================ */
-    $('btnNew').addEventListener('click', function () {
+    function resetAll() {
       if (state.pollTimer) clearInterval(state.pollTimer);
-      state.provider = null;
-      state.billType = null;
-      state.productName = null;
-      state.meterNumber = '';
-      state.verified = null;
-      state.amount = null;
-      state.reference = null;
-      state.pollTimer = null;
-
+      state = {
+        products: state.products,
+        provider: null, billType: null, productName: null,
+        meterNumber: '', verified: null, amount: null,
+        reference: null, pollTimer: null,
+      };
       $('meter').value = '';
       $('amount').value = '';
       $('verifiedBox').classList.add('elec-hidden');
@@ -842,22 +1045,17 @@
       $('verifyMsg').innerHTML = '';
       $('payMsg').innerHTML = '';
       $('amountMsg').textContent = '';
-
-      document.querySelectorAll('.elec-disco').forEach(function (x) {
-        x.classList.remove('active');
-      });
-      document.querySelectorAll('#chips .elec-chip').forEach(function (x) {
-        x.classList.remove('active');
-      });
-
-      $('typeCard').classList.add('elec-hidden');
-      $('btnContinue').disabled = true;
+      setTitle('SERVICE', 'Electricity');
       showStep(1);
-    });
+    }
+
+    $('btnNew').addEventListener('click', resetAll);
 
     /* ============================================================
        Boot
        ============================================================ */
+    setTitle('SERVICE', 'Electricity');
+    showStep(1);
     loadProducts();
   })();
   </script>
