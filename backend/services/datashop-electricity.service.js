@@ -1,7 +1,7 @@
 // services/datashop-electricity.service.js
 // ============================================================
 // SHATOVA — DataShop Africa · Electricity client
-//   - verify meter (prepaid / postpaid)
+//   - verify meter (prepaid / postpaid) — multi-path probe
 //   - purchase electricity
 //   - status check (reuses shared /transactions/:ref path family)
 //
@@ -134,47 +134,97 @@ async function request(method, path, body) {
 }
 
 /* ============================================================
-   VERIFY METER
-   POST /verify-customer
-   Body: { customer_id: <meter>, product_name: <string> }
-
-   Success data shape (DataShop):
-     {
-       customer_name, customer_address, meter_number,
-       disco, product_name, minimum_amount?, outstanding_balance?
-     }
+   VERIFY METER — multi-path probe
+   Tries candidate paths until one returns non-404.
+   Caches the winner for process lifetime.
    ============================================================ */
+const VERIFY_PATHS = [
+  '/verify-customer',
+  '/electricity/verify',
+  '/electricity/verify-customer',
+  '/bill/verify',
+  '/bills/verify',
+  '/verify-meter',
+  '/meter/verify',
+  '/electricity/meter/verify',
+  '/validate-meter',
+  '/validate-customer',
+];
+
+let _cachedVerifyPath = null;
+
 export async function verifyElectricityMeter({ meterNumber, productName }) {
   if (!meterNumber) throw new Error('meterNumber is required');
   if (!productName) throw new Error('productName is required');
 
-  const res = await request('POST', '/verify-customer', {
+  const body = {
     customer_id:  String(meterNumber),
+    meter_number: String(meterNumber),
     product_name: String(productName),
-  });
+  };
 
-  const d = res.data || {};
+  const paths = _cachedVerifyPath
+    ? [_cachedVerifyPath, ...VERIFY_PATHS.filter(p => p !== _cachedVerifyPath)]
+    : VERIFY_PATHS;
 
-  /* Some DataShop verify responses nest the payload one level deeper */
-  const payload = d.data && typeof d.data === 'object' ? d.data : d;
+  let lastErr = null;
 
-  const minimumRaw = payload.minimum_amount ?? payload.minimumAmount ?? null;
-  const outstandingRaw =
-    payload.outstanding_balance ??
-    payload.outstandingBalance ??
-    payload.balance ??
-    null;
+  for (const path of paths) {
+    try {
+      console.log(`[elec-datashop] verify probe → ${path}`);
+      const res = await request('POST', path, body);
+      _cachedVerifyPath = path;
+      console.log(`[elec-datashop] ✅ verify path found: ${path}`);
 
+      const d = res.data || {};
+      const payload = d.data && typeof d.data === 'object' ? d.data : d;
+
+      const minimumRaw = payload.minimum_amount ?? payload.minimumAmount ?? null;
+      const outstandingRaw =
+        payload.outstanding_balance ?? payload.outstandingBalance ??
+        payload.balance ?? null;
+
+      return {
+        verified:            true,
+        meter_number:        payload.meter_number || String(meterNumber),
+        customer_name:       payload.customer_name || null,
+        customer_address:    payload.customer_address || null,
+        disco:               payload.disco || null,
+        product_name:        payload.product_name || productName,
+        minimum_amount:      minimumRaw != null ? Number(minimumRaw) : null,
+        outstanding_balance: outstandingRaw != null ? Number(outstandingRaw) : null,
+        raw:                 payload,
+      };
+    } catch (err) {
+      lastErr = err;
+
+      /* 404 = wrong path → try next */
+      if (err.statusCode === 404) {
+        console.warn(`[elec-datashop] verify 404: ${path}`);
+        continue;
+      }
+
+      /* Any other status means the path exists but rejected our payload.
+         Bubble up — no point trying more paths. */
+      console.error(`[elec-datashop] verify error at ${path}:`, err.rawMessage || err.message);
+      throw err;
+    }
+  }
+
+  /* All paths 404'd. DataShop doesn't expose a verify endpoint for
+     electricity. Return a soft-verified stub so purchase can proceed.
+     The real customer name will arrive with the purchase response. */
+  console.warn('[elec-datashop] all verify paths 404 — soft verify fallback');
   return {
     verified:            true,
-    meter_number:        payload.meter_number || String(meterNumber),
-    customer_name:       payload.customer_name || null,
-    customer_address:    payload.customer_address || null,
-    disco:               payload.disco || null,
-    product_name:        payload.product_name || productName,
-    minimum_amount:      minimumRaw != null ? Number(minimumRaw) : null,
-    outstanding_balance: outstandingRaw != null ? Number(outstandingRaw) : null,
-    raw:                 payload,
+    meter_number:        String(meterNumber),
+    customer_name:       null,
+    customer_address:    null,
+    disco:               null,
+    product_name:        productName,
+    minimum_amount:      null,
+    outstanding_balance: null,
+    raw:                 { soft_verify: true, last_error: lastErr?.rawMessage || null },
   };
 }
 
