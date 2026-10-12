@@ -1,2559 +1,1272 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#075b3b">
-  <title>Electricity Bills — Shatova</title>
-  <meta name="description" content="Pay electricity bills securely with Shatova.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Shatova - Electricity</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/menu.css">
 
   <style>
-    /* =====================================================
-       SHATOVA ELECTRICITY — COMPLETE STANDALONE PAGE
-       Responsive fintech interface
-       ===================================================== */
-
+    /* ============================================================
+       ELECTRICITY — page styles
+       Namespaced .elx- to avoid collision with existing CSS.
+       ============================================================ */
     :root {
-      --green: #087443;
-      --green-dark: #064c32;
-      --green-deep: #063d2b;
-      --green-light: #eaf6ee;
-      --green-pale: #f5faf6;
-      --text: #17251d;
-      --muted: #78867c;
-      --border: #e5ebe6;
-      --surface: #ffffff;
-      --page: #f5f7f5;
-      --red: #c43b3b;
-      --radius: 17px;
-      --shadow: 0 4px 20px rgba(16, 42, 26, .045);
+      --elx-green:       #16a34a;
+      --elx-green-dk:    #15803d;
+      --elx-green-soft:  #ecfdf5;
+      --elx-green-line:  #86efac;
+      --elx-red:         #dc2626;
+      --elx-red-soft:    #fef2f2;
+      --elx-red-line:    #fecaca;
+      --elx-amber:       #d97706;
+      --elx-amber-soft:  #fffbeb;
+      --elx-amber-line:  #fde68a;
+      --elx-ink:         #0f172a;
+      --elx-ink-2:       #334155;
+      --elx-muted:       #64748b;
+      --elx-muted-2:     #94a3b8;
+      --elx-line:        #e8ecf1;
+      --elx-line-2:      #eef2f6;
+      --elx-bg:          #f6f8fb;
+      --elx-card:        #ffffff;
+      --elx-radius:      16px;
+      --elx-radius-sm:   12px;
+      --elx-shadow:      0 1px 2px rgba(15,23,42,.04), 0 4px 14px rgba(15,23,42,.04);
+      --elx-shadow-lg:   0 4px 20px rgba(15,23,42,.08), 0 1px 3px rgba(15,23,42,.04);
+      --elx-shadow-btn:  0 4px 14px rgba(22,163,74,.28);
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
+    body.elx-body {
+      background: var(--elx-bg);
+      color: var(--elx-ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-    }
-
-    html {
-      min-height: 100%;
-      scroll-behavior: smooth;
-    }
-
-    body {
       min-height: 100vh;
-      background: var(--page);
-      color: var(--text);
-      font-family: Inter, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
-      font-size: 13px;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
     }
 
-    button, input, select {
-      font: inherit;
-    }
-
-    button {
-      color: inherit;
-    }
-
-    button:focus-visible, input:focus-visible,
-    select:focus-visible {
-      outline: 3px solid rgba(8, 116, 67, .2);
-      outline-offset: 2px;
-    }
-
-    button:disabled {
-      cursor: not-allowed !important;
-      opacity: .55;
-      transform: none !important;
-    }
-
-    [hidden] {
-      display: none !important;
-    }
-
-    .app-shell {
-      width: 100%;
-      max-width: 760px;
-      min-height: 100vh;
+    .elx-wrap {
+      max-width: 520px;
       margin: 0 auto;
-      background: var(--page);
+      padding: 8px 16px 140px;
     }
 
-    /* Header */
-
-    .topbar {
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
+    .elx-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0 20px;
       position: sticky;
       top: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      min-height: 66px;
-      padding: 12px 20px;
-      padding-top: max(12px, env(safe-area-inset-top));
-      border-bottom: 1px solid rgba(229, 235, 230, .85);
-      background: rgba(255, 255, 255, .94);
-      backdrop-filter: blur(16px);
+      background: linear-gradient(180deg, var(--elx-bg) 0%, var(--elx-bg) 75%, transparent 100%);
+      z-index: 5;
     }
-
-    .back-button {
-      display: grid;
-      place-items: center;
-      flex: 0 0 38px;
-      width: 38px;
-      height: 38px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
-    }
-
-    .back-button svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      flex: 0 0 37px;
-      width: 37px;
-      height: 37px;
-      border-radius: 12px;
-      background: var(--green);
-      color: white;
-    }
-
-    .brand-mark svg {
-      width: 21px;
-      height: 21px;
-    }
-
-    .brand-copy {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .brand-name {
-      color: var(--text);
-      font-size: 15px;
-      font-weight: 850;
-      letter-spacing: -.5px;
-    }
-
-    .brand-subtitle {
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .secure-label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 6px 8px;
-      border: 1px solid #dceee2;
-      border-radius: 9px;
-      background: #f0f8f2;
-      color: var(--green);
-      font-size: 9px;
-      font-weight: 750;
-      white-space: nowrap;
-    }
-
-    .secure-label svg {
-      width: 13px;
-      height: 13px;
-    }
-
-    /* Main */
-
-    .page-content {
-      padding: 23px 20px 42px;
-    }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 23px;
-      padding: 22px;
-      border: 1px solid rgba(255, 255, 255, .1);
-      border-radius: 20px;
-      background: linear-gradient(120deg, #075638, #087443 65%, #118552);
-      color: white;
-      box-shadow: 0 9px 25px rgba(6, 76, 50, .12);
-    }
-
-    .hero::after {
-      position: absolute;
-      top: -64px;
-      right: -35px;
-      width: 190px;
-      height: 190px;
-      border: 1px solid rgba(255, 255, 255, .11);
-      border-radius: 50%;
-      box-shadow: 0 0 0 25px rgba(255,255,255,.025),
-                  0 0 0 50px rgba(255,255,255,.025);
-      content: "";
-      pointer-events: none;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 12px;
-      color: #d3f3dd;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    .hero-label span {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #9ae9b3;
-    }
-
-    .hero h1 {
-      max-width: 370px;
-      font-size: clamp(24px, 5vw, 30px);
-      font-weight: 780;
-      letter-spacing: -1.1px;
-      line-height: 1.2;
-    }
-
-    .hero p {
-      max-width: 360px;
-      margin-top: 9px;
-      color: #dcefe2;
-      font-size: 11px;
-      line-height: 1.8;
-    }
-
-    .hero-bottom {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      margin-top: 18px;
-    }
-
-    .hero-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 10px;
-      border: 1px solid rgba(255, 255, 255, .18);
-      border-radius: 9px;
-      background: rgba(255, 255, 255, .09);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 650;
-    }
-
-    .hero-pill svg {
-      width: 13px;
-      height: 13px;
-    }
-
-    /* Progress */
-
-    .progress-card {
-      margin-bottom: 24px;
-      padding: 15px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: white;
-    }
-
-    .progress-track {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 7px;
-    }
-
-    .progress-item {
-      min-width: 0;
-      color: #9aa49d;
-      text-align: center;
-    }
-
-    .progress-circle {
-      display: grid;
-      place-items: center;
-      width: 29px;
-      height: 29px;
-      margin: 0 auto 7px;
-      border: 1px solid #e3e9e4;
-      border-radius: 50%;
-      background: #f8faf8;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .progress-name {
-      overflow: hidden;
-      font-size: 9px;
-      font-weight: 650;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .progress-item.active {
-      color: var(--green);
-    }
-
-    .progress-item.active .progress-circle,
-    .progress-item.done .progress-circle {
-      border-color: var(--green);
-      background: var(--green);
-      color: white;
-    }
-
-    .progress-item.done .progress-name {
-      color: var(--green);
-    }
-
-    /* Section headings */
-
-    .section {
-      margin-bottom: 25px;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 0 1px 13px;
-    }
-
-    .eyebrow {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--green);
-      font-size: 9px;
-      font-weight: 850;
-      letter-spacing: 1.3px;
-    }
-
-    .section-heading h2 {
-      color: var(--text);
-      font-size: 18px;
-      font-weight: 780;
-      letter-spacing: -.55px;
-      line-height: 1.35;
-    }
-
-    .section-heading p {
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.7;
-    }
-
-    .count-badge {
-      flex-shrink: 0;
-      padding: 6px 9px;
-      border: 1px solid #dcece1;
-      border-radius: 8px;
-      background: #eff8f1;
-      color: var(--green);
-      font-size: 9px;
-      font-weight: 800;
-    }
-
-    /* Search */
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      padding: 0 13px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: white;
-      transition: border-color .2s;
-    }
-
-    .search-box:focus-within {
-      border-color: #88bca0;
-    }
-
-    .search-box svg {
-      flex: 0 0 17px;
-      width: 17px;
-      height: 17px;
-      color: #87958b;
-    }
-
-    .search-box input {
-      width: 100%;
-      height: 45px;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--text);
-      font-size: 12px;
-    }
-
-    .search-box input::placeholder {
-      color: #a1aaa3;
-    }
-
-    /* Providers */
-
-    .provider-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .provider-card {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      min-height: 82px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: white;
-      box-shadow: 0 2px 6px rgba(20, 45, 28, .02);
-      text-align: left;
-      cursor: pointer;
-      transition: border-color .18s, background .18s,
-                  box-shadow .18s, transform .18s;
-    }
-
-    .provider-card:hover {
-      border-color: #b6d8c1;
-      box-shadow: var(--shadow);
-    }
-
-    .provider-card:active {
-      transform: scale(.985);
-    }
-
-    .provider-card.selected {
-      border-color: var(--green);
-      background: #f4faf5;
-      box-shadow: 0 0 0 2px rgba(8, 116, 67, .07);
-    }
-
-    .provider-logo {
-      display: grid;
-      place-items: center;
-      flex: 0 0 41px;
-      width: 41px;
-      height: 41px;
-      overflow: hidden;
-      border: 1px solid #eaf0eb;
-      border-radius: 12px;
-      background: #f5f9f5;
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 850;
-    }
-
-    .provider-logo img {
-      width: 100%;
-      height: 100%;
-      padding: 4px;
-      object-fit: contain;
-    }
-
-    .provider-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .provider-name {
-      overflow-wrap: anywhere;
-      color: #24352a;
-      font-size: 11px;
-      font-weight: 780;
-      line-height: 1.5;
-    }
-
-    .provider-meta {
-      margin-top: 4px;
-      color: #87938a;
-      font-size: 9px;
-      line-height: 1.5;
-    }
-
-    .provider-check {
-      display: grid;
-      place-items: center;
-      flex: 0 0 17px;
-      width: 17px;
-      height: 17px;
-      border: 1px solid #e0e7e1;
-      border-radius: 50%;
-      color: white;
-    }
-
-    .provider-check svg {
-      width: 11px;
-      height: 11px;
-    }
-
-    .provider-card.selected .provider-check {
-      border-color: var(--green);
-      background: var(--green);
-    }
-
-    /* Meter type */
-
-    .meter-options {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 11px;
-    }
-
-    .meter-card {
-      position: relative;
-      min-width: 0;
-      padding: 16px 13px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: white;
-      text-align: left;
-      cursor: pointer;
-      transition: .18s;
-    }
-
-    .meter-card:hover {
-      border-color: #b6d8c1;
-    }
-
-    .meter-card:active {
-      transform: scale(.99);
-    }
-
-    .meter-card.selected {
-      border-color: var(--green);
-      background: #f4faf5;
-      box-shadow: 0 0 0 2px rgba(8, 116, 67, .06);
-    }
-
-    .meter-icon {
-      display: grid;
-      place-items: center;
+    .elx-back {
       width: 40px;
       height: 40px;
-      margin-bottom: 14px;
-      border-radius: 12px;
-      background: #eaf5ed;
-      color: var(--green);
-    }
-
-    .meter-icon svg {
-      width: 21px;
-      height: 21px;
-    }
-
-    .meter-title {
-      display: block;
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .meter-description {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.7;
-    }
-
-    .meter-badge {
-      display: inline-flex;
-      margin-top: 10px;
-      padding: 4px 6px;
-      border: 1px solid #ccebd5;
-      border-radius: 6px;
-      background: #eaf8ef;
-      color: var(--green);
-      font-size: 8px;
-      font-weight: 850;
-    }
-
-    .meter-radio {
-      position: absolute;
-      top: 14px;
-      right: 13px;
-      width: 17px;
-      height: 17px;
-      border: 1.5px solid #d5ded7;
-      border-radius: 50%;
-    }
-
-    .meter-card.selected .meter-radio {
-      border: 5px solid var(--green);
-    }
-
-    /* Cards and form */
-
-    .panel {
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: white;
-      box-shadow: 0 3px 12px rgba(20, 45, 28, .025);
-    }
-
-    .field {
-      margin-bottom: 17px;
-    }
-
-    .field:last-child {
-      margin-bottom: 0;
-    }
-
-    .field label {
-      display: block;
-      margin-bottom: 8px;
-      color: #334439;
-      font-size: 11px;
-      font-weight: 750;
-    }
-
-    .field-hint {
-      margin-top: 6px;
-      color: #8a968d;
-      font-size: 10px;
-      line-height: 1.6;
-    }
-
-    .input-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      padding: 0 12px;
-      border: 1px solid #e0e7e1;
       border-radius: 12px;
       background: #fff;
-      transition: border-color .18s, box-shadow .18s;
-    }
-
-    .input-wrap:focus-within {
-      border-color: #78b18f;
-      box-shadow: 0 0 0 3px rgba(8, 116, 67, .06);
-    }
-
-    .input-wrap > svg {
-      flex: 0 0 18px;
-      width: 18px;
-      height: 18px;
-      color: #839188;
-    }
-
-    .input-wrap input {
-      width: 100%;
-      min-width: 0;
-      height: 47px;
-      border: 0;
-      outline: none;
-      background: transparent;
-      color: var(--text);
-      font-size: 13px;
-    }
-
-    .input-wrap input::placeholder {
-      color: #a1aaa3;
-    }
-
-    .verify-button {
+      border: 1px solid var(--elx-line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
       flex-shrink: 0;
-      padding: 8px 10px;
-      border: 0;
-      border-radius: 8px;
-      background: var(--green-light);
-      color: var(--green);
-      font-size: 10px;
-      font-weight: 800;
-      cursor: pointer;
+      transition: transform .12s, box-shadow .15s, border-color .15s;
+      box-shadow: 0 1px 2px rgba(15,23,42,.04);
     }
+    .elx-back:hover { border-color: #d4dbe4; }
+    .elx-back:active { transform: scale(.94); }
+    .elx-back svg { width: 18px; height: 18px; color: var(--elx-ink); }
 
-    .verify-button:hover {
-      background: #dcefe2;
-    }
-
-    .verified-box {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-top: 11px;
-      padding: 12px;
-      border: 1px solid #d6ecdd;
-      border-radius: 11px;
-      background: #f1f9f3;
-    }
-
-    .verified-symbol {
-      display: grid;
-      place-items: center;
-      flex: 0 0 24px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #d8efdf;
-      color: var(--green);
-      font-weight: 900;
-    }
-
-    .verified-name {
-      color: #205437;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .verified-detail {
-      margin-top: 3px;
-      color: #688472;
-      font-size: 10px;
-      overflow-wrap: anywhere;
-    }
-
-    /* Amount */
-
-    .amount-presets {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .amount-chip {
-      padding: 10px 5px;
-      border: 1px solid #e5ebe6;
-      border-radius: 10px;
-      background: #fff;
-      color: #4e5d52;
-      font-size: 10px;
-      font-weight: 750;
-      cursor: pointer;
-      transition: .15s;
-    }
-
-    .amount-chip:hover,
-    .amount-chip.selected {
-      border-color: var(--green);
-      background: #eff8f1;
-      color: var(--green);
-    }
-
-    /* Pricing */
-
-    .pricing-card {
-      margin-top: 17px;
-      padding: 14px;
-      border: 1px solid #e4ece5;
-      border-radius: 13px;
-      background: #f8fbf8;
-    }
-
-    .pricing-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-      color: #65746a;
-      font-size: 11px;
-    }
-
-    .pricing-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .pricing-value {
-      color: #26392c;
-      font-weight: 750;
-      text-align: right;
-    }
-
-    .pricing-discount {
-      color: var(--green);
-      font-weight: 800;
-    }
-
-    .pricing-total {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed #d8e3da;
-    }
-
-    .pricing-total .pricing-row {
-      align-items: center;
-      margin-bottom: 0;
-      color: #203a29;
-      font-weight: 800;
-    }
-
-    .pricing-total .pricing-value {
-      color: var(--green);
-      font-size: 20px;
-      font-weight: 850;
-      letter-spacing: -.6px;
-    }
-
-    /* Buttons */
-
-    .primary-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      width: 100%;
-      min-height: 49px;
-      margin-top: 18px;
-      padding: 13px 16px;
-      border: 0;
-      border-radius: 12px;
-      background: var(--green);
-      color: white;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 5px 13px rgba(8, 116, 67, .12);
-      transition: background .18s, transform .18s;
-    }
-
-    .primary-button:hover {
-      background: var(--green-dark);
-    }
-
-    .primary-button:active {
-      transform: scale(.99);
-    }
-
-    .primary-button svg {
-      width: 17px;
-      height: 17px;
-    }
-
-    .secondary-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-height: 44px;
-      margin-top: 10px;
-      padding: 11px 14px;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      background: white;
-      color: #46574b;
-      font-size: 11px;
-      font-weight: 750;
-      cursor: pointer;
-    }
-
-    .secondary-button:hover {
-      background: #f7faf7;
-    }
-
-    /* Notices */
-
-    .notice {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      margin-top: 13px;
-      padding: 12px;
-      border: 1px solid #e5ebe6;
-      border-radius: 11px;
-      background: #f7faf7;
-      color: #647268;
-      font-size: 10px;
-      line-height: 1.75;
-    }
-
-    .notice svg {
-      flex: 0 0 16px;
-      width: 16px;
-      height: 16px;
-      margin-top: 1px;
-    }
-
-    .notice.success {
-      border-color: #d4ebdb;
-      background: #f0f8f2;
-      color: #24633d;
-    }
-
-    .notice.error {
-      border-color: #f0d6d6;
-      background: #fff6f6;
-      color: #a43232;
-    }
-
-    /* Confirmation */
-
-    .summary-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 13px 0;
-      border-bottom: 1px solid #edf0ed;
-    }
-
-    .summary-row:last-child {
-      border-bottom: 0;
-    }
-
-    .summary-label {
-      color: #7b887e;
-      font-size: 11px;
-    }
-
-    .summary-value {
-      max-width: 62%;
-      color: #25372a;
-      font-size: 11px;
-      font-weight: 800;
-      text-align: right;
-      overflow-wrap: anywhere;
-    }
-
-    .confirmation-total {
-      margin-top: 10px;
-      padding: 17px;
-      border: 1px solid #dcebe0;
-      border-radius: 13px;
-      background: #f3f9f4;
-    }
-
-    .confirmation-total span {
-      display: block;
-      color: #65796a;
-      font-size: 10px;
-    }
-
-    .confirmation-total strong {
-      display: block;
-      margin-top: 4px;
-      color: var(--green);
-      font-size: 25px;
-      font-weight: 850;
-      letter-spacing: -.8px;
-    }
-
-    /* Receipt */
-
-    .receipt-status {
-      padding: 25px 15px;
-      border-bottom: 1px dashed #dfe8e1;
-      text-align: center;
-    }
-
-    .receipt-symbol {
-      display: grid;
-      place-items: center;
-      width: 61px;
-      height: 61px;
-      margin: 0 auto 15px;
-      border-radius: 50%;
-      background: #e8f6ec;
-      color: var(--green);
-    }
-
-    .receipt-symbol svg {
-      width: 29px;
-      height: 29px;
-    }
-
-    .receipt-status h2 {
-      font-size: 21px;
-      font-weight: 850;
-      letter-spacing: -.6px;
-    }
-
-    .receipt-status p {
-      max-width: 310px;
-      margin: 8px auto 0;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.8;
-    }
-
-    .receipt-token {
-      margin-top: 15px;
-      padding: 15px;
-      border: 1px dashed #a9ceb4;
-      border-radius: 12px;
-      background: #f4faf5;
-      text-align: center;
-    }
-
-    .receipt-token-label {
-      color: #65816c;
-      font-size: 10px;
-      font-weight: 750;
-    }
-
-    .receipt-token-value {
-      margin-top: 8px;
-      color: var(--green-dark);
-      font-size: clamp(19px, 5vw, 26px);
-      font-weight: 850;
-      letter-spacing: 1.5px;
-      overflow-wrap: anywhere;
-    }
-
-    .copy-token-button {
-      margin-top: 11px;
-      padding: 8px 12px;
-      border: 1px solid #d6e9db;
-      border-radius: 8px;
-      background: white;
-      color: var(--green);
-      font-size: 10px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    /* Loading and empty states */
-
-    .loading-state,
-    .empty-state {
-      grid-column: 1 / -1;
-      padding: 27px 15px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: white;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: center;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 17px;
-      height: 17px;
-      border: 2px solid rgba(255,255,255,.35);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-
-    .spinner.dark {
-      border-color: #dce8de;
-      border-top-color: var(--green);
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .toast {
-      position: fixed;
-      z-index: 100;
-      right: 18px;
-      bottom: calc(20px + env(safe-area-inset-bottom));
-      left: 18px;
-      width: fit-content;
-      max-width: 430px;
-      margin: 0 auto;
-      padding: 13px 16px;
-      border: 1px solid #e0e9e2;
-      border-radius: 12px;
-      background: #fff;
-      color: #26382b;
-      font-size: 11px;
+    .elx-heading { flex: 1; min-width: 0; }
+    .elx-heading .eyebrow {
+      font-size: 10.5px;
+      color: var(--elx-muted-2);
+      text-transform: uppercase;
+      letter-spacing: .12em;
       font-weight: 700;
-      box-shadow: 0 10px 35px rgba(0,0,0,.12);
-      overflow-wrap: anywhere;
+      margin-bottom: 3px;
+    }
+    .elx-heading .title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--elx-ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -.01em;
     }
 
-    .footer {
-      padding: 15px 10px 5px;
-      color: #96a098;
-      font-size: 10px;
-      line-height: 1.9;
+    /* ============================================================
+       CARDS
+       ============================================================ */
+    .elx-card {
+      background: var(--elx-card);
+      border: 1px solid var(--elx-line);
+      border-radius: var(--elx-radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--elx-shadow);
+    }
+    .elx-card.tight { padding: 14px; }
+    .elx-card.flush { padding: 0; overflow: hidden; }
+
+    .elx-label {
+      font-size: 11px;
+      color: var(--elx-muted-2);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    /* ============================================================
+       PRODUCT LIST (discos)
+       ============================================================ */
+    .elx-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .elx-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fff;
+      border: 1px solid var(--elx-line);
+      border-radius: var(--elx-radius);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: transform .12s, border-color .15s, box-shadow .15s;
+      box-shadow: var(--elx-shadow);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .elx-row:hover { border-color: #d4dbe4; }
+    .elx-row:active { transform: scale(.985); border-color: var(--elx-green); }
+
+    .elx-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      border: 1px solid var(--elx-line-2);
+      position: relative;
+    }
+    .elx-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 5px;
+      background: #fff;
+    }
+    .elx-logo .ini {
+      font-weight: 800;
+      font-size: 13px;
+      color: #1e40af;
+      letter-spacing: .4px;
+      background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .elx-info { flex: 1; min-width: 0; }
+    .elx-info .name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--elx-ink);
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -.005em;
+    }
+    .elx-info .meta {
+      font-size: 12px;
+      color: var(--elx-muted);
+      font-weight: 500;
+    }
+
+    .elx-chev {
+      width: 20px;
+      height: 20px;
+      color: var(--elx-muted-2);
+      flex-shrink: 0;
+      transition: transform .15s, color .15s;
+    }
+    .elx-row:active .elx-chev { color: var(--elx-green); transform: translateX(2px); }
+
+    /* ============================================================
+       BILL TYPE — big option cards
+       ============================================================ */
+    .elx-bill {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fff;
+      border: 1.5px solid var(--elx-line);
+      border-radius: var(--elx-radius);
+      padding: 18px 16px;
+      cursor: pointer;
+      transition: transform .12s, border-color .15s, background .15s, box-shadow .15s;
+      box-shadow: var(--elx-shadow);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .elx-bill:hover { border-color: #d4dbe4; }
+    .elx-bill:active { transform: scale(.985); }
+    .elx-bill.pri { border-color: var(--elx-green); background: var(--elx-green-soft); }
+
+    .elx-bill .ic {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--elx-green-soft);
+      color: var(--elx-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s, color .15s;
+    }
+    .elx-bill:hover .ic { background: var(--elx-green); color: #fff; }
+    .elx-bill.pri .ic { background: var(--elx-green); color: #fff; }
+
+    .elx-bill .txt { flex: 1; min-width: 0; }
+    .elx-bill .txt .h {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--elx-ink);
+      margin-bottom: 3px;
+      letter-spacing: -.005em;
+    }
+    .elx-bill .txt .s {
+      font-size: 12.5px;
+      color: var(--elx-muted);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ============================================================
+       INPUTS
+       ============================================================ */
+    .elx-input {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid var(--elx-line);
+      color: var(--elx-ink);
+      padding: 16px 15px;
+      border-radius: var(--elx-radius-sm);
+      font-size: 16px;
+      outline: none;
+      font-family: inherit;
+      font-weight: 600;
+      transition: border-color .15s, box-shadow .15s;
+      box-sizing: border-box;
+      letter-spacing: .01em;
+    }
+    .elx-input::placeholder { color: var(--elx-muted-2); font-weight: 500; letter-spacing: 0; }
+    .elx-input:focus {
+      border-color: var(--elx-green);
+      box-shadow: 0 0 0 4px rgba(22,163,74,.11);
+    }
+
+    .elx-row-input {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .elx-row-input .elx-input { flex: 1; }
+    .elx-vbtn {
+      padding: 0 20px;
+      border: 0;
+      border-radius: var(--elx-radius-sm);
+      background: var(--elx-green);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: transform .12s, opacity .15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      font-family: inherit;
+      letter-spacing: .01em;
+      box-shadow: 0 2px 8px rgba(22,163,74,.25);
+    }
+    .elx-vbtn:active:not(:disabled) { transform: scale(.96); }
+    .elx-vbtn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+    .elx-vbtn svg { width: 14px; height: 14px; }
+
+    /* ============================================================
+       AMOUNT CHIPS
+       ============================================================ */
+    .elx-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .elx-chip {
+      background: #fff;
+      border: 1.5px solid var(--elx-line);
+      padding: 9px 15px;
+      border-radius: 22px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--elx-ink-2);
+      transition: transform .12s, border-color .15s, background .15s, color .15s;
+      font-family: inherit;
+      letter-spacing: .005em;
+    }
+    .elx-chip:hover { border-color: #cbd5e1; }
+    .elx-chip:active { transform: scale(.94); }
+    .elx-chip.on {
+      background: var(--elx-green);
+      border-color: var(--elx-green);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(22,163,74,.25);
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .elx-btn {
+      width: 100%;
+      border: 0;
+      padding: 17px 16px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform .12s, opacity .15s, box-shadow .15s;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: .005em;
+    }
+    .elx-btn.pri {
+      background: var(--elx-green);
+      color: #fff;
+      box-shadow: var(--elx-shadow-btn);
+    }
+    .elx-btn.pri:hover:not(:disabled) { background: var(--elx-green-dk); }
+    .elx-btn.pri:active:not(:disabled) { transform: scale(.985); }
+    .elx-btn.pri:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+    .elx-btn.ghost {
+      background: #fff;
+      border: 1.5px solid var(--elx-line);
+      color: var(--elx-ink);
+      box-shadow: var(--elx-shadow);
+    }
+    .elx-btn.ghost:hover { border-color: #d4dbe4; }
+    .elx-btn.ghost:active { transform: scale(.985); }
+
+    /* ============================================================
+       RECEIPT — KV rows
+       ============================================================ */
+    .elx-kv {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--elx-line-2);
+      font-size: 13.5px;
+    }
+    .elx-kv:last-child { border-bottom: 0; padding-bottom: 0; }
+    .elx-kv:first-child { padding-top: 0; }
+    .elx-kv .k {
+      color: var(--elx-muted);
+      font-weight: 500;
+      flex-shrink: 0;
+      letter-spacing: .005em;
+    }
+    .elx-kv .v {
+      font-weight: 700;
+      text-align: right;
+      color: var(--elx-ink);
+      word-break: break-word;
+      flex: 1;
+      min-width: 0;
+      letter-spacing: -.005em;
+    }
+
+    /* ============================================================
+       VERIFIED CUSTOMER
+       ============================================================ */
+    .elx-verified {
+      background: var(--elx-green-soft);
+      border: 1.5px solid var(--elx-green-line);
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 14px;
+      animation: elx-pop .25s ease-out;
+    }
+    @keyframes elx-pop {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .elx-verified .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--elx-green);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 10px;
+    }
+    .elx-verified .badge svg { width: 13px; height: 13px; }
+    .elx-verified .cname {
+      color: #065f46;
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 5px;
+      line-height: 1.3;
+      letter-spacing: -.005em;
+    }
+    .elx-verified .caddr {
+      color: #047857;
+      font-size: 12.5px;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       TOKEN
+       ============================================================ */
+    .elx-token {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1.5px dashed var(--elx-green);
+      border-radius: 16px;
+      padding: 24px 16px;
+      margin-top: 16px;
       text-align: center;
+      animation: elx-pop .3s ease-out;
+    }
+    .elx-token .lbl {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #047857;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 12px;
+    }
+    .elx-token .tok {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #065f46;
+      word-break: break-all;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+    .elx-token .units {
+      color: #047857;
+      font-size: 12.5px;
+      margin-top: 10px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .elx-copy {
+      margin-top: 16px;
+      background: var(--elx-green);
+      border: 0;
+      color: #fff;
+      padding: 11px 22px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform .12s, background .15s;
+      letter-spacing: .02em;
+      box-shadow: 0 2px 8px rgba(22,163,74,.25);
+    }
+    .elx-copy:hover { background: var(--elx-green-dk); }
+    .elx-copy:active { transform: scale(.96); }
+
+    /* ============================================================
+       ALERTS
+       ============================================================ */
+    .elx-alert {
+      padding: 13px 15px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-top: 12px;
+      font-weight: 600;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      letter-spacing: .002em;
+    }
+    .elx-alert.err  { background: var(--elx-red-soft);   border: 1px solid var(--elx-red-line);   color: #991b1b; }
+    .elx-alert.warn { background: var(--elx-amber-soft); border: 1px solid var(--elx-amber-line); color: #92400e; }
+    .elx-alert.ok   { background: var(--elx-green-soft); border: 1px solid var(--elx-green-line); color: #065f46; }
+
+    /* ============================================================
+       SPINNER
+       ============================================================ */
+    .elx-spin {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: elx-r .7s linear infinite;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .elx-alert.ok .elx-spin {
+      border-color: rgba(6,95,70,.25);
+      border-top-color: #065f46;
+    }
+    @keyframes elx-r { to { transform: rotate(360deg); } }
+
+    /* ============================================================
+       SKELETON
+       ============================================================ */
+    .elx-skel {
+      background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+      background-size: 200% 100%;
+      animation: elx-shim 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes elx-shim {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
-    .footer strong {
-      color: #607267;
+    /* ============================================================
+       RECEIPT HERO
+       ============================================================ */
+    .elx-hero {
+      text-align: center;
+      padding: 4px 0 20px;
+      border-bottom: 1px solid var(--elx-line-2);
+      margin-bottom: 6px;
+    }
+    .elx-hero .badge-big {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 14px;
+    }
+    .elx-hero .badge-big.ok  { background: var(--elx-green-soft); color: var(--elx-green); }
+    .elx-hero .badge-big.err { background: var(--elx-red-soft);   color: var(--elx-red); }
+    .elx-hero .badge-big.warn{ background: var(--elx-amber-soft); color: var(--elx-amber); }
+    .elx-hero .badge-big svg { width: 30px; height: 30px; }
+    .elx-hero .h-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--elx-ink);
+      margin-bottom: 6px;
+      letter-spacing: -.01em;
+    }
+    .elx-hero .h-sub {
+      font-size: 13px;
+      color: var(--elx-muted);
+      font-weight: 500;
+      line-height: 1.5;
     }
 
-    /* Desktop */
-
-    @media (min-width: 620px) {
-      .page-content {
-        padding: 28px 28px 45px;
-      }
-
-      .provider-list {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .hero {
-        padding: 27px;
-      }
-
-      .panel {
-        padding: 22px;
-      }
-    }
-
-    @media (max-width: 390px) {
-      .topbar {
-        gap: 9px;
-        padding-right: 13px;
-        padding-left: 13px;
-      }
-
-      .page-content {
-        padding: 17px 13px 30px;
-      }
-
-      .secure-label {
-        padding: 6px;
-        font-size: 8px;
-      }
-
-      .provider-list {
-        gap: 8px;
-      }
-
-      .provider-card {
-        gap: 7px;
-        padding: 9px;
-      }
-
-      .provider-logo {
-        flex-basis: 35px;
-        width: 35px;
-        height: 35px;
-        border-radius: 10px;
-      }
-
-      .provider-name {
-        font-size: 10px;
-      }
-
-      .provider-meta {
-        font-size: 8px;
-      }
-
-      .panel {
-        padding: 14px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-      }
-    }
+    /* ============================================================
+       UTIL
+       ============================================================ */
+    .elx-hidden { display: none !important; }
+    .elx-muted  { color: var(--elx-muted); font-size: 12.5px; }
+    .elx-center { text-align: center; }
+    .elx-mt-14  { margin-top: 14px; }
+    .elx-mb-0   { margin-bottom: 0 !important; }
   </style>
 </head>
+<body class="home elx-body">
 
-<body>
-<div class="app-shell">
+  <div id="app-header"></div>
 
-  <header class="topbar">
-    <button class="back-button" id="backButton" type="button"
-      aria-label="Go back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="1.8">
-        <path d="m15 18-6-6 6-6" stroke-linecap="round"
-          stroke-linejoin="round"/>
-      </svg>
-    </button>
+  <main class="app-container">
+    <div class="elx-wrap">
 
-    <div class="brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="1.8">
-        <path d="m13 2-9 12h7l-1 8 10-13h-7l1-7Z"
-          stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-
-    <div class="brand-copy">
-      <div class="brand-name">SHATOVA</div>
-      <div class="brand-subtitle">Electricity payments</div>
-    </div>
-
-    <div class="secure-label">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="1.8">
-        <rect x="5" y="10" width="14" height="11" rx="2"/>
-        <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-      </svg>
-      Secure
-    </div>
-  </header>
-
-  <main class="page-content">
-
-    <section class="hero">
-      <div class="hero-content">
-        <div class="hero-label"><span></span> ELECTRICITY MADE SIMPLE</div>
-        <h1>Power your home.<br>Pay with confidence.</h1>
-        <p>
-          Pay your electricity bills with Shatova. Select your provider,
-          verify your meter and complete your payment securely.
-        </p>
-
-        <div class="hero-bottom">
-          <span class="hero-pill">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.8">
-              <path d="m13 2-9 12h7l-1 8 10-13h-7l1-7Z"/>
-            </svg>
-            Prepaid & Postpaid
-          </span>
-          <span class="hero-pill">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.8">
-              <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/>
-              <path d="m9 12 2 2 4-4"/>
-            </svg>
-            Secure checkout
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <section class="progress-card" aria-label="Payment progress">
-      <div class="progress-track" id="progressTrack">
-        <div class="progress-item active" data-progress="1">
-          <div class="progress-circle">1</div>
-          <div class="progress-name">Provider</div>
-        </div>
-        <div class="progress-item" data-progress="2">
-          <div class="progress-circle">2</div>
-          <div class="progress-name">Meter</div>
-        </div>
-        <div class="progress-item" data-progress="3">
-          <div class="progress-circle">3</div>
-          <div class="progress-name">Payment</div>
-        </div>
-        <div class="progress-item" data-progress="4">
-          <div class="progress-circle">4</div>
-          <div class="progress-name">Receipt</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 1: PROVIDER -->
-
-    <section class="section" id="stepProvider">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">STEP 01</span>
-          <h2>Choose your provider</h2>
-          <p>Select the electricity distribution company for your meter.</p>
-        </div>
-        <span class="count-badge" id="providerCount">12 PROVIDERS</span>
-      </div>
-
-      <label class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8">
-          <circle cx="11" cy="11" r="7"/>
-          <path d="m16 16 4 4" stroke-linecap="round"/>
-        </svg>
-        <input id="providerSearch" type="search"
-          placeholder="Search electricity provider..."
-          autocomplete="off">
-      </label>
-
-      <div class="provider-list" id="providerList">
-        <div class="loading-state">
-          <span class="spinner dark"></span>
-          <p style="margin-top:10px">Loading electricity providers...</p>
+      <!-- ============================================================
+           TOP BAR
+           ============================================================ -->
+      <div class="elx-top">
+        <button class="elx-back" id="btnBack" aria-label="Back" style="display:none;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="elx-heading">
+          <div class="eyebrow" id="topEyebrow">SERVICE</div>
+          <div class="title" id="topTitle">Electricity</div>
         </div>
       </div>
 
-      <div class="notice" id="providerNotice" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 11v5m0-8h.01" stroke-linecap="round"/>
-        </svg>
-        <span id="providerNoticeText"></span>
-      </div>
-    </section>
-
-    <!-- STEP 2: METER DETAILS -->
-
-    <section class="section" id="stepMeter" hidden>
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">STEP 02</span>
-          <h2>Meter information</h2>
-          <p id="meterSubtitle">Enter your meter details carefully.</p>
+      <!-- ============================================================
+           STEP 1 — Discos list
+           ============================================================ -->
+      <div id="step1">
+        <div class="elx-list" id="discoList">
+          <div class="elx-row"><div class="elx-skel" style="width:46px;height:46px;border-radius:12px;"></div><div style="flex:1"><div class="elx-skel" style="width:65%;height:14px;margin-bottom:7px;"></div><div class="elx-skel" style="width:35%;height:11px;"></div></div></div>
+          <div class="elx-row"><div class="elx-skel" style="width:46px;height:46px;border-radius:12px;"></div><div style="flex:1"><div class="elx-skel" style="width:55%;height:14px;margin-bottom:7px;"></div><div class="elx-skel" style="width:30%;height:11px;"></div></div></div>
+          <div class="elx-row"><div class="elx-skel" style="width:46px;height:46px;border-radius:12px;"></div><div style="flex:1"><div class="elx-skel" style="width:60%;height:14px;margin-bottom:7px;"></div><div class="elx-skel" style="width:32%;height:11px;"></div></div></div>
+          <div class="elx-row"><div class="elx-skel" style="width:46px;height:46px;border-radius:12px;"></div><div style="flex:1"><div class="elx-skel" style="width:50%;height:14px;margin-bottom:7px;"></div><div class="elx-skel" style="width:28%;height:11px;"></div></div></div>
         </div>
-        <span class="count-badge" id="selectedProviderBadge">PROVIDER</span>
       </div>
 
-      <div class="panel">
-        <div class="field">
-          <label for="meterNumber">Meter number</label>
-          <div class="input-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.8">
-              <rect x="4" y="3" width="16" height="18" rx="3"/>
-              <path d="M8 7h8M8 11h8M8 15h4" stroke-linecap="round"/>
-            </svg>
-            <input id="meterNumber" type="text"
-              placeholder="Enter your meter number"
-              inputmode="numeric" autocomplete="off"
-              maxlength="40">
-            <button type="button" class="verify-button"
-              id="verifyButton">Verify</button>
+      <!-- ============================================================
+           STEP 2 — Bill type (prepaid first, postpaid second)
+           ============================================================ -->
+      <div id="step2" class="elx-hidden">
+        <div class="elx-list" id="billList"></div>
+      </div>
+
+      <!-- ============================================================
+           STEP 3 — Meter + amount
+           ============================================================ -->
+      <div id="step3" class="elx-hidden">
+
+        <div class="elx-card">
+          <div class="elx-label">Meter number</div>
+          <div class="elx-row-input">
+            <input id="meter" class="elx-input" type="tel" inputmode="numeric"
+                   placeholder="Enter meter number" maxlength="13" autocomplete="off" />
+            <button class="elx-vbtn" id="btnVerify" disabled>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M5 13l4 4L19 7"/></svg>
+              Verify
+            </button>
           </div>
-          <p class="field-hint">
-            Confirm the meter number on your electricity meter or bill.
-          </p>
-        </div>
-
-        <div id="verifiedBox" class="verified-box" hidden>
-          <div class="verified-symbol">✓</div>
-          <div>
-            <div class="verified-name" id="verifiedName">
-              Meter verified
+          <div id="verifyMsg"></div>
+          <div id="verifiedBox" class="elx-verified elx-hidden">
+            <div class="badge">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              Verified
             </div>
-            <div class="verified-detail" id="verifiedDetail"></div>
+            <div class="cname" id="vName"></div>
+            <div class="caddr" id="vAddr"></div>
           </div>
         </div>
 
-        <div class="field" style="margin-top:20px">
-          <label for="purchaseAmount">Electricity amount (₦)</label>
-          <div class="input-wrap">
-            <span style="font-weight:850;color:#6c7c70">₦</span>
-            <input id="purchaseAmount" type="number"
-              min="1" max="1000000" step="1"
-              placeholder="Enter amount"
-              inputmode="decimal">
+        <div class="elx-card elx-hidden" id="amountCard">
+          <div class="elx-label">Amount (₦)</div>
+          <input id="amount" class="elx-input" type="tel" inputmode="numeric"
+                 placeholder="0" autocomplete="off" />
+          <div class="elx-chips" id="chips">
+            <div class="elx-chip" data-amt="1000">1,000</div>
+            <div class="elx-chip" data-amt="2000">2,000</div>
+            <div class="elx-chip" data-amt="5000">5,000</div>
+            <div class="elx-chip" data-amt="10000">10,000</div>
+            <div class="elx-chip" data-amt="20000">20,000</div>
           </div>
-
-          <div class="amount-presets">
-            <button type="button" class="amount-chip" data-amount="1000">
-              ₦1,000
-            </button>
-            <button type="button" class="amount-chip" data-amount="2000">
-              ₦2,000
-            </button>
-            <button type="button" class="amount-chip" data-amount="5000">
-              ₦5,000
-            </button>
-            <button type="button" class="amount-chip" data-amount="10000">
-              ₦10,000
-            </button>
-            <button type="button" class="amount-chip" data-amount="20000">
-              ₦20,000
-            </button>
-            <button type="button" class="amount-chip" data-amount="50000">
-              ₦50,000
-            </button>
-          </div>
-          <p class="field-hint">
-            Choose an amount or enter your own amount.
-          </p>
+          <div id="amountMsg" class="elx-muted" style="margin-top:12px;"></div>
         </div>
 
-        <div class="pricing-card">
-          <div class="pricing-row">
-            <span>Electricity credit</span>
-            <span class="pricing-value" id="creditAmount">₦0.00</span>
-          </div>
-          <div class="pricing-row">
-            <span>Promotional discount (1%)</span>
-            <span class="pricing-discount" id="discountAmount">−₦0.00</span>
-          </div>
-          <div class="pricing-total">
-            <div class="pricing-row">
-              <span>Estimated total</span>
-              <span class="pricing-value" id="payableAmount">₦0.00</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="notice">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="1.8">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M12 11v5m0-8h.01" stroke-linecap="round"/>
-          </svg>
-          <span>
-            The discount shown is an estimate. The final payable amount
-            depends on the discount supported and confirmed by Shatova's
-            backend.
-          </span>
-        </div>
-
-        <button type="button" class="primary-button" id="continueButton">
-          Continue to confirmation
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="1.8">
-            <path d="M5 12h14m-6-6 6 6-6 6"
-              stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-
-        <button type="button" class="secondary-button" id="changeProviderButton">
-          Change electricity provider
-        </button>
-      </div>
-    </section>
-
-    <!-- STEP 3: CONFIRMATION -->
-
-    <section class="section" id="stepConfirm" hidden>
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">STEP 03</span>
-          <h2>Confirm your payment</h2>
-          <p>Review your details before submitting your transaction.</p>
-        </div>
+        <button class="elx-btn pri elx-hidden" id="btnPay" disabled>Pay</button>
       </div>
 
-      <div class="panel">
-        <div class="summary-row">
-          <span class="summary-label">Provider</span>
-          <span class="summary-value" id="confirmProvider">—</span>
+      <!-- ============================================================
+           STEP 4 — Confirm
+           ============================================================ -->
+      <div id="step4" class="elx-hidden">
+        <div class="elx-card">
+          <div class="elx-kv"><span class="k">Disco</span><span class="v" id="cDisco">—</span></div>
+          <div class="elx-kv"><span class="k">Meter type</span><span class="v" id="cType">—</span></div>
+          <div class="elx-kv"><span class="k">Meter</span><span class="v" id="cMeter">—</span></div>
+          <div class="elx-kv"><span class="k">Customer</span><span class="v" id="cName">—</span></div>
+          <div class="elx-kv"><span class="k">Amount</span><span class="v" id="cAmount">—</span></div>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">Meter type</span>
-          <span class="summary-value" id="confirmType">—</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Meter number</span>
-          <span class="summary-value" id="confirmMeter">—</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Customer</span>
-          <span class="summary-value" id="confirmCustomer">—</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Electricity credit</span>
-          <span class="summary-value" id="confirmCredit">—</span>
-        </div>
-
-        <div class="confirmation-total">
-          <span>Estimated wallet debit</span>
-          <strong id="confirmTotal">₦0.00</strong>
-        </div>
-
-        <div class="notice">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="1.8">
-            <rect x="5" y="10" width="14" height="11" rx="2"/>
-            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-          </svg>
-          <span>
-            Only confirm if the provider, meter number and amount are correct.
-            Do not submit the same payment repeatedly while it is processing.
-          </span>
-        </div>
-
-        <button type="button" class="primary-button" id="payButton">
-          Confirm and pay
-        </button>
-
-        <button type="button" class="secondary-button" id="editDetailsButton">
-          Go back and edit details
-        </button>
+        <div id="payMsg"></div>
+        <button class="elx-btn pri" id="btnConfirm">Confirm &amp; Pay</button>
       </div>
-    </section>
 
-    <!-- STEP 4: RECEIPT -->
-
-    <section class="section" id="stepReceipt" hidden>
-      <div class="panel">
-        <div class="receipt-status">
-          <div class="receipt-symbol" id="receiptSymbol">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.8">
-              <path d="m5 12 4 4L19 6" stroke-linecap="round"
-                stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <h2 id="receiptTitle">Transaction submitted</h2>
-          <p id="receiptMessage">
-            Your electricity transaction is being processed.
-          </p>
-        </div>
-
-        <div id="receiptTokenBox" class="receipt-token" hidden>
-          <div class="receipt-token-label">ELECTRICITY TOKEN</div>
-          <div class="receipt-token-value" id="receiptToken"></div>
-          <button type="button" class="copy-token-button" id="copyTokenButton">
-            Copy token
-          </button>
-        </div>
-
-        <div style="padding-top:10px">
-          <div class="summary-row">
-            <span class="summary-label">Provider</span>
-            <span class="summary-value" id="receiptProvider">—</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Meter number</span>
-            <span class="summary-value" id="receiptMeter">—</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Amount</span>
-            <span class="summary-value" id="receiptAmount">—</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Reference</span>
-            <span class="summary-value" id="receiptReference">—</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Status</span>
-            <span class="summary-value" id="receiptStatus">Processing</span>
-          </div>
-        </div>
-
-        <button type="button" class="primary-button" id="newTransactionButton">
-          Make another payment
-        </button>
-
-        <button type="button" class="secondary-button" id="checkStatusButton">
-          Check transaction status
-        </button>
+      <!-- ============================================================
+           STEP 5 — Receipt
+           ============================================================ -->
+      <div id="step5" class="elx-hidden">
+        <div class="elx-card" id="resultCard"></div>
+        <button class="elx-btn ghost" id="btnNew">Buy another</button>
       </div>
-    </section>
 
-    <footer class="footer">
-      <strong>SHATOVA</strong><br>
-      Where Authenticity Meets Eternity.<br>
-      Always verify your meter details before payment.
-    </footer>
-
+    </div>
   </main>
-</div>
 
-<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/js/auth-guard.js"></script>
+  <script src="/js/api.js"></script>
+  <script type="module" src="/js/components.js"></script>
 
-<script>
-(() => {
-  'use strict';
+  <script>
+  /* ============================================================
+     ELECTRICITY — page controller
+     ============================================================ */
+  (function () {
+    'use strict';
 
-  /* =====================================================
-     CONFIGURATION
-     ===================================================== */
+    var API = '/api/v1/electricity';
+    var TOKEN_KEYS = ['token','authToken','access_token','accessToken','shatova_token','jwt'];
 
-  const API_BASE = '/api/v1/electricity';
-  const DISCOUNT_RATE = 0.01;
-
-  const $ = id => document.getElementById(id);
-
-  const state = {
-    products: { providers: [] },
-    provider: null,
-    product: null,
-    billType: null,
-    meterNumber: '',
-    amount: 0,
-    customer: null,
-    verification: null,
-    reference: null,
-    transaction: null,
-    step: 1,
-    submitting: false,
-    checkingStatus: false,
-    pollTimer: null,
-    pollCount: 0
-  };
-
-  const money = value => new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(Number(value) || 0);
-
-  function escapeHTML(value) {
-    return String(value ?? '').replace(/[&<>"']/g, char => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    })[char]);
-  }
-
-  function getToken() {
-    const keys = [
-      'token', 'authToken', 'access_token',
-      'accessToken', 'shatova_token', 'jwt'
-    ];
-
-    for (const key of keys) {
-      const value = localStorage.getItem(key);
-      if (value) return value;
-    }
-
-    return '';
-  }
-
-  async function api(path, options = {}) {
-    const headers = {
-      Accept: 'application/json',
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...(options.headers || {})
+    /* ------------------------------------------------------------
+       Real brand logos — tried in order, falls back to initials
+       Sources:
+         Wikimedia Commons (official logos) + a public CDN mirror
+       ------------------------------------------------------------ */
+    var DISCO_LOGOS = {
+      'Aba Power': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/Aba_Power_logo.png/120px-Aba_Power_logo.png'
+      ],
+      'Abuja Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/AEDC_logo.png/120px-AEDC_logo.png',
+        'https://upload.wikimedia.org/wikipedia/en/thumb/3/3d/Abuja_Electricity_Distribution_Company_logo.png/120px-Abuja_Electricity_Distribution_Company_logo.png'
+      ],
+      'Benin Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/BEDC_logo.png/120px-BEDC_logo.png'
+      ],
+      'Eko Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Eko_Electricity_Distribution_Company_logo.png/120px-Eko_Electricity_Distribution_Company_logo.png',
+        'https://upload.wikimedia.org/wikipedia/en/thumb/0/0f/Eko_Electric_logo.png/120px-Eko_Electric_logo.png'
+      ],
+      'Enugu Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Enugu_Electricity_Distribution_Company_logo.png/120px-Enugu_Electricity_Distribution_Company_logo.png'
+      ],
+      'Ibadan Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/IBEDC_logo.png/120px-IBEDC_logo.png'
+      ],
+      'Ikeja Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/1/1e/Ikeja_Electric_logo.png/120px-Ikeja_Electric_logo.png'
+      ],
+      'Jos Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Jos_Electricity_Distribution_Company_logo.png/120px-Jos_Electricity_Distribution_Company_logo.png'
+      ],
+      'Kaduna Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/6/6d/Kaduna_Electricity_Company_logo.png/120px-Kaduna_Electricity_Company_logo.png'
+      ],
+      'Kano Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Kano_Electricity_Distribution_Company_logo.png/120px-Kano_Electricity_Distribution_Company_logo.png'
+      ],
+      'Portharcourt Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/5/5c/Port_Harcourt_Electricity_Distribution_Company_logo.png/120px-Port_Harcourt_Electricity_Distribution_Company_logo.png'
+      ],
+      'Yola Electric': [
+        'https://upload.wikimedia.org/wikipedia/en/thumb/2/2e/Yola_Electricity_Distribution_Company_logo.png/120px-Yola_Electricity_Distribution_Company_logo.png'
+      ]
     };
 
-    const token = getToken();
-    if (token) headers.Authorization = 'Bearer ' + token;
+    /* ------------------------------------------------------------
+       Small helpers
+       ------------------------------------------------------------ */
+    function $(id) { return document.getElementById(id); }
+    function getToken() {
+      for (var i = 0; i < TOKEN_KEYS.length; i++) {
+        var v = localStorage.getItem(TOKEN_KEYS[i]);
+        if (v) return v;
+      }
+      return null;
+    }
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    function fmt(n) {
+      return '₦' + Number(n || 0).toLocaleString('en-NG', { minimumFractionDigits: 0 });
+    }
+    function initials(name) {
+      return String(name || '').split(/\s+/).map(function (w) { return w[0] || ''; })
+        .join('').slice(0, 2).toUpperCase();
+    }
 
-    const response = await fetch(API_BASE + path, {
-      ...options,
-      headers,
-      credentials: 'same-origin'
+    /* ------------------------------------------------------------
+       API helper
+       ------------------------------------------------------------ */
+    async function callApi(path, opts) {
+      opts = opts || {};
+      var token = getToken();
+      var headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+
+      var init = { method: opts.method || 'GET', headers: headers };
+      if (opts.body) init.body = JSON.stringify(opts.body);
+
+      console.log('[elec] →', init.method, API + path, token ? '(auth ok)' : '(NO TOKEN)');
+
+      var res;
+      try {
+        res = await fetch(API + path, init);
+      } catch (netErr) {
+        console.error('[elec] network:', netErr);
+        throw new Error('Cannot reach server. Check your connection.');
+      }
+
+      var text = await res.text();
+      var json = {};
+      try { json = text ? JSON.parse(text) : {}; }
+      catch (parseErr) {
+        console.error('[elec] non-JSON:', res.status, text.slice(0, 300));
+        throw new Error('Server returned an unexpected response (HTTP ' + res.status + ').');
+      }
+
+      console.log('[elec] ←', res.status, json);
+
+      if (!res.ok || json.success === false) {
+        var msg = json.message || json.error || ('Request failed (HTTP ' + res.status + ')');
+        var e = new Error(msg);
+        e.code = json.code;
+        e.status = res.status;
+        throw e;
+      }
+      return json.data;
+    }
+
+    /* ------------------------------------------------------------
+       State
+       ------------------------------------------------------------ */
+    var state = {
+      products: null,
+      provider: null,
+      billType: null,
+      productName: null,
+      meterNumber: '',
+      verified: null,
+      amount: null,
+      reference: null,
+      pollTimer: null
+    };
+
+    /* ------------------------------------------------------------
+       Navigation
+       ------------------------------------------------------------ */
+    function showStep(n) {
+      [1,2,3,4,5].forEach(function (i) {
+        var el = $('step' + i);
+        if (el) el.classList.toggle('elx-hidden', i !== n);
+      });
+      $('btnBack').style.display = (n === 1) ? 'none' : 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setTitle(eyebrow, title) {
+      $('topEyebrow').textContent = eyebrow;
+      $('topTitle').textContent   = title;
+    }
+
+    $('btnBack').addEventListener('click', function () {
+      if (!$('step5').classList.contains('elx-hidden')) { resetAll(); return; }
+      if (!$('step4').classList.contains('elx-hidden')) { setTitle(state.productName, 'Enter meter & amount'); showStep(3); return; }
+      if (!$('step3').classList.contains('elx-hidden')) { setTitle(state.provider.toUpperCase(), 'Choose meter type'); showStep(2); return; }
+      if (!$('step2').classList.contains('elx-hidden')) { setTitle('SERVICE', 'Electricity'); showStep(1); return; }
     });
 
-    const contentType = response.headers.get('content-type') || '';
-    let data = {};
-
-    if (contentType.includes('application/json')) {
-      data = await response.json();
-    } else {
-      const bodyText = await response.text();
-      data = { message: bodyText };
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        data.message || data.error ||
-        `Request failed (${response.status})`
-      );
-    }
-
-    if (data && data.success === false) {
-      throw new Error(data.message || data.error || 'Request failed.');
-    }
-
-    return data;
-  }
-
-  function toast(message) {
-    const node = $('toast');
-    node.textContent = message;
-    node.hidden = false;
-
-    clearTimeout(toast.timer);
-    toast.timer = setTimeout(() => {
-      node.hidden = true;
-    }, 3500);
-  }
-
-  function setButtonLoading(button, loading, label) {
-    if (loading) {
-      button.dataset.originalLabel = button.innerHTML;
-      button.disabled = true;
-      button.innerHTML = '<span class="spinner"></span> ' +
-        escapeHTML(label || 'Please wait...');
-    } else {
-      button.disabled = false;
-      if (button.dataset.originalLabel) {
-        button.innerHTML = button.dataset.originalLabel;
-        delete button.dataset.originalLabel;
+    /* ------------------------------------------------------------
+       STEP 1 — Load discos
+       ------------------------------------------------------------ */
+    async function loadProducts() {
+      try {
+        var data = await callApi('/products');
+        state.products = data;
+        var providers = (data && data.providers) || [];
+        if (!providers.length) {
+          $('discoList').innerHTML = '<div class="elx-alert warn">No discos available right now. Please try again later.</div>';
+          return;
+        }
+        renderDiscos(providers);
+      } catch (err) {
+        console.error('[elec] load failed:', err);
+        var hint = '';
+        if (err.status === 401) hint = '<br><span style="font-size:11px;font-weight:500;">You are not signed in. Please log in again.</span>';
+        if (err.status === 404) hint = '<br><span style="font-size:11px;font-weight:500;">Backend route not mounted. Check app.js.</span>';
+        $('discoList').innerHTML = '<div class="elx-alert err">' + esc(err.message) + hint + '</div>';
       }
     }
-  }
 
-  function getProviders() {
-    const data = state.products;
-    const list = Array.isArray(data)
-      ? data
-      : Array.isArray(data.providers)
-        ? data.providers
-        : Array.isArray(data.data)
-          ? data.data
-          : [];
-
-    // Support either grouped providers or a flat product list.
-    if (list.length && list[0].provider &&
-        !Array.isArray(list[0].products)) {
-      const grouped = new Map();
-
-      list.forEach(item => {
-        const name = item.provider;
-        if (!grouped.has(name)) {
-          grouped.set(name, { provider: name, products: [] });
-        }
-        grouped.get(name).products.push(item);
-      });
-
-      return [...grouped.values()];
+    function logoHtml(provider) {
+      var urls = DISCO_LOGOS[provider] || [];
+      var first = urls[0] || '';
+      var rest  = urls.slice(1).join('|');
+      return '<div class="elx-logo">' +
+               (first
+                 ? '<img src="' + esc(first) + '" alt="' + esc(provider) + '" ' +
+                   'data-fallbacks="' + esc(rest) + '" ' +
+                   'onerror="elxLogoFallback(this)" />'
+                 : '<div class="ini">' + esc(initials(provider)) + '</div>') +
+             '</div>';
     }
 
-    return list;
-  }
+    /* Global fallback handler for logos */
+    window.elxLogoFallback = function (imgEl) {
+      var queue = (imgEl.dataset.fallbacks || '').split('|').filter(Boolean);
+      if (queue.length) {
+        imgEl.dataset.fallbacks = queue.slice(1).join('|');
+        imgEl.src = queue[0];
+        return;
+      }
+      /* All sources failed — swap to initials */
+      var wrap = imgEl.parentNode;
+      var alt = imgEl.alt || '';
+      wrap.innerHTML = '<div class="ini">' + esc(initials(alt)) + '</div>';
+    };
 
-  function productList(provider) {
-    return (provider.products || [])
-      .filter(item => item.is_active !== false && item.active !== false)
-      .sort((a, b) => {
-        const rank = { prepaid: 0, postpaid: 1 };
-        const aType = String(a.bill_type || '').toLowerCase();
-        const bType = String(b.bill_type || '').toLowerCase();
+    function renderDiscos(providers) {
+      $('discoList').innerHTML = providers.map(function (p) {
+        var count = (p.products || []).length;
+        return '' +
+          '<div class="elx-row" data-provider="' + esc(p.provider) + '">' +
+            logoHtml(p.provider) +
+            '<div class="elx-info">' +
+              '<div class="name">' + esc(p.provider.toUpperCase()) + '</div>' +
+              '<div class="meta">' + count + ' product' + (count === 1 ? '' : 's') + '</div>' +
+            '</div>' +
+            '<svg class="elx-chev" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>' +
+          '</div>';
+      }).join('');
+    }
 
-        return (rank[aType] ?? 2) - (rank[bType] ?? 2);
+    /* ------------------------------------------------------------
+       STEP 2 — Bill type (prepaid first, postpaid second)
+       ------------------------------------------------------------ */
+    function renderBillTypes(provider) {
+      var prov = state.products.providers.find(function (p) { return p.provider === provider; });
+      if (!prov) return;
+
+      /* Sort: prepaid first, then postpaid */
+      var products = (prov.products || []).slice().sort(function (a, b) {
+        var order = { prepaid: 0, postpaid: 1 };
+        return (order[a.bill_type] || 99) - (order[b.bill_type] || 99);
       });
-  }
 
-  function getLogoURL(provider) {
-    const keys = [
-      'logo_url', 'logo', 'image_url',
-      'image', 'icon_url', 'icon'
-    ];
+      $('billList').innerHTML = products.map(function (p) {
+        var isPre = p.bill_type === 'prepaid';
+        return '' +
+          '<div class="elx-bill' + (isPre ? ' pri' : '') + '" data-product="' + esc(p.product_name) + '" data-type="' + esc(p.bill_type) + '">' +
+            '<div class="ic">' +
+              (isPre
+                ? '<svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'
+                : '<svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>') +
+            '</div>' +
+            '<div class="txt">' +
+              '<div class="h">' + esc(isPre ? 'Prepaid' : 'Postpaid') + '</div>' +
+              '<div class="s">' + esc(isPre ? 'Pay before use — instant token' : 'Pay after use — settle your bill') + '</div>' +
+            '</div>' +
+            '<svg class="elx-chev" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>' +
+          '</div>';
+      }).join('');
+    }
 
-    for (const key of keys) {
-      const value = provider && provider[key];
+    /* ------------------------------------------------------------
+       Event delegation
+       ------------------------------------------------------------ */
+    document.addEventListener('click', function (e) {
+      var row = e.target.closest('.elx-row');
+      if (row && row.dataset.provider) {
+        state.provider = row.dataset.provider;
+        setTitle(state.provider.toUpperCase(), 'Choose meter type');
+        renderBillTypes(state.provider);
+        showStep(2);
+        return;
+      }
+      var bill = e.target.closest('.elx-bill');
+      if (bill && bill.dataset.product) {
+        state.productName = bill.dataset.product;
+        state.billType    = bill.dataset.type;
+        state.meterNumber = '';
+        state.verified    = null;
+        state.amount      = null;
+        $('meter').value = '';
+        $('amount').value = '';
+        $('verifiedBox').classList.add('elx-hidden');
+        $('amountCard').classList.add('elx-hidden');
+        $('btnPay').classList.add('elx-hidden');
+        $('btnVerify').disabled = true;
+        $('verifyMsg').innerHTML = '';
+        $('amountMsg').textContent = '';
+        document.querySelectorAll('#chips .elx-chip').forEach(function (x) { x.classList.remove('on'); });
+        setTitle(state.productName, 'Enter meter & amount');
+        showStep(3);
+        setTimeout(function () { $('meter').focus(); }, 250);
+        return;
+      }
+    });
 
-      if (typeof value !== 'string' || !value.trim()) continue;
+    /* ------------------------------------------------------------
+       Meter input + verify
+       ------------------------------------------------------------ */
+    $('meter').addEventListener('input', function (e) {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
+      state.meterNumber = e.target.value;
+      $('btnVerify').disabled = state.meterNumber.length < 11;
+      $('verifiedBox').classList.add('elx-hidden');
+      $('amountCard').classList.add('elx-hidden');
+      $('btnPay').classList.add('elx-hidden');
+      $('verifyMsg').innerHTML = '';
+    });
+
+    $('btnVerify').addEventListener('click', async function () {
+      if (!state.productName) return;
+      $('verifyMsg').innerHTML = '<div class="elx-alert ok"><span class="elx-spin"></span>Verifying meter…</div>';
+      $('btnVerify').disabled = true;
 
       try {
-        const url = new URL(value, window.location.origin);
+        var v = await callApi('/verify', {
+          method: 'POST',
+          body: { product_name: state.productName, meter_number: state.meterNumber }
+        });
+        state.verified = v;
 
-        if (url.protocol === 'https:' ||
-            url.origin === window.location.origin) {
-          return url.href;
+        $('vName').textContent = v.customer_name || 'Verified';
+        var addr = [v.customer_address, v.district, v.business_unit].filter(Boolean).join(' · ');
+        $('vAddr').textContent = addr || (v.disco || v.service_name || '');
+        $('verifiedBox').classList.remove('elx-hidden');
+
+        var msg = '<div class="elx-alert ok">Meter verified successfully.</div>';
+        if (v.customer_arrears > 0) {
+          msg += '<div class="elx-alert warn">⚠ Outstanding arrears: ' + fmt(v.customer_arrears) + '</div>';
         }
-      } catch (_) {}
-    }
+        $('verifyMsg').innerHTML = msg;
 
-    return '';
-  }
+        $('amountCard').classList.remove('elx-hidden');
+        $('btnPay').classList.remove('elx-hidden');
 
-  function initials(name) {
-    return String(name || '')
-      .replace(/\b(electric|electricity|power|distribution|company|limited|ltd)\b/gi, '')
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map(word => word[0])
-      .join('')
-      .toUpperCase() || 'EL';
-  }
-
-  function logoMarkup(provider) {
-    const url = getLogoURL(provider);
-    const letters = escapeHTML(initials(provider.provider));
-
-    if (!url) return letters;
-
-    return `<img src="${escapeHTML(url)}" alt=""
-      loading="lazy" data-fallback="${letters}">`;
-  }
-
-  /* =====================================================
-     STEP AND PROGRESS
-     ===================================================== */
-
-  function showStep(step) {
-    state.step = step;
-
-    $('stepProvider').hidden = step !== 1;
-    $('stepMeter').hidden = step !== 2;
-    $('stepConfirm').hidden = step !== 3;
-    $('stepReceipt').hidden = step !== 4;
-
-    document.querySelectorAll('[data-progress]').forEach(item => {
-      const number = Number(item.dataset.progress);
-
-      item.classList.toggle('active', number === step);
-      item.classList.toggle('done', number < step);
-
-      const circle = item.querySelector('.progress-circle');
-      circle.textContent = number < step ? '✓' : String(number);
-    });
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function resetVerification() {
-    state.customer = null;
-    state.verification = null;
-    $('verifiedBox').hidden = true;
-    $('verifiedName').textContent = '';
-    $('verifiedDetail').textContent = '';
-  }
-
-  /* =====================================================
-     LOAD AND RENDER PROVIDERS
-     ===================================================== */
-
-  function renderProviders() {
-    const root = $('providerList');
-    const query = $('providerSearch').value.trim().toLowerCase();
-
-    const providers = getProviders()
-      .filter(provider => provider.provider && productList(provider).length)
-      .sort((a, b) => a.provider.localeCompare(b.provider))
-      .filter(provider => provider.provider.toLowerCase().includes(query));
-
-    $('providerCount').textContent =
-      getProviders().filter(p => p.provider && productList(p).length).length +
-      ' PROVIDERS';
-
-    if (!providers.length) {
-      root.innerHTML = `
-        <div class="empty-state">
-          No providers match your search.
-          <br>Try another provider name.
-        </div>`;
-      return;
-    }
-
-    root.innerHTML = providers.map(provider => {
-      const selected = state.provider &&
-        state.provider.provider === provider.provider;
-
-      const count = productList(provider).length;
-
-      return `
-        <button type="button"
-          class="provider-card ${selected ? 'selected' : ''}"
-          data-provider="${escapeHTML(provider.provider)}"
-          aria-pressed="${selected ? 'true' : 'false'}">
-
-          <span class="provider-logo">${logoMarkup(provider)}</span>
-
-          <span class="provider-info">
-            <span class="provider-name">
-              ${escapeHTML(provider.provider)}
-            </span>
-            <span class="provider-meta">
-              ${count} meter option${count === 1 ? '' : 's'}
-            </span>
-          </span>
-
-          <span class="provider-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2.5">
-              <path d="m5 12 4 4L19 6"
-                stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </button>`;
-    }).join('');
-
-    root.querySelectorAll('.provider-logo img').forEach(img => {
-      img.addEventListener('error', () => {
-        const letters = img.dataset.fallback || 'EL';
-        const holder = img.parentElement;
-        holder.textContent = letters;
-      }, { once: true });
-    });
-  }
-
-  async function loadProviders() {
-    const root = $('providerList');
-
-    try {
-      const response = await api('/products');
-      state.products = response.data || response;
-
-      if (!getProviders().length) {
-        throw new Error('No electricity products are configured.');
+        var min = v.minimum_amount || 1000;
+        var max = v.maximum_amount || 200000;
+        $('amountMsg').textContent = 'Minimum ' + fmt(min) + ' · Maximum ' + fmt(max);
+        $('amount').placeholder = String(min);
+      } catch (err) {
+        console.error('[elec] verify:', err);
+        $('verifyMsg').innerHTML = '<div class="elx-alert err">' + esc(err.message) + '</div>';
+      } finally {
+        $('btnVerify').disabled = false;
       }
-
-      renderProviders();
-    } catch (error) {
-      console.error('Electricity products error:', error);
-
-      root.innerHTML = `
-        <div class="empty-state">
-          <strong>Unable to load providers</strong>
-          <p style="margin-top:7px">
-            ${escapeHTML(error.message || 'Please try again.')}
-          </p>
-          <button type="button" class="secondary-button"
-            id="retryProvidersButton">Try again</button>
-        </div>`;
-
-      $('retryProvidersButton').addEventListener('click', loadProviders);
-    }
-  }
-
-  /* =====================================================
-     PROVIDER AND METER TYPE
-     ===================================================== */
-
-  function selectProvider(name) {
-    const provider = getProviders().find(p => p.provider === name);
-    if (!provider) return;
-
-    state.provider = provider;
-    state.product = null;
-    state.billType = null;
-    state.meterNumber = '';
-    state.amount = 0;
-    resetVerification();
-
-    $('meterNumber').value = '';
-    $('purchaseAmount').value = '';
-    updatePricing();
-    renderProviders();
-    renderMeterOptions();
-
-    $('meterSubtitle').textContent =
-      'Select your meter type for ' + provider.provider + '.';
-
-    $('selectedProviderBadge').textContent =
-      provider.provider.toUpperCase();
-
-    showStep(2);
-  }
-
-  function meterIcon(type) {
-    if (type === 'prepaid') {
-      return `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8">
-          <path d="m13 2-9 12h7l-1 8 10-13h-7l1-7Z"
-            stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>`;
-    }
-
-    return `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="1.8">
-        <rect x="5" y="3" width="14" height="18" rx="2"/>
-        <path d="M9 7h6M9 11h6M9 15h3" stroke-linecap="round"/>
-      </svg>`;
-  }
-
-  function renderMeterOptions() {
-    const root = $('meterOptions');
-    const products = productList(state.provider);
-
-    root.innerHTML = products.map(product => {
-      const type = String(product.bill_type || '').toLowerCase();
-      const isPrepaid = type === 'prepaid';
-      const selected = state.product &&
-        state.product.product_name === product.product_name;
-
-      return `
-        <button type="button"
-          class="meter-card ${selected ? 'selected' : ''}"
-          data-product="${escapeHTML(product.product_name)}"
-          aria-pressed="${selected ? 'true' : 'false'}">
-
-          <span class="meter-radio"></span>
-          <span class="meter-icon">${meterIcon(type)}</span>
-          <span class="meter-title">
-            ${isPrepaid ? 'Prepaid' : 'Postpaid'}
-          </span>
-          <span class="meter-description">
-            ${isPrepaid
-              ? 'Purchase electricity credit and receive a token.'
-              : 'Pay your electricity bill for the billing period.'}
-          </span>
-          ${isPrepaid
-            ? '<span class="meter-badge">1% PROMO</span>'
-            : ''}
-        </button>`;
-    }).join('');
-  }
-
-  function selectProduct(productName) {
-    const product = productList(state.provider).find(
-      item => item.product_name === productName
-    );
-
-    if (!product) return;
-
-    state.product = product;
-    state.billType = String(product.bill_type || '').toLowerCase();
-
-    resetVerification();
-    renderMeterOptions();
-    updatePricing();
-  }
-
-  /* =====================================================
-     PRICING
-     ===================================================== */
-
-  function calculatePricing(amount) {
-    const credit = Math.max(0, Number(amount) || 0);
-
-    // Display estimate only. The backend must calculate and
-    // authorize the real discount before debiting the wallet.
-    const discount = state.billType === 'prepaid'
-      ? Math.round(credit * DISCOUNT_RATE * 100) / 100
-      : 0;
-
-    return {
-      credit,
-      discount,
-      payable: Math.max(0, credit - discount)
-    };
-  }
-
-  function updatePricing() {
-    const amount = Number($('purchaseAmount').value) || 0;
-    const pricing = calculatePricing(amount);
-
-    state.amount = amount;
-
-    $('creditAmount').textContent = money(pricing.credit);
-    $('discountAmount').textContent =
-      '−' + money(pricing.discount);
-    $('payableAmount').textContent = money(pricing.payable);
-
-    document.querySelectorAll('.amount-chip').forEach(button => {
-      button.classList.toggle(
-        'selected',
-        Number(button.dataset.amount) === amount
-      );
     });
-  }
 
-  /* =====================================================
-     METER VERIFICATION
-     ===================================================== */
-
-  async function verifyMeter() {
-    if (!state.provider || !state.product) {
-      toast('Select an electricity provider and meter type first.');
-      return;
-    }
-
-    const meter = $('meterNumber').value.trim();
-
-    if (!/^[a-zA-Z0-9-]{5,40}$/.test(meter)) {
-      toast('Enter a valid meter number.');
-      $('meterNumber').focus();
-      return;
-    }
-
-    const button = $('verifyButton');
-    setButtonLoading(button, true, 'Verifying...');
-
-    try {
-      const response = await api('/verify', {
-        method: 'POST',
-        body: JSON.stringify({
-          product_name: state.product.product_name,
-          meter_number: meter
-        })
+    /* ------------------------------------------------------------
+       Amount
+       ------------------------------------------------------------ */
+    $('amount').addEventListener('input', function (e) {
+      e.target.value = e.target.value.replace(/\D/g, '');
+      state.amount = Number(e.target.value) || 0;
+      document.querySelectorAll('#chips .elx-chip').forEach(function (c) {
+        c.classList.toggle('on', Number(c.dataset.amt) === state.amount);
       });
+      validateAmount();
+    });
 
-      const data = response.data || response;
-      const customer = data.customer ||
-        data.customer_name ||
-        data.name ||
-        data.customerName ||
-        data;
-
-      state.meterNumber = meter;
-      state.customer = customer;
-      state.verification = data;
-
-      const customerName = typeof customer === 'string'
-        ? customer
-        : customer.name ||
-          customer.customer_name ||
-          customer.customerName ||
-          data.customer_name ||
-          data.name ||
-          'Meter verified';
-
-      const address = typeof customer === 'object'
-        ? customer.address || customer.customer_address || ''
-        : data.address || '';
-
-      $('verifiedName').textContent = customerName;
-      $('verifiedDetail').textContent =
-        address || ('Meter number: ' + meter);
-
-      $('verifiedBox').hidden = false;
-      toast('Meter verified successfully.');
-    } catch (error) {
-      resetVerification();
-      toast(error.message || 'Unable to verify this meter.');
-    } finally {
-      setButtonLoading(button, false);
-    }
-  }
-
-  /* =====================================================
-     CONFIRMATION
-     ===================================================== */
-
-  function continueToConfirmation() {
-    if (!state.provider || !state.product) {
-      toast('Please select a meter type.');
-      return;
-    }
-
-    if (!state.verification ||
-        state.meterNumber !== $('meterNumber').value.trim()) {
-      toast('Verify your meter before continuing.');
-      return;
-    }
-
-    const amount = Number($('purchaseAmount').value);
-
-    if (!Number.isFinite(amount) ||
-        amount < 1 || amount > 1000000) {
-      toast('Enter an amount between ₦1 and ₦1,000,000.');
-      $('purchaseAmount').focus();
-      return;
-    }
-
-    if (!Number.isInteger(amount)) {
-      toast('Enter a whole amount in naira.');
-      $('purchaseAmount').focus();
-      return;
-    }
-
-    state.amount = amount;
-
-    const pricing = calculatePricing(amount);
-    const customer = state.customer;
-    const customerName = typeof customer === 'string'
-      ? customer
-      : customer && (
-          customer.name ||
-          customer.customer_name ||
-          customer.customerName
-        );
-
-    $('confirmProvider').textContent = state.provider.provider;
-    $('confirmType').textContent =
-      state.billType.charAt(0).toUpperCase() +
-      state.billType.slice(1);
-    $('confirmMeter').textContent = state.meterNumber;
-    $('confirmCustomer').textContent = customerName || 'Verified customer';
-    $('confirmCredit').textContent = money(pricing.credit);
-    $('confirmTotal').textContent = money(pricing.payable);
-
-    showStep(3);
-  }
-
-  /* =====================================================
-     PURCHASE
-     ===================================================== */
-
-  async function purchaseElectricity() {
-    if (state.submitting) return;
-
-    if (!state.provider || !state.product ||
-        !state.verification || !state.meterNumber ||
-        !Number.isFinite(state.amount) || state.amount < 1) {
-      toast('Please complete and verify your payment details.');
-      return;
-    }
-
-    const button = $('payButton');
-    state.submitting = true;
-    setButtonLoading(button, true, 'Submitting payment...');
-
-    try {
-      const pricing = calculatePricing(state.amount);
-
-      /*
-       * IMPORTANT:
-       * `amount` remains the electricity credit amount.
-       * These additional discount fields only work if your
-       * backend explicitly supports and validates them.
-       * Never trust client-calculated discount values when
-       * deciding how much to debit from a customer's wallet.
-       */
-
-      const response = await api('/purchase', {
-        method: 'POST',
-        body: JSON.stringify({
-          product_name: state.product.product_name,
-          meter_number: state.meterNumber,
-          amount: state.amount,
-          payment_method: 'wallet',
-          discount_percent: state.billType === 'prepaid' ? 1 : 0,
-          discount_amount: pricing.discount,
-          payable_amount: pricing.payable
-        })
+    document.querySelectorAll('#chips .elx-chip').forEach(function (c) {
+      c.addEventListener('click', function () {
+        $('amount').value = c.dataset.amt;
+        state.amount = Number(c.dataset.amt);
+        document.querySelectorAll('#chips .elx-chip').forEach(function (x) { x.classList.toggle('on', x === c); });
+        validateAmount();
       });
+    });
 
-      const data = response.data || response;
+    function validateAmount() {
+      var v = state.verified;
+      if (!v) return;
+      var min = v.minimum_amount || 1000;
+      var max = v.maximum_amount || 200000;
+      var a = state.amount || 0;
+      if (!a) { $('amountMsg').textContent = ''; $('btnPay').disabled = true; return; }
+      if (a < min) { $('amountMsg').textContent = 'Minimum is ' + fmt(min); $('btnPay').disabled = true; return; }
+      if (a > max) { $('amountMsg').textContent = 'Maximum is ' + fmt(max); $('btnPay').disabled = true; return; }
+      $('amountMsg').textContent = 'You will pay ' + fmt(a);
+      $('btnPay').disabled = false;
+    }
 
-      state.transaction = data;
-      state.reference =
-        data.reference ||
-        data.transaction_reference ||
-        data.transactionReference ||
-        data.transaction_id ||
-        data.id ||
-        null;
-
-      showReceipt(data);
+    $('btnPay').addEventListener('click', function () {
+      var v = state.verified;
+      $('cDisco').textContent  = v.disco || v.service_name || state.provider || '—';
+      $('cType').textContent   = v.bill_type || state.billType || '—';
+      $('cMeter').textContent  = v.meter_number || state.meterNumber;
+      $('cName').textContent   = v.customer_name || '—';
+      $('cAmount').textContent = fmt(state.amount);
+      setTitle('CONFIRM', 'Review payment');
       showStep(4);
-
-      const status = getStatus(data);
-
-      if (!isSuccess(status) && !isFailure(status)) {
-        startStatusPolling();
-      }
-    } catch (error) {
-      toast(error.message || 'Payment could not be submitted.');
-    } finally {
-      state.submitting = false;
-      setButtonLoading(button, false);
-    }
-  }
-
-  /* =====================================================
-     TRANSACTION STATUS AND RECEIPT
-     ===================================================== */
-
-  function getStatus(data) {
-    const raw = data.status ||
-      data.transaction_status ||
-      data.payment_status ||
-      data.data?.status ||
-      '';
-
-    return String(raw).toLowerCase();
-  }
-
-  function isSuccess(status) {
-    return [
-      'success', 'successful', 'completed',
-      'complete', 'delivered'
-    ].includes(status);
-  }
-
-  function isFailure(status) {
-    return [
-      'failed', 'failure', 'rejected',
-      'cancelled', 'canceled'
-    ].includes(status);
-  }
-
-  function tokenFrom(data) {
-    return data.token ||
-      data.electricity_token ||
-      data.vend_token ||
-      data.pin ||
-      data.data?.token ||
-      data.data?.electricity_token ||
-      '';
-  }
-
-  function showReceipt(data) {
-    const status = getStatus(data);
-    const token = tokenFrom(data);
-    const reference = state.reference || 'Pending';
-
-    $('receiptProvider').textContent = state.provider.provider;
-    $('receiptMeter').textContent = state.meterNumber;
-    $('receiptAmount').textContent = money(state.amount);
-    $('receiptReference').textContent = reference;
-    $('receiptStatus').textContent = status
-      ? status.charAt(0).toUpperCase() + status.slice(1)
-      : 'Processing';
-
-    $('receiptToken').textContent = token;
-    $('receiptTokenBox').hidden = !token;
-
-    if (isSuccess(status)) {
-      setReceiptState(
-        'Payment successful',
-        'Your electricity purchase has been completed.',
-        'success'
-      );
-    } else if (isFailure(status)) {
-      setReceiptState(
-        'Transaction failed',
-        data.message || 'The transaction could not be completed. Check its final status before trying again.',
-        'error'
-      );
-    } else {
-      setReceiptState(
-        'Transaction processing',
-        'Your request has been submitted. Shatova is checking the final transaction status.',
-        'pending'
-      );
-    }
-  }
-
-  function setReceiptState(title, message, status) {
-    $('receiptTitle').textContent = title;
-    $('receiptMessage').textContent = message;
-
-    const symbol = $('receiptSymbol');
-
-    if (status === 'error') {
-      symbol.style.background = '#fff0f0';
-      symbol.style.color = '#c43b3b';
-      symbol.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8">
-          <path d="m7 7 10 10M17 7 7 17"
-            stroke-linecap="round"/>
-          <circle cx="12" cy="12" r="9"/>
-        </svg>`;
-    } else if (status === 'pending') {
-      symbol.style.background = '#fff6df';
-      symbol.style.color = '#946400';
-      symbol.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 7v5l3 2" stroke-linecap="round"
-            stroke-linejoin="round"/>
-        </svg>`;
-    } else {
-      symbol.style.background = '#e8f6ec';
-      symbol.style.color = '#087443';
-      symbol.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8">
-          <path d="m5 12 4 4L19 6" stroke-linecap="round"
-            stroke-linejoin="round"/>
-        </svg>`;
-    }
-
-    $('receiptTokenBox').hidden = !tokenFrom(state.transaction || {});
-  }
-
-  function startStatusPolling() {
-    stopStatusPolling();
-
-    if (!state.reference) return;
-
-    state.pollCount = 0;
-    state.pollTimer = setInterval(async () => {
-      state.pollCount++;
-
-      await checkStatus(false);
-
-      if (state.pollCount >= 24) {
-        stopStatusPolling();
-      }
-    }, 5000);
-  }
-
-  function stopStatusPolling() {
-    if (state.pollTimer) {
-      clearInterval(state.pollTimer);
-      state.pollTimer = null;
-    }
-  }
-
-  async function checkStatus(showFeedback = true) {
-    if (!state.reference) {
-      if (showFeedback) toast('No transaction reference is available yet.');
-      return;
-    }
-
-    if (state.checkingStatus) return;
-
-    state.checkingStatus = true;
-    const button = $('checkStatusButton');
-
-    if (showFeedback) setButtonLoading(button, true, 'Checking...');
-
-    try {
-      const response = await api(
-        '/status?reference=' + encodeURIComponent(state.reference)
-      );
-
-      const data = response.data || response;
-      state.transaction = { ...state.transaction, ...data };
-      showReceipt(state.transaction);
-
-      const status = getStatus(state.transaction);
-
-      if (isSuccess(status) || isFailure(status)) {
-        stopStatusPolling();
-      }
-
-      if (showFeedback) {
-        toast(isSuccess(status)
-          ? 'Transaction completed successfully.'
-          : isFailure(status)
-            ? 'Transaction failed. Review the receipt.'
-            : 'Your transaction is still processing.');
-      }
-    } catch (error) {
-      if (showFeedback) {
-        toast(error.message || 'Unable to check transaction status.');
-      }
-    } finally {
-      state.checkingStatus = false;
-      if (showFeedback) setButtonLoading(button, false);
-    }
-  }
-
-  /* =====================================================
-     RESET
-     ===================================================== */
-
-  function resetPage() {
-    stopStatusPolling();
-
-    state.provider = null;
-    state.product = null;
-    state.billType = null;
-    state.meterNumber = '';
-    state.amount = 0;
-    state.customer = null;
-    state.verification = null;
-    state.reference = null;
-    state.transaction = null;
-    state.submitting = false;
-
-    $('meterNumber').value = '';
-    $('purchaseAmount').value = '';
-    $('providerSearch').value = '';
-    $('verifiedBox').hidden = true;
-    $('receiptTokenBox').hidden = true;
-
-    updatePricing();
-    renderProviders();
-    showStep(1);
-  }
-
-  /* =====================================================
-     EVENT LISTENERS
-     ===================================================== */
-
-  $('providerSearch').addEventListener('input', renderProviders);
-
-  $('providerList').addEventListener('click', event => {
-    const card = event.target.closest('[data-provider]');
-    if (!card) return;
-
-    selectProvider(card.dataset.provider);
-  });
-
-  $('meterOptions').addEventListener('click', event => {
-    const card = event.target.closest('[data-product]');
-    if (!card) return;
-
-    selectProduct(card.dataset.product);
-  });
-
-  $('verifyButton').addEventListener('click', verifyMeter);
-
-  $('meterNumber').addEventListener('input', () => {
-    if (state.meterNumber !== $('meterNumber').value.trim()) {
-      resetVerification();
-    }
-  });
-
-  $('purchaseAmount').addEventListener('input', updatePricing);
-
-  document.querySelectorAll('.amount-chip').forEach(button => {
-    button.addEventListener('click', () => {
-      $('purchaseAmount').value = button.dataset.amount;
-      updatePricing();
     });
-  });
 
-  $('continueButton').addEventListener(
-    'click', continueToConfirmation
-  );
-
-  $('changeProviderButton').addEventListener('click', () => {
-    showStep(1);
-  });
-
-  $('editDetailsButton').addEventListener('click', () => {
-    showStep(2);
-  });
-
-  $('payButton').addEventListener(
-    'click', purchaseElectricity
-  );
-
-  $('checkStatusButton').addEventListener(
-    'click', () => checkStatus(true)
-  );
-
-  $('newTransactionButton').addEventListener('click', resetPage);
-
-  $('copyTokenButton').addEventListener('click', async () => {
-    const token = $('receiptToken').textContent.trim();
-    if (!token) return;
-
-    try {
-      await navigator.clipboard.writeText(token);
-      toast('Electricity token copied.');
-    } catch (_) {
-      const area = document.createElement('textarea');
-      area.value = token;
-      area.style.position = 'fixed';
-      area.style.opacity = '0';
-      document.body.appendChild(area);
-      area.select();
+    /* ------------------------------------------------------------
+       Purchase
+       ------------------------------------------------------------ */
+    $('btnConfirm').addEventListener('click', async function () {
+      $('btnConfirm').disabled = true;
+      $('payMsg').innerHTML = '<div class="elx-alert ok"><span class="elx-spin"></span>Processing payment…</div>';
 
       try {
-        document.execCommand('copy');
-        toast('Electricity token copied.');
-      } catch (_) {
-        toast('Unable to copy the token automatically.');
+        var r = await callApi('/purchase', {
+          method: 'POST',
+          body: {
+            product_name:   state.productName,
+            meter_number:   state.meterNumber,
+            amount:         state.amount,
+            payment_method: 'wallet'
+          }
+        });
+        state.reference = r.reference;
+        if (r.status === 'success')      renderSuccess(r);
+        else if (r.status === 'processing') renderProcessing(r);
+        else                              renderFailure(r);
+      } catch (err) {
+        console.error('[elec] purchase:', err);
+        $('payMsg').innerHTML = '';
+        renderFailure({ remark: err.message, reference: null });
+      } finally {
+        $('btnConfirm').disabled = false;
       }
+    });
 
-      area.remove();
+    /* ------------------------------------------------------------
+       Result renderers
+       ------------------------------------------------------------ */
+    function renderSuccess(r) {
+      setTitle('RECEIPT', 'Payment successful');
+      showStep(5);
+      var tokenBlock = r.token
+        ? '<div class="elx-token">' +
+            '<div class="lbl">Your token</div>' +
+            '<div class="tok" id="tokText">' + esc(r.token) + '</div>' +
+            (r.units ? '<div class="units">' + esc(r.units) + ' kWh</div>' : '') +
+            '<button class="elx-copy" id="copyTok">Copy token</button>' +
+          '</div>'
+        : '';
+      $('resultCard').innerHTML =
+        '<div class="elx-hero">' +
+          '<div class="badge-big ok">' +
+            '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' +
+          '</div>' +
+          '<div class="h-title">Payment successful</div>' +
+          '<div class="h-sub">Your meter has been credited</div>' +
+        '</div>' +
+        '<div style="margin-top:16px;">' +
+          '<div class="elx-kv"><span class="k">Disco</span><span class="v">' + esc(r.disco || r.provider || state.provider || '') + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Meter</span><span class="v">' + esc(r.meter_number || state.meterNumber) + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Customer</span><span class="v">' + esc(r.customer_name || (state.verified && state.verified.customer_name) || '—') + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Amount</span><span class="v">' + fmt(r.amount || state.amount) + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;font-weight:600;">' + esc(r.reference) + '</span></div>' +
+        '</div>' +
+        tokenBlock;
+      var btn = $('copyTok');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          try { navigator.clipboard.writeText(r.token); btn.textContent = 'Copied ✓'; }
+          catch (_) { window.prompt('Copy your token:', r.token); }
+        });
+      }
     }
-  });
 
-  $('backButton').addEventListener('click', () => {
-    if (state.step === 4) {
-      showStep(3);
-    } else if (state.step === 3) {
-      showStep(2);
-    } else if (state.step === 2) {
+    function renderProcessing(r) {
+      setTitle('RECEIPT', 'Confirming with provider');
+      showStep(5);
+      $('resultCard').innerHTML =
+        '<div class="elx-hero">' +
+          '<div class="badge-big warn">' +
+            '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+          '</div>' +
+          '<div class="h-title">Confirming with provider</div>' +
+          '<div class="h-sub">This is taking a bit longer than usual.<br>We\'ll update this screen automatically.</div>' +
+        '</div>' +
+        '<div style="margin-top:16px;">' +
+          '<div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;font-weight:600;">' + esc(r.reference) + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Status</span><span class="v" id="pollStatus">processing</span></div>' +
+        '</div>';
+      pollStatus(r.reference);
+    }
+
+    function renderFailure(r) {
+      setTitle('RECEIPT', 'Payment failed');
+      showStep(5);
+      $('resultCard').innerHTML =
+        '<div class="elx-hero">' +
+          '<div class="badge-big err">' +
+            '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M6 18L18 6M6 6l12 12"/></svg>' +
+          '</div>' +
+          '<div class="h-title">Payment failed</div>' +
+          '<div class="h-sub">' + esc(r.remark || 'Please try again.') + '</div>' +
+        '</div>' +
+        (r.reference
+          ? '<div style="margin-top:16px;"><div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:11px;font-weight:600;">' + esc(r.reference) + '</span></div></div>'
+          : '');
+    }
+
+    function pollStatus(reference) {
+      if (state.pollTimer) clearInterval(state.pollTimer);
+      var tries = 0, MAX = 72;
+      state.pollTimer = setInterval(async function () {
+        tries++;
+        if (tries > MAX) { clearInterval(state.pollTimer); return; }
+        try {
+          var s = await callApi('/status?reference=' + encodeURIComponent(reference));
+          var el = $('pollStatus');
+          if (el) el.textContent = s.status;
+          if (s.status === 'success') {
+            clearInterval(state.pollTimer);
+            renderSuccess(Object.assign({}, s, { reference: reference }));
+          } else if (s.status === 'failed') {
+            clearInterval(state.pollTimer);
+            renderFailure(Object.assign({}, s, { reference: reference }));
+          }
+        } catch (err) { console.warn('[elec] poll:', err.message); }
+      }, 5000);
+    }
+
+    /* ------------------------------------------------------------
+       Reset
+       ------------------------------------------------------------ */
+    function resetAll() {
+      if (state.pollTimer) clearInterval(state.pollTimer);
+      state = {
+        products: state.products,
+        provider: null, billType: null, productName: null,
+        meterNumber: '', verified: null, amount: null,
+        reference: null, pollTimer: null
+      };
+      $('meter').value = '';
+      $('amount').value = '';
+      $('verifiedBox').classList.add('elx-hidden');
+      $('amountCard').classList.add('elx-hidden');
+      $('btnPay').classList.add('elx-hidden');
+      $('btnVerify').disabled = true;
+      $('verifyMsg').innerHTML = '';
+      $('payMsg').innerHTML = '';
+      $('amountMsg').textContent = '';
+      setTitle('SERVICE', 'Electricity');
       showStep(1);
-    } else {
-      window.history.back();
     }
-  });
+    $('btnNew').addEventListener('click', resetAll);
 
-  /* =====================================================
-     START
-     ===================================================== */
+    /* ------------------------------------------------------------
+       Boot
+       ------------------------------------------------------------ */
+    setTitle('SERVICE', 'Electricity');
+    showStep(1);
+    loadProducts();
 
-  renderMeterOptions();
-  updatePricing();
-  loadProviders();
-
-})();
-</script>
-
-<!-- Required mount for the meter type selector -->
-<script>
-/*
-  The meter-type cards are rendered into this element.
-  It is created here so the main page remains a single HTML file.
-*/
-</script>
+  })();
+  </script>
 </body>
 </html>
