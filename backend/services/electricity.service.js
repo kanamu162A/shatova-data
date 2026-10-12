@@ -7,9 +7,11 @@
 //   ⭐ NEVER submits to DataShop without writing
 //       metadata.datashop_submitted = true first
 //   ⭐ Refuses to auto-refund on "not found" until 2 hours pass
-//   ⭐ 1% margin model (Option C):
-//       user pays `amount`, DataShop charges `cost_price`,
-//       profit = amount - cost_price
+//   ⭐ 1% discount model (passed to the customer):
+//       customer types `amount` (the meter top-up value),
+//       DataShop receives `amount` (meter gets 100%),
+//       wallet is debited `amount * (1 - 0.01)`.
+//       profit = 0, discount = amount * 0.01
 //   ⚠️  NEVER write `provider_status` — the transactions table has a
 //       BEFORE UPDATE trigger `enforce_terminal_status` that requires
 //       lowercase terminal values and will reject our uppercase status.
@@ -23,6 +25,7 @@ import * as wallet   from './wallet.service.js';
 /* ── Business constants ── */
 const MIN_AMOUNT = 1000;
 const MAX_AMOUNT = 200000;
+const DISCOUNT_RATE = 0.01;   // 1% off passed to the customer
 
 const RECONCILE_FIRST_MS              = 20_000;
 const RECONCILE_INTERVAL_MS           = 60_000;
@@ -33,6 +36,15 @@ const MIN_AGE_BEFORE_NOT_FOUND_REFUND = 120; // minutes
    HELPERS
    ============================================================ */
 const money = (n) => Math.round((Number(n) || 0) * 100) / 100;
+
+/* Wallet debit = meter value minus the 1% discount */
+function walletDebitFor(meterAmount) {
+  return money(Number(meterAmount || 0) * (1 - DISCOUNT_RATE));
+}
+/* Customer savings = meter value minus wallet debit */
+function discountFor(meterAmount) {
+  return money(Number(meterAmount || 0) - walletDebitFor(meterAmount));
+}
 
 function normalizeMeter(raw) {
   return String(raw || '').replace(/\D/g, '');
@@ -137,7 +149,7 @@ async function markDatashopSubmitted(reference) {
 }
 
 /* ============================================================
-   PRODUCTS — read from electricity_bills
+   PRODUCTS
    ============================================================ */
 export async function getProducts() {
   const { rows } = await query(
@@ -160,6 +172,7 @@ export async function getProducts() {
       category:     r.category,
       min_amount:   MIN_AMOUNT,
       max_amount:   MAX_AMOUNT,
+      discount_rate: DISCOUNT_RATE,
     });
   }
 
@@ -167,6 +180,7 @@ export async function getProducts() {
     providers: Array.from(byProvider.values()),
     min_amount: MIN_AMOUNT,
     max_amount: MAX_AMOUNT,
+    discount_rate: DISCOUNT_RATE,
   };
 }
 
@@ -224,6 +238,7 @@ export async function verifyMeter({ productName, meterNumber }) {
     customer_arrears:      result.customer_arrears || 0,
     minimum_amount:        minimum,
     maximum_amount:        maximum,
+    discount_rate:         DISCOUNT_RATE,
   };
 }
 
@@ -237,7 +252,7 @@ export async function purchaseElectricity({
 
   const pn    = String(productName || '').trim();
   const meter = normalizeMeter(meterNumber);
-  const amt   = money(amount);
+  const amt   = money(amount);                       // meter top-up value (what the customer types)
 
   if (!pn)                              throw Object.assign(new Error('Product is required'), { code: 'INVALID_PRODUCT' });
   if (!meter)                           throw Object.assign(new Error('Meter number is required'), { code: 'INVALID_METER' });
@@ -246,6 +261,13 @@ export async function purchaseElectricity({
                                         throw Object.assign(new Error('Amount must be positive'), { code: 'INVALID_AMOUNT' });
   if (amt < MIN_AMOUNT)                 throw Object.assign(new Error(`Minimum amount is ₦${MIN_AMOUNT.toLocaleString()}`), { code: 'AMOUNT_TOO_LOW' });
   if (amt > MAX_AMOUNT)                 throw Object.assign(new Error(`Maximum amount is ₦${MAX_AMOUNT.toLocaleString()}`), { code: 'AMOUNT_TOO_HIGH' });
+
+  /* ⭐ 1% discount math:
+     - DataShop receives `amt` → meter gets 100%
+     - Wallet is debited `walletDebit` → customer saves `discountAmt`
+  */
+  const walletDebit = walletDebitFor(amt);
+  const discountAmt = discountFor(amt);
 
   const { rows: billRows } = await query(
     `SELECT id, product_name, provider, bill_type, is_active, price
@@ -260,7 +282,12 @@ export async function purchaseElectricity({
 
   const reference = datashop.generateReference('SHATOVA-ELEC');
 
-  /* ── 1. INSERT transactions (PENDING) ── */
+  /* ── 1. INSERT transactions (PENDING) ──
+     amount        = walletDebit (what the customer pays)
+     final_amount  = walletDebit
+     discount      = discountAmt
+     cost_price    = walletDebit (provisional; updated after DataShop)
+  */
   const { rows: txRows } = await query(
     `INSERT INTO transactions
        (user_id, reference, type, service, direction, amount, status,
@@ -269,32 +296,39 @@ export async function purchaseElectricity({
         created_at, updated_at)
      VALUES ($1, $2, 'ELECTRICITY', 'electricity', 'DEBIT', $3, 'PENDING',
              $4, $5::jsonb, $6,
-             $7, $8, $9, 0,
+             $7, $8, $9, $10,
              NOW(), NOW())
      RETURNING *`,
     [
       userId,
       reference,
-      amt,
-      `${bill.provider} ${bill.bill_type} ${meter} → ₦${amt}`,
+      walletDebit,
+      `${bill.provider} ${bill.bill_type} ${meter} → ₦${amt} (paid ₦${walletDebit})`,
       JSON.stringify({
         provider:        bill.provider,
         product_name:    pn,
         bill_type:       bill.bill_type,
         meter_number:    meter,
-        user_price:      amt,
+        meter_amount:    amt,
+        wallet_debit:    walletDebit,
+        discount:        discountAmt,
+        discount_rate:   DISCOUNT_RATE,
+        user_price:      walletDebit,
         payment_method:  paymentMethod,
         datashop_submitted: false,
       }),
       bill.provider.toUpperCase(),
-      amt,
+      walletDebit,
       0,
-      amt,
+      walletDebit,
+      discountAmt,
     ]
   );
   const tx = txRows[0];
 
-  /* ── 2. INSERT bill_payments (pending, linked to tx) ── */
+  /* ── 2. INSERT bill_payments (pending) ──
+     bill_payments.amount = the meter top-up value (amt), NOT walletDebit
+  */
   const { rows: bpRows } = await query(
     `INSERT INTO bill_payments
        (user_id, bill_id, meter_number, amount, status, transaction_id, created_at, updated_at)
@@ -311,7 +345,7 @@ export async function purchaseElectricity({
   let walletBefore = null;
   let walletAfter  = null;
   let caughtErr    = null;
-  let dsCost       = amt;
+  let dsCost       = walletDebit;
   let dsProfit     = 0;
   let ambiguous    = false;
   let submitted    = false;
@@ -320,7 +354,7 @@ export async function purchaseElectricity({
   let providerRef  = reference;
 
   try {
-    /* ── 3. Place hold ── */
+    /* ── 3. Place hold — hold walletDebit, not amt ── */
     if (paymentMethod === 'wallet') {
       const w = await wallet.getWallet(userId);
       if (!w) throw Object.assign(new Error('Wallet not found'), { code: 'WALLET_NOT_FOUND' });
@@ -330,7 +364,7 @@ export async function purchaseElectricity({
       walletBefore = money(w.balance);
       const holdResult = await wallet.holdFunds({
         userId,
-        amount: amt,
+        amount: walletDebit,
         reference,
         description: `${bill.provider} ${bill.bill_type} — ${meter}`,
       });
@@ -342,7 +376,7 @@ export async function purchaseElectricity({
     await markDatashopSubmitted(reference);
     submitted = true;
 
-    /* ── 5. Call DataShop ── */
+    /* ── 5. Call DataShop — send the full meter amount ── */
     dsResult = await datashop.buyElectricity({
       meterNumber: meter,
       productName: pn,
@@ -356,7 +390,7 @@ export async function purchaseElectricity({
 
     const dsStatusRaw = String(rawData.transaction_status || '').trim();
     const dsStatus    = dsStatusRaw.toLowerCase();
-    const paidAmount  = Number(rawData.paid_amount || 0) || amt;
+    const paidAmount  = Number(rawData.paid_amount || 0) || walletDebit;
 
     const tokenFromDs = rawData.token || rawData.token_code || rawData.standard_token || null;
     const unitsFromDs = rawData.units != null ? String(rawData.units) : null;
@@ -366,7 +400,7 @@ export async function purchaseElectricity({
     units       = unitsFromDs || null;
     providerRef = rawData.reference || dsResult.provider_reference || reference;
     dsCost      = paidAmount;
-    dsProfit    = money(amt - dsCost);
+    dsProfit    = money(walletDebit - dsCost);
 
     let normalized;
     if (dsStatus) {
@@ -376,11 +410,8 @@ export async function purchaseElectricity({
                                                                  normalized = 'failed';
       else                                                       normalized = 'processing';
     } else if (hasDelivery) {
-      /* No status string, but token/units arrived → definite success */
       normalized = 'successful';
     } else if (paidAmount > 0) {
-      /* No status, no delivery signal, but DataShop took money → AMBIGUOUS.
-         Must NOT be marked failed. Let the reconciler poll DataShop. */
       normalized = 'processing';
     } else {
       normalized = 'failed';
@@ -388,6 +419,7 @@ export async function purchaseElectricity({
 
     console.log(
       `[elec] purchase ${reference} ds_status=${JSON.stringify(dsStatusRaw)} ` +
+      `meter=${amt} debit=${walletDebit} discount=${discountAmt} ` +
       `paid=${paidAmount} token=${tokenFromDs ? 'yes' : 'no'} → ${normalized}`
     );
 
@@ -453,6 +485,10 @@ export async function purchaseElectricity({
     ds_customer_name:    dsRaw.customer_name    || null,
     ds_customer_address: dsRaw.customer_address || null,
     ds_token:            token,
+    meter_amount:        amt,
+    wallet_debit:        walletDebit,
+    discount:            discountAmt,
+    discount_rate:       DISCOUNT_RATE,
     wallet_before:       walletBefore,
     wallet_after:        walletAfter,
     ambiguous,
@@ -472,8 +508,8 @@ export async function purchaseElectricity({
     provider_ref:       providerRef,
     cost_price:         dsCost,
     profit:             dsProfit,
-    final_amount:       amt,
-    discount:           0,
+    final_amount:       walletDebit,
+    discount:           discountAmt,
     metadata,
   });
 
@@ -496,7 +532,7 @@ export async function purchaseElectricity({
   /* ── 10. Provider-level audit events ── */
   if (finalStatus === 'success') {
     await writeProviderAudit('provider_success', {
-      userId, reference, amount: amt,
+      userId, reference, amount: walletDebit,
       source: 'electricity.service',
       details: {
         service:         'electricity',
@@ -504,6 +540,9 @@ export async function purchaseElectricity({
         provider:        bill.provider,
         bill_type:       bill.bill_type,
         meter_number:    meter,
+        meter_amount:    amt,
+        wallet_debit:    walletDebit,
+        discount:        discountAmt,
         customer_name:   dsRaw.customer_name    || null,
         customer_address:dsRaw.customer_address || null,
         disco:           dsRaw.disco            || null,
@@ -517,7 +556,7 @@ export async function purchaseElectricity({
     });
   } else if (finalStatus === 'failed') {
     await writeProviderAudit('provider_failed', {
-      userId, reference, amount: amt,
+      userId, reference, amount: walletDebit,
       source: 'electricity.service',
       details: {
         service: 'electricity', product_name: pn,
@@ -528,7 +567,7 @@ export async function purchaseElectricity({
     });
   } else if (finalStatus === 'processing') {
     await writeProviderAudit('provider_timeout', {
-      userId, reference, amount: amt,
+      userId, reference, amount: walletDebit,
       source: 'electricity.service',
       details: {
         service: 'electricity', product_name: pn,
@@ -553,11 +592,13 @@ export async function purchaseElectricity({
     provider:           bill.provider,
     bill_type:          bill.bill_type,
     meter_number:       meter,
-    amount:             amt,
-    final_amount:       amt,
+    amount:             walletDebit,        /* what the customer paid */
+    meter_amount:       amt,                /* what the meter received */
+    final_amount:       walletDebit,
+    discount:           discountAmt,
+    discount_rate:      DISCOUNT_RATE,
     cost_price:         dsCost,
     profit:             dsProfit,
-    discount:           0,
     token,
     units,
     customer_name:      dsRaw.customer_name    || null,
@@ -589,7 +630,9 @@ export async function getStatus(reference) {
       status:             current,
       remark:             tx.remark || tx.description || '',
       amount:             Number(tx.amount) || 0,
+      meter_amount:       Number(meta.meter_amount) || Number(tx.amount) || 0,
       final_amount:       Number(tx.final_amount || tx.amount) || 0,
+      discount:           Number(tx.discount || 0),
       cost_price:         Number(tx.cost_price || 0),
       profit:             Number(tx.profit || 0),
       product_name:       meta.product_name || '',
@@ -611,6 +654,7 @@ export async function getStatus(reference) {
       status:    current === 'pending' ? 'processing' : current,
       remark:    tx.remark || tx.description || 'Preparing to submit…',
       amount:    Number(tx.amount) || 0,
+      meter_amount: Number(meta.meter_amount) || Number(tx.amount) || 0,
       product_name: meta.product_name || '',
       provider:     meta.provider || '',
       meter_number: meta.meter_number || '',
@@ -626,6 +670,7 @@ export async function getStatus(reference) {
       status:       'processing',
       remark:       tx.remark || tx.description || 'Still processing',
       amount:       Number(tx.amount) || 0,
+      meter_amount: Number(meta.meter_amount) || Number(tx.amount) || 0,
       product_name: meta.product_name || '',
       provider:     meta.provider || '',
       meter_number: meta.meter_number || '',
@@ -707,7 +752,9 @@ export async function getStatus(reference) {
     status:             newStatus,
     remark:             payload.remark || tx.remark || tx.description || '',
     amount:             Number(tx.amount) || 0,
+    meter_amount:       Number(meta.meter_amount) || Number(tx.amount) || 0,
     final_amount:       Number(tx.final_amount || tx.amount) || 0,
+    discount:           Number(tx.discount || 0),
     cost_price:         Number(tx.cost_price || 0),
     profit:             Number(tx.profit || 0),
     product_name:       meta.product_name || '',
@@ -733,7 +780,7 @@ export async function getHistory({ userId, limit = 20 } = {}) {
   const { rows } = await query(
     `SELECT
         t.reference, t.amount, t.status, t.remark, t.created_at,
-        t.cost_price, t.profit, t.final_amount,
+        t.cost_price, t.profit, t.final_amount, t.discount,
         t.metadata,
         bp.token, bp.meter_number, bp.provider_reference
        FROM transactions t
@@ -750,7 +797,9 @@ export async function getHistory({ userId, limit = 20 } = {}) {
     reference:          r.reference,
     status:             String(r.status || '').toLowerCase(),
     amount:             Number(r.amount) || 0,
+    meter_amount:       Number(r.metadata?.meter_amount) || Number(r.amount) || 0,
     final_amount:       Number(r.final_amount || r.amount) || 0,
+    discount:           Number(r.discount || 0),
     cost_price:         Number(r.cost_price || 0),
     profit:             Number(r.profit || 0),
     product_name:       r.metadata?.product_name || '',
