@@ -749,6 +749,15 @@
       #txReal { scroll-behavior: auto !important; }
     }
 
+
+    /* Pagination: fixed footer controls, only the transaction list scrolls */
+    .tx-page-hidden { display: none !important; }
+    .tx-pagination { flex: 0 0 auto !important; }
+    .pg-numbers { display: flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: nowrap; }
+    .pg-num { cursor: pointer; }
+    .pg-btn:disabled { opacity: .35 !important; cursor: not-allowed !important; }
+    .pg-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 14px; color: #8b9098; }
+
   </style>
 </head>
 <body class="tx-page">
@@ -763,7 +772,6 @@
           </svg>
         </span>
         <h1 class="tx-header-title">Transaction History</h1>
-        <span class="tx-header-count" id="txCount">0</span>
       </div>
       <button type="button" class="tx-header-close" onclick="location.href='/home.html'" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -772,18 +780,7 @@
       </button>
     </header>
 
-    <!-- TYPE DROPDOWN -->
-    <div class="tx-toolbar">
-      <button type="button" class="tx-dropdown" id="typeDropdownBtn">
-        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="tx-dropdown-funnel">
-          <path d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V21a1 1 0 01-1.447.894l-4-2A1 1 0 018 19v-5.5L2.2 4.6A1 1 0 013 4z"/>
-        </svg>
-        <span class="tx-dropdown-label" id="typeDropdownLabel">All Types</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 9l6 6 6-6"/>
-        </svg>
-      </button>
-    </div>
+    <!-- Transaction type dropdown removed as requested -->
 
     <!-- SEARCH -->
     <div class="tx-searchbar">
@@ -1226,5 +1223,121 @@
       applyDateFilter();
     })();
   </script>
+
+  <script>
+    /* SHATOVA pagination controller: supports every page, not only pages 1–5. */
+    (function () {
+      const list = document.getElementById('txReal');
+      const pagination = document.getElementById('txPagination');
+      const numbers = document.getElementById('pgNumbers');
+      const prev = document.getElementById('pgPrev');
+      const next = document.getElementById('pgNext');
+      if (!list || !pagination || !numbers || !prev || !next) return;
+
+      const PAGE_SIZE = 10;
+      let currentPage = 1;
+      let renderQueued = false;
+
+      function transactionCards() {
+        return Array.from(list.children).filter(el =>
+          el.classList.contains('tx-item') || el.hasAttribute('data-transaction')
+        );
+      }
+
+      function isDateEligible(card) {
+        // The date filter sets inline display:none for cards outside the selected range.
+        // Page hiding uses a class, so it does not interfere with this check.
+        return card.dataset.dateFilteredOut !== 'true' &&
+          (card.style.display !== 'none' || card.classList.contains('tx-page-hidden'));
+      }
+
+      function pageButton(label, page, active) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pg-num' + (active ? ' active' : '');
+        button.textContent = String(label);
+        button.setAttribute('aria-label', 'Page ' + page);
+        if (active) button.setAttribute('aria-current', 'page');
+        button.addEventListener('click', function () {
+          currentPage = page;
+          render();
+          list.scrollTop = 0;
+        });
+        return button;
+      }
+
+      function ellipsis() {
+        const span = document.createElement('span');
+        span.className = 'pg-ellipsis';
+        span.textContent = '…';
+        span.setAttribute('aria-hidden', 'true');
+        return span;
+      }
+
+      function render() {
+        const all = transactionCards();
+        // Preserve the date filter's visibility before changing page visibility.
+        const eligible = all.filter(card => {
+          if (card.classList.contains('tx-page-hidden')) return card.dataset.txDateEligible !== 'false';
+          const eligibleNow = card.style.display !== 'none';
+          card.dataset.txDateEligible = eligibleNow ? 'true' : 'false';
+          return eligibleNow;
+        });
+
+        const totalPages = Math.max(1, Math.ceil(eligible.length / PAGE_SIZE));
+        currentPage = Math.min(Math.max(1, currentPage), totalPages);
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+
+        all.forEach(card => {
+          const index = eligible.indexOf(card);
+          card.classList.toggle('tx-page-hidden', index < 0 || index < start || index >= end);
+        });
+
+        pagination.classList.toggle('hidden', eligible.length <= PAGE_SIZE);
+        numbers.replaceChildren();
+        if (totalPages <= 7) {
+          for (let page = 1; page <= totalPages; page++) {
+            numbers.appendChild(pageButton(page, page, page === currentPage));
+          }
+        } else {
+          const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+          if (currentPage <= 3) [2, 3, 4].forEach(p => pages.add(p));
+          if (currentPage >= totalPages - 2) [totalPages - 3, totalPages - 2, totalPages - 1].forEach(p => pages.add(p));
+          let last = 0;
+          Array.from(pages).filter(p => p >= 1 && p <= totalPages).sort((a,b) => a-b).forEach(page => {
+            if (last && page - last > 1) numbers.appendChild(ellipsis());
+            numbers.appendChild(pageButton(page, page, page === currentPage));
+            last = page;
+          });
+        }
+        prev.disabled = currentPage <= 1;
+        next.disabled = currentPage >= totalPages;
+        prev.onclick = function () { if (currentPage > 1) { currentPage--; render(); list.scrollTop = 0; } };
+        next.onclick = function () { if (currentPage < totalPages) { currentPage++; render(); list.scrollTop = 0; } };
+      }
+
+      function scheduleRender(reset) {
+        if (reset) currentPage = 1;
+        if (renderQueued) return;
+        renderQueued = true;
+        requestAnimationFrame(function () {
+          renderQueued = false;
+          render();
+        });
+      }
+
+      const observer = new MutationObserver(() => scheduleRender(true));
+      observer.observe(list, { childList: true });
+      document.getElementById('txDateFrom')?.addEventListener('change', () => scheduleRender(true));
+      document.getElementById('txDateTo')?.addEventListener('change', () => scheduleRender(true));
+      document.getElementById('txDateClear')?.addEventListener('click', () => scheduleRender(true));
+      document.getElementById('txStatusChips')?.addEventListener('click', () => scheduleRender(true));
+      document.getElementById('txSearchInput')?.addEventListener('input', () => scheduleRender(true));
+      window.addEventListener('pageshow', () => scheduleRender(true));
+      scheduleRender(true);
+    })();
+  </script>
+
 </body>
 </html>
