@@ -613,6 +613,55 @@
       letter-spacing: -.01em;
     }
 
+
+    /* ============================================================
+       WALLET BALANCE CARD
+       ============================================================ */
+    .elx-wallet {
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+      border: 1.5px solid #93c5fd;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .elx-wallet .w-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1e40af;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+    }
+    .elx-wallet .w-bal {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1e3a8a;
+      letter-spacing: -.02em;
+    }
+    .elx-wallet .w-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(37, 99, 235, .12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .elx-wallet .w-icon svg { width: 22px; height: 22px; color: #2563eb; }
+    .elx-wallet.insufficient {
+      background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
+      border-color: #fca5a5;
+    }
+    .elx-wallet.insufficient .w-label { color: #991b1b; }
+    .elx-wallet.insufficient .w-bal { color: #7f1d1d; }
+    .elx-wallet.insufficient .w-icon { background: rgba(220, 38, 38, .12); }
+    .elx-wallet.insufficient .w-icon svg { color: #dc2626; }
+
     /* ============================================================
        TOKEN
        ============================================================ */
@@ -917,8 +966,18 @@
           <button class="elx-btn blue" id="btnVerify" disabled>Verify Customer</button>
         </div>
 
-        <!-- STEP 4 — Confirm -->
+        <!-- STEP 4 — Confirm (with wallet balance check) -->
         <div id="step4" class="elx-hidden">
+          <div class="elx-wallet" id="walletCard">
+            <div>
+              <div class="w-label">Wallet Balance</div>
+              <div class="w-bal" id="walletBal">—</div>
+            </div>
+            <div class="w-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            </div>
+          </div>
+
           <div class="elx-card">
             <div class="elx-kv"><span class="k">Disco</span><span class="v" id="cDisco">—</span></div>
             <div class="elx-kv"><span class="k">Meter type</span><span class="v" id="cType">—</span></div>
@@ -952,59 +1011,60 @@
     'use strict';
 
     var API = '/api/v1/electricity';
+    var WALLET_API = '/api/v1/wallet';
     var TOKEN_KEYS = ['token','authToken','access_token','accessToken','shatova_token','jwt'];
 
     /* Real brand logos (Wikimedia) + multi-fallback + brand colour class */
     var DISCO_LOGOS = {
       'Aba Power': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/Aba_Power_logo.png/120px-Aba_Power_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/abapower.png'],
         cls: 'ini-aba', short: 'ABA'
       },
       'Abuja Electric': {
         urls: [
-          'https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/AEDC_logo.png/120px-AEDC_logo.png',
-          'https://upload.wikimedia.org/wikipedia/en/thumb/3/3d/Abuja_Electricity_Distribution_Company_logo.png/120px-Abuja_Electricity_Distribution_Company_logo.png'
+          'https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/aedc.png',
+          'https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/aedc.jpeg'
         ],
         cls: 'ini-abuja', short: 'AEDC'
       },
       'Benin Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/BEDC_logo.png/120px-BEDC_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/bedc.png'],
         cls: 'ini-benin', short: 'BEDC'
       },
       'Eko Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Eko_Electricity_Distribution_Company_logo.png/120px-Eko_Electricity_Distribution_Company_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ekedc.png'],
         cls: 'ini-eko', short: 'EKEDC'
       },
       'Enugu Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Enugu_Electricity_Distribution_Company_logo.png/120px-Enugu_Electricity_Distribution_Company_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/eedc.png'],
         cls: 'ini-enugu', short: 'EEDC'
       },
       'Ibadan Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/IBEDC_logo.png/120px-IBEDC_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ibedc.png'],
         cls: 'ini-ibadan', short: 'IBEDC'
       },
       'Ikeja Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/1/1e/Ikeja_Electric_logo.png/120px-Ikeja_Electric_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/ikedc.png'],
         cls: 'ini-ikeja', short: 'IKEDC'
       },
       'Jos Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Jos_Electricity_Distribution_Company_logo.png/120px-Jos_Electricity_Distribution_Company_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/jed-logo.png'],
         cls: 'ini-jos', short: 'JED'
       },
       'Kaduna Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/6/6d/Kaduna_Electricity_Company_logo.png/120px-Kaduna_Electricity_Company_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/kaedco.png'],
         cls: 'ini-kaduna', short: 'KAEDCO'
       },
       'Kano Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Kano_Electricity_Distribution_Company_logo.png/120px-Kano_Electricity_Distribution_Company_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/kedco.webp'],
         cls: 'ini-kano', short: 'KEDCO'
       },
       'Portharcourt Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/5/5c/Port_Harcourt_Electricity_Distribution_Company_logo.png/120px-Port_Harcourt_Electricity_Distribution_Company_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/phed.png'],
         cls: 'ini-ph', short: 'PHED'
       },
       'Yola Electric': {
-        urls: ['https://upload.wikimedia.org/wikipedia/en/thumb/2/2e/Yola_Electricity_Distribution_Company_logo.png/120px-Yola_Electricity_Distribution_Company_logo.png'],
+        urls: ['https://raw.githubusercontent.com/josephajibodu/utility-providers-assets/main/electricity-providers/yedc.png'],
         cls: 'ini-yola', short: 'YEDC'
       }
     };
@@ -1068,7 +1128,8 @@
       verified: null,
       amount: null,
       reference: null,
-      pollTimer: null
+      pollTimer: null,
+      walletBalance: null
     };
 
     function showStep(n) {
@@ -1178,7 +1239,8 @@
       if (!prov) return;
       var list = (prov.products || []).slice().sort(function (a, b) {
         var order = { prepaid: 0, postpaid: 1 };
-        return (order[a.bill_type] || 99) - (order[b.bill_type] || 99);
+        return (order[String(a.bill_type || '').toLowerCase()] || 99) -
+               (order[String(b.bill_type || '').toLowerCase()] || 99);
       });
       $('prodList').innerHTML = list.map(function (p) {
         var isPre = p.bill_type === 'prepaid';
@@ -1322,7 +1384,79 @@
       $('btnPay').disabled = false;
     }
 
-    $('btnPay').addEventListener('click', function () {
+    
+    async function callWallet(path, opts) {
+      opts = opts || {};
+      var token = getToken();
+      var headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      var init = { method: opts.method || 'GET', headers: headers };
+      if (opts.body) init.body = JSON.stringify(opts.body);
+      var res;
+      try {
+        res = await fetch(WALLET_API + path, init);
+      } catch (netErr) {
+        throw new Error('Cannot reach wallet service.');
+      }
+      var text = await res.text();
+      var json = {};
+      try { json = text ? JSON.parse(text) : {}; }
+      catch (_) {
+        throw new Error('Wallet service returned an unexpected response (HTTP ' + res.status + ').');
+      }
+      if (!res.ok || json.success === false) {
+        var e = new Error(json.message || json.error || ('Wallet request failed (HTTP ' + res.status + ')'));
+        e.code = json.code; e.status = res.status;
+        throw e;
+      }
+      return json.data;
+    }
+
+    async function fetchWalletBalance() {
+      try {
+        var data = await callWallet('/balance');
+        var bal = data.balance != null ? data.balance
+                : data.wallet_balance != null ? data.wallet_balance
+                : data.available_balance != null ? data.available_balance
+                : data.amount != null ? data.amount
+                : 0;
+        state.walletBalance = Number(bal) || 0;
+        return state.walletBalance;
+      } catch (err) {
+        console.warn('[elec] wallet balance:', err.message);
+        state.walletBalance = null;
+        return null;
+      }
+    }
+
+    function updateWalletUI() {
+      var card = $('walletCard');
+      var balEl = $('walletBal');
+      var btn = $('btnConfirm');
+      var bal = state.walletBalance;
+      var amount = state.amount || 0;
+      if (bal === null) {
+        balEl.textContent = '—';
+        card.classList.remove('insufficient');
+        btn.disabled = false;
+        btn.textContent = 'Confirm & Pay';
+        return;
+      }
+      balEl.textContent = fmt(bal);
+      if (bal < amount) {
+        card.classList.add('insufficient');
+        btn.disabled = true;
+        btn.textContent = 'Insufficient Balance';
+        $('payMsg').innerHTML = '<div class="elx-alert err">Your wallet balance is too low. Please fund your wallet and try again.</div>';
+      } else {
+        card.classList.remove('insufficient');
+        btn.disabled = false;
+        btn.textContent = 'Confirm & Pay';
+        $('payMsg').innerHTML = '';
+      }
+    }
+
+$('btnPay').addEventListener('click', function () {
       var v = state.verified;
       $('cDisco').textContent  = v.disco || v.service_name || state.provider || '—';
       $('cType').textContent   = v.bill_type || state.billType || '—';
@@ -1335,7 +1469,13 @@
 
     $('btnConfirm').addEventListener('click', async function () {
       $('btnConfirm').disabled = true;
-      $('payMsg').innerHTML = '<div class="elx-alert ok"><span class="elx-spin"></span>Processing payment…</div>';
+      $('payMsg').innerHTML = '<div class="elx-alert ok"><span class="elx-spin"></span>Checking balance &amp; processing…</div>';
+
+      var bal = await fetchWalletBalance();
+      if (bal !== null && bal < (state.amount || 0)) {
+        updateWalletUI();
+        return;
+      }
 
       try {
         var r = await callApi('/purchase', {
@@ -1454,7 +1594,7 @@
         products: state.products,
         provider: null, billType: null, productName: null,
         meterNumber: '', verified: null, amount: null,
-        reference: null, pollTimer: null
+        reference: null, pollTimer: null, walletBalance: null
       };
       $('meter').value = '';
       $('amount').value = '';
