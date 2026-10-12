@@ -456,6 +456,299 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    /* ============================================================
+       SHATOVA PRO LAYOUT — FIXED CONTROLS / SCROLLABLE HISTORY
+       ============================================================ */
+    :root {
+      --tx-brand: #0a4534;
+      --tx-brand-dark: #073326;
+      --tx-brand-soft: #eaf3ef;
+      --tx-ink: #18231f;
+      --tx-muted: #7b8580;
+      --tx-line: #e5eae7;
+      --tx-canvas: #f5f7f6;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden !important;
+      overscroll-behavior: none;
+      background: var(--tx-canvas) !important;
+    }
+
+    body.tx-page {
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden !important;
+    }
+
+    #app-header {
+      flex: 0 0 auto;
+      z-index: 20;
+    }
+
+    .tx-app {
+      width: 100% !important;
+      max-width: 760px !important;
+      height: calc(100vh - 46px);
+      height: calc(100dvh - 46px);
+      min-height: 0 !important;
+      margin: 0 auto !important;
+      padding: 0 0 8px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      position: relative !important;
+      background: var(--tx-canvas);
+      gap: 0 !important;
+    }
+
+    .tx-header {
+      position: relative !important;
+      top: auto !important;
+      flex: 0 0 auto;
+      z-index: 10 !important;
+      min-height: 49px;
+      padding: 10px 18px !important;
+      background: #fff !important;
+      border-bottom: 1px solid var(--tx-line) !important;
+      box-shadow: 0 2px 8px rgba(13, 45, 32, .025) !important;
+    }
+
+    .tx-toolbar {
+      flex: 0 0 auto;
+      padding: 9px 18px 4px !important;
+      background: #fff !important;
+    }
+
+    .tx-searchbar {
+      flex: 0 0 auto;
+      margin: 4px 18px 9px !important;
+      width: auto !important;
+      min-width: 0;
+    }
+
+    .tx-date-filter {
+      flex: 0 0 auto;
+      margin: 0 18px 9px;
+      padding: 10px 12px 8px;
+      background: #fff;
+      border: 1px solid var(--tx-line);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(14, 39, 29, .025);
+    }
+
+    .tx-date-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .tx-date-heading > div {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .tx-date-eyebrow {
+      color: var(--tx-brand);
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: .9px;
+    }
+
+    .tx-date-title {
+      color: #27332d;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: -.15px;
+    }
+
+    .tx-date-clear {
+      border: 0;
+      background: transparent;
+      color: var(--tx-brand);
+      font: inherit;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 4px 0 4px 8px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .tx-date-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
+      align-items: end;
+      gap: 7px;
+    }
+
+    .tx-date-field {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: #78827c;
+      font-size: 9.5px;
+      font-weight: 600;
+    }
+
+    .tx-date-field input {
+      width: 100%;
+      min-width: 0;
+      height: 34px;
+      padding: 0 8px;
+      color: #25332c;
+      background: #f8faf9;
+      border: 1px solid #e1e8e3;
+      border-radius: 8px;
+      outline: none;
+      font: 500 11px/1 Inter, sans-serif;
+      color-scheme: light;
+    }
+
+    .tx-date-field input:focus {
+      border-color: #6d9b86;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(10, 69, 52, .07);
+    }
+
+    .tx-date-arrow {
+      align-self: center;
+      margin-top: 14px;
+      color: #a3ada7;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .tx-date-message {
+      margin: 6px 1px 0;
+      min-height: 12px;
+      color: #87918b;
+      font-size: 9.5px;
+      line-height: 1.3;
+    }
+
+    .tx-chips {
+      flex: 0 0 auto;
+      padding: 0 18px 9px !important;
+      background: #fff;
+      border-bottom: 1px solid var(--tx-line);
+      overflow-x: auto;
+      flex-wrap: nowrap !important;
+      scrollbar-width: none;
+    }
+    .tx-chips::-webkit-scrollbar { display: none; }
+
+    .tx-list-section {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 9px 12px 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #txSkeleton, #txReal, #txEmpty {
+      min-height: 0 !important;
+      width: 100%;
+    }
+
+    #txSkeleton {
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    #txReal {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd8d0 transparent;
+      padding: 0 1px 12px;
+      align-content: start;
+    }
+
+    #txReal::-webkit-scrollbar { width: 4px; }
+    #txReal::-webkit-scrollbar-track { background: transparent; }
+    #txReal::-webkit-scrollbar-thumb {
+      background: #cbd8d0;
+      border-radius: 20px;
+    }
+
+    .tx-list-section .tx-empty {
+      flex: 1 1 auto;
+      overflow-y: auto;
+    }
+
+    .tx-pagination {
+      flex: 0 0 auto;
+      padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+      background: #fff;
+      border-top: 1px solid var(--tx-line);
+    }
+
+    .tx-filter-fab {
+      z-index: 30 !important;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .filter-backdrop, .txm-backdrop { z-index: 100 !important; }
+
+    @media (min-width: 700px) {
+      .tx-app {
+        max-width: 900px !important;
+        border-left: 1px solid #edf0ee;
+        border-right: 1px solid #edf0ee;
+        box-shadow: 0 0 30px rgba(16, 44, 31, .035);
+      }
+      .tx-header { padding-left: 24px !important; padding-right: 24px !important; }
+      .tx-toolbar { padding-left: 24px !important; padding-right: 24px !important; }
+      .tx-searchbar { margin-left: 24px !important; margin-right: 24px !important; }
+      .tx-date-filter { margin-left: 24px; margin-right: 24px; }
+      .tx-chips { padding-left: 24px !important; padding-right: 24px !important; }
+      .tx-list-section { padding-left: 18px !important; padding-right: 18px !important; }
+    }
+
+    @media (max-height: 700px) {
+      .tx-date-filter { padding: 7px 10px 5px; margin-bottom: 6px; }
+      .tx-date-heading { margin-bottom: 5px; }
+      .tx-date-field input { height: 30px; }
+      .tx-date-message { margin-top: 4px; }
+      .tx-chips { padding-bottom: 6px !important; }
+      .tx-list-section { padding-top: 6px !important; }
+    }
+
+    @media (max-width: 380px) {
+      .tx-header { padding-left: 12px !important; padding-right: 12px !important; }
+      .tx-toolbar { padding-left: 12px !important; padding-right: 12px !important; }
+      .tx-searchbar { margin-left: 12px !important; margin-right: 12px !important; }
+      .tx-date-filter { margin-left: 12px; margin-right: 12px; }
+      .tx-chips { padding-left: 12px !important; padding-right: 12px !important; }
+      .tx-date-filter { padding: 8px 9px 6px; }
+      .tx-date-heading > div { gap: 6px; }
+      .tx-date-title { font-size: 10.5px; }
+      .tx-date-field input { font-size: 10px; padding: 0 5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #txReal { scroll-behavior: auto !important; }
+    }
+
   </style>
 </head>
 <body class="tx-page">
@@ -511,6 +804,30 @@
         </svg>
       </button>
     </div>
+
+
+    <!-- DATE RANGE FILTER -->
+    <section class="tx-date-filter" aria-label="Filter transactions by date">
+      <div class="tx-date-heading">
+        <div>
+          <span class="tx-date-eyebrow">DATE RANGE</span>
+          <span class="tx-date-title">Choose period</span>
+        </div>
+        <button type="button" class="tx-date-clear" id="txDateClear">Clear dates</button>
+      </div>
+      <div class="tx-date-fields">
+        <label class="tx-date-field">
+          <span>From</span>
+          <input type="date" id="txDateFrom" aria-label="Start date">
+        </label>
+        <span class="tx-date-arrow" aria-hidden="true">—</span>
+        <label class="tx-date-field">
+          <span>To</span>
+          <input type="date" id="txDateTo" aria-label="End date">
+        </label>
+      </div>
+      <p class="tx-date-message" id="txDateMessage" aria-live="polite">Showing all dates</p>
+    </section>
 
     <!-- STATUS CHIPS -->
     <div class="tx-chips" id="txStatusChips">
@@ -795,14 +1112,118 @@
   <script type="module" src="/js/transactions.js"></script>
   <script>
     (function () {
-      const H = 46;
-      function freeze() {
-        const el = document.querySelector('.tx-header');
-        if (el) el.style.setProperty('top', H + 'px', 'important');
+      const fromInput = document.getElementById('txDateFrom');
+      const toInput = document.getElementById('txDateTo');
+      const clearButton = document.getElementById('txDateClear');
+      const message = document.getElementById('txDateMessage');
+      const list = document.getElementById('txReal');
+      if (!fromInput || !toInput || !list) return;
+
+      const originalDisplay = new WeakMap();
+      let observer;
+
+      function parseTransactionDate(item) {
+        const explicit = item.dataset.date || item.dataset.createdAt ||
+          item.getAttribute('datetime') || '';
+        if (explicit) {
+          const d = new Date(explicit);
+          if (!Number.isNaN(d.getTime())) return d;
+        }
+
+        const dateNode = item.querySelector('.tx-when, time, [data-date]');
+        if (dateNode) {
+          const raw = dateNode.getAttribute('datetime') ||
+            dateNode.dataset.date || dateNode.textContent.trim();
+          const parsed = new Date(raw);
+          if (!Number.isNaN(parsed.getTime())) return parsed;
+        }
+
+        // Last-resort fallback: find a date-like string in the transaction card.
+        const text = item.innerText || item.textContent || '';
+        const match = text.match(/\b(?:\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4})\b/i);
+        if (match) {
+          const parsed = new Date(match[0]);
+          if (!Number.isNaN(parsed.getTime())) return parsed;
+        }
+        return null;
       }
-      window.addEventListener('load', freeze);
-      window.addEventListener('resize', freeze);
-      freeze();
+
+      function localDateValue(date) {
+        return date.getFullYear() + '-' +
+          String(date.getMonth() + 1).padStart(2, '0') + '-' +
+          String(date.getDate()).padStart(2, '0');
+      }
+
+      function applyDateFilter() {
+        const from = fromInput.value;
+        const to = toInput.value;
+
+        if (from && to && from > to) {
+          toInput.setCustomValidity('End date must be on or after the start date.');
+          toInput.reportValidity();
+          message.textContent = 'Please choose an end date on or after the start date.';
+          return;
+        }
+        toInput.setCustomValidity('');
+
+        const cards = Array.from(list.children).filter(el =>
+          el.classList.contains('tx-item') || el.hasAttribute('data-transaction')
+        );
+        let shown = 0;
+        let unrecognized = 0;
+
+        cards.forEach(card => {
+          if (!originalDisplay.has(card)) originalDisplay.set(card, card.style.display);
+          const date = parseTransactionDate(card);
+          let visible = true;
+
+          if ((from || to) && !date) {
+            visible = false;
+            unrecognized++;
+          } else if (date) {
+            const value = localDateValue(date);
+            if (from && value < from) visible = false;
+            if (to && value > to) visible = false;
+          }
+
+          card.style.display = visible ? (originalDisplay.get(card) || '') : 'none';
+          if (visible) shown++;
+        });
+
+        if (!from && !to) {
+          message.textContent = 'Showing all dates';
+        } else {
+          const range = (from || 'Earliest') + ' – ' + (to || 'Latest');
+          message.textContent = shown + ' transaction' + (shown === 1 ? '' : 's') +
+            ' in ' + range + (unrecognized ? ' · Some dates could not be read' : '');
+        }
+
+        const empty = document.getElementById('txEmpty');
+        if (cards.length && shown === 0 && (from || to) && empty) {
+          const title = document.getElementById('txEmptyTitle');
+          const text = document.getElementById('txEmptyText');
+          if (title) title.textContent = 'No transactions for this period';
+          if (text) text.textContent = 'Try a different date range or clear the dates.';
+        }
+      }
+
+      fromInput.addEventListener('change', applyDateFilter);
+      toInput.addEventListener('change', applyDateFilter);
+
+      clearButton.addEventListener('click', function () {
+        fromInput.value = '';
+        toInput.value = '';
+        toInput.setCustomValidity('');
+        applyDateFilter();
+      });
+
+      observer = new MutationObserver(() => applyDateFilter());
+      observer.observe(list, { childList: true, subtree: false });
+      window.addEventListener('pageshow', applyDateFilter);
+      window.addEventListener('resize', () => {
+        document.body.style.setProperty('overflow', 'hidden', 'important');
+      });
+      applyDateFilter();
     })();
   </script>
 </body>
