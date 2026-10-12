@@ -28,6 +28,7 @@ import { startAirtimeStatusJob }   from './jobs/airtime-status.job.js';
 import { startDataStatusJob }      from './jobs/data-status.job.js';
 import { startWalletReconcileJob } from './jobs/wallet-reconcile.job.js';
 import { startMoneyAuditJob }      from './jobs/money-audit.job.js';
+import { startElectricityStatusJob } from './jobs/electricity-status.job.js';
 
 import { reconcileProcessingDataTransactions } from './services/data.service.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
@@ -225,6 +226,7 @@ async function start() {
     startDataStatusJob();
     startWalletReconcileJob();
     startMoneyAuditJob();
+    startElectricityStatusJob();
     console.log('[start] ✅ background jobs started');
 
     const runDataReconciler = async () => {
