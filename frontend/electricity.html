@@ -615,52 +615,244 @@
 
 
     /* ============================================================
-       WALLET BALANCE CARD
+       CONFIRM / PAY PAGE (screenshot-matched)
        ============================================================ */
-    .elx-wallet {
-      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
-      border: 1.5px solid #93c5fd;
-      border-radius: 14px;
-      padding: 16px 18px;
-      margin-bottom: 12px;
+    .elx-confirm-product {
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.07);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04);
     }
-    .elx-wallet .w-label {
+    .elx-confirm-product .cp-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .elx-confirm-product .cp-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 4px;
+    }
+    .elx-confirm-product .cp-info { flex: 1; min-width: 0; }
+    .elx-confirm-product .cp-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .elx-confirm-product .cp-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 4px;
+      font-size: 10px;
+      font-weight: 650;
+      color: #64748b;
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 2px 8px;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .elx-confirm-product .cp-amount {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -.02em;
+      flex-shrink: 0;
+    }
+
+    .elx-section-label {
       font-size: 11px;
       font-weight: 700;
-      color: #1e40af;
+      color: #94a3b8;
       text-transform: uppercase;
-      letter-spacing: .08em;
-      margin-bottom: 4px;
+      letter-spacing: .12em;
+      margin: 6px 0 10px 2px;
     }
-    .elx-wallet .w-bal {
-      font-size: 20px;
-      font-weight: 800;
-      color: #1e3a8a;
-      letter-spacing: -.02em;
+
+    .elx-purchasing-for {
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.07);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04);
     }
-    .elx-wallet .w-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: rgba(37, 99, 235, .12);
+    .elx-purchasing-for .pf-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #eff6ff;
+      color: #2563eb;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
-    .elx-wallet .w-icon svg { width: 22px; height: 22px; color: #2563eb; }
-    .elx-wallet.insufficient {
-      background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
-      border-color: #fca5a5;
+    .elx-purchasing-for .pf-icon svg { width: 20px; height: 20px; }
+    .elx-purchasing-for .pf-label {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 2px;
     }
-    .elx-wallet.insufficient .w-label { color: #991b1b; }
-    .elx-wallet.insufficient .w-bal { color: #7f1d1d; }
-    .elx-wallet.insufficient .w-icon { background: rgba(220, 38, 38, .12); }
-    .elx-wallet.insufficient .w-icon svg { color: #dc2626; }
+    .elx-purchasing-for .pf-meter {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -.01em;
+    }
+
+    .elx-pay-methods {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .elx-pay-method {
+      background: #fff;
+      border: 2px solid rgba(15, 23, 42, 0.08);
+      border-radius: 16px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s, transform .12s;
+      position: relative;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .elx-pay-method.selected {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+    .elx-pay-method.disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .elx-pay-method .pm-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .elx-pay-method .pm-icon.wallet {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .elx-pay-method .pm-icon.invoice {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    .elx-pay-method .pm-icon svg { width: 22px; height: 22px; }
+    .elx-pay-method .pm-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .elx-pay-method .pm-bal {
+      font-size: 12px;
+      font-weight: 650;
+      color: #0f172a;
+    }
+    .elx-pay-method .pm-status {
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .elx-pay-method .pm-status.low {
+      color: #dc2626;
+    }
+    .elx-pay-method .pm-status.ok {
+      color: #059669;
+    }
+    .elx-pay-method .pm-status.soon {
+      color: #94a3b8;
+    }
+    .elx-pay-method .pm-status .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .elx-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 4px 16px;
+    }
+    .elx-total-row .t-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .elx-total-row .t-amount {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -.02em;
+    }
+
+    .elx-btn.pay-now {
+      background: #3b82f6;
+      color: #fff;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, .28);
+    }
+    .elx-btn.pay-now:hover:not(:disabled) { background: #2563eb; }
+    .elx-btn.pay-now:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .elx-schedule {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .elx-schedule svg { width: 16px; height: 16px; }
+
+    /* legacy wallet class kept for JS */
+    .elx-wallet { display: none; }
 
     /* ============================================================
        TOKEN
@@ -966,27 +1158,69 @@
           <button class="elx-btn blue" id="btnVerify" disabled>Verify Customer</button>
         </div>
 
-        <!-- STEP 4 — Confirm (with wallet balance check) -->
+        <!-- STEP 4 — Confirm & Pay (screenshot UI) -->
         <div id="step4" class="elx-hidden">
-          <div class="elx-wallet" id="walletCard">
-            <div>
-              <div class="w-label">Wallet Balance</div>
-              <div class="w-bal" id="walletBal">—</div>
+
+          <!-- Product summary -->
+          <div class="elx-confirm-product" id="confirmProduct">
+            <div class="cp-logo" id="cLogo"></div>
+            <div class="cp-info">
+              <div class="cp-name" id="cProductName">—</div>
+              <div class="cp-badge" id="cDiscoBadge">—</div>
             </div>
-            <div class="w-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            <div class="cp-amount" id="cAmountTop">—</div>
+          </div>
+
+          <!-- Purchasing for -->
+          <div class="elx-section-label">Purchasing for</div>
+          <div class="elx-purchasing-for">
+            <div class="pf-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </div>
+            <div>
+              <div class="pf-label">Meter number</div>
+              <div class="pf-meter" id="cMeter">—</div>
             </div>
           </div>
 
-          <div class="elx-card">
-            <div class="elx-kv"><span class="k">Disco</span><span class="v" id="cDisco">—</span></div>
-            <div class="elx-kv"><span class="k">Meter type</span><span class="v" id="cType">—</span></div>
-            <div class="elx-kv"><span class="k">Meter</span><span class="v" id="cMeter">—</span></div>
-            <div class="elx-kv"><span class="k">Customer</span><span class="v" id="cName">—</span></div>
-            <div class="elx-kv"><span class="k">Amount</span><span class="v" id="cAmount">—</span></div>
+          <!-- Payment method -->
+          <div class="elx-section-label">Payment method</div>
+          <div class="elx-pay-methods">
+            <div class="elx-pay-method selected" id="payWallet" data-method="wallet">
+              <div class="pm-icon wallet">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+              </div>
+              <div class="pm-name">Wallet</div>
+              <div class="pm-bal" id="walletBal">—</div>
+              <div class="pm-status" id="walletStatus"></div>
+            </div>
+            <div class="elx-pay-method disabled" id="payInvoice" data-method="invoice">
+              <div class="pm-icon invoice">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <div class="pm-name">Invoice</div>
+              <div class="pm-status soon"><span class="dot"></span> Coming soon</div>
+            </div>
           </div>
+
+          <!-- Total -->
+          <div class="elx-total-row">
+            <span class="t-label">Total Amount</span>
+            <span class="t-amount" id="cAmount">—</span>
+          </div>
+
           <div id="payMsg"></div>
-          <button class="elx-btn green" id="btnConfirm">Confirm &amp; Pay</button>
+          <button class="elx-btn pay-now" id="btnConfirm">Pay Now</button>
+          <div class="elx-schedule">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Schedule
+          </div>
+
+          <!-- hidden legacy ids for JS compatibility -->
+          <span id="cDisco" class="elx-hidden">—</span>
+          <span id="cType" class="elx-hidden">—</span>
+          <span id="cName" class="elx-hidden">—</span>
+          <div id="walletCard" class="elx-hidden"></div>
         </div>
 
         <!-- STEP 5 — Receipt -->
@@ -1505,44 +1739,75 @@
     }
 
     function updateWalletUI() {
-      var card = $('walletCard');
       var balEl = $('walletBal');
+      var statusEl = $('walletStatus');
       var btn = $('btnConfirm');
+      var walletBox = $('payWallet');
       var bal = state.walletBalance;
       var amount = state.amount || 0;
+
       if (bal === null) {
         balEl.textContent = '—';
-        card.classList.remove('insufficient');
+        statusEl.innerHTML = '';
+        statusEl.className = 'pm-status';
         btn.disabled = false;
-        btn.textContent = 'Confirm & Pay';
+        btn.textContent = 'Pay Now';
+        if (walletBox) walletBox.classList.remove('insufficient');
         return;
       }
+
       balEl.textContent = fmt(bal);
+
       if (bal < amount) {
-        card.classList.add('insufficient');
+        statusEl.innerHTML = '<span class="dot"></span> Low balance';
+        statusEl.className = 'pm-status low';
         btn.disabled = true;
         btn.textContent = 'Insufficient Balance';
         $('payMsg').innerHTML = '<div class="elx-alert err">Your wallet balance is too low. Please fund your wallet and try again.</div>';
       } else {
-        card.classList.remove('insufficient');
+        statusEl.innerHTML = '<span class="dot"></span> Sufficient';
+        statusEl.className = 'pm-status ok';
         btn.disabled = false;
-        btn.textContent = 'Confirm & Pay';
+        btn.textContent = 'Pay Now';
         $('payMsg').innerHTML = '';
       }
     }
 
 $('btnPay').addEventListener('click', async function () {
       var v = state.verified;
-      $('cDisco').textContent  = v.disco || v.service_name || state.provider || '—';
+      var disco = v.disco || v.service_name || state.provider || '—';
+      var meter = v.meter_number || state.meterNumber;
+      var amt = fmt(state.amount);
+
+      $('cDisco').textContent  = disco;
       $('cType').textContent   = v.bill_type || state.billType || '—';
-      $('cMeter').textContent  = v.meter_number || state.meterNumber;
+      $('cMeter').textContent  = meter;
       $('cName').textContent   = v.customer_name || '—';
-      $('cAmount').textContent = fmt(state.amount);
+      $('cAmount').textContent = amt;
+      $('cAmountTop').textContent = amt;
+      $('cProductName').textContent = state.productName || disco;
+      $('cDiscoBadge').textContent = String(disco).toUpperCase();
+
+      /* brand logo on confirm card */
+      var logoWrap = $('cLogo');
+      if (logoWrap) {
+        logoWrap.innerHTML = '';
+        var tmp = document.createElement('div');
+        tmp.innerHTML = logoHtml(state.provider || disco, 48);
+        var inner = tmp.firstChild;
+        if (inner) {
+          logoWrap.appendChild(inner);
+          logoWrap.firstChild.style.width = '48px';
+          logoWrap.firstChild.style.height = '48px';
+          logoWrap.firstChild.style.borderRadius = '12px';
+        }
+      }
+
       setHeader('CONFIRM', 'Review payment');
       showStep(4);
 
-      /* Fetch & gate by wallet balance */
       $('walletBal').textContent = '…';
+      $('walletStatus').innerHTML = '';
       $('btnConfirm').disabled = true;
       $('payMsg').innerHTML = '<div class="elx-alert ok"><span class="elx-spin"></span>Checking wallet balance…</div>';
       await fetchWalletBalance();
@@ -1584,14 +1849,25 @@ $('btnPay').addEventListener('click', async function () {
     function renderSuccess(r) {
       setHeader('RECEIPT', 'Payment successful');
       showStep(5);
-      var tokenBlock = r.token
+      var token = r.token || r.Token || r.pin || r.PIN || '';
+      var units = r.units || r.Units || r.kwh || r.kWh || '';
+      var tokenBlock = token
         ? '<div class="elx-token">' +
-            '<div class="lbl">Your token</div>' +
-            '<div class="tok" id="tokText">' + esc(r.token) + '</div>' +
-            (r.units ? '<div class="units">' + esc(r.units) + ' kWh</div>' : '') +
-            '<button class="elx-copy" id="copyTok">Copy token</button>' +
+            '<div class="lbl">Your electricity token</div>' +
+            '<div class="tok" id="tokText">' + esc(token) + '</div>' +
+            (units ? '<div class="units">' + esc(units) + ' kWh</div>' : '') +
+            '<button class="elx-copy" id="copyTok" type="button">Copy token</button>' +
           '</div>'
-        : '';
+        : '<div class="elx-alert warn" style="margin-top:12px;">Token will appear here shortly. Check SMS or transaction history if it does not show.</div>';
+
+      var disco = r.disco || r.provider || state.provider || '';
+      var meter = r.meter_number || state.meterNumber || '';
+      var cust = r.customer_name || (state.verified && state.verified.customer_name) || '—';
+      var addr = r.customer_address || (state.verified && (state.verified.customer_address || state.verified.address)) || '';
+      var amt = fmt(r.amount || state.amount);
+      var ref = r.reference || state.reference || '—';
+      var billType = r.bill_type || state.billType || '';
+
       $('resultCard').innerHTML =
         '<div class="elx-hero">' +
           '<div class="badge-big ok">' +
@@ -1600,18 +1876,28 @@ $('btnPay').addEventListener('click', async function () {
           '<div class="h-title">Payment successful</div>' +
           '<div class="h-sub">Your meter has been credited</div>' +
         '</div>' +
-        '<div style="margin-top:16px;">' +
-          '<div class="elx-kv"><span class="k">Disco</span><span class="v">' + esc(r.disco || r.provider || state.provider || '') + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Meter</span><span class="v">' + esc(r.meter_number || state.meterNumber) + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Customer</span><span class="v">' + esc(r.customer_name || (state.verified && state.verified.customer_name) || '—') + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Amount</span><span class="v">' + fmt(r.amount || state.amount) + '</span></div>' +
-          '<div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:12px;font-weight:600;">' + esc(r.reference) + '</span></div>' +
-        '</div>' +
-        tokenBlock;
+        tokenBlock +
+        '<div style="margin-top:18px;">' +
+          '<div class="elx-kv"><span class="k">Disco</span><span class="v">' + esc(disco) + '</span></div>' +
+          (billType ? '<div class="elx-kv"><span class="k">Meter type</span><span class="v">' + esc(String(billType).toUpperCase()) + '</span></div>' : '') +
+          '<div class="elx-kv"><span class="k">Meter</span><span class="v">' + esc(meter) + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Customer</span><span class="v">' + esc(cust) + '</span></div>' +
+          (addr ? '<div class="elx-kv"><span class="k">Address</span><span class="v">' + esc(addr) + '</span></div>' : '') +
+          '<div class="elx-kv"><span class="k">Amount paid</span><span class="v">' + amt + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Payment method</span><span class="v">Wallet</span></div>' +
+          '<div class="elx-kv"><span class="k">Reference</span><span class="v" style="font-size:12px;font-weight:600;">' + esc(ref) + '</span></div>' +
+          '<div class="elx-kv"><span class="k">Status</span><span class="v" style="color:var(--elx-green);">SUCCESS</span></div>' +
+        '</div>';
+
       var btn = $('copyTok');
-      if (btn) btn.addEventListener('click', function () {
-        try { navigator.clipboard.writeText(r.token); btn.textContent = 'Copied ✓'; }
-        catch (_) { window.prompt('Copy your token:', r.token); }
+      if (btn && token) btn.addEventListener('click', function () {
+        try {
+          navigator.clipboard.writeText(token);
+          btn.textContent = 'Copied ✓';
+          setTimeout(function () { btn.textContent = 'Copy token'; }, 2000);
+        } catch (_) {
+          window.prompt('Copy your token:', token);
+        }
       });
     }
 
