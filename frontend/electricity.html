@@ -83,12 +83,13 @@
     }
 
     /* ============================================================
-       STICKY PAGE HEADER — matches sample
+       STICKY PAGE HEADER — centered title + home back
        ============================================================ */
     .elx-hdr {
-      display: flex;
+      display: grid;
+      grid-template-columns: 40px 1fr 40px;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       padding: 12px 16px 14px;
       background: transparent;
       position: sticky;
@@ -110,6 +111,7 @@
       flex-shrink: 0;
       transition: transform .15s var(--elx-ease), box-shadow .15s;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      justify-self: start;
     }
     .elx-hdr-back:hover {
       box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
@@ -117,29 +119,32 @@
     .elx-hdr-back:active { transform: scale(.94); }
     .elx-hdr-back svg { width: 18px; height: 18px; color: var(--elx-ink); }
 
-    .elx-hdr-info { flex: 1; min-width: 0; }
+    .elx-hdr-info {
+      text-align: center;
+      min-width: 0;
+    }
     .elx-hdr-info .eyebrow {
-      font-size: 10px;
+      font-size: 9.5px;
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: .14em;
-      font-weight: 700;
+      font-weight: 600;
       margin-bottom: 2px;
     }
     .elx-hdr-info .title {
-      font-size: 20px;
-      font-weight: 800;
+      font-size: 17px;
+      font-weight: 700;
       color: #0f172a;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: -.025em;
-      line-height: 1.15;
+      letter-spacing: -.02em;
+      line-height: 1.2;
     }
 
     .elx-hdr-icon {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: linear-gradient(145deg, #10b981 0%, #059669 100%);
       color: #fff;
@@ -147,9 +152,10 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 14px rgba(5, 150, 105, .3);
+      box-shadow: 0 3px 12px rgba(5, 150, 105, .28);
+      justify-self: end;
     }
-    .elx-hdr-icon svg { width: 20px; height: 20px; }
+    .elx-hdr-icon svg { width: 18px; height: 18px; }
 
     /* ============================================================
        SCROLLABLE MAIN AREA
@@ -176,21 +182,21 @@
     .elx-card {
       background: var(--elx-card);
       border: 1px solid var(--elx-line);
-      border-radius: var(--elx-radius);
-      padding: 18px;
-      margin-bottom: 14px;
-      box-shadow: var(--elx-shadow);
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
     }
-    .elx-card.tight { padding: 14px 16px; }
+    .elx-card.tight { padding: 12px 14px; }
     .elx-card.tight .elx-logo { border-radius: 50%; }
 
     .elx-label {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--elx-muted-2);
       text-transform: uppercase;
       letter-spacing: .1em;
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-weight: 650;
+      margin-bottom: 10px;
     }
 
     /* ============================================================
@@ -199,16 +205,16 @@
     .elx-row {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       background: #ffffff;
       border: 1px solid rgba(15, 23, 42, 0.06);
-      border-radius: 22px;
-      padding: 14px 16px 14px 14px;
+      border-radius: 18px;
+      padding: 11px 14px 11px 12px;
       cursor: pointer;
       transition: transform .15s var(--elx-ease), box-shadow .2s, border-color .15s;
       box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.04),
-        0 4px 14px rgba(15, 23, 42, 0.05);
+        0 1px 2px rgba(15, 23, 42, 0.03),
+        0 3px 10px rgba(15, 23, 42, 0.04);
       -webkit-user-select: none;
       user-select: none;
     }
@@ -226,8 +232,8 @@
 
     /* Brand logo badge — circular, colored */
     .elx-logo {
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: #f1f5f9;
       display: flex;
@@ -242,20 +248,20 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 7px;
+      padding: 6px;
       background: #fff;
     }
     .elx-logo .ini {
-      font-weight: 800;
-      font-size: 13px;
-      letter-spacing: 0.2px;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.15px;
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,0,.12);
+      text-shadow: 0 1px 1px rgba(0,0,0,.1);
     }
 
     /* Brand colour presets for initials fallback */
@@ -275,8 +281,8 @@
 
     .elx-info { flex: 1; min-width: 0; }
     .elx-info .name {
-      font-size: 14px;
-      font-weight: 750;
+      font-size: 13px;
+      font-weight: 650;
       color: #0f172a;
       margin-bottom: 2px;
       letter-spacing: -.01em;
@@ -286,13 +292,13 @@
       text-transform: uppercase;
     }
     .elx-info .meta {
-      font-size: 12.5px;
+      font-size: 11.5px;
       color: #94a3b8;
-      font-weight: 500;
+      font-weight: 450;
     }
     .elx-chev {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       color: #cbd5e1;
       flex-shrink: 0;
       transition: color .15s, transform .15s;
@@ -303,23 +309,23 @@
     }
 
     /* ============================================================
-       PRODUCT CARDS — only this list scrolls as a block
+       PRODUCT CARDS — prepaid first, slimmer
        ============================================================ */
     .elx-prod {
       background: #fff;
-      border: 1px solid var(--elx-line);
-      border-radius: var(--elx-radius);
-      padding: 16px 18px;
+      border: 1px solid rgba(15, 23, 42, 0.07);
+      border-radius: 16px;
+      padding: 14px 15px;
       cursor: pointer;
       transition: transform .15s var(--elx-ease), border-color .15s, box-shadow .2s;
-      box-shadow: var(--elx-shadow);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
       -webkit-user-select: none;
       user-select: none;
     }
     .elx-prod:hover {
       border-color: #cbd5e1;
-      box-shadow: var(--elx-shadow-md);
-      transform: translateY(-2px);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05), 0 8px 20px rgba(15, 23, 42, 0.07);
+      transform: translateY(-1px);
     }
     .elx-prod:active {
       transform: scale(.985);
@@ -329,90 +335,90 @@
     .elx-prod-top {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 12px;
+      gap: 12px;
+      margin-bottom: 10px;
     }
     .elx-prod-top .elx-logo {
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
     }
 
     .elx-prod-name { flex: 1; min-width: 0; }
     .elx-prod-name .n {
-      font-size: 15px;
-      font-weight: 750;
+      font-size: 13.5px;
+      font-weight: 650;
       color: var(--elx-ink);
-      margin-bottom: 3px;
+      margin-bottom: 2px;
       letter-spacing: -.015em;
       line-height: 1.25;
     }
     .elx-prod-name .p {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--elx-muted);
-      font-weight: 550;
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: .04em;
     }
     .elx-prod-name .tag {
       display: inline-flex;
       align-items: center;
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10px;
+      font-weight: 650;
       color: var(--elx-green-dk);
       background: var(--elx-green-soft);
       border: 1px solid var(--elx-green-line);
-      padding: 3px 10px;
-      border-radius: 7px;
-      margin-top: 8px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-top: 6px;
       letter-spacing: .02em;
     }
 
     .elx-prod-desc {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--elx-muted);
-      font-weight: 500;
-      margin-bottom: 14px;
-      line-height: 1.5;
+      font-weight: 450;
+      margin-bottom: 12px;
+      line-height: 1.45;
     }
     .elx-prod-foot {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 12px;
+      padding-top: 10px;
       border-top: 1px solid var(--elx-line-2);
     }
     .elx-prod-status {
-      font-size: 11.5px;
-      font-weight: 700;
+      font-size: 10.5px;
+      font-weight: 650;
       color: var(--elx-green);
       text-transform: uppercase;
-      letter-spacing: .06em;
+      letter-spacing: .05em;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
     .elx-prod-status::before {
       content: '';
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--elx-green);
-      box-shadow: 0 0 0 3px rgba(5, 150, 105, .18);
+      box-shadow: 0 0 0 2px rgba(5, 150, 105, .18);
     }
     .elx-prod-buy {
       background: var(--elx-blue);
       color: #fff;
       border: 0;
-      padding: 10px 20px;
-      border-radius: 11px;
-      font-size: 13px;
-      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 650;
       cursor: pointer;
       font-family: inherit;
       letter-spacing: .01em;
       transition: transform .12s, background .15s, box-shadow .15s;
-      box-shadow: 0 3px 10px rgba(37, 99, 235, .28);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, .22);
     }
     .elx-prod-buy:hover { background: var(--elx-blue-dk); }
     .elx-prod-buy:active { transform: scale(.96); }
@@ -425,12 +431,12 @@
       background: #fff;
       border: 1.5px solid var(--elx-line);
       color: var(--elx-ink);
-      padding: 15px 16px;
-      border-radius: var(--elx-radius-sm);
-      font-size: 16px;
+      padding: 13px 14px;
+      border-radius: 11px;
+      font-size: 15px;
       outline: none;
       font-family: inherit;
-      font-weight: 600;
+      font-weight: 550;
       transition: border-color .15s, box-shadow .15s;
       letter-spacing: .01em;
     }
@@ -457,21 +463,21 @@
     .elx-input-row .elx-input { flex: 1; }
 
     .elx-pick-btn {
-      padding: 0 16px;
+      padding: 0 14px;
       border: 1.5px solid var(--elx-line);
-      border-radius: var(--elx-radius-sm);
+      border-radius: 11px;
       background: #fff;
       color: var(--elx-ink);
-      font-weight: 650;
-      font-size: 13px;
+      font-weight: 600;
+      font-size: 12.5px;
       cursor: pointer;
       transition: border-color .15s, background .15s, box-shadow .15s;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       white-space: nowrap;
       font-family: inherit;
-      box-shadow: var(--elx-shadow);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
     .elx-pick-btn:hover {
       border-color: #cbd5e1;
@@ -481,28 +487,28 @@
     .elx-pick-btn svg { width: 15px; height: 15px; color: var(--elx-muted); }
 
     /* ============================================================
-       BUTTONS
+       BUTTONS — slim professional
        ============================================================ */
     .elx-btn {
       width: 100%;
       border: 0;
-      padding: 16px 18px;
-      border-radius: 14px;
-      font-weight: 750;
-      font-size: 15px;
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-weight: 650;
+      font-size: 14px;
       cursor: pointer;
       transition: transform .12s, opacity .15s, box-shadow .15s, background .15s;
       font-family: inherit;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       letter-spacing: .005em;
     }
     .elx-btn.blue {
       background: var(--elx-blue);
       color: #fff;
-      box-shadow: 0 4px 16px rgba(37, 99, 235, .3);
+      box-shadow: 0 3px 12px rgba(37, 99, 235, .25);
     }
     .elx-btn.blue:hover:not(:disabled) { background: var(--elx-blue-dk); }
     .elx-btn.blue:active:not(:disabled) { transform: scale(.985); }
@@ -511,7 +517,7 @@
     .elx-btn.green {
       background: var(--elx-green);
       color: #fff;
-      box-shadow: 0 4px 16px rgba(5, 150, 105, .3);
+      box-shadow: 0 3px 12px rgba(5, 150, 105, .25);
     }
     .elx-btn.green:hover:not(:disabled) { background: var(--elx-green-dk); }
     .elx-btn.green:active:not(:disabled) { transform: scale(.985); }
@@ -521,7 +527,7 @@
       background: #fff;
       border: 1.5px solid var(--elx-line);
       color: var(--elx-ink);
-      box-shadow: var(--elx-shadow);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
     .elx-btn.ghost:hover { background: #f8fafc; border-color: #cbd5e1; }
     .elx-btn.ghost:active { transform: scale(.985); }
@@ -799,7 +805,7 @@
 
       <!-- Sticky header -->
       <div class="elx-hdr">
-        <button class="elx-hdr-back" id="btnBack" style="display:none;" aria-label="Back">
+        <button class="elx-hdr-back" id="btnBack" aria-label="Back">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </button>
         <div class="elx-hdr-info">
@@ -1070,13 +1076,19 @@
         var el = $('step' + i);
         if (el) el.classList.toggle('elx-hidden', i !== n);
       });
-      $('btnBack').style.display = (n === 1) ? 'none' : 'flex';
+      /* Back always visible — on step 1 it goes home */
+      $('btnBack').style.display = 'flex';
       var main = document.querySelector('.elx-main');
       if (main) main.scrollTop = 0;
     }
     function setHeader(eyebrow, title) {
       $('hdrEyebrow').textContent = eyebrow;
       $('hdrTitle').textContent = title;
+    }
+    function goHome() {
+      /* Prefer SPA home if present, else common routes */
+      if (window.navigateTo) { window.navigateTo('/home'); return; }
+      window.location.href = '/';
     }
 
     $('btnBack').addEventListener('click', function () {
@@ -1090,6 +1102,8 @@
       if (!$('step2').classList.contains('elx-hidden')) {
         setHeader('SERVICE', 'Electricity'); showStep(1); return;
       }
+      /* Step 1 → home */
+      goHome();
     });
 
     async function loadProducts() {
