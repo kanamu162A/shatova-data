@@ -2,6 +2,9 @@
 // ============================================================
 // Dashboard — clean, no service-card handling (inline in HTML)
 // Handles: transactions, modal, balance toggle, auto-refresh
+//
+// ⭐ Electricity receipts: meter number row + token row with
+//    copy button, injected inside openTxModal().
 // ============================================================
 
 const API_BASE = '/api/v1';
@@ -119,11 +122,12 @@ const ICONS = {
   x: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>`,
   clock: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`,
   undo: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>`,
+  copy: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`,
   default: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`,
 };
 
 /* ============================================================
-   FRIENDLY TITLE — "MTN airtime", "Airtel data", etc.
+   FRIENDLY TITLE
    ============================================================ */
 function friendlyTitle(tx) {
   const type    = String(tx.type || tx.category || '').toLowerCase();
@@ -131,10 +135,7 @@ function friendlyTitle(tx) {
   const meta    = tx.metadata || {};
   const desc    = String(tx.description || '').trim();
 
-  const haystack = [
-    tx.network, meta.network_name, meta.network,
-    service, desc,
-  ].join(' ').toLowerCase();
+  const haystack = [tx.network, meta.network_name, meta.network, service, desc].join(' ').toLowerCase();
 
   let net = '';
   if (haystack.includes('mtn')) net = 'MTN';
@@ -147,7 +148,7 @@ function friendlyTitle(tx) {
     product = 'airtime';
   } else if (type.includes('data') || service.includes('data') || desc.toLowerCase().includes('data')) {
     product = 'data';
-  } else if (type.includes('electric') || desc.toLowerCase().includes('electric')) {
+  } else if (type.includes('electric') || service.includes('electric') || desc.toLowerCase().includes('electric')) {
     product = 'electricity';
   } else if (type.includes('cable') || type.includes('tv') ||
              desc.toLowerCase().includes('cable') || desc.toLowerCase().includes('tv') ||
@@ -168,9 +169,7 @@ function friendlyTitle(tx) {
   }
 
   if (product) {
-    if (net && (product === 'airtime' || product === 'data')) {
-      return `${net} ${product}`;
-    }
+    if (net && (product === 'airtime' || product === 'data')) return `${net} ${product}`;
     return product.charAt(0).toUpperCase() + product.slice(1);
   }
 
@@ -193,20 +192,20 @@ function txIconMarkup(tx) {
   let cls = 'default';
   let svg = ICONS.default;
 
-  if (type.includes('vtu') && service.includes('airtime'))  { cls = 'airtime';    svg = ICONS.airtime; }
-  else if (type.includes('vtu') && service.includes('data')){ cls = 'data';       svg = ICONS.data; }
+  if (type.includes('vtu') && service.includes('airtime'))       { cls = 'airtime';     svg = ICONS.airtime; }
+  else if (type.includes('vtu') && service.includes('data'))     { cls = 'data';        svg = ICONS.data; }
   else if (type.includes('vtu') && service.includes('electric')) { cls = 'electricity'; svg = ICONS.bills; }
-  else if (type.includes('vtu') && service.includes('cable')){ cls = 'tv';         svg = ICONS.cables; }
-  else if (type.includes('vtu') && service.includes('exam')){ cls = 'exam';        svg = ICONS.exam; }
-  else if (type.includes('airtime'))  { cls = 'airtime';    svg = ICONS.airtime; }
-  else if (type.includes('data'))     { cls = 'data';       svg = ICONS.data; }
-  else if (type.includes('electric')) { cls = 'electricity';svg = ICONS.bills; }
-  else if (type.includes('cable') || type.includes('tv')) { cls = 'tv'; svg = ICONS.cables; }
-  else if (type.includes('exam'))     { cls = 'exam';       svg = ICONS.exam; }
+  else if (type.includes('vtu') && service.includes('cable'))    { cls = 'tv';          svg = ICONS.cables; }
+  else if (type.includes('vtu') && service.includes('exam'))     { cls = 'exam';        svg = ICONS.exam; }
+  else if (type.includes('airtime'))                             { cls = 'airtime';     svg = ICONS.airtime; }
+  else if (type.includes('data'))                                { cls = 'data';        svg = ICONS.data; }
+  else if (type.includes('electric'))                            { cls = 'electricity'; svg = ICONS.bills; }
+  else if (type.includes('cable') || type.includes('tv'))        { cls = 'tv';          svg = ICONS.cables; }
+  else if (type.includes('exam'))                                { cls = 'exam';        svg = ICONS.exam; }
   else if (type.includes('wallet_topup') || type.includes('fund') || type.includes('deposit')) { cls = 'funding'; svg = ICONS.funding; }
-  else if (type.includes('refund')) { cls = 'funding'; svg = ICONS.refund; }
-  else if (type.includes('transfer') || type.includes('send')) { cls = 'transfer'; svg = ICONS.transfer; }
-  else if (type.includes('withdraw')) { cls = 'withdrawal'; svg = ICONS.withdrawal; }
+  else if (type.includes('refund'))                              { cls = 'funding';     svg = ICONS.refund; }
+  else if (type.includes('transfer') || type.includes('send'))   { cls = 'transfer';    svg = ICONS.transfer; }
+  else if (type.includes('withdraw'))                            { cls = 'withdrawal';  svg = ICONS.withdrawal; }
 
   return `<div class="tx-icon ${cls}">${svg}</div>`;
 }
@@ -294,6 +293,72 @@ function friendlyRemark(tx) {
 }
 
 /* ============================================================
+   ELECTRICITY HELPERS
+   ============================================================ */
+function isElectricityTx(tx) {
+  if (!tx) return false;
+  const t    = String(tx.type || '').toLowerCase();
+  const s    = String(tx.service || '').toLowerCase();
+  const d    = String(tx.description || '').toLowerCase();
+  const meta = tx.metadata || {};
+  const pn   = String(meta.product_name || '').toLowerCase();
+  return (
+    t.includes('electric') ||
+    s === 'electricity' ||
+    pn.includes('electric') ||
+    d.includes('electricity') ||
+    d.includes('electric') ||
+    d.includes('jed') ||
+    d.includes('ikedc') ||
+    d.includes('ekedc') ||
+    d.includes('aedc') ||
+    d.includes('bedc') ||
+    d.includes('eedc') ||
+    d.includes('ibedc') ||
+    d.includes('kedco') ||
+    d.includes('kaedco') ||
+    d.includes('phed') ||
+    d.includes('yedc')
+  );
+}
+
+function extractMeterNumber(tx) {
+  if (!tx) return '';
+  const meta = tx.metadata || {};
+  return String(
+    meta.meter_number ||
+    meta.meterNumber ||
+    meta.meter ||
+    tx.meter_number ||
+    ''
+  ).trim();
+}
+
+function extractToken(tx) {
+  if (!tx) return '';
+  const meta = tx.metadata || {};
+  return String(
+    tx.token ||
+    tx.Token ||
+    meta.token ||
+    meta.ds_token ||
+    meta.electricity_token ||
+    ''
+  ).trim();
+}
+
+function extractUnits(tx) {
+  if (!tx) return '';
+  const meta = tx.metadata || {};
+  return String(
+    tx.units ||
+    meta.units ||
+    meta.ds_units ||
+    ''
+  ).trim();
+}
+
+/* ============================================================
    DOM REFERENCES
    ============================================================ */
 const elName      = document.getElementById('userName');
@@ -324,6 +389,13 @@ const txmCopy          = document.getElementById('txmCopy');
 const txmShare         = document.getElementById('txmShare');
 const txmPrint         = document.getElementById('txmPrint');
 const txmDone          = document.getElementById('txmDone');
+
+/* Electricity-specific cells (may or may not exist in the HTML) */
+const txmMeterRow      = document.getElementById('txmMeterRow');
+const txmMeter         = document.getElementById('txmMeter');
+const txmTokenRow      = document.getElementById('txmTokenRow');
+const txmToken         = document.getElementById('txmToken');
+const txmCopyToken     = document.getElementById('txmCopyToken');
 
 let currentTx = null;
 let currentUser = null;
@@ -389,7 +461,7 @@ function renderTransactions(txs) {
 }
 
 /* ============================================================
-   MODAL
+   MODAL — with electricity meter + token support
    ============================================================ */
 function openTxModal(tx) {
   if (!txModal) return;
@@ -399,21 +471,24 @@ function openTxModal(tx) {
   const title  = friendlyTitle(tx);
   const amt    = formatNaira(Math.abs(Number(tx.amount || 0)));
   const meta   = tx.metadata || {};
+  const isElec = isElectricityTx(tx);
 
+  /* Hero colour */
   const heroClass =
-    status.cls === 'success' ? 'txm-success' :
-    status.cls === 'failed'  ? 'txm-failed'  :
-    status.cls === 'refunded'? 'txm-refunded':
+    status.cls === 'success'  ? 'txm-success'  :
+    status.cls === 'failed'   ? 'txm-failed'   :
+    status.cls === 'refunded' ? 'txm-refunded' :
     'txm-processing';
   if (txmHero) {
     txmHero.classList.remove('txm-success', 'txm-failed', 'txm-processing', 'txm-refunded');
     txmHero.classList.add(heroClass);
   }
 
+  /* Hero icon */
   const iconSvg =
-    status.cls === 'success' ? ICONS.check :
-    status.cls === 'failed'  ? ICONS.x :
-    status.cls === 'refunded'? ICONS.undo :
+    status.cls === 'success'  ? ICONS.check :
+    status.cls === 'failed'   ? ICONS.x     :
+    status.cls === 'refunded' ? ICONS.undo  :
     ICONS.clock;
   const heroIcon = txmHero?.querySelector('.txm-hero-icon');
   if (heroIcon) heroIcon.innerHTML = iconSvg;
@@ -422,12 +497,22 @@ function openTxModal(tx) {
   if (txmTitle)  txmTitle.textContent  = title;
   if (txmAmount) txmAmount.textContent = amt;
 
-  if (txmRecipient) txmRecipient.textContent = meta.phone || '—';
+  /* Recipient — for electricity this should be the meter number */
+  if (txmRecipient) {
+    if (isElec) {
+      const meter = extractMeterNumber(tx);
+      txmRecipient.textContent = meter || '—';
+    } else {
+      txmRecipient.textContent = meta.phone || '—';
+    }
+  }
+
   if (txmReference) txmReference.textContent = tx.reference || '—';
   if (txmDate)      txmDate.textContent      = formatDateTimeFull(tx.created_at || tx.createdAt);
   if (txmType)      txmType.textContent      = title;
-  if (txmNetwork)   txmNetwork.textContent   = meta.network_name || meta.network || '—';
+  if (txmNetwork)   txmNetwork.textContent   = meta.network_name || meta.network || (isElec ? (meta.provider || '—') : '—');
 
+  /* Balances */
   if (txmBalanceBefore) {
     const before = resolveBalanceBefore(tx);
     txmBalanceBefore.textContent = before != null ? formatNaira(before) : '—';
@@ -438,10 +523,40 @@ function openTxModal(tx) {
   }
   if (txmRemark) txmRemark.textContent = friendlyRemark(tx);
 
+  /* ---------- Electricity-specific rows ---------- */
+  applyElectricityRows(tx, isElec);
+
+  /* Open modal */
   txModal.classList.remove('hidden');
   txModal.setAttribute('aria-hidden', 'false');
   requestAnimationFrame(() => txModal.classList.add('show'));
   document.body.style.overflow = 'hidden';
+}
+
+function applyElectricityRows(tx, isElec) {
+  const meter = extractMeterNumber(tx);
+  const token = extractToken(tx);
+  const units = extractUnits(tx);
+
+  /* Meter row */
+  if (txmMeterRow && txmMeter) {
+    if (isElec && meter) {
+      txmMeter.textContent = meter;
+      txmMeterRow.style.display = '';
+    } else {
+      txmMeterRow.style.display = 'none';
+    }
+  }
+
+  /* Token row */
+  if (txmTokenRow && txmToken) {
+    if (isElec && token) {
+      txmToken.textContent = units ? `${token}  ·  ${units} kWh` : token;
+      txmTokenRow.style.display = '';
+    } else {
+      txmTokenRow.style.display = 'none';
+    }
+  }
 }
 
 function closeTxModal() {
@@ -451,6 +566,9 @@ function closeTxModal() {
   setTimeout(() => {
     txModal.classList.add('hidden');
     txModal.setAttribute('aria-hidden', 'true');
+    /* Reset electricity rows so they don't linger */
+    if (txmMeterRow) txmMeterRow.style.display = 'none';
+    if (txmTokenRow) txmTokenRow.style.display = 'none';
     currentTx = null;
   }, 240);
 }
@@ -471,6 +589,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && txModal && !txModal.classList.contains('hidden')) closeTxModal();
 });
 
+/* ---------- Copy reference ---------- */
 if (txmCopy) {
   txmCopy.addEventListener('click', async () => {
     if (!currentTx?.reference) { showToast('No reference to copy', 'error'); return; }
@@ -481,6 +600,31 @@ if (txmCopy) {
   });
 }
 
+/* ---------- Copy electricity token ---------- */
+if (txmCopyToken) {
+  txmCopyToken.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!currentTx) return;
+    const token = extractToken(currentTx);
+    if (!token) { showToast('No token to copy', 'error'); return; }
+    try {
+      await navigator.clipboard.writeText(token);
+      const originalHTML = txmCopyToken.innerHTML;
+      txmCopyToken.innerHTML = ICONS.check;
+      txmCopyToken.classList.add('copied');
+      showToast('Token copied', 'success');
+      setTimeout(() => {
+        txmCopyToken.innerHTML = originalHTML;
+        txmCopyToken.classList.remove('copied');
+      }, 2000);
+    } catch {
+      window.prompt('Copy your token:', token);
+    }
+  });
+}
+
+/* ---------- Share ---------- */
 if (txmShare) {
   txmShare.addEventListener('click', () => {
     if (!currentTx) return;
@@ -492,16 +636,29 @@ if (txmShare) {
     const after  = resolveBalanceAfter(currentTx);
     const holder = resolveDisplayName(currentUser) || '—';
     const remark = friendlyRemark(currentTx);
+    const isElec = isElectricityTx(currentTx);
+    const meter  = isElec ? extractMeterNumber(currentTx) : '';
+    const token  = isElec ? extractToken(currentTx) : '';
+    const units  = isElec ? extractUnits(currentTx) : '';
 
-    const text =
-      `Shatova Receipt\n─────────────\n` +
-      `Account: ${holder}\n` +
-      `${title}\nAmount: ${amount}\nStatus: ${status}\n` +
-      `Reference: ${currentTx.reference || '—'}\n` +
-      `Date: ${formatDateTimeFull(currentTx.created_at || currentTx.createdAt)}\n` +
-      `Balance Before: ${before != null ? formatNaira(before) : '—'}\n` +
-      `Balance After: ${after != null ? formatNaira(after) : '—'}\n` +
-      `Remark: ${remark}`;
+    const lines = [
+      `Shatova Receipt`,
+      `─────────────`,
+      `Account: ${holder}`,
+      title,
+      `Amount: ${amount}`,
+      `Status: ${status}`,
+    ];
+    if (isElec && meter) lines.push(`Meter: ${meter}`);
+    if (isElec && token) lines.push(`Token: ${token}${units ? `  (${units} kWh)` : ''}`);
+    lines.push(
+      `Reference: ${currentTx.reference || '—'}`,
+      `Date: ${formatDateTimeFull(currentTx.created_at || currentTx.createdAt)}`,
+      `Balance Before: ${before != null ? formatNaira(before) : '—'}`,
+      `Balance After: ${after != null ? formatNaira(after) : '—'}`,
+      `Remark: ${remark}`
+    );
+    const text = lines.join('\n');
 
     if (navigator.share) {
       navigator.share({ title: 'Shatova Receipt', text }).catch(() => {});
@@ -513,6 +670,7 @@ if (txmShare) {
   });
 }
 
+/* ---------- Print ---------- */
 if (txmPrint) {
   txmPrint.addEventListener('click', () => {
     if (!currentTx) return;
@@ -524,9 +682,18 @@ if (txmPrint) {
     const after  = resolveBalanceAfter(currentTx);
     const holder = resolveDisplayName(currentUser) || '—';
     const remark = friendlyRemark(currentTx);
+    const isElec = isElectricityTx(currentTx);
+    const meter  = isElec ? extractMeterNumber(currentTx) : '';
+    const token  = isElec ? extractToken(currentTx) : '';
+    const units  = isElec ? extractUnits(currentTx) : '';
 
     const w = window.open('', '_blank', 'width=400,height=600');
     if (!w) { showToast('Popup blocked', 'error'); return; }
+
+    const electricityRows =
+      (isElec && meter ? `<div class="row"><span class="label">Meter</span><span class="value">${escapeHtml(meter)}</span></div>` : '') +
+      (isElec && token ? `<div class="row"><span class="label">Token</span><span class="value" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.5px">${escapeHtml(token)}</span></div>` : '') +
+      (isElec && units ? `<div class="row"><span class="label">Units</span><span class="value">${escapeHtml(units)} kWh</span></div>` : '');
 
     w.document.write(`
       <!DOCTYPE html><html><head><title>Shatova Receipt</title>
@@ -538,9 +705,9 @@ if (txmPrint) {
         .account { font-size: 13px; font-weight: 700; color: #0f172a; margin-top: 10px; }
         .amount { font-size: 26px; font-weight: 800; margin: 16px 0 4px; text-align: center; }
         .status { text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #047857; margin-bottom: 20px; }
-        .row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+        .row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 1px solid #f1f5f9; gap: 12px; }
         .row:last-child { border-bottom: none; }
-        .label { color: #64748b; font-weight: 500; }
+        .label { color: #64748b; font-weight: 500; flex-shrink: 0; }
         .value { color: #0f172a; font-weight: 700; text-align: right; max-width: 60%; word-break: break-word; }
         .remark { margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 8px; font-size: 11.5px; line-height: 1.5; color: #334155; }
         .remark-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
@@ -553,8 +720,9 @@ if (txmPrint) {
         </div>
         <div class="amount">${escapeHtml(amount)}</div><div class="status">${escapeHtml(status)}</div>
         <div class="row"><span class="label">Type</span><span class="value">${escapeHtml(title)}</span></div>
-        <div class="row"><span class="label">Recipient</span><span class="value">${escapeHtml(meta.phone || '—')}</span></div>
-        <div class="row"><span class="label">Network</span><span class="value">${escapeHtml(meta.network_name || meta.network || '—')}</span></div>
+        ${electricityRows}
+        <div class="row"><span class="label">Recipient</span><span class="value">${escapeHtml(isElec ? meter || '—' : (meta.phone || '—'))}</span></div>
+        <div class="row"><span class="label">Network</span><span class="value">${escapeHtml(meta.network_name || meta.network || (isElec ? (meta.provider || '—') : '—'))}</span></div>
         <div class="row"><span class="label">Reference</span><span class="value">${escapeHtml(currentTx.reference || '—')}</span></div>
         <div class="row"><span class="label">Date</span><span class="value">${escapeHtml(formatDateTimeFull(currentTx.created_at || currentTx.createdAt))}</span></div>
         <div class="row"><span class="label">Balance Before</span><span class="value">${escapeHtml(before != null ? formatNaira(before) : '—')}</span></div>
@@ -804,7 +972,7 @@ async function init() {
       loadRecentTransactions(5),
     ]);
     const user = userR.status === 'fulfilled' ? userR.value : null;
-    const txs  = txsR.status  === 'fulfilled' ? txsR.value  : null;
+    const txs  = txsR.status === 'fulfilled' ? txsR.value : null;
 
     if (user) applyUser(user);
     if (txs !== null) {
