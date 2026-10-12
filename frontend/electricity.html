@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Electricity — SHATOVA</title>
+<style>
+  :root{
+    --bg:#0b1220; --card:#111a2e; --card2:#0f1729; --line:#1e2b45;
+    --text:#eaf0ff; --muted:#8ba0c9; --brand:#3d7dff; --brand2:#2a5fd9;
+    --ok:#22c55e; --warn:#f59e0b; --err:#ef4444;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:520px;margin:0 auto;min-height:100vh;padding:16px 14px 120px}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+  .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .discos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .disco{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;transition:.15s;font-size:12px;font-weight:600}
+  .disco.active{border-color:var(--brand);background:#14264f;box-shadow:0 0 0 1px var(--brand) inset}
+  .disco .ini{display:block;width:32px;height:32px;line-height:32px;border-radius:50%;background:#22344f;color:#cfe0ff;margin:0 auto 6px;font-weight:700;font-size:13px}
+  .toggle{display:flex;gap:8px;background:var(--card2);padding:4px;border-radius:12px}
+  .toggle button{flex:1;background:transparent;border:0;color:var(--muted);padding:10px;font-weight:600;border-radius:9px;cursor:pointer;font-size:14px}
+  .toggle button.on{background:var(--brand);color:#fff}
+  input{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);padding:14px;border-radius:12px;font-size:16px;outline:none}
+  input:focus{border-color:var(--brand)}
+  .row{display:flex;gap:10px;margin-top:10px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{background:var(--card2);border:1px solid var(--line);padding:8px 12px;border-radius:20px;font-size:13px;cursor:pointer}
+  .chip.active{background:#14264f;border-color:var(--brand)}
+  button.primary{width:100%;background:var(--brand);color:#fff;border:0;padding:16px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;margin-top:6px}
+  button.primary:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--text);padding:14px;border-radius:14px;font-weight:600;cursor:pointer;width:100%;margin-top:8px}
+  .kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .kv:last-child{border-bottom:0}
+  .kv span:first-child{color:var(--muted)}
+  .kv span:last-child{font-weight:600;text-align:right;max-width:60%}
+  .verified{background:#0d2b1c;border:1px solid #17472b;padding:12px;border-radius:12px;margin-top:12px}
+  .verified .name{color:#7cf7a9;font-weight:700;margin-bottom:4px}
+  .verified .addr{color:#a0e9c0;font-size:12px}
+  .tokenbox{background:#0b1f16;border:1px dashed #2b7a4d;border-radius:12px;padding:14px;margin-top:10px;text-align:center}
+  .tokenbox .tok{font-family:ui-monospace,Menlo,monospace;font-size:20px;font-weight:800;letter-spacing:2px;color:#7cf7a9;word-break:break-all}
+  .tokenbox .units{color:#8bd3aa;font-size:12px;margin-top:6px}
+  .copy{margin-top:8px;background:#154d2e;border:0;color:#c9ffdd;padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer}
+  .alert{padding:12px;border-radius:12px;font-size:13px;margin-top:10px}
+  .alert.err{background:#2b1212;border:1px solid #5a1e1e;color:#ffc9c9}
+  .alert.warn{background:#2b2212;border:1px solid #5a441e;color:#ffe3ad}
+  .alert.ok{background:#0d2b1c;border:1px solid #17472b;color:#c9ffdd}
+  .spinner{width:18px;height:18px;border:2px solid #ffffff44;border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .center{text-align:center}
+  .hidden{display:none!important}
+  .step-dots{display:flex;gap:6px;justify-content:center;margin:6px 0 18px}
+  .step-dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+  .step-dots i.on{background:var(--brand)}
+  .muted{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Electricity</h1>
+  <div class="sub">Pay any Nigerian disco — prepaid or postpaid</div>
+
+  <div class="step-dots">
+    <i id="d1" class="on"></i><i id="d2"></i><i id="d3"></i><i id="d4"></i>
+  </div>
+
+  <!-- STEP 1 — provider + bill type -->
+  <div id="step1">
+    <div class="card">
+      <div class="label">Choose disco</div>
+      <div id="discos" class="discos"><div class="muted">Loading…</div></div>
+    </div>
+
+    <div class="card" id="typeCard" style="display:none">
+      <div class="label">Meter type</div>
+      <div class="toggle" id="typeToggle">
+        <button data-type="prepaid">Prepaid</button>
+        <button data-type="postpaid">Postpaid</button>
+      </div>
+    </div>
+
+    <button class="primary" id="btnContinue" disabled>Continue</button>
+  </div>
+
+  <!-- STEP 2 — meter + verify -->
+  <div id="step2" class="hidden">
+    <div class="card">
+      <div class="label">Meter number</div>
+      <input id="meter" type="tel" inputmode="numeric" placeholder="e.g. 45705225097" maxlength="13" />
+      <button class="primary" id="btnVerify" disabled>Verify Meter</button>
+      <div id="verifyMsg"></div>
+      <div id="verifiedBox" class="verified hidden">
+        <div class="name" id="vName"></div>
+        <div class="addr" id="vAddr"></div>
+        <div class="addr" id="vDisco"></div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="amountCard">
+      <div class="label">Amount (₦)</div>
+      <input id="amount" type="tel" inputmode="numeric" placeholder="1000" />
+      <div class="chips" id="chips">
+        <div class="chip" data-amt="1000">₦1,000</div>
+        <div class="chip" data-amt="2000">₦2,000</div>
+        <div class="chip" data-amt="5000">₦5,000</div>
+        <div class="chip" data-amt="10000">₦10,000</div>
+        <div class="chip" data-amt="20000">₦20,000</div>
+      </div>
+      <div id="amountMsg" class="muted" style="margin-top:8px"></div>
+    </div>
+
+    <button class="ghost" id="btnBack2">Back</button>
+    <button class="primary hidden" id="btnPay" disabled>Pay</button>
+  </div>
+
+  <!-- STEP 3 — confirm -->
+  <div id="step3" class="hidden">
+    <div class="card">
+      <div class="label">Confirm payment</div>
+      <div class="kv"><span>Disco</span><span id="cDisco"></span></div>
+      <div class="kv"><span>Meter type</span><span id="cType"></span></div>
+      <div class="kv"><span>Meter</span><span id="cMeter"></span></div>
+      <div class="kv"><span>Customer</span><span id="cName"></span></div>
+      <div class="kv"><span>Amount</span><span id="cAmount"></span></div>
+      <div class="kv"><span>You pay</span><span id="cPay"></span></div>
+    </div>
+    <div id="payMsg"></div>
+    <button class="ghost" id="btnBack3">Back</button>
+    <button class="primary" id="btnConfirm">Confirm & Pay</button>
+  </div>
+
+  <!-- STEP 4 — result -->
+  <div id="step4" class="hidden">
+    <div class="card center" id="resultCard"></div>
+    <button class="ghost" id="btnNew">Buy another</button>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const API  = '/api/v1/electricity';
+const TOKEN = localStorage.getItem('token') || localStorage.getItem('authToken') || '';
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  products:     null,
+  provider:     null,
+  billType:     null,
+  productName:  null,
+  meterNumber:  '',
+  verified:     null,
+  amount:       null,
+  reference:    null,
+  pollTimer:    null,
+};
+
+/* ============================================================
+   HTTP
+   ============================================================ */
+async function api(path, { method = 'GET', body } = {}) {
+  const res = await fetch(`${API}${path}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || json.success === false) {
+    const err = new Error(json.message || `Request failed (${res.status})`);
+    err.code = json.code;
+    err.data = json.data;
+    throw err;
+  }
+  return json.data;
+}
+
+/* ============================================================
+   UI HELPERS
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => '₦' + Number(n || 0).toLocaleString();
+
+function showStep(n) {
+  ['step1','step2','step3','step4'].forEach((id, i) => {
+    $(id).classList.toggle('hidden', i + 1 !== n);
+  });
+  ['d1','d2','d3','d4'].forEach((id, i) => {
+    $(id).classList.toggle('on', i + 1 <= n);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function initials(name) {
+  return name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
+/* ============================================================
+   STEP 1 — LOAD PRODUCTS
+   ============================================================ */
+async function loadProducts() {
+  try {
+    const data = await api('/products');
+    state.products = data;
+    renderDiscos(data.providers);
+  } catch (err) {
+    $('discos').innerHTML = `<div class="alert err">${err.message}</div>`;
+  }
+}
+
+function renderDiscos(providers) {
+  if (!providers.length) {
+    $('discos').innerHTML = '<div class="muted">No products available</div>';
+    return;
+  }
+  $('discos').innerHTML = providers.map(p => `
+    <div class="disco" data-provider="${p.provider}">
+      <span class="ini">${initials(p.provider)}</span>
+      ${p.provider}
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.disco').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('.disco').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      state.provider = el.dataset.provider;
+      showTypeToggle();
+    };
+  });
+}
+
+function showTypeToggle() {
+  const prov = state.products.providers.find(p => p.provider === state.provider);
+  if (!prov) return;
+
+  const hasPre  = prov.products.some(p => p.bill_type === 'prepaid');
+  const hasPost = prov.products.some(p => p.bill_type === 'postpaid');
+
+  $('typeCard').style.display = 'block';
+
+  const btns = $('typeToggle').querySelectorAll('button');
+  btns.forEach(b => {
+    b.style.display = (b.dataset.type === 'prepaid' && hasPre) ||
+                       (b.dataset.type === 'postpaid' && hasPost) ? 'block' : 'none';
+  });
+
+  const first = hasPre ? 'prepaid' : 'postpaid';
+  setBillType(first);
+}
+
+function setBillType(t) {
+  state.billType = t;
+  document.querySelectorAll('#typeToggle button').forEach(b => {
+    b.classList.toggle('on', b.dataset.type === t);
+  });
+
+  const prov = state.products.providers.find(p => p.provider === state.provider);
+  const prod = prov.products.find(p => p.bill_type === t);
+  state.productName = prod ? prod.product_name : null;
+
+  $('btnContinue').disabled = !state.productName;
+}
+
+document.querySelectorAll('#typeToggle button').forEach(b => {
+  b.onclick = () => setBillType(b.dataset.type);
+});
+
+$('btnContinue').onclick = () => {
+  showStep(2);
+  $('meter').focus();
+};
+
+$('btnBack2').onclick = () => showStep(1);
+$('btnBack3').onclick = () => showStep(2);
+
+/* ============================================================
+   STEP 2 — METER VERIFY
+   ============================================================ */
+$('meter').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
+  state.meterNumber = e.target.value;
+  $('btnVerify').disabled = state.meterNumber.length < 11;
+  $('verifiedBox').classList.add('hidden');
+  $('amountCard').classList.add('hidden');
+  $('btnPay').classList.add('hidden');
+  $('verifyMsg').innerHTML = '';
+});
+
+$('btnVerify').onclick = async () => {
+  $('verifyMsg').innerHTML = '<div class="alert ok"><span class="spinner"></span>Verifying meter…</div>';
+  $('btnVerify').disabled = true;
+
+  try {
+    const v = await api('/verify', {
+      method: 'POST',
+      body: { product_name: state.productName, meter_number: state.meterNumber },
+    });
+    state.verified = v;
+
+    $('vName').textContent  = v.customer_name || 'Verified';
+    $('vAddr').textContent  = v.customer_address || '';
+    $('vDisco').textContent = v.disco || v.provider || '';
+    $('verifiedBox').classList.remove('hidden');
+
+    $('verifyMsg').innerHTML = '<div class="alert ok">✓ Meter verified</div>';
+    $('amountCard').classList.remove('hidden');
+    $('btnPay').classList.remove('hidden');
+
+    const min = v.minimum_amount || 1000;
+    $('amountMsg').textContent = `Minimum ${fmt(min)} · Maximum ${fmt(v.maximum_amount || 200000)}`;
+    $('amount').placeholder = String(min);
+  } catch (err) {
+    $('verifyMsg').innerHTML = `<div class="alert err">${err.message}</div>`;
+  } finally {
+    $('btnVerify').disabled = false;
+  }
+};
+
+/* Amount input */
+$('amount').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g, '');
+  const amt = Number(e.target.value) || 0;
+  state.amount = amt;
+  document.querySelectorAll('#chips .chip').forEach(c => {
+    c.classList.toggle('active', Number(c.dataset.amt) === amt);
+  });
+  validateAmount();
+});
+
+document.querySelectorAll('#chips .chip').forEach(c => {
+  c.onclick = () => {
+    $('amount').value = c.dataset.amt;
+    state.amount = Number(c.dataset.amt);
+    document.querySelectorAll('#chips .chip').forEach(x => x.classList.toggle('active', x === c));
+    validateAmount();
+  };
+});
+
+function validateAmount() {
+  const v = state.verified;
+  if (!v) return;
+  const min = v.minimum_amount || 1000;
+  const max = v.maximum_amount || 200000;
+  const a   = state.amount || 0;
+
+  if (!a) { $('btnPay').disabled = true; return; }
+  if (a < min) { $('amountMsg').textContent = `Minimum is ${fmt(min)}`; $('btnPay').disabled = true; return; }
+  if (a > max) { $('amountMsg').textContent = `Maximum is ${fmt(max)}`; $('btnPay').disabled = true; return; }
+  $('amountMsg').textContent = `You will pay ${fmt(a)}`;
+  $('btnPay').disabled = false;
+}
+
+$('btnPay').onclick = () => {
+  const v = state.verified;
+  $('cDisco').textContent  = v.disco || v.provider;
+  $('cType').textContent   = v.bill_type;
+  $('cMeter').textContent  = v.meter_number;
+  $('cName').textContent   = v.customer_name || '—';
+  $('cAmount').textContent = fmt(state.amount);
+  $('cPay').textContent    = fmt(state.amount);
+  showStep(3);
+};
+
+/* ============================================================
+   STEP 3 — PURCHASE
+   ============================================================ */
+$('btnConfirm').onclick = async () => {
+  $('btnConfirm').disabled = true;
+  $('payMsg').innerHTML = '<div class="alert ok"><span class="spinner"></span>Processing payment…</div>';
+
+  try {
+    const r = await api('/purchase', {
+      method: 'POST',
+      body: {
+        product_name:   state.productName,
+        meter_number:   state.meterNumber,
+        amount:         state.amount,
+        payment_method: 'wallet',
+      },
+    });
+
+    state.reference = r.reference;
+
+    if (r.status === 'success') {
+      renderSuccess(r);
+    } else if (r.status === 'processing') {
+      renderProcessing(r);
+    } else {
+      renderFailure(r);
+    }
+  } catch (err) {
+    $('payMsg').innerHTML = '';
+    renderFailure({ remark: err.message, reference: null });
+  } finally {
+    $('btnConfirm').disabled = false;
+  }
+};
+
+/* ============================================================
+   STEP 4 — RESULTS
+   ============================================================ */
+function renderSuccess(r) {
+  showStep(4);
+  const tokenBlock = r.token ? `
+    <div class="tokenbox">
+      <div class="tok" id="tokText">${r.token}</div>
+      ${r.units ? `<div class="units">${r.units} kWh</div>` : ''}
+      <button class="copy" id="copyTok">Copy token</button>
+    </div>
+  ` : '';
+
+  $('resultCard').innerHTML = `
+    <div class="alert ok" style="font-size:15px;font-weight:700">✓ Payment successful</div>
+    <div style="margin-top:14px">
+      <div class="kv"><span>Disco</span><span>${r.disco || r.provider || ''}</span></div>
+      <div class="kv"><span>Meter</span><span>${r.meter_number}</span></div>
+      <div class="kv"><span>Customer</span><span>${r.customer_name || '—'}</span></div>
+      <div class="kv"><span>Amount</span><span>${fmt(r.amount)}</span></div>
+      <div class="kv"><span>Reference</span><span style="font-size:11px">${r.reference}</span></div>
+    </div>
+    ${tokenBlock}
+  `;
+
+  if (r.token) {
+    $('copyTok').onclick = () => {
+      navigator.clipboard.writeText(r.token);
+      $('copyTok').textContent = 'Copied ✓';
+    };
+  }
+}
+
+function renderProcessing(r) {
+  showStep(4);
+  $('resultCard').innerHTML = `
+    <div class="alert warn" style="font-weight:700">⏳ Confirming with provider</div>
+    <p class="muted">This is taking a bit longer than usual. We'll update this screen automatically.</p>
+    <div class="kv"><span>Reference</span><span style="font-size:11px">${r.reference}</span></div>
+    <div class="kv"><span>Status</span><span id="pollStatus">processing</span></div>
+  `;
+  pollStatus(r.reference);
+}
+
+function renderFailure(r) {
+  showStep(4);
+  $('resultCard').innerHTML = `
+    <div class="alert err" style="font-weight:700">✕ Payment failed</div>
+    <p class="muted">${r.remark || 'Please try again.'}</p>
+    ${r.reference ? `<div class="kv"><span>Reference</span><span style="font-size:11px">${r.reference}</span></div>` : ''}
+  `;
+}
+
+function pollStatus(reference) {
+  if (state.pollTimer) clearInterval(state.pollTimer);
+
+  state.pollTimer = setInterval(async () => {
+    try {
+      const s = await api(`/status?reference=${encodeURIComponent(reference)}`);
+      const el = $('pollStatus');
+      if (el) el.textContent = s.status;
+
+      if (s.status === 'success') {
+        clearInterval(state.pollTimer);
+        renderSuccess({ ...s, reference });
+      } else if (s.status === 'failed') {
+        clearInterval(state.pollTimer);
+        renderFailure({ ...s, reference });
+      }
+    } catch (err) {
+      console.warn('poll error', err.message);
+    }
+  }, 5000);
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+$('btnNew').onclick = () => {
+  if (state.pollTimer) clearInterval(state.pollTimer);
+  Object.assign(state, {
+    provider: null, billType: null, productName: null,
+    meterNumber: '', verified: null, amount: null,
+    reference: null, pollTimer: null,
+  });
+  $('meter').value = '';
+  $('amount').value = '';
+  $('verifiedBox').classList.add('hidden');
+  $('amountCard').classList.add('hidden');
+  $('btnPay').classList.add('hidden');
+  $('btnVerify').disabled = true;
+  $('verifyMsg').innerHTML = '';
+  $('payMsg').innerHTML = '';
+  document.querySelectorAll('.disco').forEach(x => x.classList.remove('active'));
+  $('typeCard').style.display = 'none';
+  $('btnContinue').disabled = true;
+  showStep(1);
+};
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+loadProducts();
+</script>
+</body>
+</html>
