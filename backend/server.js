@@ -21,6 +21,7 @@ import adminRoutes       from './routes/admin.routes.js';
 import walletAdminRoutes from './routes/walletAdmin.routes.js';
 import webhookRoutes     from './routes/webhook.routes.js';
 import pricingRoutes     from './routes/pricing.routes.js';
+import electricityRoutes from './routes/electricity.routes.js';
 
 import { startCatalogSyncJob }     from './jobs/catalogSync.job.js';
 import { startAirtimeStatusJob }   from './jobs/airtime-status.job.js';
@@ -134,6 +135,7 @@ app.use('/api/v1/wallet',       walletRoutes);
 app.use('/api/v1/admin',        adminRoutes);
 app.use('/api/v1/webhooks',     webhookRoutes);
 app.use('/api/v1/admin/pricing', pricingRoutes);
+app.use('/api/v1/electricity', electricityRoutes);
 
 /* ── Default landing — BEFORE static ────────────────────── */
 app.get('/',           (req, res) => res.redirect('/pin.html'));
