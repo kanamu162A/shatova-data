@@ -16,41 +16,40 @@
 
   <style>
     /* ============================================================
-       ELECTRICITY — page styles
-       Namespaced .elx- to avoid collision with existing CSS.
+       ELECTRICITY — page styles (DataShop-flow parity)
+       Namespaced .elx- to avoid collision.
        ============================================================ */
     :root {
-      --elx-green:       #16a34a;
-      --elx-green-dk:    #15803d;
-      --elx-green-soft:  #ecfdf5;
-      --elx-green-line:  #86efac;
-      --elx-red:         #dc2626;
-      --elx-red-soft:    #fef2f2;
-      --elx-red-line:    #fecaca;
-      --elx-amber:       #d97706;
-      --elx-amber-soft:  #fffbeb;
-      --elx-amber-line:  #fde68a;
-      --elx-ink:         #0f172a;
-      --elx-ink-2:       #334155;
-      --elx-muted:       #64748b;
-      --elx-muted-2:     #94a3b8;
-      --elx-line:        #e8ecf1;
-      --elx-line-2:      #eef2f6;
-      --elx-bg:          #f6f8fb;
-      --elx-card:        #ffffff;
-      --elx-radius:      16px;
-      --elx-radius-sm:   12px;
-      --elx-shadow:      0 1px 2px rgba(15,23,42,.04), 0 4px 14px rgba(15,23,42,.04);
-      --elx-shadow-lg:   0 4px 20px rgba(15,23,42,.08), 0 1px 3px rgba(15,23,42,.04);
-      --elx-shadow-btn:  0 4px 14px rgba(22,163,74,.28);
+      --elx-blue:       #2563eb;
+      --elx-blue-dk:    #1d4ed8;
+      --elx-blue-soft:  #eff6ff;
+      --elx-green:      #16a34a;
+      --elx-green-dk:   #15803d;
+      --elx-green-soft: #ecfdf5;
+      --elx-green-line: #86efac;
+      --elx-red:        #dc2626;
+      --elx-red-soft:   #fef2f2;
+      --elx-red-line:   #fecaca;
+      --elx-amber:      #d97706;
+      --elx-amber-soft: #fffbeb;
+      --elx-amber-line: #fde68a;
+      --elx-ink:        #0f172a;
+      --elx-ink-2:      #334155;
+      --elx-muted:      #64748b;
+      --elx-muted-2:    #94a3b8;
+      --elx-line:       #e8ecf1;
+      --elx-line-2:     #eef2f6;
+      --elx-bg:         #f7f9fc;
+      --elx-card:       #ffffff;
+      --elx-shadow:     0 1px 2px rgba(15,23,42,.04), 0 4px 14px rgba(15,23,42,.04);
+      --elx-shadow-lg:  0 4px 20px rgba(15,23,42,.08);
     }
 
     body.elx-body {
       background: var(--elx-bg);
       color: var(--elx-ink);
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       -webkit-tap-highlight-color: transparent;
       min-height: 100vh;
     }
@@ -62,46 +61,42 @@
     }
 
     /* ============================================================
-       TOP BAR
+       PAGE HEADER — back arrow + service label + title + icon
        ============================================================ */
-    .elx-top {
+    .elx-hdr {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 0 20px;
+      padding: 12px 0 22px;
       position: sticky;
       top: 0;
-      background: linear-gradient(180deg, var(--elx-bg) 0%, var(--elx-bg) 75%, transparent 100%);
+      background: linear-gradient(180deg, var(--elx-bg) 0%, var(--elx-bg) 78%, transparent 100%);
       z-index: 5;
     }
-    .elx-back {
-      width: 40px;
-      height: 40px;
+    .elx-hdr-back {
+      width: 42px; height: 42px;
       border-radius: 12px;
       background: #fff;
       border: 1px solid var(--elx-line);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      transition: transform .12s, box-shadow .15s, border-color .15s;
+      transition: transform .12s, border-color .15s;
       box-shadow: 0 1px 2px rgba(15,23,42,.04);
     }
-    .elx-back:hover { border-color: #d4dbe4; }
-    .elx-back:active { transform: scale(.94); }
-    .elx-back svg { width: 18px; height: 18px; color: var(--elx-ink); }
+    .elx-hdr-back:active { transform: scale(.94); }
+    .elx-hdr-back svg { width: 18px; height: 18px; color: var(--elx-ink); }
 
-    .elx-heading { flex: 1; min-width: 0; }
-    .elx-heading .eyebrow {
+    .elx-hdr-info { flex: 1; min-width: 0; }
+    .elx-hdr-info .eyebrow {
       font-size: 10.5px;
       color: var(--elx-muted-2);
       text-transform: uppercase;
       letter-spacing: .12em;
-      font-weight: 700;
+      font-weight: 800;
       margin-bottom: 3px;
     }
-    .elx-heading .title {
+    .elx-hdr-info .title {
       font-size: 18px;
       font-weight: 800;
       color: var(--elx-ink);
@@ -111,19 +106,29 @@
       letter-spacing: -.01em;
     }
 
+    .elx-hdr-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      background: var(--elx-green);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(22,163,74,.28);
+    }
+    .elx-hdr-icon svg { width: 22px; height: 22px; }
+
     /* ============================================================
        CARDS
        ============================================================ */
     .elx-card {
       background: var(--elx-card);
       border: 1px solid var(--elx-line);
-      border-radius: var(--elx-radius);
+      border-radius: 16px;
       padding: 18px;
       margin-bottom: 14px;
       box-shadow: var(--elx-shadow);
     }
     .elx-card.tight { padding: 14px; }
-    .elx-card.flush { padding: 0; overflow: hidden; }
 
     .elx-label {
       font-size: 11px;
@@ -135,7 +140,7 @@
     }
 
     /* ============================================================
-       PRODUCT LIST (discos)
+       ROW LIST — discos
        ============================================================ */
     .elx-list { display: flex; flex-direction: column; gap: 10px; }
 
@@ -145,33 +150,26 @@
       gap: 14px;
       background: #fff;
       border: 1px solid var(--elx-line);
-      border-radius: var(--elx-radius);
+      border-radius: 16px;
       padding: 14px 16px;
       cursor: pointer;
-      transition: transform .12s, border-color .15s, box-shadow .15s;
+      transition: transform .12s, border-color .15s;
       box-shadow: var(--elx-shadow);
-      -webkit-user-select: none;
-      user-select: none;
+      -webkit-user-select: none; user-select: none;
     }
-    .elx-row:hover { border-color: #d4dbe4; }
     .elx-row:active { transform: scale(.985); border-color: var(--elx-green); }
 
     .elx-logo {
-      width: 46px;
-      height: 46px;
+      width: 46px; height: 46px;
       border-radius: 12px;
       background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
       overflow: hidden;
       border: 1px solid var(--elx-line-2);
-      position: relative;
     }
     .elx-logo img {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: contain;
       padding: 5px;
       background: #fff;
@@ -182,11 +180,8 @@
       color: #1e40af;
       letter-spacing: .4px;
       background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
     }
 
     .elx-info { flex: 1; min-width: 0; }
@@ -195,76 +190,109 @@
       font-weight: 800;
       color: var(--elx-ink);
       margin-bottom: 3px;
+      letter-spacing: -.005em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: -.005em;
     }
     .elx-info .meta {
       font-size: 12px;
       color: var(--elx-muted);
       font-weight: 500;
     }
-
     .elx-chev {
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       color: var(--elx-muted-2);
       flex-shrink: 0;
-      transition: transform .15s, color .15s;
+      transition: color .15s, transform .15s;
     }
     .elx-row:active .elx-chev { color: var(--elx-green); transform: translateX(2px); }
 
     /* ============================================================
-       BILL TYPE — big option cards
+       PRODUCT CARDS — for a selected disco
        ============================================================ */
-    .elx-bill {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .elx-prod {
       background: #fff;
-      border: 1.5px solid var(--elx-line);
-      border-radius: var(--elx-radius);
-      padding: 18px 16px;
+      border: 1px solid var(--elx-line);
+      border-radius: 16px;
+      padding: 16px;
       cursor: pointer;
-      transition: transform .12s, border-color .15s, background .15s, box-shadow .15s;
+      transition: transform .12s, border-color .15s, box-shadow .15s;
       box-shadow: var(--elx-shadow);
-      -webkit-user-select: none;
-      user-select: none;
+      -webkit-user-select: none; user-select: none;
     }
-    .elx-bill:hover { border-color: #d4dbe4; }
-    .elx-bill:active { transform: scale(.985); }
-    .elx-bill.pri { border-color: var(--elx-green); background: var(--elx-green-soft); }
+    .elx-prod:active { transform: scale(.985); border-color: var(--elx-green); }
 
-    .elx-bill .ic {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background: var(--elx-green-soft);
-      color: var(--elx-green);
+    .elx-prod-top {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background .15s, color .15s;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 12px;
     }
-    .elx-bill:hover .ic { background: var(--elx-green); color: #fff; }
-    .elx-bill.pri .ic { background: var(--elx-green); color: #fff; }
+    .elx-prod-top .elx-logo { width: 42px; height: 42px; }
 
-    .elx-bill .txt { flex: 1; min-width: 0; }
-    .elx-bill .txt .h {
-      font-size: 15px;
+    .elx-prod-name { flex: 1; min-width: 0; }
+    .elx-prod-name .n {
+      font-size: 14px;
       font-weight: 800;
       color: var(--elx-ink);
       margin-bottom: 3px;
       letter-spacing: -.005em;
     }
-    .elx-bill .txt .s {
-      font-size: 12.5px;
+    .elx-prod-name .p {
+      font-size: 11.5px;
       color: var(--elx-muted);
       font-weight: 500;
-      line-height: 1.4;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
+    .elx-prod-name .tag {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--elx-green);
+      background: var(--elx-green-soft);
+      border: 1px solid var(--elx-green-line);
+      padding: 3px 9px;
+      border-radius: 6px;
+      margin-top: 6px;
+      letter-spacing: .02em;
+    }
+
+    .elx-prod-desc {
+      font-size: 12px;
+      color: var(--elx-muted);
+      font-weight: 500;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .elx-prod-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .elx-prod-status {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--elx-green);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .elx-prod-buy {
+      background: var(--elx-blue);
+      color: #fff;
+      border: 0;
+      padding: 9px 20px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: .02em;
+      transition: transform .12s, background .15s;
+      box-shadow: 0 2px 8px rgba(37,99,235,.25);
+    }
+    .elx-prod-buy:active { transform: scale(.96); }
 
     /* ============================================================
        INPUTS
@@ -275,7 +303,7 @@
       border: 1.5px solid var(--elx-line);
       color: var(--elx-ink);
       padding: 16px 15px;
-      border-radius: var(--elx-radius-sm);
+      border-radius: 12px;
       font-size: 16px;
       outline: none;
       font-family: inherit;
@@ -286,68 +314,38 @@
     }
     .elx-input::placeholder { color: var(--elx-muted-2); font-weight: 500; letter-spacing: 0; }
     .elx-input:focus {
-      border-color: var(--elx-green);
-      box-shadow: 0 0 0 4px rgba(22,163,74,.11);
+      border-color: var(--elx-blue);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.11);
+    }
+    .elx-input:disabled {
+      background: #f8fafc;
+      color: var(--elx-muted);
+      cursor: not-allowed;
     }
 
-    .elx-row-input {
+    .elx-input-row {
       display: flex;
       gap: 8px;
       align-items: stretch;
     }
-    .elx-row-input .elx-input { flex: 1; }
-    .elx-vbtn {
-      padding: 0 20px;
-      border: 0;
-      border-radius: var(--elx-radius-sm);
-      background: var(--elx-green);
-      color: #fff;
-      font-weight: 800;
-      font-size: 13.5px;
+    .elx-input-row .elx-input { flex: 1; }
+
+    .elx-pick-btn {
+      padding: 0 18px;
+      border: 1.5px solid var(--elx-line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--elx-ink);
+      font-weight: 700;
+      font-size: 13px;
       cursor: pointer;
-      transition: transform .12s, opacity .15s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      transition: border-color .15s, background .15s;
+      display: flex; align-items: center; gap: 6px;
       white-space: nowrap;
       font-family: inherit;
-      letter-spacing: .01em;
-      box-shadow: 0 2px 8px rgba(22,163,74,.25);
     }
-    .elx-vbtn:active:not(:disabled) { transform: scale(.96); }
-    .elx-vbtn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
-    .elx-vbtn svg { width: 14px; height: 14px; }
-
-    /* ============================================================
-       AMOUNT CHIPS
-       ============================================================ */
-    .elx-chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-    .elx-chip {
-      background: #fff;
-      border: 1.5px solid var(--elx-line);
-      padding: 9px 15px;
-      border-radius: 22px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      color: var(--elx-ink-2);
-      transition: transform .12s, border-color .15s, background .15s, color .15s;
-      font-family: inherit;
-      letter-spacing: .005em;
-    }
-    .elx-chip:hover { border-color: #cbd5e1; }
-    .elx-chip:active { transform: scale(.94); }
-    .elx-chip.on {
-      background: var(--elx-green);
-      border-color: var(--elx-green);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(22,163,74,.25);
-    }
+    .elx-pick-btn:active { transform: scale(.97); }
+    .elx-pick-btn svg { width: 14px; height: 14px; color: var(--elx-muted); }
 
     /* ============================================================
        BUTTONS
@@ -360,40 +358,95 @@
       font-weight: 800;
       font-size: 15px;
       cursor: pointer;
-      transition: transform .12s, opacity .15s, box-shadow .15s;
+      transition: transform .12s, opacity .15s, box-shadow .15s, background .15s;
       font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       gap: 8px;
       letter-spacing: .005em;
     }
-    .elx-btn.pri {
+    .elx-btn.blue {
+      background: var(--elx-blue);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37,99,235,.28);
+    }
+    .elx-btn.blue:hover:not(:disabled) { background: var(--elx-blue-dk); }
+    .elx-btn.blue:active:not(:disabled) { transform: scale(.985); }
+    .elx-btn.blue:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+    .elx-btn.green {
       background: var(--elx-green);
       color: #fff;
-      box-shadow: var(--elx-shadow-btn);
+      box-shadow: 0 4px 14px rgba(22,163,74,.28);
     }
-    .elx-btn.pri:hover:not(:disabled) { background: var(--elx-green-dk); }
-    .elx-btn.pri:active:not(:disabled) { transform: scale(.985); }
-    .elx-btn.pri:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+    .elx-btn.green:hover:not(:disabled) { background: var(--elx-green-dk); }
+    .elx-btn.green:active:not(:disabled) { transform: scale(.985); }
+    .elx-btn.green:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
     .elx-btn.ghost {
       background: #fff;
       border: 1.5px solid var(--elx-line);
       color: var(--elx-ink);
       box-shadow: var(--elx-shadow);
     }
-    .elx-btn.ghost:hover { border-color: #d4dbe4; }
     .elx-btn.ghost:active { transform: scale(.985); }
 
     /* ============================================================
-       RECEIPT — KV rows
+       VERIFIED BANNER (green block, DataShop style)
        ============================================================ */
+    .elx-verified-banner {
+      background: var(--elx-green);
+      color: #fff;
+      border-radius: 16px;
+      padding: 26px 18px;
+      text-align: center;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(22,163,74,.28);
+      animation: elx-pop .25s ease-out;
+    }
+    @keyframes elx-pop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .elx-verified-banner .vb-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.22);
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .elx-verified-banner .vb-icon svg { width: 28px; height: 28px; color: #fff; }
+    .elx-verified-banner .vb-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -.01em;
+    }
+    .elx-verified-banner .vb-sub {
+      font-size: 13px;
+      opacity: .92;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       CUSTOMER DETAILS (KV rows)
+       ============================================================ */
+    .elx-details-label {
+      font-size: 10.5px;
+      color: var(--elx-muted-2);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 800;
+      margin: 8px 0 12px;
+      padding-left: 2px;
+    }
+
     .elx-kv {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 14px;
-      padding: 13px 0;
+      padding: 14px 0;
       border-bottom: 1px solid var(--elx-line-2);
       font-size: 13.5px;
     }
@@ -416,48 +469,6 @@
     }
 
     /* ============================================================
-       VERIFIED CUSTOMER
-       ============================================================ */
-    .elx-verified {
-      background: var(--elx-green-soft);
-      border: 1.5px solid var(--elx-green-line);
-      border-radius: 14px;
-      padding: 15px;
-      margin-top: 14px;
-      animation: elx-pop .25s ease-out;
-    }
-    @keyframes elx-pop {
-      from { opacity: 0; transform: translateY(-4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .elx-verified .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10.5px;
-      font-weight: 800;
-      color: var(--elx-green);
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      margin-bottom: 10px;
-    }
-    .elx-verified .badge svg { width: 13px; height: 13px; }
-    .elx-verified .cname {
-      color: #065f46;
-      font-weight: 800;
-      font-size: 15px;
-      margin-bottom: 5px;
-      line-height: 1.3;
-      letter-spacing: -.005em;
-    }
-    .elx-verified .caddr {
-      color: #047857;
-      font-size: 12.5px;
-      line-height: 1.55;
-      font-weight: 500;
-    }
-
-    /* ============================================================
        TOKEN
        ============================================================ */
     .elx-token {
@@ -465,7 +476,7 @@
       border: 1.5px dashed var(--elx-green);
       border-radius: 16px;
       padding: 24px 16px;
-      margin-top: 16px;
+      margin-top: 4px;
       text-align: center;
       animation: elx-pop .3s ease-out;
     }
@@ -485,7 +496,6 @@
       color: #065f46;
       word-break: break-all;
       line-height: 1.4;
-      margin-bottom: 4px;
     }
     .elx-token .units {
       color: #047857;
@@ -509,7 +519,6 @@
       letter-spacing: .02em;
       box-shadow: 0 2px 8px rgba(22,163,74,.25);
     }
-    .elx-copy:hover { background: var(--elx-green-dk); }
     .elx-copy:active { transform: scale(.96); }
 
     /* ============================================================
@@ -536,8 +545,7 @@
        ============================================================ */
     .elx-spin {
       display: inline-block;
-      width: 14px;
-      height: 14px;
+      width: 14px; height: 14px;
       border: 2px solid rgba(255,255,255,.4);
       border-top-color: #fff;
       border-radius: 50%;
@@ -545,10 +553,9 @@
       flex-shrink: 0;
       margin-top: 2px;
     }
-    .elx-alert.ok .elx-spin {
-      border-color: rgba(6,95,70,.25);
-      border-top-color: #065f46;
-    }
+    .elx-alert.ok .elx-spin,
+    .elx-alert.warn .elx-spin { border-color: rgba(6,95,70,.25); border-top-color: #065f46; }
+    .elx-alert.err .elx-spin { border-color: rgba(153,27,27,.3); border-top-color: #991b1b; }
     @keyframes elx-r { to { transform: rotate(360deg); } }
 
     /* ============================================================
@@ -578,15 +585,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 60px;
-      height: 60px;
+      width: 60px; height: 60px;
       border-radius: 50%;
       margin-bottom: 14px;
     }
-    .elx-hero .badge-big.ok  { background: var(--elx-green-soft); color: var(--elx-green); }
-    .elx-hero .badge-big.err { background: var(--elx-red-soft);   color: var(--elx-red); }
-    .elx-hero .badge-big.warn{ background: var(--elx-amber-soft); color: var(--elx-amber); }
-    .elx-hero .badge-big svg { width: 30px; height: 30px; }
+    .elx-hero .badge-big.ok   { background: var(--elx-green-soft); color: var(--elx-green); }
+    .elx-hero .badge-big.err  { background: var(--elx-red-soft);   color: var(--elx-red); }
+    .elx-hero .badge-big.warn { background: var(--elx-amber-soft); color: var(--elx-amber); }
+    .elx-hero .badge-big svg  { width: 30px; height: 30px; }
     .elx-hero .h-title {
       font-size: 17px;
       font-weight: 800;
@@ -602,12 +608,23 @@
     }
 
     /* ============================================================
+       PAGINATION ("1 of 6")
+       ============================================================ */
+    .elx-pager {
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--elx-muted);
+      font-weight: 600;
+      padding: 16px 0 4px;
+      letter-spacing: .02em;
+    }
+    .elx-pager .cur { color: var(--elx-green); font-weight: 800; }
+
+    /* ============================================================
        UTIL
        ============================================================ */
     .elx-hidden { display: none !important; }
     .elx-muted  { color: var(--elx-muted); font-size: 12.5px; }
-    .elx-center { text-align: center; }
-    .elx-mt-14  { margin-top: 14px; }
     .elx-mb-0   { margin-bottom: 0 !important; }
   </style>
 </head>
@@ -619,15 +636,18 @@
     <div class="elx-wrap">
 
       <!-- ============================================================
-           TOP BAR
+           HEADER (back arrow + eyebrow + title + lightning icon)
            ============================================================ -->
-      <div class="elx-top">
-        <button class="elx-back" id="btnBack" aria-label="Back" style="display:none;">
+      <div class="elx-hdr">
+        <button class="elx-hdr-back" id="btnBack" style="display:none;" aria-label="Back">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <div class="elx-heading">
-          <div class="eyebrow" id="topEyebrow">SERVICE</div>
-          <div class="title" id="topTitle">Electricity</div>
+        <div class="elx-hdr-info">
+          <div class="eyebrow" id="hdrEyebrow">SERVICE</div>
+          <div class="title" id="hdrTitle">Electricity</div>
+        </div>
+        <div class="elx-hdr-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </div>
       </div>
 
@@ -641,56 +661,78 @@
           <div class="elx-row"><div class="elx-skel" style="width:46px;height:46px;border-radius:12px;"></div><div style="flex:1"><div class="elx-skel" style="width:60%;height:14px;margin-bottom:7px;"></div><div class="elx-skel" style="width:32%;height:11px;"></div></div></div>
           <div class="elx-row"><div class="elx-skel" style="width:46px;height:46px;border-radius:12px;"></div><div style="flex:1"><div class="elx-skel" style="width:50%;height:14px;margin-bottom:7px;"></div><div class="elx-skel" style="width:28%;height:11px;"></div></div></div>
         </div>
+        <div class="elx-pager" id="discoPager" style="display:none;"></div>
       </div>
 
       <!-- ============================================================
-           STEP 2 — Bill type (prepaid first, postpaid second)
+           STEP 2 — Products for a disco (prepaid first, then postpaid)
            ============================================================ -->
       <div id="step2" class="elx-hidden">
-        <div class="elx-list" id="billList"></div>
+        <div class="elx-list" id="prodList"></div>
       </div>
 
       <!-- ============================================================
-           STEP 3 — Meter + amount
+           STEP 3 — Checkout (Customer ID + Verify + Amount)
            ============================================================ -->
       <div id="step3" class="elx-hidden">
 
+        <!-- Product summary card -->
+        <div class="elx-card tight" id="summaryCard">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div class="elx-logo" id="sumLogo"></div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:15px;font-weight:800;color:var(--elx-ink);letter-spacing:-.005em;" id="sumName">—</div>
+              <div style="font-size:11.5px;color:var(--elx-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:3px;" id="sumProvider">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer ID -->
         <div class="elx-card">
-          <div class="elx-label">Meter number</div>
-          <div class="elx-row-input">
+          <div class="elx-label">Customer ID</div>
+          <div class="elx-input-row">
             <input id="meter" class="elx-input" type="tel" inputmode="numeric"
                    placeholder="Enter meter number" maxlength="13" autocomplete="off" />
-            <button class="elx-vbtn" id="btnVerify" disabled>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M5 13l4 4L19 7"/></svg>
-              Verify
+            <button class="elx-pick-btn" id="btnPick" title="Pick from contacts">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              Pick
             </button>
           </div>
           <div id="verifyMsg"></div>
-          <div id="verifiedBox" class="elx-verified elx-hidden">
-            <div class="badge">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-              Verified
+        </div>
+
+        <!-- Verified banner + customer details -->
+        <div id="verifiedBlock" class="elx-hidden">
+          <div class="elx-verified-banner">
+            <div class="vb-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
             </div>
-            <div class="cname" id="vName"></div>
-            <div class="caddr" id="vAddr"></div>
+            <div class="vb-title">Verified Successfully</div>
+            <div class="vb-sub">Customer information has been confirmed</div>
           </div>
+
+          <div class="elx-details-label">Customer Details</div>
+          <div class="elx-card">
+            <div class="elx-kv"><span class="k">Service Name</span><span class="v" id="dService">—</span></div>
+            <div class="elx-kv"><span class="k">Customer Id</span><span class="v" id="dId">—</span></div>
+            <div class="elx-kv"><span class="k">Customer Name</span><span class="v" id="dName">—</span></div>
+            <div class="elx-kv"><span class="k">Customer Address</span><span class="v" id="dAddr">—</span></div>
+            <div class="elx-kv" id="dArrearsRow" style="display:none;"><span class="k">Arrears</span><span class="v" id="dArrears">—</span></div>
+          </div>
+
+          <!-- Amount -->
+          <div class="elx-card">
+            <div class="elx-label">Amount (₦)</div>
+            <input id="amount" class="elx-input" type="tel" inputmode="numeric"
+                   placeholder="0" autocomplete="off" />
+            <div id="amountMsg" class="elx-muted" style="margin-top:12px;"></div>
+          </div>
+
+          <button class="elx-btn green" id="btnPay" disabled>Pay</button>
         </div>
 
-        <div class="elx-card elx-hidden" id="amountCard">
-          <div class="elx-label">Amount (₦)</div>
-          <input id="amount" class="elx-input" type="tel" inputmode="numeric"
-                 placeholder="0" autocomplete="off" />
-          <div class="elx-chips" id="chips">
-            <div class="elx-chip" data-amt="1000">1,000</div>
-            <div class="elx-chip" data-amt="2000">2,000</div>
-            <div class="elx-chip" data-amt="5000">5,000</div>
-            <div class="elx-chip" data-amt="10000">10,000</div>
-            <div class="elx-chip" data-amt="20000">20,000</div>
-          </div>
-          <div id="amountMsg" class="elx-muted" style="margin-top:12px;"></div>
-        </div>
-
-        <button class="elx-btn pri elx-hidden" id="btnPay" disabled>Pay</button>
+        <!-- Verify button (shown only when NOT verified yet) -->
+        <button class="elx-btn blue" id="btnVerify" disabled>Verify Customer</button>
       </div>
 
       <!-- ============================================================
@@ -705,7 +747,7 @@
           <div class="elx-kv"><span class="k">Amount</span><span class="v" id="cAmount">—</span></div>
         </div>
         <div id="payMsg"></div>
-        <button class="elx-btn pri" id="btnConfirm">Confirm &amp; Pay</button>
+        <button class="elx-btn green" id="btnConfirm">Confirm &amp; Pay</button>
       </div>
 
       <!-- ============================================================
@@ -713,7 +755,7 @@
            ============================================================ -->
       <div id="step5" class="elx-hidden">
         <div class="elx-card" id="resultCard"></div>
-        <button class="elx-btn ghost" id="btnNew">Buy another</button>
+        <button class="elx-btn ghost" id="btnNew" style="margin-top:14px;">Buy another</button>
       </div>
 
     </div>
@@ -725,7 +767,7 @@
 
   <script>
   /* ============================================================
-     ELECTRICITY — page controller
+     ELECTRICITY — page controller (DataShop-flow parity)
      ============================================================ */
   (function () {
     'use strict';
@@ -734,9 +776,7 @@
     var TOKEN_KEYS = ['token','authToken','access_token','accessToken','shatova_token','jwt'];
 
     /* ------------------------------------------------------------
-       Real brand logos — tried in order, falls back to initials
-       Sources:
-         Wikimedia Commons (official logos) + a public CDN mirror
+       Real brand logos — Wikimedia, with initials fallback
        ------------------------------------------------------------ */
     var DISCO_LOGOS = {
       'Aba Power': [
@@ -750,8 +790,7 @@
         'https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/BEDC_logo.png/120px-BEDC_logo.png'
       ],
       'Eko Electric': [
-        'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Eko_Electricity_Distribution_Company_logo.png/120px-Eko_Electricity_Distribution_Company_logo.png',
-        'https://upload.wikimedia.org/wikipedia/en/thumb/0/0f/Eko_Electric_logo.png/120px-Eko_Electric_logo.png'
+        'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Eko_Electricity_Distribution_Company_logo.png/120px-Eko_Electricity_Distribution_Company_logo.png'
       ],
       'Enugu Electric': [
         'https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Enugu_Electricity_Distribution_Company_logo.png/120px-Enugu_Electricity_Distribution_Company_logo.png'
@@ -780,7 +819,7 @@
     };
 
     /* ------------------------------------------------------------
-       Small helpers
+       Helpers
        ------------------------------------------------------------ */
     function $(id) { return document.getElementById(id); }
     function getToken() {
@@ -804,18 +843,16 @@
     }
 
     /* ------------------------------------------------------------
-       API helper
+       API
        ------------------------------------------------------------ */
     async function callApi(path, opts) {
       opts = opts || {};
       var token = getToken();
       var headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = 'Bearer ' + token;
-
       var init = { method: opts.method || 'GET', headers: headers };
       if (opts.body) init.body = JSON.stringify(opts.body);
-
-      console.log('[elec] →', init.method, API + path, token ? '(auth ok)' : '(NO TOKEN)');
+      console.log('[elec] →', init.method, API + path, token ? '(auth)' : '(no token)');
 
       var res;
       try {
@@ -824,22 +861,17 @@
         console.error('[elec] network:', netErr);
         throw new Error('Cannot reach server. Check your connection.');
       }
-
       var text = await res.text();
       var json = {};
       try { json = text ? JSON.parse(text) : {}; }
-      catch (parseErr) {
+      catch (_) {
         console.error('[elec] non-JSON:', res.status, text.slice(0, 300));
         throw new Error('Server returned an unexpected response (HTTP ' + res.status + ').');
       }
-
       console.log('[elec] ←', res.status, json);
-
       if (!res.ok || json.success === false) {
-        var msg = json.message || json.error || ('Request failed (HTTP ' + res.status + ')');
-        var e = new Error(msg);
-        e.code = json.code;
-        e.status = res.status;
+        var e = new Error(json.message || json.error || ('Request failed (HTTP ' + res.status + ')'));
+        e.code = json.code; e.status = res.status;
         throw e;
       }
       return json.data;
@@ -853,6 +885,7 @@
       provider: null,
       billType: null,
       productName: null,
+      productDesc: '',
       meterNumber: '',
       verified: null,
       amount: null,
@@ -871,21 +904,26 @@
       $('btnBack').style.display = (n === 1) ? 'none' : 'flex';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    function setTitle(eyebrow, title) {
-      $('topEyebrow').textContent = eyebrow;
-      $('topTitle').textContent   = title;
+    function setHeader(eyebrow, title) {
+      $('hdrEyebrow').textContent = eyebrow;
+      $('hdrTitle').textContent = title;
     }
 
     $('btnBack').addEventListener('click', function () {
       if (!$('step5').classList.contains('elx-hidden')) { resetAll(); return; }
-      if (!$('step4').classList.contains('elx-hidden')) { setTitle(state.productName, 'Enter meter & amount'); showStep(3); return; }
-      if (!$('step3').classList.contains('elx-hidden')) { setTitle(state.provider.toUpperCase(), 'Choose meter type'); showStep(2); return; }
-      if (!$('step2').classList.contains('elx-hidden')) { setTitle('SERVICE', 'Electricity'); showStep(1); return; }
+      if (!$('step4').classList.contains('elx-hidden')) {
+        setHeader(state.productName, 'Checkout'); showStep(3); return;
+      }
+      if (!$('step3').classList.contains('elx-hidden')) {
+        setHeader(state.provider.toUpperCase(), 'Choose meter type'); showStep(2); return;
+      }
+      if (!$('step2').classList.contains('elx-hidden')) {
+        setHeader('SERVICE', 'Electricity'); showStep(1); return;
+      }
     });
 
     /* ------------------------------------------------------------
-       STEP 1 — Load discos
+       STEP 1 — Discos
        ------------------------------------------------------------ */
     async function loadProducts() {
       try {
@@ -897,6 +935,7 @@
           return;
         }
         renderDiscos(providers);
+        renderPager(1, providers.length);
       } catch (err) {
         console.error('[elec] load failed:', err);
         var hint = '';
@@ -906,11 +945,12 @@
       }
     }
 
-    function logoHtml(provider) {
+    function logoHtml(provider, size) {
       var urls = DISCO_LOGOS[provider] || [];
       var first = urls[0] || '';
       var rest  = urls.slice(1).join('|');
-      return '<div class="elx-logo">' +
+      var style = size ? ' style="width:' + size + 'px;height:' + size + 'px;"' : '';
+      return '<div class="elx-logo"' + style + '>' +
                (first
                  ? '<img src="' + esc(first) + '" alt="' + esc(provider) + '" ' +
                    'data-fallbacks="' + esc(rest) + '" ' +
@@ -918,8 +958,6 @@
                  : '<div class="ini">' + esc(initials(provider)) + '</div>') +
              '</div>';
     }
-
-    /* Global fallback handler for logos */
     window.elxLogoFallback = function (imgEl) {
       var queue = (imgEl.dataset.fallbacks || '').split('|').filter(Boolean);
       if (queue.length) {
@@ -927,10 +965,8 @@
         imgEl.src = queue[0];
         return;
       }
-      /* All sources failed — swap to initials */
       var wrap = imgEl.parentNode;
-      var alt = imgEl.alt || '';
-      wrap.innerHTML = '<div class="ini">' + esc(initials(alt)) + '</div>';
+      wrap.innerHTML = '<div class="ini">' + esc(initials(imgEl.alt || '')) + '</div>';
     };
 
     function renderDiscos(providers) {
@@ -947,34 +983,39 @@
           '</div>';
       }).join('');
     }
+    function renderPager(cur, total) {
+      $('discoPager').style.display = total ? 'block' : 'none';
+      $('discoPager').innerHTML = '<span class="cur">1</span> of ' + Math.max(1, Math.ceil(total / 8));
+    }
 
     /* ------------------------------------------------------------
-       STEP 2 — Bill type (prepaid first, postpaid second)
+       STEP 2 — Products
        ------------------------------------------------------------ */
-    function renderBillTypes(provider) {
+    function renderProducts(provider) {
       var prov = state.products.providers.find(function (p) { return p.provider === provider; });
       if (!prov) return;
-
-      /* Sort: prepaid first, then postpaid */
-      var products = (prov.products || []).slice().sort(function (a, b) {
+      var list = (prov.products || []).slice().sort(function (a, b) {
         var order = { prepaid: 0, postpaid: 1 };
         return (order[a.bill_type] || 99) - (order[b.bill_type] || 99);
       });
-
-      $('billList').innerHTML = products.map(function (p) {
+      $('prodList').innerHTML = list.map(function (p) {
         var isPre = p.bill_type === 'prepaid';
+        var title = p.product_name;
         return '' +
-          '<div class="elx-bill' + (isPre ? ' pri' : '') + '" data-product="' + esc(p.product_name) + '" data-type="' + esc(p.bill_type) + '">' +
-            '<div class="ic">' +
-              (isPre
-                ? '<svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'
-                : '<svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>') +
+          '<div class="elx-prod" data-product="' + esc(p.product_name) + '" data-type="' + esc(p.bill_type) + '">' +
+            '<div class="elx-prod-top">' +
+              logoHtml(p.provider, 42) +
+              '<div class="elx-prod-name">' +
+                '<div class="n">' + esc(title) + '</div>' +
+                '<div class="p">' + esc(p.provider) + '</div>' +
+                (isPre ? '<div class="tag">1% off</div>' : '<div class="tag">1% off</div>') +
+              '</div>' +
             '</div>' +
-            '<div class="txt">' +
-              '<div class="h">' + esc(isPre ? 'Prepaid' : 'Postpaid') + '</div>' +
-              '<div class="s">' + esc(isPre ? 'Pay before use — instant token' : 'Pay after use — settle your bill') + '</div>' +
+            '<div class="elx-prod-desc">' + esc(p.description || (isPre ? 'Prepaid meter — get token instantly' : 'Postpaid meter — settle your bill')) + '</div>' +
+            '<div class="elx-prod-foot">' +
+              '<div class="elx-prod-status">Open</div>' +
+              '<button class="elx-prod-buy" type="button">Buy ›</button>' +
             '</div>' +
-            '<svg class="elx-chev" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>' +
           '</div>';
       }).join('');
     }
@@ -983,31 +1024,43 @@
        Event delegation
        ------------------------------------------------------------ */
     document.addEventListener('click', function (e) {
+      /* Disco row */
       var row = e.target.closest('.elx-row');
       if (row && row.dataset.provider) {
         state.provider = row.dataset.provider;
-        setTitle(state.provider.toUpperCase(), 'Choose meter type');
-        renderBillTypes(state.provider);
+        setHeader(state.provider.toUpperCase(), 'Choose meter type');
+        renderProducts(state.provider);
         showStep(2);
         return;
       }
-      var bill = e.target.closest('.elx-bill');
-      if (bill && bill.dataset.product) {
-        state.productName = bill.dataset.product;
-        state.billType    = bill.dataset.type;
+      /* Product card */
+      var prod = e.target.closest('.elx-prod');
+      if (prod && prod.dataset.product) {
+        /* Reset checkout state */
+        state.productName = prod.dataset.product;
+        state.billType    = prod.dataset.type;
         state.meterNumber = '';
         state.verified    = null;
         state.amount      = null;
+
         $('meter').value = '';
         $('amount').value = '';
-        $('verifiedBox').classList.add('elx-hidden');
-        $('amountCard').classList.add('elx-hidden');
-        $('btnPay').classList.add('elx-hidden');
+        $('verifiedBlock').classList.add('elx-hidden');
+        $('btnVerify').classList.remove('elx-hidden');
         $('btnVerify').disabled = true;
+        $('btnPay').disabled = true;
         $('verifyMsg').innerHTML = '';
         $('amountMsg').textContent = '';
-        document.querySelectorAll('#chips .elx-chip').forEach(function (x) { x.classList.remove('on'); });
-        setTitle(state.productName, 'Enter meter & amount');
+        $('dArrearsRow').style.display = 'none';
+
+        /* Summary card */
+        var prov = state.products.providers.find(function (p) { return p.provider === state.provider; });
+        var prodObj = prov && prov.products.find(function (p) { return p.product_name === state.productName; });
+        $('sumLogo').outerHTML = logoHtml(state.provider, 46).replace('class="elx-logo"', 'class="elx-logo" id="sumLogo"');
+        $('sumName').textContent = state.productName;
+        $('sumProvider').textContent = state.provider;
+
+        setHeader(state.productName, 'Checkout');
         showStep(3);
         setTimeout(function () { $('meter').focus(); }, 250);
         return;
@@ -1021,49 +1074,72 @@
       e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
       state.meterNumber = e.target.value;
       $('btnVerify').disabled = state.meterNumber.length < 11;
-      $('verifiedBox').classList.add('elx-hidden');
-      $('amountCard').classList.add('elx-hidden');
-      $('btnPay').classList.add('elx-hidden');
+      $('verifiedBlock').classList.add('elx-hidden');
+      $('btnVerify').classList.remove('elx-hidden');
       $('verifyMsg').innerHTML = '';
     });
+
+    $('btnPick').addEventListener('click', function () {
+      alert('Contact picker not enabled. Please type the meter number.');
+    });
+
+    /* Simple 60s client cache so repeat verifies are instant */
+    var verifyCache = new Map();
+    function cacheKey(p, m) { return p + '::' + m; }
 
     $('btnVerify').addEventListener('click', async function () {
       if (!state.productName) return;
       $('verifyMsg').innerHTML = '<div class="elx-alert ok"><span class="elx-spin"></span>Verifying meter…</div>';
       $('btnVerify').disabled = true;
 
+      var key = cacheKey(state.productName, state.meterNumber);
+      var hit = verifyCache.get(key);
+      if (hit && Date.now() < hit.exp) {
+        console.log('[elec] verify (client cache)');
+        finishVerify(hit.value);
+        return;
+      }
+
+      var t0 = performance.now();
       try {
         var v = await callApi('/verify', {
           method: 'POST',
           body: { product_name: state.productName, meter_number: state.meterNumber }
         });
-        state.verified = v;
-
-        $('vName').textContent = v.customer_name || 'Verified';
-        var addr = [v.customer_address, v.district, v.business_unit].filter(Boolean).join(' · ');
-        $('vAddr').textContent = addr || (v.disco || v.service_name || '');
-        $('verifiedBox').classList.remove('elx-hidden');
-
-        var msg = '<div class="elx-alert ok">Meter verified successfully.</div>';
-        if (v.customer_arrears > 0) {
-          msg += '<div class="elx-alert warn">⚠ Outstanding arrears: ' + fmt(v.customer_arrears) + '</div>';
-        }
-        $('verifyMsg').innerHTML = msg;
-
-        $('amountCard').classList.remove('elx-hidden');
-        $('btnPay').classList.remove('elx-hidden');
-
-        var min = v.minimum_amount || 1000;
-        var max = v.maximum_amount || 200000;
-        $('amountMsg').textContent = 'Minimum ' + fmt(min) + ' · Maximum ' + fmt(max);
-        $('amount').placeholder = String(min);
+        console.log('[elec] verify took ' + Math.round(performance.now() - t0) + 'ms');
+        verifyCache.set(key, { value: v, exp: Date.now() + 60000 });
+        finishVerify(v);
       } catch (err) {
         console.error('[elec] verify:', err);
         $('verifyMsg').innerHTML = '<div class="elx-alert err">' + esc(err.message) + '</div>';
-      } finally {
         $('btnVerify').disabled = false;
       }
     });
+
+    function finishVerify(v) {
+      state.verified = v;
+
+      $('dService').textContent = v.disco || v.service_name || state.provider || '—';
+      $('dId').textContent      = v.meter_number || state.meterNumber;
+      $('dName').textContent    = v.customer_name || '—';
+      $('dAddr').textContent    = v.customer_address || '—';
+      if (v.customer_arrears > 0) {
+        $('dArrears').textContent = fmt(v.customer_arrears);
+        $('dArrearsRow').style.display = 'flex';
+      } else {
+        $('dArrearsRow').style.display = 'none';
+      }
+
+      $('verifyMsg').innerHTML = '';
+      $('btnVerify').classList.add('elx-hidden');
+      $('verifiedBlock').classList.remove('elx-hidden');
+
+      var min = v.minimum_amount || 1000;
+      var max = v.maximum_amount || 200000;
+      $('amountMsg').textContent = 'Minimum ' + fmt(min) + ' · Maximum ' + fmt(max);
+      $('amount').placeholder = String(min);
+      $('btnVerify').disabled = false;
+    }
 
     /* ------------------------------------------------------------
        Amount
@@ -1071,19 +1147,7 @@
     $('amount').addEventListener('input', function (e) {
       e.target.value = e.target.value.replace(/\D/g, '');
       state.amount = Number(e.target.value) || 0;
-      document.querySelectorAll('#chips .elx-chip').forEach(function (c) {
-        c.classList.toggle('on', Number(c.dataset.amt) === state.amount);
-      });
       validateAmount();
-    });
-
-    document.querySelectorAll('#chips .elx-chip').forEach(function (c) {
-      c.addEventListener('click', function () {
-        $('amount').value = c.dataset.amt;
-        state.amount = Number(c.dataset.amt);
-        document.querySelectorAll('#chips .elx-chip').forEach(function (x) { x.classList.toggle('on', x === c); });
-        validateAmount();
-      });
     });
 
     function validateAmount() {
@@ -1106,7 +1170,7 @@
       $('cMeter').textContent  = v.meter_number || state.meterNumber;
       $('cName').textContent   = v.customer_name || '—';
       $('cAmount').textContent = fmt(state.amount);
-      setTitle('CONFIRM', 'Review payment');
+      setHeader('CONFIRM', 'Review payment');
       showStep(4);
     });
 
@@ -1128,9 +1192,9 @@
           }
         });
         state.reference = r.reference;
-        if (r.status === 'success')      renderSuccess(r);
+        if (r.status === 'success')         renderSuccess(r);
         else if (r.status === 'processing') renderProcessing(r);
-        else                              renderFailure(r);
+        else                                renderFailure(r);
       } catch (err) {
         console.error('[elec] purchase:', err);
         $('payMsg').innerHTML = '';
@@ -1144,7 +1208,7 @@
        Result renderers
        ------------------------------------------------------------ */
     function renderSuccess(r) {
-      setTitle('RECEIPT', 'Payment successful');
+      setHeader('RECEIPT', 'Payment successful');
       showStep(5);
       var tokenBlock = r.token
         ? '<div class="elx-token">' +
@@ -1171,16 +1235,14 @@
         '</div>' +
         tokenBlock;
       var btn = $('copyTok');
-      if (btn) {
-        btn.addEventListener('click', function () {
-          try { navigator.clipboard.writeText(r.token); btn.textContent = 'Copied ✓'; }
-          catch (_) { window.prompt('Copy your token:', r.token); }
-        });
-      }
+      if (btn) btn.addEventListener('click', function () {
+        try { navigator.clipboard.writeText(r.token); btn.textContent = 'Copied ✓'; }
+        catch (_) { window.prompt('Copy your token:', r.token); }
+      });
     }
 
     function renderProcessing(r) {
-      setTitle('RECEIPT', 'Confirming with provider');
+      setHeader('RECEIPT', 'Confirming with provider');
       showStep(5);
       $('resultCard').innerHTML =
         '<div class="elx-hero">' +
@@ -1198,7 +1260,7 @@
     }
 
     function renderFailure(r) {
-      setTitle('RECEIPT', 'Payment failed');
+      setHeader('RECEIPT', 'Payment failed');
       showStep(5);
       $('resultCard').innerHTML =
         '<div class="elx-hero">' +
@@ -1247,14 +1309,14 @@
       };
       $('meter').value = '';
       $('amount').value = '';
-      $('verifiedBox').classList.add('elx-hidden');
-      $('amountCard').classList.add('elx-hidden');
-      $('btnPay').classList.add('elx-hidden');
+      $('verifiedBlock').classList.add('elx-hidden');
+      $('btnVerify').classList.remove('elx-hidden');
       $('btnVerify').disabled = true;
+      $('btnPay').disabled = true;
       $('verifyMsg').innerHTML = '';
       $('payMsg').innerHTML = '';
       $('amountMsg').textContent = '';
-      setTitle('SERVICE', 'Electricity');
+      setHeader('SERVICE', 'Electricity');
       showStep(1);
     }
     $('btnNew').addEventListener('click', resetAll);
@@ -1262,7 +1324,7 @@
     /* ------------------------------------------------------------
        Boot
        ------------------------------------------------------------ */
-    setTitle('SERVICE', 'Electricity');
+    setHeader('SERVICE', 'Electricity');
     showStep(1);
     loadProducts();
 
