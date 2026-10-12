@@ -11,454 +11,9 @@
   <link rel="stylesheet" href="/css/transactions.css">
   <link rel="stylesheet" href="/css/theme.css">
 
-  <!-- ============================================================
-       FINAL OVERRIDE — loaded AFTER all imports so it always wins.
-       1) Kills hidden/ugly element bleeding behind the list.
-       2) Applies the slim, modern, day-by-day history look
-          (tighter padding, softer borders, lighter shadows,
-           thinner text weights, subtler transitions).
-       ============================================================ -->
   <style>
-    /* ---------- 1. Neutralize stray global overlays ---------- */
-    html, body {
-      background: var(--tx-bg, #f4f5f7);
-      overflow-x: hidden;
-    }
-
-    body.tx-page { overflow-x: hidden; position: relative; }
-
-    body.tx-page > *:not(#app-header):not(.tx-app):not(.tx-filter-fab):not(.filter-backdrop):not(.txm-backdrop):not(script):not(style) {
-      display: none !important;
-    }
-
-    body.tx-page::before,
-    body.tx-page::after,
-    .tx-app::before,
-    .tx-app::after {
-      display: none !important;
-      content: none !important;
-    }
-
-    #app-header { position: relative; z-index: 5; }
-    .tx-app      { position: relative; z-index: 1; }
-
-    .tx-list-section,
-    #txReal,
-    #txSkeleton,
-    #txEmpty,
-    #txPagination {
-      position: relative;
-      z-index: 2;
-    }
-
-    /* ---------- 2. Slim modern typography & spacing ---------- */
-
-    /* App shell: slimmer bottom space, tighter page feel */
-    .tx-app {
-      padding: 0 0 92px !important;
-      max-width: 480px !important;
-    }
-
-    /* Header — slimmer, lighter weight, tighter padding */
-    .tx-header {
-      top: 46px !important;
-      padding: 11px 16px !important;
-      box-shadow: none !important;
-      border-bottom: 1px solid #eceef0 !important;
-    }
-
-    .tx-header-icon { width: 22px !important; height: 22px !important; }
-    .tx-header-icon svg { width: 18px !important; height: 18px !important; }
-
-    .tx-header-title {
-      font-size: 15px !important;
-      font-weight: 500 !important;
-      letter-spacing: -0.2px !important;
-      color: #1f2329 !important;
-    }
-
-    .tx-header-count {
-      min-width: 22px !important;
-      height: 18px !important;
-      padding: 0 6px !important;
-      font-size: 10.5px !important;
-      font-weight: 500 !important;
-      background: #eef0f3 !important;
-      color: #4b5563 !important;
-    }
-
-    .tx-header-close {
-      width: 30px !important;
-      height: 30px !important;
-      background: #f4f5f6 !important;
-    }
-
-    .tx-header-close svg { width: 13px !important; height: 13px !important; }
-
-    /* Toolbar / dropdown — slimmer */
-    .tx-toolbar {
-      padding: 9px 16px 6px !important;
-      background: #fff !important;
-    }
-
-    .tx-dropdown {
-      min-height: 32px !important;
-      padding: 6px 11px !important;
-      gap: 7px !important;
-      font-size: 11.5px !important;
-      font-weight: 500 !important;
-      border-radius: 9px !important;
-      border: 1px solid #e3e5e8 !important;
-      box-shadow: none !important;
-      color: #3a3f47 !important;
-      letter-spacing: -0.1px !important;
-    }
-
-    .tx-dropdown svg { width: 12px !important; height: 12px !important; }
-    .tx-dropdown-funnel { width: 11px !important; height: 11px !important; }
-
-    .tx-dropdown:hover {
-      background: #fafafa !important;
-      border-color: #cfd3d8 !important;
-      color: #17191c !important;
-      box-shadow: none !important;
-    }
-
-    /* Search — slimmer */
-    .tx-searchbar {
-      height: 40px !important;
-      min-height: 40px !important;
-      margin: 2px 16px 10px !important;
-      padding: 0 12px !important;
-      border-radius: 10px !important;
-      background: #f5f6f7 !important;
-      border: 1px solid #e7e9ec !important;
-      box-shadow: none !important;
-      gap: 8px !important;
-    }
-
-    .tx-searchbar:focus-within {
-      background: #fff !important;
-      border-color: #c7ccd2 !important;
-      box-shadow: 0 0 0 3px rgba(31, 35, 40, 0.05) !important;
-    }
-
-    .tx-searchbar-ico { width: 15px !important; height: 15px !important; color: #9aa0a6 !important; }
-
-    .tx-searchbar-input {
-      font-size: 12px !important;
-      font-weight: 400 !important;
-      color: #1f2329 !important;
-    }
-
-    .tx-searchbar-input::placeholder { color: #9aa0a6 !important; font-weight: 400 !important; }
-
-    .tx-searchbar-clear { width: 18px !important; height: 18px !important; }
-    .tx-searchbar-clear svg { width: 10px !important; height: 10px !important; }
-
-    /* Status chips — slimmer */
-    .tx-chips {
-      gap: 6px !important;
-      padding: 0 16px 10px !important;
-    }
-
-    .tx-chip {
-      min-height: 30px !important;
-      padding: 5px 11px !important;
-      gap: 6px !important;
-      font-size: 11px !important;
-      font-weight: 450 !important;
-      border-radius: 8px !important;
-      border: 1px solid #e5e7ea !important;
-      color: #5f646d !important;
-      box-shadow: none !important;
-      letter-spacing: 0 !important;
-    }
-
-    .tx-chip:hover {
-      background: #f8f9fa !important;
-      border-color: #d3d7dc !important;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-
-    .tx-chip.active {
-      background: #1f2329 !important;
-      border-color: #1f2329 !important;
-      color: #fff !important;
-      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.14) !important;
-    }
-
-    .tx-chip-dot { width: 5px !important; height: 5px !important; }
-
-    /* ---------- 3. Transaction list — slim day-by-day look ---------- */
-
-    .tx-list-section {
-      margin: 4px 12px 0 !important;
-      gap: 6px !important;
-      display: flex !important;
-      flex-direction: column !important;
-    }
-
-    .tx-item {
-      padding: 11px 13px !important;
-      border-radius: 11px !important;
-      border: 1px solid #eceef0 !important;
-      background: #fff !important;
-      box-shadow:
-        0 1px 2px rgba(16, 24, 40, 0.02),
-        0 2px 6px -2px rgba(16, 24, 40, 0.035) !important;
-      transition:
-        transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-        box-shadow 0.2s ease,
-        border-color 0.18s ease,
-        background 0.15s ease !important;
-      gap: 0 !important;
-    }
-
-    .tx-item:hover {
-      border-color: #d7dbe0 !important;
-      transform: translateY(-1px) !important;
-      box-shadow:
-        0 2px 4px rgba(16, 24, 40, 0.03),
-        0 6px 14px -6px rgba(16, 24, 40, 0.07) !important;
-    }
-
-    .tx-item:active {
-      transform: translateY(0) scale(0.995) !important;
-      background: #fafbfc !important;
-    }
-
-    .tx-item:last-child { border-bottom: 1px solid #eceef0 !important; }
-
-    /* Text — much thinner, tighter */
-    .tx-title {
-      font-size: 12.5px !important;
-      font-weight: 500 !important;
-      letter-spacing: -0.08px !important;
-      color: #1f2329 !important;
-      margin-bottom: 3px !important;
-      line-height: 1.28 !important;
-    }
-
-    .tx-meta { gap: 6px !important; line-height: 1.3 !important; }
-    .tx-when { font-size: 10.5px !important; font-weight: 400 !important; color: #8b9098 !important; }
-
-    .tx-pill {
-      padding: 2px 7px !important;
-      font-size: 8px !important;
-      font-weight: 500 !important;
-      letter-spacing: 0.25px !important;
-      border-radius: 999px !important;
-    }
-
-    .tx-amount {
-      font-size: 12.5px !important;
-      font-weight: 500 !important;
-      letter-spacing: -0.2px !important;
-      color: #1f2329 !important;
-    }
-
-    .tx-main { padding-right: 10px !important; }
-
-    /* Empty state — slim */
-    .tx-empty {
-      padding: 44px 20px !important;
-      border-radius: 12px !important;
-      border: 1px solid #eceef0 !important;
-      box-shadow: 0 1px 3px rgba(16, 24, 40, 0.025) !important;
-      margin: 6px 0 !important;
-    }
-
-    .tx-empty-emoji { font-size: 34px !important; margin-bottom: 10px !important; }
-    .tx-empty-title { font-size: 13px !important; font-weight: 500 !important; color: #1f2329 !important; margin-bottom: 4px !important; }
-    .tx-empty-text  { font-size: 11.5px !important; color: #8b9098 !important; line-height: 1.5 !important; }
-
-    /* Pagination — slim */
-    .tx-pagination { gap: 5px !important; padding: 16px 16px 6px !important; }
-
-    .pg-btn,
-    .pg-num {
-      width: 30px !important;
-      min-width: 30px !important;
-      height: 30px !important;
-      border-radius: 8px !important;
-      border: 1px solid #e5e7ea !important;
-      background: #fff !important;
-      color: #5f646d !important;
-      font-size: 11.5px !important;
-      font-weight: 500 !important;
-      box-shadow: none !important;
-      transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    }
-
-    .pg-btn svg { width: 13px !important; height: 13px !important; }
-
-    .pg-btn:hover:not(:disabled),
-    .pg-num:hover {
-      background: #f5f6f7 !important;
-      border-color: #cfd3d8 !important;
-      color: #1f2329 !important;
-      transform: none !important;
-    }
-
-    .pg-num.active {
-      background: #1f2329 !important;
-      border-color: #1f2329 !important;
-      color: #fff !important;
-      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.14) !important;
-    }
-
-    .pg-ellipsis { font-size: 11.5px !important; font-weight: 500 !important; padding: 0 2px !important; }
-
-    /* ---------- 4. FAB — slim ---------- */
-    .tx-filter-fab {
-      min-height: 38px !important;
-      padding: 9px 15px !important;
-      gap: 7px !important;
-      border-radius: 11px !important;
-      font-size: 11.5px !important;
-      font-weight: 500 !important;
-      letter-spacing: -0.05px !important;
-      background: #1f2329 !important;
-      box-shadow:
-        0 4px 14px rgba(17, 24, 39, 0.16),
-        0 1px 3px rgba(17, 24, 39, 0.08) !important;
-      bottom: 22px !important;
-      right: 16px !important;
-    }
-
-    .tx-filter-fab svg { width: 13px !important; height: 13px !important; }
-
-    .tx-filter-fab:hover {
-      background: #111214 !important;
-      transform: translateY(-1px) !important;
-      box-shadow:
-        0 6px 18px rgba(17, 24, 39, 0.20),
-        0 2px 5px rgba(17, 24, 39, 0.10) !important;
-    }
-
-    .tx-filter-badge {
-      min-width: 16px !important;
-      height: 16px !important;
-      font-size: 9px !important;
-      font-weight: 600 !important;
-      border-width: 1.5px !important;
-    }
-
-    /* ---------- 5. Filter sheet — slim, premium ---------- */
-    .filter-sheet {
-      border-radius: 18px 18px 0 0 !important;
-      padding: 6px 15px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-      box-shadow: 0 -10px 34px rgba(20, 24, 22, 0.12) !important;
-    }
-
-    .filter-grip { width: 30px !important; height: 3px !important; margin: 4px auto 9px !important; }
-
-    .filter-head { padding: 1px 1px 10px !important; margin-bottom: 4px !important; }
-    .filter-head-icon { width: 28px !important; height: 28px !important; border-radius: 8px !important; }
-    .filter-head-icon svg { width: 14px !important; height: 14px !important; }
-    .filter-head-title { font-size: 13.5px !important; font-weight: 500 !important; letter-spacing: -0.15px !important; color: #1f2329 !important; }
-    .filter-head-close { width: 26px !important; height: 26px !important; border-radius: 8px !important; }
-    .filter-head-close svg { width: 12px !important; height: 12px !important; }
-
-    .filter-body { gap: 6px !important; padding: 2px 0 6px !important; }
-
-    .filter-card {
-      min-height: 50px !important;
-      gap: 10px !important;
-      padding: 8px 10px !important;
-      border-radius: 10px !important;
-      border: 1px solid #e7e8ea !important;
-      box-shadow: none !important;
-      background: #fff !important;
-    }
-
-    .filter-card:hover {
-      background: #fafafa !important;
-      border-color: #d5d8dc !important;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-
-    .filter-card.active {
-      background: #f6f6f7 !important;
-      border-color: #7a7e86 !important;
-      box-shadow: inset 0 0 0 1px rgba(35, 37, 40, 0.03) !important;
-    }
-
-    .filter-card-icon,
-    .filter-card-icon-all,
-    .filter-card-icon-deposit,
-    .filter-card-icon-withdraw,
-    .filter-card-icon-refund,
-    .filter-card-icon-transfer {
-      width: 30px !important;
-      height: 30px !important;
-      border-radius: 8px !important;
-      color: #555960 !important;
-      background: #f3f3f4 !important;
-      border: 1px solid #e8e8ea !important;
-    }
-
-    .filter-card-icon svg { width: 14px !important; height: 14px !important; }
-
-    .filter-card-info { gap: 1px !important; }
-    .filter-card-title { font-size: 11.5px !important; font-weight: 500 !important; line-height: 1.32 !important; color: #2a2e34 !important; letter-spacing: -0.05px !important; }
-    .filter-card.active .filter-card-title { color: #1f2329 !important; }
-    .filter-card-sub { font-size: 10px !important; font-weight: 400 !important; color: #8b9098 !important; line-height: 1.3 !important; }
-
-    .filter-card-check { width: 16px !important; height: 16px !important; background: #1f2329 !important; border-color: #1f2329 !important; box-shadow: none !important; }
-    .filter-card-check svg { width: 9px !important; height: 9px !important; }
-
-    .filter-foot { gap: 7px !important; padding-top: 9px !important; margin-top: 2px !important; border-top: 1px solid #eceef0 !important; }
-
-    .filter-btn {
-      min-height: 36px !important;
-      padding: 9px 12px !important;
-      border-radius: 9px !important;
-      font-size: 11px !important;
-      font-weight: 500 !important;
-      letter-spacing: 0 !important;
-      box-shadow: none !important;
-    }
-
-    .filter-btn svg { width: 13px !important; height: 13px !important; }
-    .filter-btn-reset { color: #454951 !important; background: #fff !important; border: 1px solid #dfe1e4 !important; }
-    .filter-btn-reset:hover { background: #f6f6f7 !important; box-shadow: none !important; }
-    .filter-btn-apply { color: #fff !important; background: #1f2329 !important; border: 1px solid #1f2329 !important; }
-    .filter-btn-apply:hover { background: #111214 !important; border-color: #111214 !important; transform: none !important; box-shadow: none !important; }
-
-    /* ---------- 6. Compact screens ---------- */
-    @media (max-width: 380px) {
-      .tx-list-section { margin: 4px 9px 0 !important; gap: 5px !important; }
-      .tx-item { padding: 10px 11px !important; border-radius: 10px !important; }
-      .tx-title { font-size: 12px !important; }
-      .tx-amount { font-size: 12px !important; }
-      .tx-pill { font-size: 7.5px !important; padding: 2px 6px !important; }
-      .tx-filter-fab { right: 12px !important; bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important; }
-      .filter-sheet { padding-left: 12px !important; padding-right: 12px !important; }
-      .filter-card { min-height: 46px !important; padding: 7px 9px !important; gap: 9px !important; }
-      .filter-card-icon,
-      .filter-card-icon-all,
-      .filter-card-icon-deposit,
-      .filter-card-icon-withdraw,
-      .filter-card-icon-refund,
-      .filter-card-icon-transfer { width: 28px !important; height: 28px !important; }
-      .filter-card-title { font-size: 11px !important; }
-      .filter-card-sub { font-size: 9.5px !important; }
-      .filter-btn { min-height: 34px !important; font-size: 10.5px !important; }
-    }
-
-    /* ---------- 7. Motion sensitivity ---------- */
-    @media (prefers-reduced-motion: reduce) {
-      .tx-item, .tx-chip, .pg-btn, .pg-num, .filter-card, .filter-btn, .tx-filter-fab {
-        transition-duration: 0.01ms !important;
-      }
-    }
-
     /* ============================================================
-       SHATOVA PRO LAYOUT — FIXED CONTROLS / SCROLLABLE HISTORY
+       SHATOVA — Transactions page (slim, clean, premium)
        ============================================================ */
     :root {
       --tx-brand: #0a4534;
@@ -471,26 +26,20 @@
     }
 
     html, body {
-      width: 100%;
-      height: 100%;
-      min-height: 0;
+      width: 100%; height: 100%; min-height: 0;
       overflow: hidden !important;
       overscroll-behavior: none;
       background: var(--tx-canvas) !important;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body.tx-page {
-      height: 100vh;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
+      height: 100vh; height: 100dvh;
+      display: flex; flex-direction: column;
       overflow: hidden !important;
     }
 
-    #app-header {
-      flex: 0 0 auto;
-      z-index: 20;
-    }
+    #app-header { flex: 0 0 auto; z-index: 20; }
 
     .tx-app {
       width: 100% !important;
@@ -500,176 +49,193 @@
       min-height: 0 !important;
       margin: 0 auto !important;
       padding: 0 0 8px !important;
-      display: flex !important;
-      flex-direction: column !important;
+      display: flex !important; flex-direction: column !important;
       overflow: hidden !important;
       position: relative !important;
       background: var(--tx-canvas);
       gap: 0 !important;
     }
 
+    /* ============ Header ============ */
     .tx-header {
-      position: relative !important;
-      top: auto !important;
-      flex: 0 0 auto;
-      z-index: 10 !important;
-      min-height: 49px;
-      padding: 10px 18px !important;
+      position: relative !important; top: auto !important;
+      flex: 0 0 auto; z-index: 10 !important;
+      min-height: 46px;
+      padding: 10px 16px !important;
       background: #fff !important;
       border-bottom: 1px solid var(--tx-line) !important;
-      box-shadow: 0 2px 8px rgba(13, 45, 32, .025) !important;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(13, 45, 32, .02) !important;
     }
+    .tx-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .tx-header-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--tx-brand-soft); color: var(--tx-brand);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tx-header-icon svg { width: 15px; height: 15px; }
+    .tx-header-title {
+      font-size: 14px; font-weight: 600; letter-spacing: -.2px;
+      color: #1f2329; margin: 0;
+    }
+    .tx-header-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 17px; padding: 0 6px;
+      border-radius: 9px; background: #eef0f3; color: #4b5563;
+      font-size: 10px; font-weight: 600; margin-left: 6px;
+    }
+    .tx-header-close {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: #f4f5f6; border: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #5f646d; cursor: pointer;
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+    .tx-header-close:hover { background: #e9ebee; }
+    .tx-header-close svg { width: 13px; height: 13px; }
 
+    /* ============ Toolbar ============ */
     .tx-toolbar {
       flex: 0 0 auto;
-      padding: 9px 18px 4px !important;
+      padding: 8px 16px 4px !important;
       background: #fff !important;
     }
-
-    .tx-searchbar {
-      flex: 0 0 auto;
-      margin: 4px 18px 9px !important;
-      width: auto !important;
-      min-width: 0;
+    .tx-dropdown {
+      display: inline-flex; align-items: center; gap: 6px;
+      min-height: 30px; padding: 5px 10px;
+      border-radius: 8px; border: 1px solid #e3e5e8;
+      background: #fff; color: #3a3f47;
+      font-size: 11px; font-weight: 500;
+      cursor: pointer;
     }
 
+    /* ============ Search ============ */
+    .tx-searchbar {
+      flex: 0 0 auto;
+      height: 38px; min-height: 38px;
+      margin: 4px 16px 8px !important;
+      padding: 0 11px !important;
+      border-radius: 10px !important;
+      background: #f5f6f7 !important;
+      border: 1px solid #e7e9ec !important;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .tx-searchbar:focus-within {
+      background: #fff !important;
+      border-color: #c7ccd2 !important;
+      box-shadow: 0 0 0 3px rgba(31, 35, 40, .05) !important;
+    }
+    .tx-searchbar-ico { width: 14px; height: 14px; color: #9aa0a6; flex-shrink: 0; }
+    .tx-searchbar-input {
+      flex: 1; min-width: 0; border: 0; background: transparent;
+      font-size: 12px; font-weight: 400; color: #1f2329; outline: none;
+      font-family: inherit;
+    }
+    .tx-searchbar-input::placeholder { color: #9aa0a6; font-weight: 400; }
+    .tx-searchbar-clear {
+      width: 18px; height: 18px; border: 0; background: transparent;
+      color: #9aa0a6; cursor: pointer; padding: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tx-searchbar-clear svg { width: 10px; height: 10px; }
+
+    /* ============ Date filter ============ */
     .tx-date-filter {
       flex: 0 0 auto;
-      margin: 0 18px 9px;
+      margin: 0 16px 8px;
       padding: 10px 12px 8px;
       background: #fff;
       border: 1px solid var(--tx-line);
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(14, 39, 29, .025);
+      box-shadow: 0 1px 3px rgba(14, 39, 29, .02);
     }
-
     .tx-date-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 8px;
     }
-
-    .tx-date-heading > div {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .tx-date-eyebrow {
-      color: var(--tx-brand);
-      font-size: 9px;
-      line-height: 1.2;
-      font-weight: 800;
-      letter-spacing: .9px;
-    }
-
-    .tx-date-title {
-      color: #27332d;
-      font-size: 11.5px;
-      font-weight: 600;
-      letter-spacing: -.15px;
-    }
-
+    .tx-date-heading > div { display: flex; align-items: baseline; gap: 8px; }
+    .tx-date-eyebrow { color: var(--tx-brand); font-size: 9px; font-weight: 700; letter-spacing: .8px; }
+    .tx-date-title { color: #27332d; font-size: 11.5px; font-weight: 600; letter-spacing: -.15px; }
     .tx-date-clear {
-      border: 0;
-      background: transparent;
-      color: var(--tx-brand);
-      font: inherit;
-      font-size: 10.5px;
-      font-weight: 600;
-      padding: 4px 0 4px 8px;
-      white-space: nowrap;
-      cursor: pointer;
+      border: 0; background: transparent; color: var(--tx-brand);
+      font-family: inherit; font-size: 10.5px; font-weight: 600;
+      padding: 4px 0 4px 8px; cursor: pointer; white-space: nowrap;
     }
-
     .tx-date-fields {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
-      align-items: end;
-      gap: 7px;
+      align-items: end; gap: 7px;
     }
-
     .tx-date-field {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      color: #78827c;
-      font-size: 9.5px;
-      font-weight: 600;
+      min-width: 0; display: flex; flex-direction: column; gap: 4px;
+      color: #78827c; font-size: 9.5px; font-weight: 600;
     }
-
     .tx-date-field input {
-      width: 100%;
-      min-width: 0;
-      height: 34px;
-      padding: 0 8px;
-      color: #25332c;
-      background: #f8faf9;
-      border: 1px solid #e1e8e3;
-      border-radius: 8px;
-      outline: none;
-      font: 500 11px/1 Inter, sans-serif;
+      width: 100%; min-width: 0; height: 34px;
+      padding: 0 8px; color: #25332c; background: #f8faf9;
+      border: 1px solid #e1e8e3; border-radius: 8px;
+      outline: none; font: 500 11px/1 Inter, sans-serif;
       color-scheme: light;
     }
-
     .tx-date-field input:focus {
-      border-color: #6d9b86;
-      background: #fff;
+      border-color: #6d9b86; background: #fff;
       box-shadow: 0 0 0 3px rgba(10, 69, 52, .07);
     }
-
     .tx-date-arrow {
-      align-self: center;
-      margin-top: 14px;
-      color: #a3ada7;
-      font-size: 12px;
-      text-align: center;
+      align-self: center; margin-top: 14px;
+      color: #a3ada7; font-size: 12px; text-align: center;
     }
-
     .tx-date-message {
-      margin: 6px 1px 0;
-      min-height: 12px;
-      color: #87918b;
-      font-size: 9.5px;
-      line-height: 1.3;
+      margin: 6px 1px 0; min-height: 12px;
+      color: #87918b; font-size: 9.5px; line-height: 1.3;
     }
 
+    /* ============ Status chips ============ */
     .tx-chips {
       flex: 0 0 auto;
-      padding: 0 18px 9px !important;
+      display: flex; gap: 6px;
+      padding: 0 16px 8px !important;
       background: #fff;
       border-bottom: 1px solid var(--tx-line);
-      overflow-x: auto;
-      flex-wrap: nowrap !important;
+      overflow-x: auto; flex-wrap: nowrap !important;
       scrollbar-width: none;
     }
     .tx-chips::-webkit-scrollbar { display: none; }
+    .tx-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      min-height: 28px; padding: 4px 10px;
+      border-radius: 8px; border: 1px solid #e5e7ea;
+      background: #fff; color: #5f646d;
+      font-size: 11px; font-weight: 450;
+      cursor: pointer; white-space: nowrap;
+      font-family: inherit;
+      transition: background .15s, border-color .15s;
+    }
+    .tx-chip:hover { background: #f8f9fa; border-color: #d3d7dc; }
+    .tx-chip.active {
+      background: #1f2329; border-color: #1f2329; color: #fff;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, .14);
+    }
+    .tx-chip-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .65; }
+    .tx-chip.active .tx-chip-dot { background: #fff; opacity: .85; }
+    .tx-chip-dot-all      { background: #64748b; }
+    .tx-chip-dot-success  { background: #059669; }
+    .tx-chip-dot-pending  { background: #d97706; }
+    .tx-chip-dot-failed   { background: #dc2626; }
 
+    /* ============ Transaction list ============ */
     .tx-list-section {
       flex: 1 1 auto !important;
       min-height: 0 !important;
       margin: 0 !important;
-      padding: 9px 12px 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
+      padding: 8px 12px 0 !important;
+      display: flex !important; flex-direction: column !important;
       gap: 0 !important;
       overflow: hidden !important;
     }
-
-    #txSkeleton, #txReal, #txEmpty {
-      min-height: 0 !important;
-      width: 100%;
-    }
-
-    #txSkeleton {
-      flex: 1 1 auto;
-      overflow: hidden;
-    }
-
+    #txSkeleton { flex: 1 1 auto; overflow: hidden; }
     #txReal {
       flex: 1 1 auto !important;
       min-height: 0 !important;
@@ -679,85 +245,494 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       scrollbar-color: #cbd8d0 transparent;
-      padding: 0 1px 12px;
-      align-content: start;
+      padding: 0 1px 10px;
     }
+    #txReal::-webkit-scrollbar { width: 3px; }
+    #txReal::-webkit-scrollbar-thumb { background: #cbd8d0; border-radius: 20px; }
 
-    #txReal::-webkit-scrollbar { width: 4px; }
-    #txReal::-webkit-scrollbar-track { background: transparent; }
-    #txReal::-webkit-scrollbar-thumb {
-      background: #cbd8d0;
-      border-radius: 20px;
+    .tx-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 11px 13px;
+      margin-bottom: 6px;
+      border-radius: 11px;
+      border: 1px solid #eceef0;
+      background: #fff;
+      cursor: pointer;
+      box-shadow:
+        0 1px 2px rgba(16, 24, 40, .02),
+        0 2px 6px -2px rgba(16, 24, 40, .035);
+      transition: transform .18s cubic-bezier(.16,1,.3,1), box-shadow .2s, border-color .18s;
     }
+    .tx-item:hover {
+      border-color: #d7dbe0;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(16,24,40,.03), 0 6px 14px -6px rgba(16,24,40,.07);
+    }
+    .tx-item:active { transform: translateY(0) scale(.995); background: #fafbfc; }
 
-    .tx-list-section .tx-empty {
+    .tx-item .tx-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      background: #f1f3f5; color: #5f646d;
+    }
+    .tx-item .tx-icon svg { width: 18px; height: 18px; }
+    .tx-item .tx-icon.data        { background: #eef4ff; color: #2563eb; }
+    .tx-item .tx-icon.airtime     { background: #fff3e6; color: #ea580c; }
+    .tx-item .tx-icon.electricity { background: #ecfdf5; color: #059669; }
+    .tx-item .tx-icon.tv          { background: #f3e8ff; color: #7c3aed; }
+    .tx-item .tx-icon.exam        { background: #fef3c7; color: #d97706; }
+    .tx-item .tx-icon.funding     { background: #ecfdf5; color: #059669; }
+    .tx-item .tx-icon.transfer    { background: #eff6ff; color: #2563eb; }
+    .tx-item .tx-icon.withdrawal  { background: #fef2f2; color: #dc2626; }
+
+    .tx-item .tx-main { flex: 1; min-width: 0; padding-right: 8px; }
+    .tx-title {
+      font-size: 12.5px; font-weight: 500; letter-spacing: -.08px;
+      color: #1f2329; margin-bottom: 3px; line-height: 1.28;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .tx-meta { display: flex; align-items: center; gap: 6px; line-height: 1.3; }
+    .tx-when { font-size: 10.5px; font-weight: 400; color: #8b9098; }
+    .tx-pill {
+      padding: 2px 7px; font-size: 8px; font-weight: 500;
+      letter-spacing: .25px; border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .tx-pill.success  { background: #ecfdf5; color: #047857; }
+    .tx-pill.pending  { background: #fffbeb; color: #b45309; }
+    .tx-pill.failed   { background: #fef2f2; color: #b91c1c; }
+    .tx-pill.refunded { background: #eff6ff; color: #1d4ed8; }
+
+    .tx-amount {
+      font-size: 12.5px; font-weight: 500; letter-spacing: -.2px;
+      color: #1f2329; white-space: nowrap;
+    }
+    .tx-amount.credit  { color: #047857; }
+    .tx-amount.debit   { color: #1f2329; }
+    .tx-amount.failed  { color: #b91c1c; text-decoration: line-through; opacity: .75; }
+    .tx-amount.pending { color: #b45309; }
+
+    /* ============ Empty state ============ */
+    .tx-empty {
       flex: 1 1 auto;
-      overflow-y: auto;
+      padding: 44px 20px;
+      border-radius: 12px;
+      border: 1px solid #eceef0;
+      background: #fff;
+      text-align: center;
+      margin: 6px 0;
     }
+    .tx-empty-emoji { font-size: 34px; margin-bottom: 10px; }
+    .tx-empty-title { font-size: 13px; font-weight: 500; color: #1f2329; margin-bottom: 4px; }
+    .tx-empty-text  { font-size: 11.5px; color: #8b9098; line-height: 1.5; }
 
+    /* ============ Pagination ============ */
     .tx-pagination {
       flex: 0 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      gap: 5px;
       padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
       background: #fff;
       border-top: 1px solid var(--tx-line);
     }
+    .pg-btn, .pg-num {
+      width: 30px; min-width: 30px; height: 30px;
+      border-radius: 8px; border: 1px solid #e5e7ea;
+      background: #fff; color: #5f646d;
+      font-size: 11.5px; font-weight: 500;
+      cursor: pointer; font-family: inherit;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background .16s, border-color .16s;
+    }
+    .pg-btn svg { width: 13px; height: 13px; }
+    .pg-btn:hover:not(:disabled), .pg-num:hover {
+      background: #f5f6f7; border-color: #cfd3d8; color: #1f2329;
+    }
+    .pg-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .pg-num.active {
+      background: #1f2329; border-color: #1f2329; color: #fff;
+      box-shadow: 0 1px 3px rgba(17, 24, 39, .14);
+    }
+    .pg-numbers { display: flex; align-items: center; gap: 5px; }
+    .pg-ellipsis {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 14px; color: #8b9098; font-size: 11.5px;
+    }
 
+    /* ============ Filter FAB ============ */
     .tx-filter-fab {
-      z-index: 30 !important;
-      bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+      position: fixed;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      right: 16px;
+      z-index: 30;
+      display: inline-flex; align-items: center; gap: 7px;
+      min-height: 36px; padding: 8px 14px;
+      border-radius: 11px;
+      background: #1f2329; color: #fff; border: 0;
+      font-family: inherit; font-size: 11.5px; font-weight: 500;
+      letter-spacing: -.05px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(17, 24, 39, .16), 0 1px 3px rgba(17, 24, 39, .08);
+      transition: background .15s, transform .15s;
+    }
+    .tx-filter-fab:hover { background: #111214; transform: translateY(-1px); }
+    .tx-filter-fab svg { width: 13px; height: 13px; }
+    .tx-filter-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      background: #fff; color: #1f2329;
+      font-size: 9px; font-weight: 700;
+      border-radius: 999px;
     }
 
-    .filter-backdrop, .txm-backdrop { z-index: 100 !important; }
-
-    @media (min-width: 700px) {
-      .tx-app {
-        max-width: 900px !important;
-        border-left: 1px solid #edf0ee;
-        border-right: 1px solid #edf0ee;
-        box-shadow: 0 0 30px rgba(16, 44, 31, .035);
-      }
-      .tx-header { padding-left: 24px !important; padding-right: 24px !important; }
-      .tx-toolbar { padding-left: 24px !important; padding-right: 24px !important; }
-      .tx-searchbar { margin-left: 24px !important; margin-right: 24px !important; }
-      .tx-date-filter { margin-left: 24px; margin-right: 24px; }
-      .tx-chips { padding-left: 24px !important; padding-right: 24px !important; }
-      .tx-list-section { padding-left: 18px !important; padding-right: 18px !important; }
+    /* ============ Filter sheet ============ */
+    .filter-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(15, 23, 42, .45);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 100;
+      animation: tx-fade-in .2s ease;
     }
+    @keyframes tx-fade-in { from { opacity: 0 } to { opacity: 1 } }
+    .filter-sheet {
+      width: 100%; max-width: 520px;
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      padding: 6px 15px calc(12px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -10px 34px rgba(20, 24, 22, .12);
+      animation: tx-slide-up .25s cubic-bezier(.16,1,.3,1);
+    }
+    @keyframes tx-slide-up { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+    .filter-grip { width: 30px; height: 3px; border-radius: 3px; background: #d1d5db; margin: 4px auto 9px; }
+    .filter-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1px 1px 10px;
+      border-bottom: 1px solid #eceef0;
+      margin-bottom: 6px;
+    }
+    .filter-head-left { display: flex; align-items: center; gap: 9px; }
+    .filter-head-icon {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: var(--tx-brand-soft); color: var(--tx-brand);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .filter-head-icon svg { width: 13px; height: 13px; }
+    .filter-head-title { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: -.15px; color: #1f2329; }
+    .filter-head-close {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: #f4f5f6; border: 0; color: #5f646d; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .filter-head-close svg { width: 12px; height: 12px; }
+    .filter-body { display: flex; flex-direction: column; gap: 6px; padding: 2px 0 6px; }
+    .filter-card {
+      display: flex; align-items: center; gap: 10px;
+      min-height: 48px; padding: 8px 10px;
+      border-radius: 10px; border: 1px solid #e7e8ea; background: #fff;
+      cursor: pointer; font-family: inherit; text-align: left;
+      transition: background .15s, border-color .15s;
+    }
+    .filter-card:hover { background: #fafafa; border-color: #d5d8dc; }
+    .filter-card.active { background: #f6f6f7; border-color: #7a7e86; }
+    .filter-card-icon,
+    .filter-card-icon-all,
+    .filter-card-icon-deposit,
+    .filter-card-icon-withdraw,
+    .filter-card-icon-refund,
+    .filter-card-icon-transfer {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: #f3f3f4; border: 1px solid #e8e8ea;
+      color: #555960;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .filter-card-icon svg { width: 13px; height: 13px; }
+    .filter-card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+    .filter-card-title { font-size: 11.5px; font-weight: 500; color: #2a2e34; letter-spacing: -.05px; }
+    .filter-card-sub   { font-size: 10px; font-weight: 400; color: #8b9098; }
+    .filter-card-check {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #1f2329; color: #fff; border: 1px solid #1f2329;
+      display: none; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .filter-card-check svg { width: 9px; height: 9px; }
+    .filter-card.active .filter-card-check { display: flex; }
+    .filter-foot {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 7px; padding-top: 9px; margin-top: 2px;
+      border-top: 1px solid #eceef0;
+    }
+    .filter-btn {
+      min-height: 36px; padding: 9px 12px;
+      border-radius: 9px; border: 0; cursor: pointer;
+      font-family: inherit; font-size: 11px; font-weight: 500;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px;
+    }
+    .filter-btn svg { width: 13px; height: 13px; }
+    .filter-btn-reset { color: #454951; background: #fff; border: 1px solid #dfe1e4; }
+    .filter-btn-reset:hover { background: #f6f6f7; }
+    .filter-btn-apply { color: #fff; background: #1f2329; border: 1px solid #1f2329; }
+    .filter-btn-apply:hover { background: #111214; }
 
-    @media (max-height: 700px) {
-      .tx-date-filter { padding: 7px 10px 5px; margin-bottom: 6px; }
-      .tx-date-heading { margin-bottom: 5px; }
-      .tx-date-field input { height: 30px; }
-      .tx-date-message { margin-top: 4px; }
-      .tx-chips { padding-bottom: 6px !important; }
-      .tx-list-section { padding-top: 6px !important; }
+    /* ============================================================
+       ⭐ SLIM RECEIPT MODAL
+       ============================================================ */
+    .txm-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(15, 23, 42, .45);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 100;
+      animation: tx-fade-in .2s ease;
+    }
+    .txm-sheet {
+      width: 100%; max-width: 460px;
+      max-height: 90vh; max-height: 90dvh;
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 -12px 40px rgba(15, 23, 42, .14);
+      animation: tx-slide-up .28s cubic-bezier(.16,1,.3,1);
+    }
+    .txm-grip {
+      width: 32px; height: 3.5px; border-radius: 3px;
+      background: #d1d5db;
+      margin: 8px auto 4px;
+      flex-shrink: 0;
+    }
+    .txm-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 18px 10px;
+      flex-shrink: 0;
+    }
+    .txm-head-title {
+      font-size: 13.5px; font-weight: 600;
+      letter-spacing: -.2px; color: #1f2329;
+    }
+    .txm-close {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: #f4f5f6; border: 0; color: #5f646d; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .txm-close svg { width: 12px; height: 12px; }
+
+    .txm-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 0 18px 8px;
+    }
+    .txm-body::-webkit-scrollbar { width: 3px; }
+    .txm-body::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 20px; }
+
+    /* Hero — slimmer */
+    .txm-hero {
+      text-align: center;
+      padding: 2px 0 14px;
+      border-bottom: 1px solid #eef1f4;
+      margin-bottom: 10px;
+    }
+    .txm-hero-icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      margin: 0 auto 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .txm-hero-icon svg { width: 20px; height: 20px; }
+    .txm-hero-icon.success  { background: #ecfdf5; color: #059669; }
+    .txm-hero-icon.failed   { background: #fef2f2; color: #dc2626; }
+    .txm-hero-icon.pending  { background: #fffbeb; color: #d97706; }
+    .txm-hero-icon.refunded { background: #eff6ff; color: #2563eb; }
+
+    .txm-hero-title {
+      font-size: 11.5px; font-weight: 500; color: #6b7280;
+      letter-spacing: -.05px;
+      margin-bottom: 3px;
+    }
+    .txm-hero-amount {
+      font-size: 21px; font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -.5px;
+      line-height: 1.15;
+    }
+    .txm-status {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2.5px 9px;
+      border-radius: 999px;
+      font-size: 9.5px; font-weight: 600;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
+    .txm-status.success  { background: #ecfdf5; color: #047857; }
+    .txm-status.failed   { background: #fef2f2; color: #b91c1c; }
+    .txm-status.pending  { background: #fffbeb; color: #b45309; }
+    .txm-status.refunded { background: #eff6ff; color: #1d4ed8; }
+
+    /* Grid — slimmer */
+    .txm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 12px;
+      margin-bottom: 8px;
+    }
+    .txm-cell {
+      padding: 9px 0;
+      border-bottom: 1px solid #f4f6f8;
+      min-width: 0;
+    }
+    .txm-cell-wide {
+      grid-column: 1 / -1;
+    }
+    .txm-cell-label {
+      font-size: 9.5px; font-weight: 600;
+      letter-spacing: .35px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 3px;
+    }
+    .txm-cell-value {
+      font-size: 12.5px; font-weight: 500;
+      color: #1f2329;
+      letter-spacing: -.05px;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+    .txm-cell-value.txm-mono {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      letter-spacing: .2px;
+    }
+    .txm-cell-value.txm-remark {
+      font-size: 11.5px;
+      color: #4b5563;
+      line-height: 1.45;
+      font-weight: 400;
+    }
+    .txm-cell-row {
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .txm-cell-row .txm-cell-value {
+      flex: 1; min-width: 0;
+    }
+    .txm-copy {
+      width: 26px; height: 26px; border-radius: 7px;
+      background: #f4f5f6; border: 1px solid #e7e9ec;
+      color: #5f646d; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .txm-copy:hover { background: #e9ebee; }
+    .txm-copy.copied { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
+    .txm-copy svg { width: 12px; height: 12px; }
+
+    /* Token block inside receipt */
+    .txm-token-box {
+      grid-column: 1 / -1;
+      background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1.5px dashed #34d399;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 4px 0 8px;
+      text-align: center;
+    }
+    .txm-token-box .tb-lbl {
+      font-size: 9.5px; font-weight: 700;
+      color: #047857;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 6px;
+    }
+    .txm-token-box .tb-tok {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 15px; font-weight: 800;
+      letter-spacing: 1.8px;
+      color: #065f46;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+    .txm-token-box .tb-units {
+      color: #047857;
+      font-size: 11px;
+      margin-top: 5px;
+      font-weight: 600;
+    }
+    .txm-token-box .tb-copy {
+      margin-top: 10px;
+      background: #059669;
+      color: #fff; border: 0;
+      padding: 7px 16px; border-radius: 8px;
+      font-size: 11px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+    }
+    .txm-token-box .tb-copy:active { transform: scale(.96); }
+
+    /* Footer — slimmer */
+    .txm-foot {
+      flex-shrink: 0;
+      padding: 10px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+      background: #fff;
+      border-top: 1px solid #eef1f4;
+      display: flex; flex-direction: column;
+      gap: 8px;
+    }
+    .txm-foot-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .txm-btn {
+      min-height: 40px;
+      padding: 10px 14px;
+      border-radius: 11px;
+      font-family: inherit;
+      font-size: 12.5px; font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 7px;
+      transition: background .15s, transform .12s;
+    }
+    .txm-btn svg { width: 14px; height: 14px; }
+    .txm-btn-ghost {
+      background: #fff; border: 1.5px solid #e5e7ea;
+      color: #1f2329;
+    }
+    .txm-btn-ghost:hover { background: #f8fafc; border-color: #cfd3d8; }
+    .txm-btn-ghost:active { transform: scale(.985); }
+    .txm-btn-primary {
+      background: #1f2329; color: #fff; border: 1.5px solid #1f2329;
+    }
+    .txm-btn-primary:hover { background: #111214; border-color: #111214; }
+    .txm-btn-primary:active { transform: scale(.985); }
+
+    /* ============ Utility ============ */
+    .hidden { display: none !important; }
+
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+      background-size: 200% 100%;
+      animation: skel-shim 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes skel-shim {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
     @media (max-width: 380px) {
-      .tx-header { padding-left: 12px !important; padding-right: 12px !important; }
-      .tx-toolbar { padding-left: 12px !important; padding-right: 12px !important; }
-      .tx-searchbar { margin-left: 12px !important; margin-right: 12px !important; }
-      .tx-date-filter { margin-left: 12px; margin-right: 12px; }
-      .tx-chips { padding-left: 12px !important; padding-right: 12px !important; }
-      .tx-date-filter { padding: 8px 9px 6px; }
-      .tx-date-heading > div { gap: 6px; }
-      .tx-date-title { font-size: 10.5px; }
-      .tx-date-field input { font-size: 10px; padding: 0 5px; }
+      .tx-list-section { padding: 6px 9px 0 !important; }
+      .tx-item { padding: 10px 11px; border-radius: 10px; }
+      .txm-sheet { max-width: 100%; }
+      .txm-body { padding: 0 14px 8px; }
+      .txm-head { padding: 6px 14px 10px; }
+      .txm-foot { padding: 10px 14px calc(14px + env(safe-area-inset-bottom, 0px)); }
+      .txm-hero-amount { font-size: 19px; }
+      .txm-cell-value { font-size: 12px; }
+      .txm-cell-value.txm-mono { font-size: 11px; }
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      #txReal { scroll-behavior: auto !important; }
-    }
-
-
-    /* Pagination: fixed footer controls, only the transaction list scrolls */
-    .tx-page-hidden { display: none !important; }
-    .tx-pagination { flex: 0 0 auto !important; }
-    .pg-numbers { display: flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: nowrap; }
-    .pg-num { cursor: pointer; }
-    .pg-btn:disabled { opacity: .35 !important; cursor: not-allowed !important; }
-    .pg-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 14px; color: #8b9098; }
-
   </style>
 </head>
 <body class="tx-page">
@@ -780,28 +755,19 @@
       </button>
     </header>
 
-    <!-- Transaction type dropdown removed as requested -->
-
     <!-- SEARCH -->
     <div class="tx-searchbar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tx-searchbar-ico">
         <circle cx="11" cy="11" r="8"/>
         <path d="M21 21l-4.35-4.35"/>
       </svg>
-      <input
-        type="text"
-        id="txSearchInput"
-        class="tx-searchbar-input"
-        placeholder="Search reference, amount, bank…"
-        autocomplete="off"
-      >
+      <input type="text" id="txSearchInput" class="tx-searchbar-input" placeholder="Search reference, amount…" autocomplete="off">
       <button type="button" class="tx-searchbar-clear hidden" id="txSearchClear" aria-label="Clear">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </div>
-
 
     <!-- DATE RANGE FILTER -->
     <section class="tx-date-filter" aria-label="Filter transactions by date">
@@ -829,20 +795,16 @@
     <!-- STATUS CHIPS -->
     <div class="tx-chips" id="txStatusChips">
       <button type="button" class="tx-chip active" data-status="all">
-        <span class="tx-chip-dot tx-chip-dot-all"></span>
-        All
+        <span class="tx-chip-dot tx-chip-dot-all"></span> All
       </button>
       <button type="button" class="tx-chip" data-status="success">
-        <span class="tx-chip-dot tx-chip-dot-success"></span>
-        Successful
+        <span class="tx-chip-dot tx-chip-dot-success"></span> Successful
       </button>
       <button type="button" class="tx-chip" data-status="processing">
-        <span class="tx-chip-dot tx-chip-dot-pending"></span>
-        Pending
+        <span class="tx-chip-dot tx-chip-dot-pending"></span> Pending
       </button>
       <button type="button" class="tx-chip" data-status="failed">
-        <span class="tx-chip-dot tx-chip-dot-failed"></span>
-        Failed
+        <span class="tx-chip-dot tx-chip-dot-failed"></span> Failed
       </button>
     </div>
 
@@ -1028,7 +990,9 @@
     </div>
   </div>
 
-  <!-- RECEIPT MODAL -->
+  <!-- ============================================================
+       RECEIPT MODAL — with electricity cells
+       ============================================================ -->
   <div class="txm-backdrop hidden" id="txModal">
     <div class="txm-sheet" role="dialog" aria-modal="true">
       <div class="txm-grip"></div>
@@ -1064,6 +1028,37 @@
             <div class="txm-cell-label">Date &amp; Time</div>
             <div class="txm-cell-value" id="txmDate">—</div>
           </div>
+
+          <!-- ⭐ Electricity-specific cells (hidden by default) -->
+          <div class="txm-cell txm-cell-wide" id="txmMeterRow" style="display:none;">
+            <div class="txm-cell-label">Meter number</div>
+            <div class="txm-cell-value txm-mono" id="txmMeter">—</div>
+          </div>
+
+          <div class="txm-cell txm-cell-wide" id="txmCustomerRow" style="display:none;">
+            <div class="txm-cell-label">Customer</div>
+            <div class="txm-cell-value" id="txmCustomer">—</div>
+          </div>
+
+          <div class="txm-cell txm-cell-wide" id="txmAddressRow" style="display:none;">
+            <div class="txm-cell-label">Address</div>
+            <div class="txm-cell-value" id="txmAddress">—</div>
+          </div>
+
+          <div class="txm-cell txm-cell-wide" id="txmDiscoRow" style="display:none;">
+            <div class="txm-cell-label">Disco</div>
+            <div class="txm-cell-value" id="txmDisco">—</div>
+          </div>
+
+          <!-- Token block (fills whole width) -->
+          <div class="txm-token-box" id="txmTokenBox" style="display:none;">
+            <div class="tb-lbl">Electricity Token</div>
+            <div class="tb-tok" id="txmToken">—</div>
+            <div class="tb-units" id="txmUnits" style="display:none;"></div>
+            <button type="button" class="tb-copy" id="txmCopyToken">Copy token</button>
+          </div>
+
+          <!-- Reference -->
           <div class="txm-cell txm-cell-wide">
             <div class="txm-cell-label">Reference</div>
             <div class="txm-cell-row">
@@ -1075,6 +1070,8 @@
               </button>
             </div>
           </div>
+
+          <!-- Remark -->
           <div class="txm-cell txm-cell-wide">
             <div class="txm-cell-label">Remark</div>
             <div class="txm-cell-value txm-remark" id="txmRemark">—</div>
@@ -1107,236 +1104,248 @@
   <script src="/js/api.js"></script>
   <script type="module" src="/js/components.js"></script>
   <script type="module" src="/js/transactions.js"></script>
+
+  <!-- ============================================================
+       Electricity enrichment script — runs after transactions.js
+       hooks into the modal without touching the original code
+       ============================================================ -->
   <script>
-    (function () {
-      const fromInput = document.getElementById('txDateFrom');
-      const toInput = document.getElementById('txDateTo');
-      const clearButton = document.getElementById('txDateClear');
-      const message = document.getElementById('txDateMessage');
-      const list = document.getElementById('txReal');
-      if (!fromInput || !toInput || !list) return;
+  (function () {
+    'use strict';
 
-      const originalDisplay = new WeakMap();
-      let observer;
+    /* ---------- Helpers ---------- */
+    function $(id) { return document.getElementById(id); }
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function trim(v) { return typeof v === 'string' ? v.trim() : v; }
 
-      function parseTransactionDate(item) {
-        const explicit = item.dataset.date || item.dataset.createdAt ||
-          item.getAttribute('datetime') || '';
-        if (explicit) {
-          const d = new Date(explicit);
-          if (!Number.isNaN(d.getTime())) return d;
-        }
+    /* ---------- Electricity detection ---------- */
+    function isElectricity(tx) {
+      if (!tx) return false;
+      var t = String(tx.type || '').toLowerCase();
+      var s = String(tx.service || '').toLowerCase();
+      var d = String(tx.description || '').toLowerCase();
+      var m = tx.metadata || {};
+      var pn = String(m.product_name || '').toLowerCase();
+      return (
+        t.indexOf('electric') !== -1 ||
+        s === 'electricity' ||
+        pn.indexOf('electric') !== -1 ||
+        d.indexOf('electric') !== -1
+      );
+    }
 
-        const dateNode = item.querySelector('.tx-when, time, [data-date]');
-        if (dateNode) {
-          const raw = dateNode.getAttribute('datetime') ||
-            dateNode.dataset.date || dateNode.textContent.trim();
-          const parsed = new Date(raw);
-          if (!Number.isNaN(parsed.getTime())) return parsed;
-        }
-
-        // Last-resort fallback: find a date-like string in the transaction card.
-        const text = item.innerText || item.textContent || '';
-        const match = text.match(/\b(?:\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4})\b/i);
-        if (match) {
-          const parsed = new Date(match[0]);
-          if (!Number.isNaN(parsed.getTime())) return parsed;
-        }
-        return null;
+    /* ---------- Field extractors ---------- */
+    function pick(obj, keys) {
+      if (!obj) return null;
+      for (var i = 0; i < keys.length; i++) {
+        var v = obj[keys[i]];
+        if (v != null && v !== '') return v;
       }
+      return null;
+    }
 
-      function localDateValue(date) {
-        return date.getFullYear() + '-' +
-          String(date.getMonth() + 1).padStart(2, '0') + '-' +
-          String(date.getDate()).padStart(2, '0');
+    function getMeter(tx) {
+      var m = tx.metadata || {};
+      return trim(pick(m, [
+        'meter_number', 'meterNumber', 'meter',
+        'customer_id', 'customerId'
+      ]) || pick(tx, ['meter_number', 'recipient']));
+    }
+
+    function getToken(tx) {
+      var m = tx.metadata || {};
+      return trim(pick(tx, ['token', 'Token']) ||
+                  pick(m, ['token', 'ds_token', 'electricity_token', 'token_code', 'standard_token']));
+    }
+
+    function getUnits(tx) {
+      var m = tx.metadata || {};
+      return trim(pick(m, ['ds_units', 'units', 'kwh', 'kWh']) || pick(tx, ['units', 'kwh']));
+    }
+
+    function getCustomer(tx) {
+      var m = tx.metadata || {};
+      return trim(pick(m, ['ds_customer_name', 'customer_name', 'customerName']));
+    }
+
+    function getAddress(tx) {
+      var m = tx.metadata || {};
+      return trim(pick(m, ['ds_customer_address', 'customer_address', 'customerAddress', 'address']));
+    }
+
+    function getDisco(tx) {
+      var m = tx.metadata || {};
+      return trim(pick(m, ['ds_disco', 'disco', 'provider']) ||
+                  pick(tx, ['network', 'provider']));
+    }
+
+    /* ---------- Track the currently-open transaction ---------- */
+    var currentTx = null;
+
+    /* Hook into the transaction list — capture the clicked tx */
+    document.addEventListener('click', function (e) {
+      var item = e.target.closest('.tx-item');
+      if (!item) return;
+      /* The list item stores its tx somewhere — check common attributes */
+      var raw =
+        item.dataset.tx || item.dataset.transaction ||
+        item.getAttribute('data-tx') || item.getAttribute('data-transaction');
+      if (raw) {
+        try { currentTx = JSON.parse(raw); return; } catch (_) {}
       }
+      /* Fallback: try window.__txCache or similar global. The script below
+         also listens to the txModal becoming visible. */
+      var idx = item.dataset.txIdx || item.dataset.index;
+      if (idx != null && window.__shatovaTx) {
+        currentTx = window.__shatovaTx[Number(idx)] || null;
+      }
+    }, true);
 
-      function applyDateFilter() {
-        const from = fromInput.value;
-        const to = toInput.value;
-
-        if (from && to && from > to) {
-          toInput.setCustomValidity('End date must be on or after the start date.');
-          toInput.reportValidity();
-          message.textContent = 'Please choose an end date on or after the start date.';
+    /* Also watch for the modal becoming visible — read whatever was stored */
+    var modal = $('txModal');
+    if (modal) {
+      var obs = new MutationObserver(function () {
+        if (modal.classList.contains('hidden')) {
+          /* Modal closed → clear electricity rows */
+          ['txmMeterRow','txmCustomerRow','txmAddressRow','txmDiscoRow'].forEach(function (id) {
+            var el = $(id); if (el) el.style.display = 'none';
+          });
+          var tb = $('txmTokenBox'); if (tb) tb.style.display = 'none';
+          currentTx = null;
           return;
         }
-        toInput.setCustomValidity('');
-
-        const cards = Array.from(list.children).filter(el =>
-          el.classList.contains('tx-item') || el.hasAttribute('data-transaction')
-        );
-        let shown = 0;
-        let unrecognized = 0;
-
-        cards.forEach(card => {
-          if (!originalDisplay.has(card)) originalDisplay.set(card, card.style.display);
-          const date = parseTransactionDate(card);
-          let visible = true;
-
-          if ((from || to) && !date) {
-            visible = false;
-            unrecognized++;
-          } else if (date) {
-            const value = localDateValue(date);
-            if (from && value < from) visible = false;
-            if (to && value > to) visible = false;
-          }
-
-          card.style.display = visible ? (originalDisplay.get(card) || '') : 'none';
-          if (visible) shown++;
-        });
-
-        if (!from && !to) {
-          message.textContent = 'Showing all dates';
-        } else {
-          const range = (from || 'Earliest') + ' – ' + (to || 'Latest');
-          message.textContent = shown + ' transaction' + (shown === 1 ? '' : 's') +
-            ' in ' + range + (unrecognized ? ' · Some dates could not be read' : '');
-        }
-
-        const empty = document.getElementById('txEmpty');
-        if (cards.length && shown === 0 && (from || to) && empty) {
-          const title = document.getElementById('txEmptyTitle');
-          const text = document.getElementById('txEmptyText');
-          if (title) title.textContent = 'No transactions for this period';
-          if (text) text.textContent = 'Try a different date range or clear the dates.';
-        }
-      }
-
-      fromInput.addEventListener('change', applyDateFilter);
-      toInput.addEventListener('change', applyDateFilter);
-
-      clearButton.addEventListener('click', function () {
-        fromInput.value = '';
-        toInput.value = '';
-        toInput.setCustomValidity('');
-        applyDateFilter();
+        /* Modal open → try to enrich if we captured a tx */
+        enrich();
       });
+      obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+    }
 
-      observer = new MutationObserver(() => applyDateFilter());
-      observer.observe(list, { childList: true, subtree: false });
-      window.addEventListener('pageshow', applyDateFilter);
-      window.addEventListener('resize', () => {
-        document.body.style.setProperty('overflow', 'hidden', 'important');
-      });
-      applyDateFilter();
-    })();
-  </script>
-
-  <script>
-    /* SHATOVA pagination controller: supports every page, not only pages 1–5. */
-    (function () {
-      const list = document.getElementById('txReal');
-      const pagination = document.getElementById('txPagination');
-      const numbers = document.getElementById('pgNumbers');
-      const prev = document.getElementById('pgPrev');
-      const next = document.getElementById('pgNext');
-      if (!list || !pagination || !numbers || !prev || !next) return;
-
-      const PAGE_SIZE = 10;
-      let currentPage = 1;
-      let renderQueued = false;
-
-      function transactionCards() {
-        return Array.from(list.children).filter(el =>
-          el.classList.contains('tx-item') || el.hasAttribute('data-transaction')
-        );
+    /* Try capturing the tx from any global variable set by transactions.js.
+       Common patterns: window.currentTx, window.__currentTx, window.activeTx. */
+    function findGlobalTx() {
+      var candidates = [
+        window.currentTx,
+        window.__currentTx,
+        window.activeTx,
+        window.selectedTx,
+        window.__selectedTx
+      ];
+      for (var i = 0; i < candidates.length; i++) {
+        if (candidates[i] && typeof candidates[i] === 'object') return candidates[i];
       }
+      return null;
+    }
 
-      function isDateEligible(card) {
-        // The date filter sets inline display:none for cards outside the selected range.
-        // Page hiding uses a class, so it does not interfere with this check.
-        return card.dataset.dateFilteredOut !== 'true' &&
-          (card.style.display !== 'none' || card.classList.contains('tx-page-hidden'));
-      }
+    function enrich() {
+      var tx = currentTx || findGlobalTx();
+      if (!tx) return;
 
-      function pageButton(label, page, active) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'pg-num' + (active ? ' active' : '');
-        button.textContent = String(label);
-        button.setAttribute('aria-label', 'Page ' + page);
-        if (active) button.setAttribute('aria-current', 'page');
-        button.addEventListener('click', function () {
-          currentPage = page;
-          render();
-          list.scrollTop = 0;
+      var isElec = isElectricity(tx);
+      if (!isElec) {
+        ['txmMeterRow','txmCustomerRow','txmAddressRow','txmDiscoRow'].forEach(function (id) {
+          var el = $(id); if (el) el.style.display = 'none';
         });
-        return button;
+        var tb0 = $('txmTokenBox'); if (tb0) tb0.style.display = 'none';
+        return;
       }
 
-      function ellipsis() {
-        const span = document.createElement('span');
-        span.className = 'pg-ellipsis';
-        span.textContent = '…';
-        span.setAttribute('aria-hidden', 'true');
-        return span;
+      var meter    = getMeter(tx);
+      var customer = getCustomer(tx);
+      var address  = getAddress(tx);
+      var disco    = getDisco(tx);
+      var token    = getToken(tx);
+      var units    = getUnits(tx);
+
+      /* Meter */
+      var meterRow = $('txmMeterRow'), meterEl = $('txmMeter');
+      if (meterRow && meterEl) {
+        if (meter) { meterEl.textContent = meter; meterRow.style.display = ''; }
+        else meterRow.style.display = 'none';
       }
 
-      function render() {
-        const all = transactionCards();
-        // Preserve the date filter's visibility before changing page visibility.
-        const eligible = all.filter(card => {
-          if (card.classList.contains('tx-page-hidden')) return card.dataset.txDateEligible !== 'false';
-          const eligibleNow = card.style.display !== 'none';
-          card.dataset.txDateEligible = eligibleNow ? 'true' : 'false';
-          return eligibleNow;
-        });
+      /* Customer */
+      var custRow = $('txmCustomerRow'), custEl = $('txmCustomer');
+      if (custRow && custEl) {
+        if (customer) { custEl.textContent = customer; custRow.style.display = ''; }
+        else custRow.style.display = 'none';
+      }
 
-        const totalPages = Math.max(1, Math.ceil(eligible.length / PAGE_SIZE));
-        currentPage = Math.min(Math.max(1, currentPage), totalPages);
-        const start = (currentPage - 1) * PAGE_SIZE;
-        const end = start + PAGE_SIZE;
+      /* Address */
+      var addrRow = $('txmAddressRow'), addrEl = $('txmAddress');
+      if (addrRow && addrEl) {
+        if (address) { addrEl.textContent = address; addrRow.style.display = ''; }
+        else addrRow.style.display = 'none';
+      }
 
-        all.forEach(card => {
-          const index = eligible.indexOf(card);
-          card.classList.toggle('tx-page-hidden', index < 0 || index < start || index >= end);
-        });
+      /* Disco */
+      var discoRow = $('txmDiscoRow'), discoEl = $('txmDisco');
+      if (discoRow && discoEl) {
+        if (disco) { discoEl.textContent = disco; discoRow.style.display = ''; }
+        else discoRow.style.display = 'none';
+      }
 
-        pagination.classList.toggle('hidden', eligible.length <= PAGE_SIZE);
-        numbers.replaceChildren();
-        if (totalPages <= 7) {
-          for (let page = 1; page <= totalPages; page++) {
-            numbers.appendChild(pageButton(page, page, page === currentPage));
+      /* Recipient row — for electricity we show the meter here too */
+      var recipEl = $('txmRecipient');
+      if (recipEl && meter) recipEl.textContent = meter;
+
+      /* Network row — for electricity we show the disco */
+      var netEl = $('txmNetwork');
+      if (netEl && disco) netEl.textContent = disco;
+
+      /* Token block */
+      var tokenBox = $('txmTokenBox');
+      var tokenEl  = $('txmToken');
+      var unitsEl  = $('txmUnits');
+      if (tokenBox && tokenEl) {
+        if (token) {
+          tokenEl.textContent = token;
+          tokenBox.style.display = '';
+          if (unitsEl) {
+            if (units) { unitsEl.textContent = units + ' kWh'; unitsEl.style.display = ''; }
+            else unitsEl.style.display = 'none';
           }
+          wireCopyToken(token);
         } else {
-          const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
-          if (currentPage <= 3) [2, 3, 4].forEach(p => pages.add(p));
-          if (currentPage >= totalPages - 2) [totalPages - 3, totalPages - 2, totalPages - 1].forEach(p => pages.add(p));
-          let last = 0;
-          Array.from(pages).filter(p => p >= 1 && p <= totalPages).sort((a,b) => a-b).forEach(page => {
-            if (last && page - last > 1) numbers.appendChild(ellipsis());
-            numbers.appendChild(pageButton(page, page, page === currentPage));
-            last = page;
-          });
+          tokenBox.style.display = 'none';
         }
-        prev.disabled = currentPage <= 1;
-        next.disabled = currentPage >= totalPages;
-        prev.onclick = function () { if (currentPage > 1) { currentPage--; render(); list.scrollTop = 0; } };
-        next.onclick = function () { if (currentPage < totalPages) { currentPage++; render(); list.scrollTop = 0; } };
       }
+    }
 
-      function scheduleRender(reset) {
-        if (reset) currentPage = 1;
-        if (renderQueued) return;
-        renderQueued = true;
-        requestAnimationFrame(function () {
-          renderQueued = false;
-          render();
-        });
-      }
+    var copyTokenBound = false;
+    function wireCopyToken(token) {
+      var btn = $('txmCopyToken');
+      if (!btn) return;
+      /* Replace to drop old listeners */
+      var fresh = btn.cloneNode(true);
+      btn.parentNode.replaceChild(fresh, btn);
+      fresh.addEventListener('click', function () {
+        try {
+          navigator.clipboard.writeText(token);
+          var orig = fresh.textContent;
+          fresh.textContent = 'Copied ✓';
+          fresh.style.background = '#047857';
+          setTimeout(function () {
+            fresh.textContent = orig;
+            fresh.style.background = '';
+          }, 1800);
+        } catch (_) { window.prompt('Copy your token:', token); }
+      });
+    }
 
-      const observer = new MutationObserver(() => scheduleRender(true));
-      observer.observe(list, { childList: true });
-      document.getElementById('txDateFrom')?.addEventListener('change', () => scheduleRender(true));
-      document.getElementById('txDateTo')?.addEventListener('change', () => scheduleRender(true));
-      document.getElementById('txDateClear')?.addEventListener('click', () => scheduleRender(true));
-      document.getElementById('txStatusChips')?.addEventListener('click', () => scheduleRender(true));
-      document.getElementById('txSearchInput')?.addEventListener('input', () => scheduleRender(true));
-      window.addEventListener('pageshow', () => scheduleRender(true));
-      scheduleRender(true);
-    })();
+    /* Also expose a hook in case transactions.js sets the tx on the modal
+       by other means — poll once every 400ms while modal is open */
+    setInterval(function () {
+      if (!modal || modal.classList.contains('hidden')) return;
+      if (currentTx) return;
+      var tx = findGlobalTx();
+      if (tx) { currentTx = tx; enrich(); }
+    }, 400);
+
+  })();
   </script>
 
 </body>
