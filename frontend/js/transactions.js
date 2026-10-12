@@ -2,6 +2,8 @@
 // ============================================================
 // Shatova — Transaction History
 //   ⭐ Refunded filter · Clean icons · Black amounts · No signs
+//   ⭐ Electricity receipt: meter, customer, address, disco,
+//     token (with copy button), and units (kWh)
 // ============================================================
 
 const API_BASE = window.API_BASE;
@@ -122,110 +124,58 @@ function escapeHtml(s) {
 
 /* ICONS — clean, no yellow */
 const ICONS = {
-  /* Airtime — purple phone */
   airtime: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
-  /* Data — blue wifi */
   data: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1.2" fill="currentColor" stroke="none"/></svg>`,
-  /* Electricity — green bolt */
   electricity: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
-  /* Cable — indigo monitor */
   cable: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 3l4 4 4-4"/></svg>`,
-  /* Exam — indigo book */
   exam: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg>`,
-  /* Deposit — green down arrow */
   deposit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>`,
-  /* Withdraw — red up arrow */
   withdraw: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
-  /* Transfer — blue arrows */
   transfer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>`,
-  /* Refund — indigo undo */
   refund: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>`,
-  /* Generic */
   generic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`,
 
-  /* Modal hero icons */
   check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`,
   x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>`,
   clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`,
   undo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>`,
 };
 
-/* CLASSIFY — categories */
+/* CLASSIFY */
 function classify(tx) {
   const status  = String(tx.status || '').toLowerCase();
   const type    = String(tx.type || '').toLowerCase();
-  const service = String(tx.service || '').toLowerCase();
   const dir     = String(tx.direction || '').toUpperCase();
 
-  /* Refunded — highest priority */
   if (status === 'refunded' || type.includes('refund')) return 'refunded';
-
-  /* Deposits */
   if (type.includes('wallet_topup') || type.includes('topup') ||
       type.includes('fund') || type.includes('deposit') ||
       type.includes('credit') || type.includes('bonus') ||
       (dir === 'CREDIT')) {
     return 'deposits';
   }
-
-  /* Withdrawals */
   if (type.includes('withdraw') || type.includes('cash_out')) return 'withdrawals';
-
-  /* Transfers */
   if (type.includes('transfer') || type.includes('send')) return 'transfers';
-
-  /* Everything else = orders (not filtered directly, just shown in all) */
   return 'orders';
 }
 
-/* ICON by service (not category) — so it matches the transaction type */
 function txIconMarkup(tx) {
   const service = String(tx.service || '').toLowerCase();
   const type    = String(tx.type || '').toLowerCase();
   const status  = String(tx.status || '').toLowerCase();
 
-  /* Refunded → undo icon */
-  if (status === 'refunded' || type.includes('refund')) {
-    return `<div class="tx-icon tx-icon-refund">${ICONS.refund}</div>`;
-  }
-
-  /* Airtime */
-  if (service.includes('airtime') || type.includes('airtime')) {
-    return `<div class="tx-icon tx-icon-airtime">${ICONS.airtime}</div>`;
-  }
-  /* Data */
-  if (service.includes('data') || type.includes('data')) {
-    return `<div class="tx-icon tx-icon-data">${ICONS.data}</div>`;
-  }
-  /* Electricity / Bills */
+  if (status === 'refunded' || type.includes('refund')) return `<div class="tx-icon tx-icon-refund">${ICONS.refund}</div>`;
+  if (service.includes('airtime') || type.includes('airtime')) return `<div class="tx-icon tx-icon-airtime">${ICONS.airtime}</div>`;
+  if (service.includes('data') || type.includes('data')) return `<div class="tx-icon tx-icon-data">${ICONS.data}</div>`;
   if (service.includes('electric') || type.includes('electric') ||
-      service.includes('bill') || type.includes('bill')) {
-    return `<div class="tx-icon tx-icon-electricity">${ICONS.electricity}</div>`;
-  }
-  /* Cable TV */
+      service.includes('bill') || type.includes('bill')) return `<div class="tx-icon tx-icon-electricity">${ICONS.electricity}</div>`;
   if (service.includes('cable') || type.includes('cable') ||
-      service.includes('tv') || type.includes('tv')) {
-    return `<div class="tx-icon tx-icon-cable">${ICONS.cable}</div>`;
-  }
-  /* Exam */
-  if (service.includes('exam') || type.includes('exam')) {
-    return `<div class="tx-icon tx-icon-exam">${ICONS.exam}</div>`;
-  }
-
-  /* Deposits / funding */
+      service.includes('tv') || type.includes('tv')) return `<div class="tx-icon tx-icon-cable">${ICONS.cable}</div>`;
+  if (service.includes('exam') || type.includes('exam')) return `<div class="tx-icon tx-icon-exam">${ICONS.exam}</div>`;
   if (type.includes('wallet_topup') || type.includes('topup') ||
-      type.includes('fund') || type.includes('deposit') || type.includes('bonus')) {
-    return `<div class="tx-icon tx-icon-deposit">${ICONS.deposit}</div>`;
-  }
-  /* Withdrawal */
-  if (type.includes('withdraw')) {
-    return `<div class="tx-icon tx-icon-withdraw">${ICONS.withdraw}</div>`;
-  }
-  /* Transfer */
-  if (type.includes('transfer') || type.includes('send')) {
-    return `<div class="tx-icon tx-icon-transfer">${ICONS.transfer}</div>`;
-  }
-
+      type.includes('fund') || type.includes('deposit') || type.includes('bonus')) return `<div class="tx-icon tx-icon-deposit">${ICONS.deposit}</div>`;
+  if (type.includes('withdraw')) return `<div class="tx-icon tx-icon-withdraw">${ICONS.withdraw}</div>`;
+  if (type.includes('transfer') || type.includes('send')) return `<div class="tx-icon tx-icon-transfer">${ICONS.transfer}</div>`;
   return `<div class="tx-icon tx-icon-generic">${ICONS.generic}</div>`;
 }
 
@@ -572,6 +522,10 @@ function openTxModal(tx) {
   if (txmNetwork)   txmNetwork.textContent   = meta.network_name || meta.network || '—';
   if (txmRemark)    txmRemark.textContent    = tx.description || status.label;
 
+  /* ⭐ Electricity enrichment — fills meter / customer / address /
+     disco / token / units and overrides recipient + network */
+  fillElectricityFields(tx);
+
   txModal.classList.remove('hidden');
   requestAnimationFrame(() => txModal.classList.add('show'));
   document.body.style.overflow = 'hidden';
@@ -584,6 +538,14 @@ function closeTxModal() {
   setTimeout(() => {
     txModal.classList.add('hidden');
     currentTx = null;
+
+    /* ⭐ Reset electricity rows so they don't bleed into the next receipt */
+    ['txmMeterRow', 'txmCustomerRow', 'txmAddressRow', 'txmDiscoRow'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    const tb = document.getElementById('txmTokenBox');
+    if (tb) tb.style.display = 'none';
   }, 260);
 }
 
@@ -706,6 +668,96 @@ async function fetchAllTransactions() {
   }
 }
 
+/* ============================================================
+   ⭐ ELECTRICITY RECEIPT HELPERS
+   ============================================================ */
+function isElectricityTx(tx) {
+  if (!tx) return false;
+  const t = String(tx.type || '').toLowerCase();
+  const s = String(tx.service || '').toLowerCase();
+  const d = String(tx.description || '').toLowerCase();
+  const m = tx.metadata || {};
+  const pn = String(m.product_name || '').toLowerCase();
+  return (
+    t.indexOf('electric') !== -1 ||
+    s === 'electricity' ||
+    pn.indexOf('electric') !== -1 ||
+    d.indexOf('electric') !== -1
+  );
+}
+
+function fillElectricityFields(tx) {
+  const isElec = isElectricityTx(tx);
+
+  const meterRow    = document.getElementById('txmMeterRow');
+  const customerRow = document.getElementById('txmCustomerRow');
+  const addressRow  = document.getElementById('txmAddressRow');
+  const discoRow    = document.getElementById('txmDiscoRow');
+  const tokenBox    = document.getElementById('txmTokenBox');
+
+  /* Always reset first */
+  [meterRow, customerRow, addressRow, discoRow].forEach((r) => { if (r) r.style.display = 'none'; });
+  if (tokenBox) tokenBox.style.display = 'none';
+
+  if (!isElec) return;
+
+  const m = tx.metadata || {};
+  const pick = (keys) => { for (const k of keys) { const v = m[k]; if (v != null && v !== '') return v; } return null; };
+  const pickTop = (keys) => { for (const k of keys) { const v = tx[k]; if (v != null && v !== '') return v; } return null; };
+  const trim = (v) => typeof v === 'string' ? v.trim() : v;
+
+  const meter    = trim(pick(['meter_number', 'meterNumber', 'meter', 'customer_id', 'customerId']) || pickTop(['meter_number', 'recipient']));
+  const customer = trim(pick(['ds_customer_name', 'customer_name', 'customerName']));
+  const address  = trim(pick(['ds_customer_address', 'customer_address', 'customerAddress', 'address']));
+  const disco    = trim(pick(['ds_disco', 'disco', 'provider']) || pickTop(['network', 'provider']));
+  const token    = trim(pickTop(['token', 'Token']) || pick(['token', 'ds_token', 'electricity_token', 'token_code', 'standard_token']));
+  const units    = trim(pick(['ds_units', 'units', 'kwh', 'kWh']) || pickTop(['units', 'kwh']));
+
+  const setRow = (rowEl, textEl, value) => {
+    if (!rowEl || !textEl) return;
+    if (value) { textEl.textContent = value; rowEl.style.display = ''; }
+    else { rowEl.style.display = 'none'; }
+  };
+
+  setRow(meterRow,    document.getElementById('txmMeter'),    meter);
+  setRow(customerRow, document.getElementById('txmCustomer'), customer);
+  setRow(addressRow,  document.getElementById('txmAddress'),  address);
+  setRow(discoRow,    document.getElementById('txmDisco'),    disco);
+
+  /* Override recipient + network for electricity */
+  if (txmRecipient && meter) txmRecipient.textContent = meter;
+  if (txmNetwork && disco)   txmNetwork.textContent   = disco;
+
+  /* Token box */
+  if (tokenBox && token) {
+    const tokenEl = document.getElementById('txmToken');
+    const unitsEl = document.getElementById('txmUnits');
+    if (tokenEl) tokenEl.textContent = token;
+    tokenBox.style.display = '';
+    if (unitsEl) {
+      if (units) { unitsEl.textContent = units + ' kWh'; unitsEl.style.display = ''; }
+      else unitsEl.style.display = 'none';
+    }
+    const copyBtn = document.getElementById('txmCopyToken');
+    if (copyBtn) {
+      const fresh = copyBtn.cloneNode(true);
+      copyBtn.parentNode.replaceChild(fresh, copyBtn);
+      fresh.addEventListener('click', () => {
+        try {
+          navigator.clipboard.writeText(token);
+          const orig = fresh.textContent;
+          fresh.textContent = 'Copied ✓';
+          fresh.style.background = '#047857';
+          setTimeout(() => { fresh.textContent = orig; fresh.style.background = ''; }, 1800);
+        } catch (_) { window.prompt('Copy your token:', token); }
+      });
+    }
+  }
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
 async function init() {
   if (!getToken()) { redirectToLogin(); return; }
   await fetchAllTransactions();
