@@ -10,6 +10,10 @@
 //   ⭐ 1% margin model (Option C):
 //       user pays `amount`, DataShop charges `cost_price`,
 //       profit = amount - cost_price
+//   ⚠️  NEVER write `provider_status` — the transactions table has a
+//       BEFORE UPDATE trigger `enforce_terminal_status` that requires
+//       lowercase terminal values and will reject our uppercase status.
+//       DataShop's provider_status lives in `metadata.ds_status` instead.
 // ============================================================
 
 import { query, withTransaction } from '../config/database.js';
@@ -79,6 +83,7 @@ async function findBillPaymentByReference(reference) {
   return rows[0] || null;
 }
 
+/* ⚠️ NOTE: no `provider_status` write here — the DB trigger will reject it. */
 async function updateTransaction(reference, fields = {}) {
   const sets = [];
   const params = [];
@@ -89,11 +94,11 @@ async function updateTransaction(reference, fields = {}) {
   if (fields.remark !== undefined)      push('remark', fields.remark);
   if (fields.provider_reference)        push('provider_reference', fields.provider_reference);
   if (fields.provider_ref)              push('provider_ref', fields.provider_ref);
-  if (fields.provider_status)           push('provider_status', fields.provider_status);
   if (fields.cost_price !== undefined)  push('cost_price', money(fields.cost_price));
   if (fields.profit !== undefined)      push('profit', money(fields.profit));
   if (fields.final_amount !== undefined) push('final_amount', money(fields.final_amount));
   if (fields.discount !== undefined)    push('discount', money(fields.discount));
+  /* ⛔ provider_status is intentionally NOT written — see trigger note at top */
 
   if (fields.metadata) {
     params.push(JSON.stringify(fields.metadata));
@@ -142,14 +147,10 @@ export async function getProducts() {
       ORDER BY provider ASC, bill_type ASC`
   );
 
-  /* Group by provider for the frontend */
   const byProvider = new Map();
   for (const r of rows) {
     if (!byProvider.has(r.provider)) {
-      byProvider.set(r.provider, {
-        provider: r.provider,
-        products: [],
-      });
+      byProvider.set(r.provider, { provider: r.provider, products: [] });
     }
     byProvider.get(r.provider).products.push({
       id:           r.id,
@@ -182,7 +183,6 @@ export async function verifyMeter({ productName, meterNumber }) {
     throw Object.assign(new Error('Meter number must be 11 to 13 digits'), { code: 'INVALID_METER' });
   }
 
-  /* Product must exist + be active */
   const { rows } = await query(
     `SELECT id, product_name, provider, bill_type, is_active
        FROM electricity_bills
@@ -195,28 +195,35 @@ export async function verifyMeter({ productName, meterNumber }) {
   if (bill.is_active !== true)
                           throw Object.assign(new Error('This product is currently unavailable'), { code: 'PRODUCT_UNAVAILABLE' });
 
-  /* Call DataShop */
   const result = await datashop.verifyElectricityMeter({
     meterNumber: meter,
     productName: pn,
   });
 
-  /* Minimum = max(DataShop's, our floor) */
   const providerMin = Number(result.minimum_amount || 0) || 0;
+  const providerMax = Number(result.maximum_amount || 0) || 0;
   const minimum     = Math.max(MIN_AMOUNT, providerMin);
+  const maximum     = providerMax > 0
+                        ? Math.min(MAX_AMOUNT, providerMax)
+                        : MAX_AMOUNT;
 
   return {
-    verified:            true,
-    product_name:        pn,
-    provider:            bill.provider,
-    bill_type:           bill.bill_type,
-    meter_number:        result.meter_number,
-    customer_name:       result.customer_name,
-    customer_address:    result.customer_address,
-    disco:               result.disco,
-    minimum_amount:      minimum,
-    maximum_amount:      MAX_AMOUNT,
-    outstanding_balance: result.outstanding_balance,
+    verified:              true,
+    product_name:          pn,
+    provider:              bill.provider,
+    bill_type:             bill.bill_type,
+    meter_number:          result.meter_number,
+    customer_name:         result.customer_name,
+    customer_address:      result.customer_address,
+    disco:                 result.service_name || result.disco || bill.provider,
+    account_type:          result.customer_account_type,
+    account_number:        result.account_number,
+    district:              result.district,
+    business_unit:         result.business_unit,
+    service_band:          result.service_band,
+    customer_arrears:      result.customer_arrears || 0,
+    minimum_amount:        minimum,
+    maximum_amount:        maximum,
   };
 }
 
@@ -240,7 +247,6 @@ export async function purchaseElectricity({
   if (amt < MIN_AMOUNT)                 throw Object.assign(new Error(`Minimum amount is ₦${MIN_AMOUNT.toLocaleString()}`), { code: 'AMOUNT_TOO_LOW' });
   if (amt > MAX_AMOUNT)                 throw Object.assign(new Error(`Maximum amount is ₦${MAX_AMOUNT.toLocaleString()}`), { code: 'AMOUNT_TOO_HIGH' });
 
-  /* Load product */
   const { rows: billRows } = await query(
     `SELECT id, product_name, provider, bill_type, is_active, price
        FROM electricity_bills
@@ -252,7 +258,6 @@ export async function purchaseElectricity({
   if (!bill)                            throw Object.assign(new Error('Product not found'), { code: 'INVALID_PRODUCT' });
   if (bill.is_active !== true)          throw Object.assign(new Error('This product is currently unavailable'), { code: 'PRODUCT_UNAVAILABLE' });
 
-  /* Reference — our merchant reference, echoed back by DataShop */
   const reference = datashop.generateReference('SHATOVA-ELEC');
 
   /* ── 1. INSERT transactions (PENDING) ── */
@@ -260,11 +265,11 @@ export async function purchaseElectricity({
     `INSERT INTO transactions
        (user_id, reference, type, service, direction, amount, status,
         description, metadata, network,
-        cost_price, profit, final_amount, discount, provider_ref, provider_status,
+        cost_price, profit, final_amount, discount,
         created_at, updated_at)
      VALUES ($1, $2, 'ELECTRICITY', 'electricity', 'DEBIT', $3, 'PENDING',
              $4, $5::jsonb, $6,
-             $7, $8, $9, 0, NULL, NULL,
+             $7, $8, $9, 0,
              NOW(), NOW())
      RETURNING *`,
     [
@@ -282,9 +287,9 @@ export async function purchaseElectricity({
         datashop_submitted: false,
       }),
       bill.provider.toUpperCase(),
-      amt,   // provisional cost_price — will be overwritten by DataShop response
-      0,     // provisional profit
-      amt,   // final_amount = user price (Option C, no user discount)
+      amt,
+      0,
+      amt,
     ]
   );
   const tx = txRows[0];
@@ -345,22 +350,53 @@ export async function purchaseElectricity({
       reference,
     });
 
-    /* ── 6. Interpret result ── */
-    const normalized = datashop.normalizeProviderStatus(dsResult.raw || dsResult);
-    const paidAmount = Number(dsResult.paid_amount || 0) || amt;
+    /* ── 6. Interpret result — read DataShop payload directly ── */
+    const raw     = dsResult.raw || {};
+    const rawData = raw.data || raw;
 
-    token       = dsResult.token       || null;
-    units       = dsResult.units       || null;
-    providerRef = dsResult.provider_reference || reference;
+    const dsStatusRaw = String(rawData.transaction_status || '').trim();
+    const dsStatus    = dsStatusRaw.toLowerCase();
+    const paidAmount  = Number(rawData.paid_amount || 0) || amt;
+
+    const tokenFromDs = rawData.token || rawData.token_code || rawData.standard_token || null;
+    const unitsFromDs = rawData.units != null ? String(rawData.units) : null;
+    const hasDelivery = !!(tokenFromDs || unitsFromDs);
+
+    token       = tokenFromDs || null;
+    units       = unitsFromDs || null;
+    providerRef = rawData.reference || dsResult.provider_reference || reference;
     dsCost      = paidAmount;
     dsProfit    = money(amt - dsCost);
 
+    let normalized;
+    if (dsStatus) {
+      if (dsStatus.includes('success'))                         normalized = 'successful';
+      else if (dsStatus.includes('fail') || dsStatus.includes('reject') ||
+               dsStatus.includes('cancel') || dsStatus.includes('error'))
+                                                                 normalized = 'failed';
+      else                                                       normalized = 'processing';
+    } else if (hasDelivery) {
+      /* No status string, but token/units arrived → definite success */
+      normalized = 'successful';
+    } else if (paidAmount > 0) {
+      /* No status, no delivery signal, but DataShop took money → AMBIGUOUS.
+         Must NOT be marked failed. Let the reconciler poll DataShop. */
+      normalized = 'processing';
+    } else {
+      normalized = 'failed';
+    }
+
+    console.log(
+      `[elec] purchase ${reference} ds_status=${JSON.stringify(dsStatusRaw)} ` +
+      `paid=${paidAmount} token=${tokenFromDs ? 'yes' : 'no'} → ${normalized}`
+    );
+
     if (normalized === 'successful') {
       finalStatus = 'success';
-      remark      = dsResult.remark || 'Electricity purchase successful';
+      remark      = rawData.remark || raw.message || 'Electricity purchase successful';
     } else if (normalized === 'failed') {
       finalStatus = 'failed';
-      remark      = dsResult.remark || 'Purchase failed';
+      remark      = rawData.remark || raw.message || 'Purchase failed';
     } else {
       finalStatus = 'processing';
       ambiguous   = true;
@@ -370,7 +406,6 @@ export async function purchaseElectricity({
     caughtErr = err;
 
     const isTimeout = err.code === 'PROVIDER_NETWORK' || err.isNetworkError;
-    const isReject  = err.code === 'PROVIDER_REJECTED';
 
     if (isTimeout && submitted) {
       finalStatus = 'processing';
@@ -406,7 +441,7 @@ export async function purchaseElectricity({
   }
 
   /* ── 8. Persist final state on transactions ── */
-  const dsRaw = dsResult?.raw || {};
+  const dsRaw = dsResult?.raw?.data || dsResult?.raw || {};
   const metadata = {
     ds_reference:        dsRaw.reference || providerRef,
     ds_status:           dsRaw.transaction_status || '',
@@ -417,6 +452,7 @@ export async function purchaseElectricity({
     ds_paid_amount:      dsCost,
     ds_customer_name:    dsRaw.customer_name    || null,
     ds_customer_address: dsRaw.customer_address || null,
+    ds_token:            token,
     wallet_before:       walletBefore,
     wallet_after:        walletAfter,
     ambiguous,
@@ -427,13 +463,13 @@ export async function purchaseElectricity({
       : null,
   };
 
+  /* ⚠️  provider_status is intentionally NOT passed — trigger would reject it */
   await updateTransaction(reference, {
     status:             finalStatus.toUpperCase(),
     description:        remark,
     remark,
     provider_reference: providerRef,
     provider_ref:       providerRef,
-    provider_status:    dsRaw.transaction_status || null,
     cost_price:         dsCost,
     profit:             dsProfit,
     final_amount:       amt,
@@ -457,7 +493,7 @@ export async function purchaseElectricity({
     [billStatus, token, providerRef, bp.id]
   );
 
-  /* ── 10. Provider-level audit events (only we know these) ── */
+  /* ── 10. Provider-level audit events ── */
   if (finalStatus === 'success') {
     await writeProviderAudit('provider_success', {
       userId, reference, amount: amt,
@@ -502,7 +538,6 @@ export async function purchaseElectricity({
     });
   }
 
-  /* ── 11. Definite errors are thrown; ambiguous returns normally ── */
   if (caughtErr && finalStatus === 'failed') {
     const e = new Error(caughtErr.message || 'Purchase failed');
     e.code  = caughtErr.code || 'PURCHASE_FAILED';
@@ -582,7 +617,6 @@ export async function getStatus(reference) {
     };
   }
 
-  /* Still processing — ask DataShop */
   let ds;
   try {
     ds = await datashop.checkElectricityStatus(reference);
@@ -606,7 +640,6 @@ export async function getStatus(reference) {
   else if (normalized === 'failed') newStatus = 'failed';
 
   if (newStatus !== 'processing' && newStatus !== current) {
-    /* Close out the hold */
     try {
       if (newStatus === 'success') {
         await wallet.releaseHold({
@@ -632,13 +665,13 @@ export async function getStatus(reference) {
       remark:             payload.remark || 'Updated',
       provider_reference: payload.reference || reference,
       provider_ref:       payload.reference || reference,
-      provider_status:    payload.transaction_status || null,
       cost_price:         dsCost,
       profit:             dsProfit,
       metadata: {
         ds_status:           payload.transaction_status || '',
         ds_quantity:         payload.quantity || null,
         ds_units:            unitsOut,
+        ds_token:            tokenOut,
         ds_customer_name:    payload.customer_name    || null,
         ds_customer_address: payload.customer_address || null,
         ds_disco:            payload.disco            || null,
@@ -691,7 +724,7 @@ export async function getStatus(reference) {
 }
 
 /* ============================================================
-   HISTORY — user's past electricity payments
+   HISTORY
    ============================================================ */
 export async function getHistory({ userId, limit = 20 } = {}) {
   if (!userId) throw new Error('userId is required');
@@ -736,7 +769,7 @@ export async function getHistory({ userId, limit = 20 } = {}) {
 }
 
 /* ============================================================
-   RECONCILER — call from cron every 60s
+   RECONCILER
    ============================================================ */
 export async function reconcileProcessingElectricityTransactions(limit = 50) {
   const { rows } = await query(
@@ -765,7 +798,6 @@ export async function reconcileProcessingElectricityTransactions(limit = 50) {
     const ageMs    = Date.now() - new Date(tx.created_at).getTime();
     const ageMin   = Math.floor(ageMs / 60000);
 
-    /* Case 1 — never submitted */
     const submitted = meta.datashop_submitted;
     if ((submitted === false || submitted === undefined) && ageMs > 30_000) {
       await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
@@ -784,7 +816,6 @@ export async function reconcileProcessingElectricityTransactions(limit = 50) {
       continue;
     }
 
-    /* Case 2 — check with DataShop */
     try {
       const ds = await datashop.checkElectricityStatus(ref);
       const normalized = datashop.normalizeProviderStatus(ds);
@@ -807,12 +838,12 @@ export async function reconcileProcessingElectricityTransactions(limit = 50) {
           remark:      payload.remark || 'Purchase successful',
           provider_reference: payload.reference || meta.ds_reference || ref,
           provider_ref:       payload.reference || meta.ds_reference || ref,
-          provider_status:    payload.transaction_status || null,
           cost_price: dsCost,
           profit,
           metadata: {
             ds_status: payload.transaction_status || '',
             ds_units:  payload.units || null,
+            ds_token:  tokenOut,
             ds_customer_name:    payload.customer_name    || null,
             ds_customer_address: payload.customer_address || null,
             ds_disco:            payload.disco            || null,
@@ -852,7 +883,6 @@ export async function reconcileProcessingElectricityTransactions(limit = 50) {
           status: 'FAILED',
           description: payload.remark || 'Purchase failed',
           remark:      payload.remark || 'Purchase failed',
-          provider_status: payload.transaction_status || null,
           metadata: {
             ds_status: payload.transaction_status || '',
             reconcile_attempts: attempts + 1,
@@ -876,7 +906,6 @@ export async function reconcileProcessingElectricityTransactions(limit = 50) {
 
         finalized++;
       } else {
-        /* still processing */
         if (attempts + 1 >= RECONCILE_MAX_ATTEMPTS) {
           await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
           await updateTransaction(ref, {
