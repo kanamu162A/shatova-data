@@ -1,12 +1,10 @@
-```javascript
-// frontend/js/transactions.js
-// ============================================================
-// SHATOVA — COMPLETE TRANSACTION HISTORY & RECEIPTS
-// Search • Filters • Pagination • Details • Copy • Share • Print
-// Electricity meter • Customer • Address • Disco • Token • kWh
-// ============================================================
 
 "use strict";
+
+// ============================================================
+// SHATOVA — TRANSACTION HISTORY & ELECTRICITY RECEIPTS
+// Search • Filters • Pagination • Details • Copy • Share • Print
+// ============================================================
 
 const API_BASE = String(window.API_BASE || "").replace(/\/+$/, "");
 const PAGE_SIZE = 20;
@@ -31,7 +29,7 @@ let draftCategory = "all";
 
 function getToken() {
   return localStorage.getItem("token") ||
-         sessionStorage.getItem("token") || "";
+    sessionStorage.getItem("token") || "";
 }
 
 function authHeaders() {
@@ -86,7 +84,9 @@ function formatRelativeTime(value) {
   if (days < 7) return `${days} days ago`;
 
   return date.toLocaleDateString("en-NG", {
-    day: "2-digit", month: "short", year: "numeric"
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
   });
 }
 
@@ -106,14 +106,38 @@ function safeText(value, fallback = "—") {
     : String(value).trim();
 }
 
+function parseObject(value) {
+  if (!value) return {};
+
+  if (typeof value === "object" && !Array.isArray(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  return {};
+}
+
 function getMetadata(tx) {
-  return tx?.metadata && typeof tx.metadata === "object"
-    ? tx.metadata : {};
+  return {
+    ...parseObject(tx?.metadata),
+    ...parseObject(tx?.meta),
+    ...parseObject(tx?.details),
+    ...parseObject(tx?.response_data),
+    ...parseObject(tx?.provider_response)
+  };
 }
 
 function getCreatedAt(tx) {
   return tx?.created_at || tx?.createdAt ||
-         tx?.completed_at || tx?.completedAt || tx?.date || null;
+    tx?.completed_at || tx?.completedAt || tx?.date || null;
 }
 
 // ============================================================
@@ -144,10 +168,8 @@ function classify(tx) {
   if (/withdraw|cash_out/.test(type)) return "withdrawals";
   if (/transfer|send/.test(type)) return "transfers";
 
-  if (
-    /deposit|topup|top_up|fund|credit|bonus/.test(type) ||
-    direction === "credit"
-  ) return "deposits";
+  if (/deposit|topup|top_up|fund|credit|bonus/.test(type) ||
+      direction === "credit") return "deposits";
 
   return "orders";
 }
@@ -178,13 +200,15 @@ function friendlyTitle(tx) {
   if (/withdraw|cash_out/.test(type)) return "Withdrawal";
   if (/transfer|send/.test(type)) return "Wallet Transfer";
   if (/deposit|topup|top_up|fund/.test(type)) return "Wallet Funding";
-  if (/electric|prepaid meter|postpaid meter/.test(
-    `${type} ${service} ${description}`.toLowerCase()
-  )) return "Electricity Payment";
+
+  if (isElectricityTx(tx)) return "Electricity Payment";
+
   if (/airtime/.test(`${type} ${service}`))
     return network ? `${network} Airtime` : "Airtime Purchase";
+
   if (/data/.test(`${type} ${service}`))
     return network ? `${network} Data` : "Data Purchase";
+
   if (/cable|tv/.test(`${type} ${service}`)) return "Cable Subscription";
   if (/exam|waec|jamb/.test(`${type} ${service}`)) return "Exam PIN";
 
@@ -198,11 +222,12 @@ function iconMarkup(tx) {
   const group = classify(tx);
 
   let key = "generic";
+
   if (group === "refunded") key = "refund";
   else if (group === "deposits") key = "deposit";
   else if (group === "withdrawals") key = "withdraw";
   else if (group === "transfers") key = "transfer";
-  else if (/electric|meter/.test(`${type} ${service}`)) key = "electricity";
+  else if (isElectricityTx(tx)) key = "electricity";
   else if (/airtime/.test(`${type} ${service}`)) key = "airtime";
   else if (/data/.test(`${type} ${service}`)) key = "data";
   else if (/cable|tv/.test(`${type} ${service}`)) key = "cable";
@@ -211,7 +236,8 @@ function iconMarkup(tx) {
 }
 
 // ============================================================
-// ROBUST RECEIPT DATA EXTRACTION
+// ELECTRICITY RECEIPT EXTRACTION
+// Supports root columns, JSON metadata and nested provider data.
 // ============================================================
 
 function receiptObjects(tx) {
@@ -219,8 +245,24 @@ function receiptObjects(tx) {
   const seen = new Set();
 
   function visit(value, depth = 0) {
-    if (!value || typeof value !== "object" || depth > 6) return;
-    if (seen.has(value)) return;
+    if (depth > 7 || value == null) return;
+
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+
+      if (
+        (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+        (trimmed.startsWith("[") && trimmed.endsWith("]"))
+      ) {
+        try {
+          visit(JSON.parse(trimmed), depth + 1);
+        } catch {}
+      }
+
+      return;
+    }
+
+    if (typeof value !== "object" || seen.has(value)) return;
     seen.add(value);
 
     if (Array.isArray(value)) {
@@ -232,12 +274,15 @@ function receiptObjects(tx) {
 
     [
       "metadata", "meta", "details", "data", "response",
-      "provider_response", "providerResponse", "provider_data",
-      "providerData", "result", "customer", "electricity",
-      "electricity_details", "electricityDetails", "bill",
-      "receipt", "transaction", "transaction_details",
-      "transactionDetails"
-    ].forEach(key => visit(value[key], depth + 1));
+      "response_data", "responseData", "provider_response",
+      "providerResponse", "provider_data", "providerData",
+      "result", "customer", "customer_info", "customerInfo",
+      "electricity", "electricity_details", "electricityDetails",
+      "bill", "receipt", "purchase_details", "purchaseDetails",
+      "transaction_details", "transactionDetails"
+    ].forEach(key => {
+      if (value[key] != null) visit(value[key], depth + 1);
+    });
   }
 
   visit(tx);
@@ -247,27 +292,37 @@ function receiptObjects(tx) {
 function receiptValue(tx, aliases) {
   const objects = receiptObjects(tx);
 
-  for (const obj of objects) {
-    for (const alias of aliases) {
-      const value = obj[alias];
-
-      if (value !== undefined && value !== null &&
-          String(value).trim() !== "") {
-        return String(value).trim();
-      }
-    }
-  }
-
   const normalize = value =>
     String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
 
   const wanted = new Set(aliases.map(normalize));
 
+  // First check exact property names.
+  for (const obj of objects) {
+    for (const alias of aliases) {
+      const value = obj[alias];
+
+      if (
+        value !== undefined &&
+        value !== null &&
+        typeof value !== "object" &&
+        String(value).trim() !== ""
+      ) {
+        return String(value).trim();
+      }
+    }
+  }
+
+  // Then support snake_case, camelCase and differently formatted keys.
   for (const obj of objects) {
     for (const [key, value] of Object.entries(obj)) {
-      if (wanted.has(normalize(key)) &&
-          value !== undefined && value !== null &&
-          String(value).trim() !== "") {
+      if (
+        wanted.has(normalize(key)) &&
+        value !== undefined &&
+        value !== null &&
+        typeof value !== "object" &&
+        String(value).trim() !== ""
+      ) {
         return String(value).trim();
       }
     }
@@ -283,14 +338,18 @@ function isElectricityTx(tx) {
 
   const description = objects.flatMap(obj => [
     obj.type, obj.service, obj.category, obj.description,
-    obj.product_name, obj.productName, obj.bill_type, obj.billType
+    obj.product_name, obj.productName, obj.bill_type,
+    obj.billType, obj.service_type, obj.serviceType
   ]).filter(Boolean).join(" ").toLowerCase();
 
-  if (/\belectricity\b|\belectric\b|\bprepaid meter\b|\bpostpaid meter\b/.test(description))
+  if (
+    /\belectricity\b|\belectric\b|\bprepaid meter\b|\bpostpaid meter\b|\bdisco\b/.test(description)
+  ) {
     return true;
+  }
 
   return Boolean(receiptValue(tx, [
-    "meter_number", "meterNumber", "meter_no",
+    "meter_number", "meterNumber", "meter_no", "meterNo",
     "electricity_token", "electricityToken",
     "ds_customer_name", "ds_disco"
   ]));
@@ -301,38 +360,64 @@ function getElectricityReceipt(tx) {
     meter: receiptValue(tx, [
       "meter_number", "meterNumber", "meter_no", "meterNo",
       "meter", "customer_meter_number", "customerMeterNumber",
-      "customer_id", "customerId"
+      "meter_id", "meterId", "meter_number_used"
     ]),
     customer: receiptValue(tx, [
       "ds_customer_name", "customer_name", "customerName",
-      "customer", "account_name", "accountName",
-      "customer_full_name", "customerFullName"
+      "customer_full_name", "customerFullName",
+      "account_name", "accountName", "customer_name_on_meter"
     ]),
     address: receiptValue(tx, [
       "ds_customer_address", "customer_address", "customerAddress",
       "meter_address", "meterAddress", "service_address",
-      "serviceAddress", "address"
+      "serviceAddress", "customer_location", "customerLocation",
+      "address"
     ]),
     disco: receiptValue(tx, [
       "ds_disco", "disco", "disco_name", "discoName",
       "electricity_provider", "electricityProvider",
-      "provider_name", "providerName", "provider"
+      "provider_name", "providerName", "distribution_company",
+      "distributionCompany", "service_provider", "serviceProvider"
     ]),
     token: receiptValue(tx, [
       "ds_token", "electricity_token", "electricityToken",
       "token", "token_code", "tokenCode", "standard_token",
-      "standardToken", "vend_token", "vendToken"
+      "standardToken", "vend_token", "vendToken",
+      "meter_token", "meterToken", "purchase_token", "purchaseToken"
     ]),
     units: receiptValue(tx, [
       "ds_units", "units", "kwh", "units_purchased",
-      "unitsPurchased", "energy_units", "energyUnits"
+      "unitsPurchased", "energy_units", "energyUnits",
+      "vend_units", "vendUnits", "unit_purchased"
     ])
   };
 }
 
+function resetElectricityFields() {
+  [
+    ["txmMeterRow", "txmMeter"],
+    ["txmCustomerRow", "txmCustomer"],
+    ["txmAddressRow", "txmAddress"],
+    ["txmDiscoRow", "txmDisco"]
+  ].forEach(([rowId, valueId]) => {
+    if (byId(rowId)) byId(rowId).style.display = "none";
+    if (byId(valueId)) byId(valueId).textContent = "";
+  });
+
+  if (byId("txmTokenBox")) byId("txmTokenBox").style.display = "none";
+  if (byId("txmToken")) byId("txmToken").textContent = "";
+  if (byId("txmUnits")) {
+    byId("txmUnits").textContent = "";
+    byId("txmUnits").style.display = "";
+  }
+}
+
 function fillElectricityFields(tx) {
+  resetElectricityFields();
+
+  if (!isElectricityTx(tx)) return;
+
   const fields = getElectricityReceipt(tx);
-  const electricity = isElectricityTx(tx);
 
   const rows = [
     ["txmMeterRow", "txmMeter", fields.meter],
@@ -340,23 +425,6 @@ function fillElectricityFields(tx) {
     ["txmAddressRow", "txmAddress", fields.address],
     ["txmDiscoRow", "txmDisco", fields.disco]
   ];
-
-  rows.forEach(([rowId, valueId]) => {
-    const row = byId(rowId);
-    const element = byId(valueId);
-    if (row) row.style.display = "none";
-    if (element) element.textContent = "";
-  });
-
-  const tokenBox = byId("txmTokenBox");
-  const tokenEl = byId("txmToken");
-  const unitsEl = byId("txmUnits");
-
-  if (tokenBox) tokenBox.style.display = "none";
-  if (tokenEl) tokenEl.textContent = "";
-  if (unitsEl) unitsEl.textContent = "";
-
-  if (!electricity) return;
 
   rows.forEach(([rowId, valueId, value]) => {
     const row = byId(rowId);
@@ -371,50 +439,61 @@ function fillElectricityFields(tx) {
   const meta = getMetadata(tx);
 
   const recipient = fields.meter ||
-    receiptValue(tx, ["recipient", "phone", "phone_number", "phoneNumber"]);
+    receiptValue(tx, [
+      "recipient", "phone", "phone_number", "phoneNumber"
+    ]);
 
-  if (byId("txmRecipient"))
+  if (byId("txmRecipient")) {
     byId("txmRecipient").textContent = recipient || "—";
+  }
 
-  if (byId("txmNetwork"))
-    byId("txmNetwork").textContent = fields.disco ||
-      meta.network_name || meta.network || "—";
+  if (byId("txmNetwork")) {
+    byId("txmNetwork").textContent =
+      fields.disco || meta.network_name || meta.network || tx.network || "—";
+  }
+
+  const tokenBox = byId("txmTokenBox");
+  const tokenEl = byId("txmToken");
+  const unitsEl = byId("txmUnits");
 
   if (tokenBox && (fields.token || fields.units)) {
     tokenBox.style.display = "";
 
-    if (tokenEl)
+    if (tokenEl) {
       tokenEl.textContent = fields.token || "Token not available";
+    }
 
     if (unitsEl) {
       unitsEl.textContent = fields.units ? `${fields.units} kWh` : "";
       unitsEl.style.display = fields.units ? "" : "none";
     }
+  }
 
-    const button = byId("txmCopyToken");
+  const copyButton = byId("txmCopyToken");
 
-    if (button) {
-      const fresh = button.cloneNode(true);
-      button.replaceWith(fresh);
-      fresh.disabled = !fields.token;
+  if (copyButton) {
+    copyButton.disabled = !fields.token;
+    copyButton.onclick = async () => {
+      if (!fields.token) {
+        alert("No electricity token is available in this transaction.");
+        return;
+      }
 
-      fresh.addEventListener("click", async () => {
-        if (!fields.token) {
-          alert("No electricity token was returned for this transaction.");
-          return;
-        }
+      try {
+        await copyText(fields.token);
+        const original = copyButton.dataset.originalText ||
+          copyButton.textContent || "Copy token";
 
-        try {
-          await copyText(fields.token);
-          fresh.textContent = "Copied ✓";
-          setTimeout(() => {
-            fresh.textContent = button.textContent || "Copy token";
-          }, 1500);
-        } catch {
-          window.prompt("Copy your electricity token:", fields.token);
-        }
-      });
-    }
+        copyButton.dataset.originalText = original;
+        copyButton.textContent = "Copied ✓";
+
+        setTimeout(() => {
+          if (copyButton.isConnected) copyButton.textContent = original;
+        }, 1500);
+      } catch {
+        window.prompt("Copy electricity token:", fields.token);
+      }
+    };
   }
 }
 
@@ -434,10 +513,10 @@ async function copyText(value) {
   document.body.appendChild(textarea);
   textarea.select();
 
-  const ok = document.execCommand("copy");
+  const copied = document.execCommand("copy");
   textarea.remove();
 
-  if (!ok) throw new Error("Copy failed");
+  if (!copied) throw new Error("Copy failed");
 }
 
 // ============================================================
@@ -448,23 +527,31 @@ function applyFilters() {
   const search = state.search.trim().toLowerCase();
 
   state.filtered = state.allTransactions.filter(tx => {
-    if (state.filters.category !== "all" &&
-        classify(tx) !== state.filters.category) return false;
+    if (
+      state.filters.category !== "all" &&
+      classify(tx) !== state.filters.category
+    ) return false;
 
     const status = statusInfo(tx).cls;
 
     if (state.filters.status === "success" && status !== "success")
       return false;
+
     if (state.filters.status === "processing" && status !== "pending")
       return false;
-    if (state.filters.status === "failed" &&
-        status !== "failed" && status !== "refunded") return false;
+
+    if (
+      state.filters.status === "failed" &&
+      status !== "failed" && status !== "refunded"
+    ) return false;
 
     if (search) {
       const values = receiptObjects(tx).flatMap(obj => [
-        obj.reference, obj.transaction_reference, obj.transactionReference,
-        obj.description, obj.phone, obj.meter_number, obj.customer_name,
-        obj.network, obj.network_name, obj.token, obj.amount
+        obj.reference, obj.transaction_reference,
+        obj.transactionReference, obj.description, obj.phone,
+        obj.meter_number, obj.meterNumber, obj.customer_name,
+        obj.customerName, obj.network, obj.network_name,
+        obj.token, obj.amount
       ]).filter(value => value != null);
 
       if (!values.join(" ").toLowerCase().includes(search)) return false;
@@ -474,10 +561,13 @@ function applyFilters() {
   });
 
   state.currentPage = 1;
-  state.totalPages = Math.max(1, Math.ceil(state.filtered.length / PAGE_SIZE));
+  state.totalPages = Math.max(
+    1, Math.ceil(state.filtered.length / PAGE_SIZE)
+  );
 
-  const count = byId("txCount");
-  if (count) count.textContent = String(state.filtered.length);
+  if (byId("txCount")) {
+    byId("txCount").textContent = String(state.filtered.length);
+  }
 
   updateFilterBadge();
   renderPage();
@@ -486,6 +576,7 @@ function applyFilters() {
 function updateFilterBadge() {
   const badge = byId("txFilterBadge");
   const fab = byId("txFilterFab");
+
   if (!badge) return;
 
   const count =
@@ -494,6 +585,7 @@ function updateFilterBadge() {
 
   badge.textContent = String(count);
   badge.classList.toggle("hidden", count === 0);
+
   if (fab) fab.classList.toggle("tx-filter-fab-active", count > 0);
 }
 
@@ -508,21 +600,21 @@ function renderPage() {
 
   if (!container) return;
 
-  const total = state.filtered.length;
-
-  if (!total) {
+  if (!state.filtered.length) {
     container.innerHTML = "";
     container.classList.add("hidden");
+
     if (empty) empty.classList.remove("hidden");
     if (pagination) pagination.classList.add("hidden");
 
     if (byId("txEmptyTitle"))
       byId("txEmptyTitle").textContent = "No transactions found";
 
-    if (byId("txEmptyText"))
+    if (byId("txEmptyText")) {
       byId("txEmptyText").textContent = state.search
         ? `No matches for "${state.search}".`
         : "Your transactions will appear here.";
+    }
 
     return;
   }
@@ -535,21 +627,22 @@ function renderPage() {
   container.innerHTML = items.map((tx, index) => {
     const title = friendlyTitle(tx);
     const status = statusInfo(tx);
-    const date = formatRelativeTime(getCreatedAt(tx));
-    const amount = formatNaira(tx.amount);
 
     return `
       <div class="tx-item" data-tx-idx="${start + index}"
-           role="button" tabindex="0" aria-label="View ${escapeHtml(title)} receipt">
+           role="button" tabindex="0"
+           aria-label="View ${escapeHtml(title)} receipt">
         ${iconMarkup(tx)}
         <div class="tx-main">
           <div class="tx-title">${escapeHtml(title)}</div>
           <div class="tx-meta">
-            <span class="tx-when">${escapeHtml(date)}</span>
+            <span class="tx-when">${escapeHtml(
+              formatRelativeTime(getCreatedAt(tx))
+            )}</span>
             <span class="tx-pill tx-pill-${status.cls}">${status.label}</span>
           </div>
         </div>
-        <div class="tx-amount">${escapeHtml(amount)}</div>
+        <div class="tx-amount">${escapeHtml(formatNaira(tx.amount))}</div>
       </div>`;
   }).join("");
 
@@ -562,6 +655,7 @@ function renderPage() {
     };
 
     row.addEventListener("click", open);
+
     row.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
@@ -598,10 +692,13 @@ function renderPagination() {
   let html = "";
 
   [...pages].sort((a, b) => a - b).forEach(page => {
-    if (page - previous > 1) html += '<span class="pg-ellipsis">…</span>';
+    if (page - previous > 1) {
+      html += '<span class="pg-ellipsis">…</span>';
+    }
 
-    html += `<button type="button" class="pg-num ${page === current ? "active" : ""}"
-             data-page="${page}">${page}</button>`;
+    html += `<button type="button"
+      class="pg-num ${page === current ? "active" : ""}"
+      data-page="${page}">${page}</button>`;
 
     previous = page;
   });
@@ -645,6 +742,7 @@ function openTxModal(tx) {
   const meta = getMetadata(tx);
 
   const hero = byId("txmHero");
+
   if (hero) {
     hero.classList.remove(
       "txm-success", "txm-failed", "txm-processing", "txm-refunded"
@@ -674,31 +772,36 @@ function openTxModal(tx) {
   if (byId("txmTitle")) byId("txmTitle").textContent = title;
   if (byId("txmAmount")) byId("txmAmount").textContent = formatNaira(tx.amount);
 
-  if (byId("txmRecipient"))
+  if (byId("txmRecipient")) {
     byId("txmRecipient").textContent =
       meta.phone || tx.recipient || tx.phone || "—";
+  }
 
-  if (byId("txmReference"))
+  if (byId("txmReference")) {
     byId("txmReference").textContent =
       tx.reference || tx.transaction_reference ||
       tx.transactionReference || tx.id || "—";
+  }
 
   if (byId("txmDate"))
     byId("txmDate").textContent = formatDateTimeFull(getCreatedAt(tx));
 
   if (byId("txmType")) byId("txmType").textContent = title;
 
-  if (byId("txmNetwork"))
+  if (byId("txmNetwork")) {
     byId("txmNetwork").textContent =
       meta.network_name || meta.network || tx.network || "—";
+  }
 
-  if (byId("txmRemark"))
-    byId("txmRemark").textContent =
-      tx.description || status.label;
+  if (byId("txmRemark")) {
+    byId("txmRemark").textContent = tx.description || status.label;
+  }
 
+  // Electricity fields are reset and repopulated for every receipt.
   fillElectricityFields(tx);
 
   modal.classList.remove("hidden");
+
   if (modalTimer) clearTimeout(modalTimer);
 
   requestAnimationFrame(() => modal.classList.add("show"));
@@ -717,6 +820,7 @@ function closeTxModal() {
   modalTimer = setTimeout(() => {
     modal.classList.add("hidden");
     currentTx = null;
+    resetElectricityFields();
   }, 260);
 }
 
@@ -733,10 +837,11 @@ if (byId("txModal")) {
 }
 
 document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && byId("txModal") &&
-      !byId("txModal").classList.contains("hidden")) {
-    closeTxModal();
-  }
+  if (
+    event.key === "Escape" &&
+    byId("txModal") &&
+    !byId("txModal").classList.contains("hidden")
+  ) closeTxModal();
 });
 
 // ============================================================
@@ -782,15 +887,17 @@ function receiptText(tx) {
     `Date: ${formatDateTimeFull(getCreatedAt(tx))}`
   ];
 
-  if (meta.phone || tx.phone)
+  if (meta.phone || tx.phone) {
     lines.push(`Recipient: ${meta.phone || tx.phone}`);
+  }
 
   if (isElectricityTx(tx)) {
     const e = getElectricityReceipt(tx);
+
     lines.push(
-      `Disco: ${e.disco || "—"}`,
-      `Meter: ${e.meter || "—"}`,
-      `Customer: ${e.customer || "—"}`,
+      `DisCo: ${e.disco || "—"}`,
+      `Meter Number: ${e.meter || "—"}`,
+      `Customer Name: ${e.customer || "—"}`,
       `Address: ${e.address || "—"}`,
       `Token: ${e.token || "Not available in transaction data"}`,
       `Units: ${e.units ? `${e.units} kWh` : "—"}`
@@ -826,7 +933,7 @@ if (byId("txmShare")) {
 }
 
 // ============================================================
-// PRINT RECEIPT — ESCAPED VALUES, INCLUDING ELECTRICITY DETAILS
+// PRINT RECEIPT
 // ============================================================
 
 function printReceipt(tx) {
@@ -926,7 +1033,11 @@ function printReceipt(tx) {
           break-inside: avoid;
         }
         .label { color: #64748b; flex: 0 0 40%; }
-        .value { font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+        .value {
+          font-weight: 600;
+          text-align: right;
+          overflow-wrap: anywhere;
+        }
         .footer {
           text-align: center;
           color: #64748b;
@@ -937,7 +1048,6 @@ function printReceipt(tx) {
         }
         @media print {
           body { padding: 0; }
-          .no-print { display: none; }
         }
       </style>
     </head>
@@ -952,9 +1062,7 @@ function printReceipt(tx) {
       <div class="footer">Thank you for using Shatova.</div>
       <script>
         window.onload = function() {
-          setTimeout(function() {
-            window.print();
-          }, 400);
+          setTimeout(function() { window.print(); }, 400);
         };
       <\/script>
     </body>
@@ -1002,6 +1110,7 @@ function closeFilterSheet() {
   document.body.style.overflow = "";
 
   if (filterTimer) clearTimeout(filterTimer);
+
   filterTimer = setTimeout(() => sheet.classList.add("hidden"), 260);
 }
 
@@ -1031,27 +1140,32 @@ function syncFilterControls() {
   if (byId("txSearchInput"))
     byId("txSearchInput").value = state.search;
 
-  if (byId("txSearchClear"))
+  if (byId("txSearchClear")) {
     byId("txSearchClear").classList.toggle("hidden", !state.search);
+  }
 
   if (byId("txStatusChips")) {
     byId("txStatusChips").querySelectorAll(".tx-chip").forEach(chip => {
-      chip.classList.toggle("active",
-        chip.dataset.status === state.filters.status);
+      chip.classList.toggle(
+        "active",
+        chip.dataset.status === state.filters.status
+      );
     });
   }
 
   const labels = {
     all: "All Types",
+    orders: "Purchases",
     deposits: "Deposits",
     withdrawals: "Withdrawals",
     refunded: "Refunded",
     transfers: "Transfers"
   };
 
-  if (byId("typeDropdownLabel"))
+  if (byId("typeDropdownLabel")) {
     byId("typeDropdownLabel").textContent =
       labels[state.filters.category] || "All Types";
+  }
 }
 
 if (byId("filterReset")) {
@@ -1095,7 +1209,7 @@ if (byId("txStatusChips")) {
 if (byId("typeDropdownBtn")) {
   byId("typeDropdownBtn").addEventListener("click", () => {
     const categories = [
-      "all", "deposits", "withdrawals", "refunded", "transfers"
+      "all", "orders", "deposits", "withdrawals", "refunded", "transfers"
     ];
 
     const index = categories.indexOf(state.filters.category);
@@ -1115,8 +1229,9 @@ if (byId("txSearchInput")) {
   byId("txSearchInput").addEventListener("input", event => {
     state.search = event.target.value || "";
 
-    if (byId("txSearchClear"))
+    if (byId("txSearchClear")) {
       byId("txSearchClear").classList.toggle("hidden", !state.search);
+    }
 
     if (searchTimer) clearTimeout(searchTimer);
     searchTimer = setTimeout(applyFilters, 180);
@@ -1126,7 +1241,10 @@ if (byId("txSearchInput")) {
 if (byId("txSearchClear")) {
   byId("txSearchClear").addEventListener("click", () => {
     state.search = "";
-    if (byId("txSearchInput")) byId("txSearchInput").value = "";
+
+    if (byId("txSearchInput")) {
+      byId("txSearchInput").value = "";
+    }
 
     byId("txSearchClear").classList.add("hidden");
     applyFilters();
@@ -1140,7 +1258,7 @@ if (byId("pgNext"))
   byId("pgNext").addEventListener("click", () => changePage(1));
 
 // ============================================================
-// FETCH TRANSACTIONS
+// FETCH TRANSACTIONS — KEEP EXISTING API CONTRACT
 // ============================================================
 
 function extractTransactions(json) {
@@ -1193,19 +1311,23 @@ async function fetchAllTransactions() {
     const json = await response.json().catch(() => ({}));
 
     if (!response.ok || json.success === false) {
-      throw new Error(json.message || `Request failed (${response.status}).`);
+      throw new Error(
+        json.message || `Request failed (${response.status}).`
+      );
     }
 
     const transactions = extractTransactions(json);
 
     if (!transactions) {
-      throw new Error("The transactions API returned an unexpected response.");
+      throw new Error(
+        "Unexpected transaction API response. Check the Network response."
+      );
     }
 
     state.allTransactions = transactions;
-    state.search = state.search || "";
 
     if (skeleton) skeleton.classList.add("hidden");
+
     syncFilterControls();
     applyFilters();
 
@@ -1216,12 +1338,14 @@ async function fetchAllTransactions() {
     if (container) container.classList.add("hidden");
     if (empty) empty.classList.remove("hidden");
 
-    if (byId("txEmptyTitle"))
+    if (byId("txEmptyTitle")) {
       byId("txEmptyTitle").textContent = "Could not load transactions";
+    }
 
-    if (byId("txEmptyText"))
+    if (byId("txEmptyText")) {
       byId("txEmptyText").textContent =
         error.message || "Please check your connection and try again.";
+    }
   }
 }
 
@@ -1239,8 +1363,11 @@ async function initTransactions() {
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initTransactions, { once: true });
+  document.addEventListener(
+    "DOMContentLoaded",
+    initTransactions,
+    { once: true }
+  );
 } else {
   initTransactions();
 }
-```
