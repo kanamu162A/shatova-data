@@ -1,10 +1,11 @@
+// frontend/js/transactions.js
+// ============================================================
+// SHATOVA — COMPLETE TRANSACTION HISTORY & RECEIPTS
+// Search • Filters • Pagination • Details • Copy • Share • Print
+// Electricity meter • Customer • Address • Disco • Token • kWh
+// ============================================================
 
 "use strict";
-
-// ============================================================
-// SHATOVA — TRANSACTION HISTORY & ELECTRICITY RECEIPTS
-// Search • Filters • Pagination • Details • Copy • Share • Print
-// ============================================================
 
 const API_BASE = String(window.API_BASE || "").replace(/\/+$/, "");
 const PAGE_SIZE = 20;
@@ -131,7 +132,8 @@ function getMetadata(tx) {
     ...parseObject(tx?.meta),
     ...parseObject(tx?.details),
     ...parseObject(tx?.response_data),
-    ...parseObject(tx?.provider_response)
+    ...parseObject(tx?.provider_response),
+    ...parseObject(tx?.providerResponse)
   };
 }
 
@@ -236,16 +238,24 @@ function iconMarkup(tx) {
 }
 
 // ============================================================
-// ELECTRICITY RECEIPT EXTRACTION
-// Supports root columns, JSON metadata and nested provider data.
+// ELECTRICITY RECEIPT EXTRACTION — ROBUST
 // ============================================================
 
+/**
+ * Recursively walks EVERY property of the transaction (including
+ * JSON-string values, arrays, and nested objects) and returns a
+ * flat list of every plain object encountered.
+ *
+ * This no longer relies on a hardcoded whitelist of key names, so
+ * no matter where the provider nests the token / meter / disco, it
+ * will be found.
+ */
 function receiptObjects(tx) {
   const objects = [];
   const seen = new Set();
 
   function visit(value, depth = 0) {
-    if (depth > 7 || value == null) return;
+    if (depth > 10 || value == null) return;
 
     if (typeof value === "string") {
       const trimmed = value.trim();
@@ -256,7 +266,7 @@ function receiptObjects(tx) {
       ) {
         try {
           visit(JSON.parse(trimmed), depth + 1);
-        } catch {}
+        } catch { /* not valid JSON — ignore */ }
       }
 
       return;
@@ -272,58 +282,77 @@ function receiptObjects(tx) {
 
     objects.push(value);
 
-    [
-      "metadata", "meta", "details", "data", "response",
-      "response_data", "responseData", "provider_response",
-      "providerResponse", "provider_data", "providerData",
-      "result", "customer", "customer_info", "customerInfo",
-      "electricity", "electricity_details", "electricityDetails",
-      "bill", "receipt", "purchase_details", "purchaseDetails",
-      "transaction_details", "transactionDetails"
-    ].forEach(key => {
-      if (value[key] != null) visit(value[key], depth + 1);
-    });
+    // Recurse into EVERY enumerable key.
+    for (const key of Object.keys(value)) {
+      visit(value[key], depth + 1);
+    }
   }
 
   visit(tx);
   return objects;
 }
 
+/**
+ * Normalises a key by lowercasing and stripping everything except
+ * letters and digits. "meter_number", "meterNumber", "Meter-Number"
+ * all normalise to "meternumber".
+ */
+function normalizeKey(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Searches all objects for the first non-empty scalar value whose
+ * key matches one of the aliases.
+ *
+ * Match priority:
+ *   1. Exact key match.
+ *   2. Normalised key match (snake_case / camelCase / PascalCase).
+ *   3. Key CONTAINS the alias (catches token_number, prepaid_token, …).
+ */
 function receiptValue(tx, aliases) {
   const objects = receiptObjects(tx);
+  const normalisedAliases = aliases.map(normalizeKey);
 
-  const normalize = value =>
-    String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+  const isUsable = value =>
+    value !== undefined &&
+    value !== null &&
+    typeof value !== "object" &&
+    String(value).trim() !== "";
 
-  const wanted = new Set(aliases.map(normalize));
-
-  // First check exact property names.
+  // Pass 1 — exact key
   for (const obj of objects) {
     for (const alias of aliases) {
-      const value = obj[alias];
+      if (isUsable(obj[alias])) return String(obj[alias]).trim();
+    }
+  }
 
-      if (
-        value !== undefined &&
-        value !== null &&
-        typeof value !== "object" &&
-        String(value).trim() !== ""
-      ) {
+  // Pass 2 — normalised key
+  for (const obj of objects) {
+    for (const [key, value] of Object.entries(obj)) {
+      if (!isUsable(value)) continue;
+
+      const nk = normalizeKey(key);
+
+      if (normalisedAliases.includes(nk)) {
         return String(value).trim();
       }
     }
   }
 
-  // Then support snake_case, camelCase and differently formatted keys.
+  // Pass 3 — key contains alias (last resort)
   for (const obj of objects) {
     for (const [key, value] of Object.entries(obj)) {
-      if (
-        wanted.has(normalize(key)) &&
-        value !== undefined &&
-        value !== null &&
-        typeof value !== "object" &&
-        String(value).trim() !== ""
-      ) {
-        return String(value).trim();
+      if (!isUsable(value)) continue;
+
+      const nk = normalizeKey(key);
+      const strValue = String(value).trim();
+
+      // Avoid dumping giant blobs (URLs, HTML, JSON strings).
+      if (strValue.length > 300) continue;
+
+      if (normalisedAliases.some(alias => nk.includes(alias))) {
+        return strValue;
       }
     }
   }
@@ -336,14 +365,18 @@ function isElectricityTx(tx) {
 
   const objects = receiptObjects(tx);
 
-  const description = objects.flatMap(obj => [
-    obj.type, obj.service, obj.category, obj.description,
-    obj.product_name, obj.productName, obj.bill_type,
-    obj.billType, obj.service_type, obj.serviceType
-  ]).filter(Boolean).join(" ").toLowerCase();
+  const description = objects
+    .flatMap(obj => [
+      obj.type, obj.service, obj.category, obj.description,
+      obj.product_name, obj.productName, obj.bill_type,
+      obj.billType, obj.service_type, obj.serviceType
+    ])
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
 
   if (
-    /\belectricity\b|\belectric\b|\bprepaid meter\b|\bpostpaid meter\b|\bdisco\b/.test(description)
+    /\belectricity\b|\belectric\b|\bprepaid meter\b|\bpostpaid meter\b|\bdisco\b|\bkwh\b/.test(description)
   ) {
     return true;
   }
@@ -351,7 +384,8 @@ function isElectricityTx(tx) {
   return Boolean(receiptValue(tx, [
     "meter_number", "meterNumber", "meter_no", "meterNo",
     "electricity_token", "electricityToken",
-    "ds_customer_name", "ds_disco"
+    "ds_customer_name", "ds_disco",
+    "disco", "disco_name", "discoName"
   ]));
 }
 
@@ -400,8 +434,10 @@ function resetElectricityFields() {
     ["txmAddressRow", "txmAddress"],
     ["txmDiscoRow", "txmDisco"]
   ].forEach(([rowId, valueId]) => {
-    if (byId(rowId)) byId(rowId).style.display = "none";
-    if (byId(valueId)) byId(valueId).textContent = "";
+    const row = byId(rowId);
+    const value = byId(valueId);
+    if (row) row.style.display = "none";
+    if (value) value.textContent = "";
   });
 
   if (byId("txmTokenBox")) byId("txmTokenBox").style.display = "none";
@@ -1258,7 +1294,7 @@ if (byId("pgNext"))
   byId("pgNext").addEventListener("click", () => changePage(1));
 
 // ============================================================
-// FETCH TRANSACTIONS — KEEP EXISTING API CONTRACT
+// FETCH TRANSACTIONS
 // ============================================================
 
 function extractTransactions(json) {
