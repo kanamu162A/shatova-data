@@ -57,12 +57,12 @@ button{font-family:inherit}
 .sidebar .brand-badge{font-size:8px;font-weight:800;color:var(--warning-dark);letter-spacing:0.7px;text-transform:uppercase;margin-top:1px}
 .nav-section{display:flex;flex-direction:column;gap:2px}
 .nav-section-label{font-size:9px;font-weight:800;color:var(--text-muted);letter-spacing:1.3px;text-transform:uppercase;padding:6px 10px 3px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;transition:all .22s;text-align:left;width:100%;letter-spacing:-0.1px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:11.8px;font-weight:600;cursor:pointer;transition:all .22s;text-align:left;width:100%;letter-spacing:-0.1px}
 .nav-item i{font-size:12px;width:15px;text-align:center;color:var(--text-muted);transition:all .22s}
 .nav-item .nav-badge{margin-left:auto;font-size:9px;font-weight:800;padding:1px 7px;border-radius:999px;background:var(--bg-input);color:var(--text-muted);min-width:20px;text-align:center}
 .nav-item:hover{background:var(--bg-hover);color:var(--text);transform:translateX(1px)}
 .nav-item:hover i{color:var(--primary);transform:scale(1.08)}
-.nav-item.active{background:var(--primary-gradient);color:#fff;box-shadow:0 5px 14px -4px rgba(10,69,52,0.4)}
+.nav-item.active{background:linear-gradient(135deg,rgba(13,90,68,.96) 0%,rgba(10,69,52,.96) 48%,rgba(6,47,36,.96) 100%);color:#fff;box-shadow:0 3px 9px -4px rgba(10,69,52,0.32)}
 .nav-item.active i{color:#fff}
 .nav-item.active .nav-badge{background:rgba(255,255,255,0.22);color:#fff}
 .nav-item.nav-link{text-decoration:none}
@@ -99,9 +99,9 @@ button{font-family:inherit}
 .timeframe-bar .tf-meta strong{color:var(--primary-dark);font-weight:800}
 .tf-pills{display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;padding:2px;background:var(--bg-input);border-radius:8px;border:1px solid var(--border-soft);scrollbar-width:none;max-width:100%}
 .tf-pills::-webkit-scrollbar{display:none}
-.tf-pills button{padding:5px 10px;font-size:10.5px;font-weight:700;border-radius:6px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;white-space:nowrap;transition:all .16s;font-family:inherit;flex-shrink:0}
+.tf-pills button{padding:4px 9px;font-size:10px;font-weight:700;border-radius:5px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;white-space:nowrap;transition:all .16s;font-family:inherit;flex-shrink:0}
 .tf-pills button:hover:not(.active){color:var(--text);background:var(--bg-hover)}
-.tf-pills button.active{background:var(--bg-card);color:var(--primary-dark);box-shadow:0 1px 2px rgba(15,23,42,0.06),0 3px 8px rgba(15,23,42,0.04);font-weight:800}
+.tf-pills button.active{background:rgba(255,255,255,.95);color:var(--primary-dark);box-shadow:0 1px 2px rgba(15,23,42,0.045),0 2px 5px rgba(15,23,42,0.035);font-weight:800}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
 .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:all .26s;min-width:0;position:relative;overflow:hidden;box-shadow:var(--shadow-xs);animation:fadeUp .45s both}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--primary-gradient);opacity:0;transition:opacity .28s}
@@ -1602,7 +1602,7 @@ button.primary:hover {
           <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fas fa-wifi"></i></div></div><div class="stat-label">Data Sales</div><div class="stat-value" id="statData">—</div><div class="stat-sub" id="statDataSub">0 transactions</div></div>
 <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fas fa-bolt"></i></div></div><div class="stat-label">Electricity Sales</div><div class="stat-value" id="statElectricity">—</div><div class="stat-sub" id="statElectricitySub">0 transactions</div></div>
           <div class="stat-card success"><div class="stat-top"><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div><div class="stat-label">Success Rate</div><div class="stat-value success" id="statSuccess">—</div><div class="stat-sub" id="statSuccessSub">Across all VTU</div></div>
-          <div class="stat-card warning"><div class="stat-top"><div class="stat-icon"><i class="fas fa-coins"></i></div></div><div class="stat-label">Est. Profit</div><div class="stat-value warning" id="statProfit">—</div><div class="stat-sub" id="statProfitSub">From completed sales</div></div>
+          <div class="stat-card warning"><div class="stat-top"><div class="stat-icon"><i class="fas fa-coins"></i></div></div><div class="stat-label">Est. Profit</div><div class="stat-value warning" id="statProfit">—</div><div class="stat-sub" id="statProfitSub">From completed product sales</div></div>
         </div>
         <div class="panel" id="panelRecentTx">
           <div class="panel-head"><h3><i class="fas fa-receipt"></i> Recent Transactions</h3><button onclick="switchTab('transactions')" style="padding:6px 12px;border-radius:999px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px">View all <i class="fas fa-arrow-right"></i></button></div>
@@ -1622,14 +1622,15 @@ button.primary:hover {
           </div>
           <div class="tf-meta" id="rangeMeta2"><i class="fas fa-circle-info"></i> <strong>Today</strong></div>
         </div>
+        <div id="analyticsDataNotice" role="status" style="display:none;margin-bottom:12px;padding:9px 12px;border:1px solid rgba(245,158,11,.24);border-radius:9px;background:var(--warning-light);color:var(--warning-dark);font-size:11px;font-weight:600"><i class="fas fa-triangle-exclamation"></i> Analytics data could not be verified. Check the admin API response before relying on these figures.</div>
         <div class="an-hero">
           <div class="an-hero-inner">
             <div>
               <h2>Business Intelligence</h2>
-              <p>Real-time performance across the Shatova platform.</p>
+              <p>Product-sales performance from the live transaction records. Wallet deposits are tracked separately.</p>
             </div>
             <div class="an-hero-stats">
-              <div class="an-hero-stat"><div class="lbl">Gross Volume</div><div class="val" id="heroVolume">₦0</div><div class="delta" id="heroVolumeDelta">—</div></div>
+              <div class="an-hero-stat"><div class="lbl">Successful Sales</div><div class="val" id="heroVolume">₦0</div><div class="delta" id="heroVolumeDelta">—</div></div>
               <div class="an-hero-stat"><div class="lbl">Transactions</div><div class="val" id="heroTxns">0</div><div class="delta" id="heroTxnsDelta">—</div></div>
               <div class="an-hero-stat"><div class="lbl">Success Rate</div><div class="val" id="heroSuccess">0%</div><div class="delta" id="heroSuccessDelta">—</div></div>
             </div>
@@ -1637,7 +1638,7 @@ button.primary:hover {
         </div>
         <div class="an-grid">
           <div class="an-card">
-            <div class="an-card-head"><h3><i class="fas fa-chart-area"></i> Revenue &amp; Volume Trend</h3><span class="hint" id="chartRangeLabel">Today</span></div>
+            <div class="an-card-head"><h3><i class="fas fa-chart-area"></i> Product Sales &amp; Revenue Trend</h3><span class="hint" id="chartRangeLabel">Today</span></div>
             <div class="an-card-body tight"><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
             <div class="chart-legend-custom">
               <span class="lg"><span class="sw" style="background:#0a4534"></span> Gross Volume</span>
@@ -2104,6 +2105,13 @@ window.getAmount = getAmount;
     if (dir === 'credit' || dir === 'in') return 'deposit';
     return 'other';
   }
+  // Business performance must only include fulfilled/attempted VTU product sales.
+  // Wallet movements (deposits, withdrawals, manual funding, transfers and refunds)
+  // are tracked separately and must never inflate sales revenue or success rate.
+  function isBusinessSale(t) {
+    const k = txnKind(t);
+    return k === 'airtime' || k === 'data' || k === 'electricity';
+  }
   function kindLabel(k) { const m = { airtime:'Airtime', data:'Data', electricity:'Electricity', deposit:'Deposit', withdrawal:'Withdrawal', transfer:'Transfer', refund:'Refund', other:'Other', manual_fund:'Manual Credit', manual_debit:'Manual Debit' }; return m[k] || 'Transaction'; }
   function kindAvatarClass(t) { const k = txnKind(t); if (k === 'manual_fund') return 'deposit'; if (k === 'manual_debit') return 'withdraw'; if (k === 'electricity') return 'txn-electricity'; if (['deposit','withdrawal','transfer','refund','other'].includes(k)) return 'txn-' + k; return 'net-' + detectNetwork(t); }
   function kindAvatarHtml(t) { const k = txnKind(t); const ic = { deposit:'fa-arrow-down', withdrawal:'fa-arrow-up', transfer:'fa-paper-plane', refund:'fa-rotate-left', other:'fa-receipt', manual_fund:'fa-arrow-down', manual_debit:'fa-arrow-up', electricity:'fa-bolt' }; if (ic[k]) return `<i class="fas ${ic[k]}" style="font-size:12px;color:#fff"></i>`; return NET_SVG[detectNetwork(t)] || NET_SVG.generic; }
@@ -2169,6 +2177,7 @@ window.getAmount = getAmount;
 
   async function fetchUsers() { try { const r = await api('/admin/users?limit=500'); state.users = pick(r); state.totalUsers = r?.meta?.total ?? state.users.length; } catch (_) { state.users = []; } }
   async function fetchTxn() {
+    state.transactionFetchError = false;
     try {
       const all = [];
       let page = 1;
@@ -2187,6 +2196,7 @@ window.getAmount = getAmount;
       state.transactions = all;
       state.transactionsTotal = all.length;
     } catch (_) {
+      state.transactionFetchError = true;
       state.transactions = [];
       state.transactionsTotal = 0;
     }
@@ -2322,19 +2332,20 @@ window.getAmount = getAmount;
       s('statElectricitySub', `${elcO.length} successful of ${elc.length} total`);
     }
 
-    // Success rate — success vs failed only (pending excluded from rate)
-    const sc = txns.filter(t => getStatus(t) === 'success');
-    const fc = txns.filter(t => getStatus(t) === 'failed');
-    const pc = txns.filter(t => getStatus(t) === 'pending');
+    // Operational KPIs use product sales only; deposits and wallet movements are excluded.
+    const sales = txns.filter(isBusinessSale);
+    const sc = sales.filter(t => getStatus(t) === 'success');
+    const fc = sales.filter(t => getStatus(t) === 'failed');
+    const pc = sales.filter(t => getStatus(t) === 'pending');
     const dc = sc.length + fc.length;
-    const rate = dc > 0 ? Math.round((sc.length / dc) * 1000) / 10 : 0; // 1 decimal
+    const rate = dc > 0 ? Math.round((sc.length / dc) * 1000) / 10 : 0;
     s('statSuccess', dc ? `${rate}%` : '—');
-    s('statSuccessSub', `${sc.length} ok · ${fc.length} failed` + (pc.length ? ` · ${pc.length} pending` : ''));
+    s('statSuccessSub', `${sc.length} successful · ${fc.length} failed` + (pc.length ? ` · ${pc.length} pending` : ''));
 
-    // Profit — SUCCESS sales only; derive from cost_price when profit missing
+    // Profit is derived only from successful product sales with actual cost/profit fields.
     const pr = sc.reduce((a, t) => a + calcProfit(t), 0);
     s('statProfit', fmtMoney(pr, true));
-    s('statProfitSub', `From ${sc.length} completed sale${sc.length === 1 ? '' : 's'}`);
+    s('statProfitSub', `From ${sc.length} completed product sale${sc.length === 1 ? '' : 's'}`);
     const sb = (id,c) => { const e = document.getElementById(id); if (e) e.textContent = c; };
     sb('sidebarTxnCount', (state.unifiedTransactions||[]).length);
     sb('sidebarDepositCount', (state.deposits||[]).length);
@@ -2477,52 +2488,42 @@ window.getAmount = getAmount;
     let grossVolume = 0, successVolume = 0, totalProfit = 0, successSum = 0, successCnt = 0;
     const userSpend = new Map();
 
+    // Keep wallet operations visible in the operational breakdown, but never
+    // treat deposits/withdrawals/manual credits/transfers/refunds as sales.
     for (const t of list) {
       const amt = getAmount(t);
       const st = getStatus(t);
       const k = txnKind(t);
       if (counted[k] !== undefined) counted[k] += 1;
-
-      // Product money: SUCCESS only (accurate revenue)
       if (st === 'success' && amounts[k] !== undefined) amounts[k] += amt;
 
+      if (!isBusinessSale(t)) continue;
       if (st === 'success') {
         totalSuccessCount++;
         successVolume += amt;
         successSum += amt;
         successCnt++;
         totalProfit += calcProfit(t);
-        // Top customers: SUCCESS product purchases ONLY (AIRTIME / DATA).
-        // Never count deposits, withdrawals, manual fund, or refunds.
-        {
-          const svc = String(t.service || t.type || '').toUpperCase();
-          const dir = String(t.direction || '').toUpperCase();
-          const isProductSvc = svc === 'AIRTIME' || svc === 'DATA' || svc === 'ELECTRICITY' || svc === 'BILL'
-            || k === 'airtime' || k === 'data' || k === 'electricity';
-          const isMoneyMovement = k === 'deposit' || k === 'withdrawal' || k === 'manual_fund' || k === 'manual_debit' || k === 'refund'
-            || dir === 'CREDIT' && (svc === 'DEPOSIT' || /deposit|fund|credit/i.test(String(t.description||'')));
-          if (isProductSvc && !isMoneyMovement && amt > 0) {
-            const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown');
-            const nm = t.user_name || t.user_email || t.phone || 'Unknown';
-            const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 };
-            cur.total += amt;
-            cur.count += 1;
-            userSpend.set(uid, cur);
-          }
+        if (amt > 0) {
+          const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown');
+          const nm = t.user_name || t.user_email || t.phone || 'Unknown';
+          const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 };
+          cur.total += amt;
+          cur.count += 1;
+          userSpend.set(uid, cur);
         }
       } else if (st === 'failed') {
         totalFailedCount++;
       } else if (st === 'pending') {
         totalPendingCount++;
       }
-      // gross = all statuses (for volume trend context)
+      // Gross product volume is a product-sale metric only; exclude wallet funding.
       grossVolume += amt;
     }
 
     const denom = totalSuccessCount + totalFailedCount;
     const rate = denom > 0 ? Math.round((totalSuccessCount / denom) * 1000) / 10 : 0;
-    const avg = successCnt > 0 ? (successSum / successCnt) : 0;
-    // Margin on successful sales volume only
+    const avg = successCnt > 0 ? successSum / successCnt : 0;
     const margin = successVolume > 0 ? (totalProfit / successVolume) * 100 : 0;
 
     const buckets = buildAnalyticsBuckets();
@@ -2530,13 +2531,14 @@ window.getAmount = getAmount;
     const seriesSuccess = buckets.map(() => 0);
     const seriesProfit = buckets.map(() => 0);
     for (const t of list) {
+      if (!isBusinessSale(t)) continue;
       const ts = new Date(getDate(t)).getTime();
       if (isNaN(ts)) continue;
       const amt = getAmount(t);
       const st = getStatus(t);
       for (let i = 0; i < buckets.length; i++) {
-        const s = buckets[i].start.getTime(), e = buckets[i].end.getTime();
-        if (ts >= s && ts < e) {
+        const bs = buckets[i].start.getTime(), be = buckets[i].end.getTime();
+        if (ts >= bs && ts < be) {
           seriesGross[i] += amt;
           if (st === 'success') {
             seriesSuccess[i] += amt;
@@ -2552,7 +2554,6 @@ window.getAmount = getAmount;
       counted, amounts,
       totalSuccessCount, totalFailedCount, totalPendingCount,
       rate, avg, totalProfit, margin,
-      // Hero shows SUCCESS volume (real business revenue), not pending/failed noise
       heroGross: successVolume,
       heroTxns: totalSuccessCount + totalFailedCount + totalPendingCount,
       successVolume, grossVolume,
@@ -2608,6 +2609,8 @@ window.getAmount = getAmount;
   function updateAnalytics() {
     if (state.activeTab !== 'analytics') return;
     const series = computeAnalyticsSeries();
+    const notice = document.getElementById('analyticsDataNotice');
+    if (notice) notice.style.display = state.transactionFetchError ? 'block' : 'none';
     const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
     s('heroVolume', fmtMoney(series.heroGross, true));
     s('heroTxns', series.heroTxns.toLocaleString());
