@@ -1,766 +1,1246 @@
+```javascript
 // frontend/js/transactions.js
 // ============================================================
-// Shatova — Transaction History
-//   ⭐ Refunded filter · Clean icons · Black amounts · No signs
-//   ⭐ Electricity receipt: meter, customer, address, disco,
-//     token (with copy button), and units (kWh)
+// SHATOVA — COMPLETE TRANSACTION HISTORY & RECEIPTS
+// Search • Filters • Pagination • Details • Copy • Share • Print
+// Electricity meter • Customer • Address • Disco • Token • kWh
 // ============================================================
 
-const API_BASE = window.API_BASE;
+"use strict";
+
+const API_BASE = String(window.API_BASE || "").replace(/\/+$/, "");
 const PAGE_SIZE = 20;
 
-function getToken() {
-  return localStorage.getItem('token') || sessionStorage.getItem('token');
-}
-function authHeaders(extra = {}) {
-  const t = getToken();
-  return {
-    'Content-Type': 'application/json',
-    ...(t ? { Authorization: `Bearer ${t}` } : {}),
-    ...extra,
-  };
-}
-function redirectToLogin() { window.location.href = '/login.html'; }
+const $ = selector => document.querySelector(selector);
+const byId = id => document.getElementById(id);
 
 const state = {
   allTransactions: [],
   filtered: [],
-  search: '',
+  search: "",
   currentPage: 1,
   totalPages: 1,
-  loading: false,
-  filters: {
-    category: 'all',    // all | deposits | withdrawals | refunded | transfers
-    status: 'all',      // all | success | processing | failed
-  },
+  filters: { category: "all", status: "all" }
 };
-
-const $  = (s) => document.querySelector(s);
-
-const txCount         = $('#txCount');
-const txReal          = $('#txReal');
-const txSkeleton      = $('#txSkeleton');
-const txEmpty         = $('#txEmpty');
-const txEmptyTitle    = $('#txEmptyTitle');
-const txEmptyText     = $('#txEmptyText');
-
-const txSearchInput   = $('#txSearchInput');
-const txSearchClear   = $('#txSearchClear');
-const txStatusChips   = $('#txStatusChips');
-
-const typeDropdownBtn   = $('#typeDropdownBtn');
-const typeDropdownLabel = $('#typeDropdownLabel');
-
-const txFilterFab     = $('#txFilterFab');
-const txFilterBadge   = $('#txFilterBadge');
-
-const filterSheet     = $('#filterSheet');
-const filterClose     = $('#filterClose');
-const filterBody      = $('#filterBody');
-const filterReset     = $('#filterReset');
-const filterApply     = $('#filterApply');
-
-const txPagination    = $('#txPagination');
-const pgNumbers       = $('#pgNumbers');
-const pgPrev          = $('#pgPrev');
-const pgNext          = $('#pgNext');
-
-/* Modal */
-const txModal      = $('#txModal');
-const txmClose     = $('#txmClose');
-const txmHero      = $('#txmHero');
-const txmHeroIcon  = $('#txmHeroIcon');
-const txmStatus    = $('#txmStatus');
-const txmTitle     = $('#txmTitle');
-const txmAmount    = $('#txmAmount');
-const txmRecipient = $('#txmRecipient');
-const txmReference = $('#txmReference');
-const txmDate      = $('#txmDate');
-const txmType      = $('#txmType');
-const txmNetwork   = $('#txmNetwork');
-const txmRemark    = $('#txmRemark');
-const txmCopy      = $('#txmCopy');
-const txmShare     = $('#txmShare');
-const txmPrint     = $('#txmPrint');
-const txmDone      = $('#txmDone');
 
 let currentTx = null;
-let draftCategory = 'all';
+let searchTimer = null;
+let modalTimer = null;
+let filterTimer = null;
+let draftCategory = "all";
 
-/* FORMATTERS */
-function formatNaira(n) {
-  return '₦' + Number(n || 0).toLocaleString('en-NG', {
-    minimumFractionDigits: 2, maximumFractionDigits: 2,
+function getToken() {
+  return localStorage.getItem("token") ||
+         sessionStorage.getItem("token") || "";
+}
+
+function authHeaders() {
+  const token = getToken();
+  return {
+    Accept: "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {})
+  };
+}
+
+function redirectToLogin() {
+  window.location.href = "/login.html";
+}
+
+function formatNaira(value) {
+  const amount = Number(value);
+  return "₦" + (Number.isFinite(amount) ? Math.abs(amount) : 0)
+    .toLocaleString("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+}
+
+function formatDateTimeFull(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleString("en-NG", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
   });
 }
-function formatDateTimeFull(iso) {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleString('en-NG', {
-    day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', hour12: true,
+
+function formatRelativeTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)} hr ago`;
+
+  const days = Math.floor(minutes / 1440);
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+
+  return date.toLocaleDateString("en-NG", {
+    day: "2-digit", month: "short", year: "numeric"
   });
 }
-function formatRelativeTime(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const diff = Date.now() - d.getTime();
-  const min = Math.floor(diff / 60000);
-  const hr  = Math.floor(diff / 3600000);
-  const day = Math.floor(diff / 86400000);
 
-  if (min < 1)  return 'Just now';
-  if (min < 60) return `${min} min ago`;
-  if (hr < 24)  return `${hr} hr ago`;
-  if (day === 1) return 'Yesterday';
-  if (day < 7)  return `${day} days ago`;
-  return d.toLocaleDateString('en-NG', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-function escapeHtml(s) {
-  return String(s || '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
 }
 
-/* ICONS — clean, no yellow */
+function safeText(value, fallback = "—") {
+  return value == null || String(value).trim() === ""
+    ? fallback
+    : String(value).trim();
+}
+
+function getMetadata(tx) {
+  return tx?.metadata && typeof tx.metadata === "object"
+    ? tx.metadata : {};
+}
+
+function getCreatedAt(tx) {
+  return tx?.created_at || tx?.createdAt ||
+         tx?.completed_at || tx?.completedAt || tx?.date || null;
+}
+
+// ============================================================
+// ICONS
+// ============================================================
+
 const ICONS = {
-  airtime: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
-  data: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1.2" fill="currentColor" stroke="none"/></svg>`,
-  electricity: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
-  cable: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 3l4 4 4-4"/></svg>`,
-  exam: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg>`,
-  deposit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>`,
-  withdraw: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
-  transfer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>`,
-  refund: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>`,
-  generic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`,
-
-  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`,
-  x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>`,
-  clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`,
-  undo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>`,
+  airtime: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 11.2 19a19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4l2.8.7a2 2 0 0 1 1.7 2z"/></svg>',
+  data: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a11 11 0 0 1 14 0M1.5 9a16 16 0 0 1 21 0M8.5 16a6 6 0 0 1 7 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>',
+  electricity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 10-13h-7z"/></svg>',
+  cable: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="m8 3 4 4 4-4"/></svg>',
+  deposit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M5 13l7 7 7-7"/></svg>',
+  withdraw: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V4M5 11l7-7 7 7"/></svg>',
+  transfer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h15l-4-4M20 16H5l4 4"/></svg>',
+  refund: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6 6-6"/></svg>',
+  generic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 4 4L19 6"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>'
 };
 
-/* CLASSIFY */
 function classify(tx) {
-  const status  = String(tx.status || '').toLowerCase();
-  const type    = String(tx.type || '').toLowerCase();
-  const dir     = String(tx.direction || '').toUpperCase();
+  const type = String(tx?.type || "").toLowerCase();
+  const status = String(tx?.status || "").toLowerCase();
+  const direction = String(tx?.direction || "").toLowerCase();
 
-  if (status === 'refunded' || type.includes('refund')) return 'refunded';
-  if (type.includes('wallet_topup') || type.includes('topup') ||
-      type.includes('fund') || type.includes('deposit') ||
-      type.includes('credit') || type.includes('bonus') ||
-      (dir === 'CREDIT')) {
-    return 'deposits';
-  }
-  if (type.includes('withdraw') || type.includes('cash_out')) return 'withdrawals';
-  if (type.includes('transfer') || type.includes('send')) return 'transfers';
-  return 'orders';
-}
+  if (status === "refunded" || type.includes("refund")) return "refunded";
+  if (/withdraw|cash_out/.test(type)) return "withdrawals";
+  if (/transfer|send/.test(type)) return "transfers";
 
-function txIconMarkup(tx) {
-  const service = String(tx.service || '').toLowerCase();
-  const type    = String(tx.type || '').toLowerCase();
-  const status  = String(tx.status || '').toLowerCase();
+  if (
+    /deposit|topup|top_up|fund|credit|bonus/.test(type) ||
+    direction === "credit"
+  ) return "deposits";
 
-  if (status === 'refunded' || type.includes('refund')) return `<div class="tx-icon tx-icon-refund">${ICONS.refund}</div>`;
-  if (service.includes('airtime') || type.includes('airtime')) return `<div class="tx-icon tx-icon-airtime">${ICONS.airtime}</div>`;
-  if (service.includes('data') || type.includes('data')) return `<div class="tx-icon tx-icon-data">${ICONS.data}</div>`;
-  if (service.includes('electric') || type.includes('electric') ||
-      service.includes('bill') || type.includes('bill')) return `<div class="tx-icon tx-icon-electricity">${ICONS.electricity}</div>`;
-  if (service.includes('cable') || type.includes('cable') ||
-      service.includes('tv') || type.includes('tv')) return `<div class="tx-icon tx-icon-cable">${ICONS.cable}</div>`;
-  if (service.includes('exam') || type.includes('exam')) return `<div class="tx-icon tx-icon-exam">${ICONS.exam}</div>`;
-  if (type.includes('wallet_topup') || type.includes('topup') ||
-      type.includes('fund') || type.includes('deposit') || type.includes('bonus')) return `<div class="tx-icon tx-icon-deposit">${ICONS.deposit}</div>`;
-  if (type.includes('withdraw')) return `<div class="tx-icon tx-icon-withdraw">${ICONS.withdraw}</div>`;
-  if (type.includes('transfer') || type.includes('send')) return `<div class="tx-icon tx-icon-transfer">${ICONS.transfer}</div>`;
-  return `<div class="tx-icon tx-icon-generic">${ICONS.generic}</div>`;
-}
-
-function friendlyTitle(tx) {
-  const meta     = tx.metadata || {};
-  const net      = meta.network_name || meta.network || '';
-  const phone    = meta.phone || '';
-  const type     = String(tx.type || '').toLowerCase();
-  const service  = String(tx.service || '').toLowerCase();
-  const status   = String(tx.status || '').toLowerCase();
-
-  if (status === 'refunded') return 'Refund';
-  if (type.includes('wallet_topup') || type.includes('fund') || type.includes('deposit')) {
-    return 'Deposit via bank_transfer';
-  }
-  if (type.includes('withdraw')) return 'Withdrawal request' + (phone ? ' to ' + phone : '');
-  if (type.includes('transfer') || type.includes('send')) return 'Transfer' + (phone ? ' to ' + phone : '');
-
-  if (service.includes('airtime') || type.includes('airtime')) return net ? `${net} Airtime` : 'Airtime Purchase';
-  if (service.includes('data') || type.includes('data'))       return net ? `${net} Data` : 'Data Purchase';
-  if (service.includes('cable') || type.includes('cable') ||
-      service.includes('tv') || type.includes('tv'))            return 'Cable Subscription';
-  if (service.includes('electric') || type.includes('electric'))return 'Electricity';
-  if (service.includes('exam') || type.includes('exam'))        return 'Exam PIN';
-
-  if (tx.description && tx.description.length <= 50) return tx.description;
-  return 'Transaction';
+  return "orders";
 }
 
 function statusInfo(tx) {
-  const s = String(tx.status || '').toLowerCase();
-  if (s === 'success' || s === 'successful' || s === 'completed') return { label: 'SUCCESSFUL', cls: 'success' };
-  if (s === 'pending' || s === 'processing' || s === 'in_progress' || s === 'submitted') return { label: 'PENDING', cls: 'pending' };
-  if (s === 'failed' || s === 'failure' || s === 'rejected') return { label: 'FAILED', cls: 'failed' };
-  if (s === 'refunded') return { label: 'REFUNDED', cls: 'refunded' };
-  return { label: 'PENDING', cls: 'pending' };
+  const status = String(tx?.status || "").toLowerCase();
+
+  if (/^(success|successful|completed|complete|paid)$/.test(status))
+    return { label: "SUCCESSFUL", cls: "success" };
+
+  if (/^(failed|failure|rejected|cancelled|canceled)$/.test(status))
+    return { label: "FAILED", cls: "failed" };
+
+  if (status === "refunded")
+    return { label: "REFUNDED", cls: "refunded" };
+
+  return { label: "PENDING", cls: "pending" };
 }
 
-/* FILTER */
-function applyFilters() {
-  const search = state.search.toLowerCase().trim();
+function friendlyTitle(tx) {
+  const meta = getMetadata(tx);
+  const type = String(tx?.type || "").toLowerCase();
+  const service = String(tx?.service || "").toLowerCase();
+  const description = String(tx?.description || "");
+  const network = meta.network_name || meta.network || tx?.network || "";
 
-  state.filtered = state.allTransactions.filter((tx) => {
-    if (state.filters.category !== 'all') {
-      if (classify(tx) !== state.filters.category) return false;
+  if (classify(tx) === "refunded") return "Refund";
+  if (/withdraw|cash_out/.test(type)) return "Withdrawal";
+  if (/transfer|send/.test(type)) return "Wallet Transfer";
+  if (/deposit|topup|top_up|fund/.test(type)) return "Wallet Funding";
+  if (/electric|prepaid meter|postpaid meter/.test(
+    `${type} ${service} ${description}`.toLowerCase()
+  )) return "Electricity Payment";
+  if (/airtime/.test(`${type} ${service}`))
+    return network ? `${network} Airtime` : "Airtime Purchase";
+  if (/data/.test(`${type} ${service}`))
+    return network ? `${network} Data` : "Data Purchase";
+  if (/cable|tv/.test(`${type} ${service}`)) return "Cable Subscription";
+  if (/exam|waec|jamb/.test(`${type} ${service}`)) return "Exam PIN";
+
+  return description.length <= 60 && description
+    ? description : "Transaction";
+}
+
+function iconMarkup(tx) {
+  const type = String(tx?.type || "").toLowerCase();
+  const service = String(tx?.service || "").toLowerCase();
+  const group = classify(tx);
+
+  let key = "generic";
+  if (group === "refunded") key = "refund";
+  else if (group === "deposits") key = "deposit";
+  else if (group === "withdrawals") key = "withdraw";
+  else if (group === "transfers") key = "transfer";
+  else if (/electric|meter/.test(`${type} ${service}`)) key = "electricity";
+  else if (/airtime/.test(`${type} ${service}`)) key = "airtime";
+  else if (/data/.test(`${type} ${service}`)) key = "data";
+  else if (/cable|tv/.test(`${type} ${service}`)) key = "cable";
+
+  return `<div class="tx-icon tx-icon-${key}">${ICONS[key]}</div>`;
+}
+
+// ============================================================
+// ROBUST RECEIPT DATA EXTRACTION
+// ============================================================
+
+function receiptObjects(tx) {
+  const objects = [];
+  const seen = new Set();
+
+  function visit(value, depth = 0) {
+    if (!value || typeof value !== "object" || depth > 6) return;
+    if (seen.has(value)) return;
+    seen.add(value);
+
+    if (Array.isArray(value)) {
+      value.forEach(item => visit(item, depth + 1));
+      return;
     }
-    if (state.filters.status !== 'all') {
-      const s = statusInfo(tx).cls;
-      if (state.filters.status === 'success'    && s !== 'success')    return false;
-      if (state.filters.status === 'processing' && s !== 'pending')    return false;
-      if (state.filters.status === 'failed'     && s !== 'failed' && s !== 'refunded') return false;
+
+    objects.push(value);
+
+    [
+      "metadata", "meta", "details", "data", "response",
+      "provider_response", "providerResponse", "provider_data",
+      "providerData", "result", "customer", "electricity",
+      "electricity_details", "electricityDetails", "bill",
+      "receipt", "transaction", "transaction_details",
+      "transactionDetails"
+    ].forEach(key => visit(value[key], depth + 1));
+  }
+
+  visit(tx);
+  return objects;
+}
+
+function receiptValue(tx, aliases) {
+  const objects = receiptObjects(tx);
+
+  for (const obj of objects) {
+    for (const alias of aliases) {
+      const value = obj[alias];
+
+      if (value !== undefined && value !== null &&
+          String(value).trim() !== "") {
+        return String(value).trim();
+      }
     }
+  }
+
+  const normalize = value =>
+    String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  const wanted = new Set(aliases.map(normalize));
+
+  for (const obj of objects) {
+    for (const [key, value] of Object.entries(obj)) {
+      if (wanted.has(normalize(key)) &&
+          value !== undefined && value !== null &&
+          String(value).trim() !== "") {
+        return String(value).trim();
+      }
+    }
+  }
+
+  return "";
+}
+
+function isElectricityTx(tx) {
+  if (!tx) return false;
+
+  const objects = receiptObjects(tx);
+
+  const description = objects.flatMap(obj => [
+    obj.type, obj.service, obj.category, obj.description,
+    obj.product_name, obj.productName, obj.bill_type, obj.billType
+  ]).filter(Boolean).join(" ").toLowerCase();
+
+  if (/\belectricity\b|\belectric\b|\bprepaid meter\b|\bpostpaid meter\b/.test(description))
+    return true;
+
+  return Boolean(receiptValue(tx, [
+    "meter_number", "meterNumber", "meter_no",
+    "electricity_token", "electricityToken",
+    "ds_customer_name", "ds_disco"
+  ]));
+}
+
+function getElectricityReceipt(tx) {
+  return {
+    meter: receiptValue(tx, [
+      "meter_number", "meterNumber", "meter_no", "meterNo",
+      "meter", "customer_meter_number", "customerMeterNumber",
+      "customer_id", "customerId"
+    ]),
+    customer: receiptValue(tx, [
+      "ds_customer_name", "customer_name", "customerName",
+      "customer", "account_name", "accountName",
+      "customer_full_name", "customerFullName"
+    ]),
+    address: receiptValue(tx, [
+      "ds_customer_address", "customer_address", "customerAddress",
+      "meter_address", "meterAddress", "service_address",
+      "serviceAddress", "address"
+    ]),
+    disco: receiptValue(tx, [
+      "ds_disco", "disco", "disco_name", "discoName",
+      "electricity_provider", "electricityProvider",
+      "provider_name", "providerName", "provider"
+    ]),
+    token: receiptValue(tx, [
+      "ds_token", "electricity_token", "electricityToken",
+      "token", "token_code", "tokenCode", "standard_token",
+      "standardToken", "vend_token", "vendToken"
+    ]),
+    units: receiptValue(tx, [
+      "ds_units", "units", "kwh", "units_purchased",
+      "unitsPurchased", "energy_units", "energyUnits"
+    ])
+  };
+}
+
+function fillElectricityFields(tx) {
+  const fields = getElectricityReceipt(tx);
+  const electricity = isElectricityTx(tx);
+
+  const rows = [
+    ["txmMeterRow", "txmMeter", fields.meter],
+    ["txmCustomerRow", "txmCustomer", fields.customer],
+    ["txmAddressRow", "txmAddress", fields.address],
+    ["txmDiscoRow", "txmDisco", fields.disco]
+  ];
+
+  rows.forEach(([rowId, valueId]) => {
+    const row = byId(rowId);
+    const element = byId(valueId);
+    if (row) row.style.display = "none";
+    if (element) element.textContent = "";
+  });
+
+  const tokenBox = byId("txmTokenBox");
+  const tokenEl = byId("txmToken");
+  const unitsEl = byId("txmUnits");
+
+  if (tokenBox) tokenBox.style.display = "none";
+  if (tokenEl) tokenEl.textContent = "";
+  if (unitsEl) unitsEl.textContent = "";
+
+  if (!electricity) return;
+
+  rows.forEach(([rowId, valueId, value]) => {
+    const row = byId(rowId);
+    const element = byId(valueId);
+
+    if (row && element && value) {
+      element.textContent = value;
+      row.style.display = "";
+    }
+  });
+
+  const meta = getMetadata(tx);
+
+  const recipient = fields.meter ||
+    receiptValue(tx, ["recipient", "phone", "phone_number", "phoneNumber"]);
+
+  if (byId("txmRecipient"))
+    byId("txmRecipient").textContent = recipient || "—";
+
+  if (byId("txmNetwork"))
+    byId("txmNetwork").textContent = fields.disco ||
+      meta.network_name || meta.network || "—";
+
+  if (tokenBox && (fields.token || fields.units)) {
+    tokenBox.style.display = "";
+
+    if (tokenEl)
+      tokenEl.textContent = fields.token || "Token not available";
+
+    if (unitsEl) {
+      unitsEl.textContent = fields.units ? `${fields.units} kWh` : "";
+      unitsEl.style.display = fields.units ? "" : "none";
+    }
+
+    const button = byId("txmCopyToken");
+
+    if (button) {
+      const fresh = button.cloneNode(true);
+      button.replaceWith(fresh);
+      fresh.disabled = !fields.token;
+
+      fresh.addEventListener("click", async () => {
+        if (!fields.token) {
+          alert("No electricity token was returned for this transaction.");
+          return;
+        }
+
+        try {
+          await copyText(fields.token);
+          fresh.textContent = "Copied ✓";
+          setTimeout(() => {
+            fresh.textContent = button.textContent || "Copy token";
+          }, 1500);
+        } catch {
+          window.prompt("Copy your electricity token:", fields.token);
+        }
+      });
+    }
+  }
+}
+
+// ============================================================
+// CLIPBOARD
+// ============================================================
+
+async function copyText(value) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(String(value));
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = String(value);
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  const ok = document.execCommand("copy");
+  textarea.remove();
+
+  if (!ok) throw new Error("Copy failed");
+}
+
+// ============================================================
+// FILTERS AND SEARCH
+// ============================================================
+
+function applyFilters() {
+  const search = state.search.trim().toLowerCase();
+
+  state.filtered = state.allTransactions.filter(tx => {
+    if (state.filters.category !== "all" &&
+        classify(tx) !== state.filters.category) return false;
+
+    const status = statusInfo(tx).cls;
+
+    if (state.filters.status === "success" && status !== "success")
+      return false;
+    if (state.filters.status === "processing" && status !== "pending")
+      return false;
+    if (state.filters.status === "failed" &&
+        status !== "failed" && status !== "refunded") return false;
+
     if (search) {
-      const meta = tx.metadata || {};
-      const haystack = [
-        tx.reference, tx.description,
-        meta.phone, meta.network, meta.network_name,
-        String(tx.amount),
-      ].filter(Boolean).join(' ').toLowerCase();
-      if (!haystack.includes(search)) return false;
+      const values = receiptObjects(tx).flatMap(obj => [
+        obj.reference, obj.transaction_reference, obj.transactionReference,
+        obj.description, obj.phone, obj.meter_number, obj.customer_name,
+        obj.network, obj.network_name, obj.token, obj.amount
+      ]).filter(value => value != null);
+
+      if (!values.join(" ").toLowerCase().includes(search)) return false;
     }
+
     return true;
   });
 
   state.currentPage = 1;
   state.totalPages = Math.max(1, Math.ceil(state.filtered.length / PAGE_SIZE));
 
-  updateHeaderCount();
+  const count = byId("txCount");
+  if (count) count.textContent = String(state.filtered.length);
+
   updateFilterBadge();
   renderPage();
 }
 
-function updateHeaderCount() {
-  if (txCount) txCount.textContent = String(state.filtered.length);
-}
-
 function updateFilterBadge() {
-  if (!txFilterBadge) return;
-  const n = (state.filters.category !== 'all' ? 1 : 0) + (state.filters.status !== 'all' ? 1 : 0);
-  if (n > 0) {
-    txFilterBadge.textContent = String(n);
-    txFilterBadge.classList.remove('hidden');
-    txFilterFab?.classList.add('tx-filter-fab-active');
-  } else {
-    txFilterBadge.classList.add('hidden');
-    txFilterFab?.classList.remove('tx-filter-fab-active');
-  }
+  const badge = byId("txFilterBadge");
+  const fab = byId("txFilterFab");
+  if (!badge) return;
+
+  const count =
+    (state.filters.category !== "all" ? 1 : 0) +
+    (state.filters.status !== "all" ? 1 : 0);
+
+  badge.textContent = String(count);
+  badge.classList.toggle("hidden", count === 0);
+  if (fab) fab.classList.toggle("tx-filter-fab-active", count > 0);
 }
 
-/* RENDER */
+// ============================================================
+// TRANSACTION LIST
+// ============================================================
+
 function renderPage() {
-  if (!txReal) return;
+  const container = byId("txReal");
+  const empty = byId("txEmpty");
+  const pagination = byId("txPagination");
+
+  if (!container) return;
+
   const total = state.filtered.length;
 
   if (!total) {
-    txEmpty.classList.remove('hidden');
-    txReal.classList.add('hidden');
-    txReal.innerHTML = '';
-    txPagination.classList.add('hidden');
-    if (txEmptyTitle) txEmptyTitle.textContent = 'No transactions found';
-    if (txEmptyText)  txEmptyText.textContent  = state.search ? `No matches for "${state.search}".` : 'Try changing the filters.';
+    container.innerHTML = "";
+    container.classList.add("hidden");
+    if (empty) empty.classList.remove("hidden");
+    if (pagination) pagination.classList.add("hidden");
+
+    if (byId("txEmptyTitle"))
+      byId("txEmptyTitle").textContent = "No transactions found";
+
+    if (byId("txEmptyText"))
+      byId("txEmptyText").textContent = state.search
+        ? `No matches for "${state.search}".`
+        : "Your transactions will appear here.";
+
     return;
   }
 
-  txEmpty.classList.add('hidden');
+  if (empty) empty.classList.add("hidden");
 
-  const from = (state.currentPage - 1) * PAGE_SIZE;
-  const to   = Math.min(from + PAGE_SIZE, total);
-  const pageItems = state.filtered.slice(from, to);
+  const start = (state.currentPage - 1) * PAGE_SIZE;
+  const items = state.filtered.slice(start, start + PAGE_SIZE);
 
-  txReal.innerHTML = pageItems.map((tx, idx) => {
-    const realIdx = from + idx;
-    const title   = friendlyTitle(tx);
-    const status  = statusInfo(tx);
-    const when    = formatRelativeTime(tx.created_at || tx.createdAt);
-    const amt     = formatNaira(Math.abs(Number(tx.amount || 0)));
+  container.innerHTML = items.map((tx, index) => {
+    const title = friendlyTitle(tx);
+    const status = statusInfo(tx);
+    const date = formatRelativeTime(getCreatedAt(tx));
+    const amount = formatNaira(tx.amount);
 
     return `
-      <div class="tx-item" data-tx-idx="${realIdx}" role="button" tabindex="0">
-        ${txIconMarkup(tx)}
+      <div class="tx-item" data-tx-idx="${start + index}"
+           role="button" tabindex="0" aria-label="View ${escapeHtml(title)} receipt">
+        ${iconMarkup(tx)}
         <div class="tx-main">
           <div class="tx-title">${escapeHtml(title)}</div>
           <div class="tx-meta">
-            <span class="tx-when">${escapeHtml(when)}</span>
-            <span class="tx-pill tx-pill-${status.cls}">${escapeHtml(status.label)}</span>
+            <span class="tx-when">${escapeHtml(date)}</span>
+            <span class="tx-pill tx-pill-${status.cls}">${status.label}</span>
           </div>
         </div>
-        <div class="tx-amount">${escapeHtml(amt)}</div>
+        <div class="tx-amount">${escapeHtml(amount)}</div>
       </div>`;
-  }).join('');
+  }).join("");
 
-  txReal.classList.remove('hidden');
+  container.classList.remove("hidden");
 
-  txReal.querySelectorAll('.tx-item').forEach((row) => {
-    const idx = Number(row.dataset.txIdx);
-    const tx = state.filtered[idx];
-    if (!tx) return;
-    row.addEventListener('click', () => openTxModal(tx));
+  container.querySelectorAll(".tx-item").forEach(row => {
+    const open = () => {
+      const tx = state.filtered[Number(row.dataset.txIdx)];
+      if (tx) openTxModal(tx);
+    };
+
+    row.addEventListener("click", open);
+    row.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        open();
+      }
+    });
   });
 
   renderPagination();
 }
 
-/* PAGINATION */
 function renderPagination() {
-  if (!txPagination || !pgNumbers) return;
+  const pagination = byId("txPagination");
+  const numbers = byId("pgNumbers");
+
+  if (!pagination || !numbers) return;
+
   if (state.totalPages <= 1) {
-    txPagination.classList.add('hidden');
+    pagination.classList.add("hidden");
     return;
   }
-  txPagination.classList.remove('hidden');
 
+  pagination.classList.remove("hidden");
+
+  const current = state.currentPage;
   const total = state.totalPages;
-  const cur   = state.currentPage;
-  const pages = [];
-  const add = (n) => { if (!pages.includes(n)) pages.push(n); };
+  const pages = new Set([1, total]);
 
-  add(1);
-  for (let i = cur - 1; i <= cur + 1; i++) if (i > 1 && i < total) add(i);
-  if (total > 1) add(total);
-  pages.sort((a, b) => a - b);
-
-  let html = '';
-  let prev = 0;
-  for (const p of pages) {
-    if (p - prev > 1) html += `<span class="pg-ellipsis">…</span>`;
-    html += `<button type="button" class="pg-num ${p === cur ? 'active' : ''}" data-page="${p}">${p}</button>`;
-    prev = p;
+  for (let page = current - 1; page <= current + 1; page++) {
+    if (page > 1 && page < total) pages.add(page);
   }
-  pgNumbers.innerHTML = html;
 
-  pgNumbers.querySelectorAll('.pg-num').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const page = Number(btn.dataset.page);
-      if (page === state.currentPage) return;
-      state.currentPage = page;
+  let previous = 0;
+  let html = "";
+
+  [...pages].sort((a, b) => a - b).forEach(page => {
+    if (page - previous > 1) html += '<span class="pg-ellipsis">…</span>';
+
+    html += `<button type="button" class="pg-num ${page === current ? "active" : ""}"
+             data-page="${page}">${page}</button>`;
+
+    previous = page;
+  });
+
+  numbers.innerHTML = html;
+
+  numbers.querySelectorAll("[data-page]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.currentPage = Number(button.dataset.page);
       renderPage();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 
-  if (pgPrev) pgPrev.disabled = state.currentPage === 1;
-  if (pgNext) pgNext.disabled = state.currentPage === state.totalPages;
+  if (byId("pgPrev")) byId("pgPrev").disabled = current === 1;
+  if (byId("pgNext")) byId("pgNext").disabled = current === total;
 }
 
-if (pgPrev) {
-  pgPrev.addEventListener('click', () => {
-    if (state.currentPage <= 1) return;
-    state.currentPage--;
-    renderPage();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+function changePage(delta) {
+  const next = state.currentPage + delta;
+
+  if (next < 1 || next > state.totalPages) return;
+
+  state.currentPage = next;
+  renderPage();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
-if (pgNext) {
-  pgNext.addEventListener('click', () => {
-    if (state.currentPage >= state.totalPages) return;
-    state.currentPage++;
-    renderPage();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+// ============================================================
+// RECEIPT MODAL
+// ============================================================
+
+function openTxModal(tx) {
+  const modal = byId("txModal");
+  if (!modal) return;
+
+  currentTx = tx;
+
+  const status = statusInfo(tx);
+  const title = friendlyTitle(tx);
+  const meta = getMetadata(tx);
+
+  const hero = byId("txmHero");
+  if (hero) {
+    hero.classList.remove(
+      "txm-success", "txm-failed", "txm-processing", "txm-refunded"
+    );
+
+    hero.classList.add(
+      status.cls === "success" ? "txm-success" :
+      status.cls === "failed" ? "txm-failed" :
+      status.cls === "refunded" ? "txm-refunded" :
+      "txm-processing"
+    );
+  }
+
+  if (byId("txmHeroIcon")) {
+    byId("txmHeroIcon").innerHTML =
+      status.cls === "success" ? ICONS.check :
+      status.cls === "failed" ? ICONS.x :
+      status.cls === "refunded" ? ICONS.refund :
+      ICONS.clock;
+  }
+
+  if (byId("txmStatus")) {
+    byId("txmStatus").textContent = status.label;
+    byId("txmStatus").className = `txm-status ${status.cls}`;
+  }
+
+  if (byId("txmTitle")) byId("txmTitle").textContent = title;
+  if (byId("txmAmount")) byId("txmAmount").textContent = formatNaira(tx.amount);
+
+  if (byId("txmRecipient"))
+    byId("txmRecipient").textContent =
+      meta.phone || tx.recipient || tx.phone || "—";
+
+  if (byId("txmReference"))
+    byId("txmReference").textContent =
+      tx.reference || tx.transaction_reference ||
+      tx.transactionReference || tx.id || "—";
+
+  if (byId("txmDate"))
+    byId("txmDate").textContent = formatDateTimeFull(getCreatedAt(tx));
+
+  if (byId("txmType")) byId("txmType").textContent = title;
+
+  if (byId("txmNetwork"))
+    byId("txmNetwork").textContent =
+      meta.network_name || meta.network || tx.network || "—";
+
+  if (byId("txmRemark"))
+    byId("txmRemark").textContent =
+      tx.description || status.label;
+
+  fillElectricityFields(tx);
+
+  modal.classList.remove("hidden");
+  if (modalTimer) clearTimeout(modalTimer);
+
+  requestAnimationFrame(() => modal.classList.add("show"));
+  document.body.style.overflow = "hidden";
+}
+
+function closeTxModal() {
+  const modal = byId("txModal");
+  if (!modal) return;
+
+  modal.classList.remove("show");
+  document.body.style.overflow = "";
+
+  if (modalTimer) clearTimeout(modalTimer);
+
+  modalTimer = setTimeout(() => {
+    modal.classList.add("hidden");
+    currentTx = null;
+  }, 260);
+}
+
+if (byId("txmClose"))
+  byId("txmClose").addEventListener("click", closeTxModal);
+
+if (byId("txmDone"))
+  byId("txmDone").addEventListener("click", closeTxModal);
+
+if (byId("txModal")) {
+  byId("txModal").addEventListener("click", event => {
+    if (event.target === byId("txModal")) closeTxModal();
   });
 }
 
-/* STATUS CHIPS */
-if (txStatusChips) {
-  txStatusChips.addEventListener('click', (e) => {
-    const btn = e.target.closest('.tx-chip');
-    if (!btn) return;
-    txStatusChips.querySelectorAll('.tx-chip').forEach((c) => c.classList.remove('active'));
-    btn.classList.add('active');
-    state.filters.status = btn.dataset.status;
-    applyFilters();
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && byId("txModal") &&
+      !byId("txModal").classList.contains("hidden")) {
+    closeTxModal();
+  }
+});
+
+// ============================================================
+// COPY REFERENCE
+// ============================================================
+
+if (byId("txmCopy")) {
+  byId("txmCopy").addEventListener("click", async () => {
+    if (!currentTx) return;
+
+    const reference = currentTx.reference ||
+      currentTx.transaction_reference ||
+      currentTx.transactionReference || currentTx.id;
+
+    if (!reference) return;
+
+    try {
+      await copyText(reference);
+      byId("txmCopy").textContent = "Copied ✓";
+
+      setTimeout(() => {
+        if (byId("txmCopy")) byId("txmCopy").textContent = "Copy";
+      }, 1500);
+    } catch {
+      window.prompt("Copy transaction reference:", reference);
+    }
   });
 }
 
-/* DROPDOWN quick cycle */
-if (typeDropdownBtn) {
-  typeDropdownBtn.addEventListener('click', () => {
-    const order = ['all', 'deposits', 'withdrawals', 'refunded', 'transfers'];
-    const labels = { all: 'All Types', deposits: 'Deposits', withdrawals: 'Withdrawals', refunded: 'Refunded', transfers: 'Transfers' };
-    const i = order.indexOf(state.filters.category);
-    const next = order[(i + 1) % order.length];
-    state.filters.category = next;
-    if (typeDropdownLabel) typeDropdownLabel.textContent = labels[next];
-    applyFilters();
+// ============================================================
+// SHARE RECEIPT
+// ============================================================
+
+function receiptText(tx) {
+  const meta = getMetadata(tx);
+  const lines = [
+    "SHATOVA — TRANSACTION RECEIPT",
+    "--------------------------------",
+    `Transaction: ${friendlyTitle(tx)}`,
+    `Amount: ${formatNaira(tx.amount)}`,
+    `Status: ${statusInfo(tx).label}`,
+    `Reference: ${tx.reference || tx.transaction_reference || tx.id || "—"}`,
+    `Date: ${formatDateTimeFull(getCreatedAt(tx))}`
+  ];
+
+  if (meta.phone || tx.phone)
+    lines.push(`Recipient: ${meta.phone || tx.phone}`);
+
+  if (isElectricityTx(tx)) {
+    const e = getElectricityReceipt(tx);
+    lines.push(
+      `Disco: ${e.disco || "—"}`,
+      `Meter: ${e.meter || "—"}`,
+      `Customer: ${e.customer || "—"}`,
+      `Address: ${e.address || "—"}`,
+      `Token: ${e.token || "Not available in transaction data"}`,
+      `Units: ${e.units ? `${e.units} kWh` : "—"}`
+    );
+  }
+
+  lines.push("", "Thank you for using Shatova.");
+  return lines.join("\n");
+}
+
+if (byId("txmShare")) {
+  byId("txmShare").addEventListener("click", async () => {
+    if (!currentTx) return;
+
+    const text = receiptText(currentTx);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Shatova Receipt", text });
+        return;
+      } catch (error) {
+        if (error.name === "AbortError") return;
+      }
+    }
+
+    try {
+      await copyText(text);
+      alert("Receipt copied. You can now paste and share it.");
+    } catch {
+      window.prompt("Copy your receipt:", text);
+    }
   });
 }
 
-/* FILTER SHEET */
+// ============================================================
+// PRINT RECEIPT — ESCAPED VALUES, INCLUDING ELECTRICITY DETAILS
+// ============================================================
+
+function printReceipt(tx) {
+  const popup = window.open("", "_blank", "width=480,height=720");
+
+  if (!popup) {
+    alert("Please allow pop-ups to print your receipt.");
+    return;
+  }
+
+  const meta = getMetadata(tx);
+  const electricity = isElectricityTx(tx);
+  const e = getElectricityReceipt(tx);
+  const status = statusInfo(tx);
+
+  const rows = [
+    ["Transaction", friendlyTitle(tx)],
+    ["Status", status.label],
+    ["Reference", tx.reference || tx.transaction_reference || tx.id || "—"],
+    ["Date", formatDateTimeFull(getCreatedAt(tx))],
+    ["Recipient", meta.phone || tx.phone || tx.recipient || "—"]
+  ];
+
+  if (electricity) {
+    rows.push(
+      ["Electricity Provider", e.disco || "—"],
+      ["Meter Number", e.meter || "—"],
+      ["Customer Name", e.customer || "—"],
+      ["Address", e.address || "—"],
+      ["Token", e.token || "Not available in transaction data"],
+      ["Units", e.units ? `${e.units} kWh` : "—"]
+    );
+  } else {
+    rows.push([
+      "Network",
+      meta.network_name || meta.network || tx.network || "—"
+    ]);
+  }
+
+  rows.push(["Description", tx.description || "—"]);
+
+  const htmlRows = rows.map(([label, value]) => `
+    <div class="row">
+      <span class="label">${escapeHtml(label)}</span>
+      <span class="value">${escapeHtml(value)}</span>
+    </div>
+  `).join("");
+
+  popup.document.open();
+  popup.document.write(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Shatova Transaction Receipt</title>
+      <style>
+        * { box-sizing: border-box; }
+        body {
+          font-family: Arial, sans-serif;
+          color: #111827;
+          max-width: 420px;
+          margin: 0 auto;
+          padding: 24px;
+          background: white;
+        }
+        .header {
+          text-align: center;
+          padding-bottom: 18px;
+          border-bottom: 2px dashed #d1d5db;
+        }
+        .brand { font-size: 26px; font-weight: 900; color: #0a4534; }
+        .subtitle { color: #64748b; font-size: 12px; margin-top: 5px; }
+        .amount {
+          text-align: center;
+          font-size: 29px;
+          font-weight: 800;
+          margin-top: 22px;
+        }
+        .status {
+          text-align: center;
+          font-size: 12px;
+          font-weight: bold;
+          margin: 10px 0 22px;
+        }
+        .success { color: #047857; }
+        .failed { color: #b91c1c; }
+        .pending { color: #92400e; }
+        .refunded { color: #475569; }
+        .row {
+          display: flex;
+          justify-content: space-between;
+          gap: 16px;
+          padding: 10px 0;
+          border-bottom: 1px solid #e5e7eb;
+          font-size: 12px;
+          break-inside: avoid;
+        }
+        .label { color: #64748b; flex: 0 0 40%; }
+        .value { font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+        .footer {
+          text-align: center;
+          color: #64748b;
+          font-size: 11px;
+          margin-top: 24px;
+          padding-top: 15px;
+          border-top: 2px dashed #d1d5db;
+        }
+        @media print {
+          body { padding: 0; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="brand">SHATOVA</div>
+        <div class="subtitle">Transaction Receipt</div>
+      </div>
+      <div class="amount">${escapeHtml(formatNaira(tx.amount))}</div>
+      <div class="status ${status.cls}">${escapeHtml(status.label)}</div>
+      ${htmlRows}
+      <div class="footer">Thank you for using Shatova.</div>
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+          }, 400);
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+  popup.document.close();
+}
+
+if (byId("txmPrint")) {
+  byId("txmPrint").addEventListener("click", () => {
+    if (currentTx) printReceipt(currentTx);
+  });
+}
+
+// ============================================================
+// FILTER SHEET
+// ============================================================
+
+function syncFilterSheet() {
+  const body = byId("filterBody");
+  if (!body) return;
+
+  body.querySelectorAll(".filter-card").forEach(card => {
+    card.classList.toggle("active", card.dataset.value === draftCategory);
+  });
+}
+
 function openFilterSheet() {
+  const sheet = byId("filterSheet");
+  if (!sheet) return;
+
   draftCategory = state.filters.category;
   syncFilterSheet();
-  filterSheet.classList.remove('hidden');
-  requestAnimationFrame(() => filterSheet.classList.add('show'));
-  document.body.style.overflow = 'hidden';
+  sheet.classList.remove("hidden");
+
+  requestAnimationFrame(() => sheet.classList.add("show"));
+  document.body.style.overflow = "hidden";
 }
+
 function closeFilterSheet() {
-  filterSheet.classList.remove('show');
-  document.body.style.overflow = '';
-  setTimeout(() => filterSheet.classList.add('hidden'), 260);
+  const sheet = byId("filterSheet");
+  if (!sheet) return;
+
+  sheet.classList.remove("show");
+  document.body.style.overflow = "";
+
+  if (filterTimer) clearTimeout(filterTimer);
+  filterTimer = setTimeout(() => sheet.classList.add("hidden"), 260);
 }
-function syncFilterSheet() {
-  if (!filterBody) return;
-  filterBody.querySelectorAll('.filter-card').forEach((card) => {
-    card.classList.toggle('active', card.dataset.value === draftCategory);
+
+if (byId("txFilterFab"))
+  byId("txFilterFab").addEventListener("click", openFilterSheet);
+
+if (byId("filterClose"))
+  byId("filterClose").addEventListener("click", closeFilterSheet);
+
+if (byId("filterSheet")) {
+  byId("filterSheet").addEventListener("click", event => {
+    if (event.target === byId("filterSheet")) closeFilterSheet();
   });
 }
 
-if (txFilterFab)   txFilterFab.addEventListener('click', openFilterSheet);
-if (filterClose)   filterClose.addEventListener('click', closeFilterSheet);
-if (filterSheet) {
-  filterSheet.addEventListener('click', (e) => {
-    if (e.target === filterSheet) closeFilterSheet();
-  });
-}
-if (filterBody) {
-  filterBody.addEventListener('click', (e) => {
-    const card = e.target.closest('.filter-card');
+if (byId("filterBody")) {
+  byId("filterBody").addEventListener("click", event => {
+    const card = event.target.closest(".filter-card");
     if (!card) return;
+
     draftCategory = card.dataset.value;
     syncFilterSheet();
   });
 }
 
-if (filterReset) {
-  filterReset.addEventListener('click', () => {
-    draftCategory = 'all';
-    state.filters.category = 'all';
-    state.filters.status = 'all';
-    state.search = '';
-    if (txSearchInput) txSearchInput.value = '';
-    if (txSearchClear) txSearchClear.classList.add('hidden');
-    if (txStatusChips) {
-      txStatusChips.querySelectorAll('.tx-chip').forEach((c) => c.classList.toggle('active', c.dataset.status === 'all'));
-    }
-    if (typeDropdownLabel) typeDropdownLabel.textContent = 'All Types';
+function syncFilterControls() {
+  if (byId("txSearchInput"))
+    byId("txSearchInput").value = state.search;
+
+  if (byId("txSearchClear"))
+    byId("txSearchClear").classList.toggle("hidden", !state.search);
+
+  if (byId("txStatusChips")) {
+    byId("txStatusChips").querySelectorAll(".tx-chip").forEach(chip => {
+      chip.classList.toggle("active",
+        chip.dataset.status === state.filters.status);
+    });
+  }
+
+  const labels = {
+    all: "All Types",
+    deposits: "Deposits",
+    withdrawals: "Withdrawals",
+    refunded: "Refunded",
+    transfers: "Transfers"
+  };
+
+  if (byId("typeDropdownLabel"))
+    byId("typeDropdownLabel").textContent =
+      labels[state.filters.category] || "All Types";
+}
+
+if (byId("filterReset")) {
+  byId("filterReset").addEventListener("click", () => {
+    state.filters.category = "all";
+    state.filters.status = "all";
+    state.search = "";
+    draftCategory = "all";
+
+    syncFilterControls();
     syncFilterSheet();
     closeFilterSheet();
     applyFilters();
   });
 }
 
-if (filterApply) {
-  filterApply.addEventListener('click', () => {
+if (byId("filterApply")) {
+  byId("filterApply").addEventListener("click", () => {
     state.filters.category = draftCategory;
-    const labels = { all: 'All Types', deposits: 'Deposits', withdrawals: 'Withdrawals', refunded: 'Refunded', transfers: 'Transfers' };
-    if (typeDropdownLabel) typeDropdownLabel.textContent = labels[draftCategory] || 'All Types';
+    syncFilterControls();
     closeFilterSheet();
     applyFilters();
   });
 }
 
-/* SEARCH */
-let searchTimer = null;
-if (txSearchInput) {
-  txSearchInput.addEventListener('input', (e) => {
-    state.search = e.target.value || '';
-    if (txSearchClear) txSearchClear.classList.toggle('hidden', !state.search);
+// ============================================================
+// STATUS CHIPS AND TYPE DROPDOWN
+// ============================================================
+
+if (byId("txStatusChips")) {
+  byId("txStatusChips").addEventListener("click", event => {
+    const chip = event.target.closest(".tx-chip");
+    if (!chip) return;
+
+    state.filters.status = chip.dataset.status || "all";
+    syncFilterControls();
+    applyFilters();
+  });
+}
+
+if (byId("typeDropdownBtn")) {
+  byId("typeDropdownBtn").addEventListener("click", () => {
+    const categories = [
+      "all", "deposits", "withdrawals", "refunded", "transfers"
+    ];
+
+    const index = categories.indexOf(state.filters.category);
+    state.filters.category = categories[(index + 1) % categories.length];
+    draftCategory = state.filters.category;
+
+    syncFilterControls();
+    applyFilters();
+  });
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+if (byId("txSearchInput")) {
+  byId("txSearchInput").addEventListener("input", event => {
+    state.search = event.target.value || "";
+
+    if (byId("txSearchClear"))
+      byId("txSearchClear").classList.toggle("hidden", !state.search);
+
     if (searchTimer) clearTimeout(searchTimer);
     searchTimer = setTimeout(applyFilters, 180);
   });
 }
-if (txSearchClear) {
-  txSearchClear.addEventListener('click', () => {
-    if (txSearchInput) txSearchInput.value = '';
-    state.search = '';
-    txSearchClear.classList.add('hidden');
+
+if (byId("txSearchClear")) {
+  byId("txSearchClear").addEventListener("click", () => {
+    state.search = "";
+    if (byId("txSearchInput")) byId("txSearchInput").value = "";
+
+    byId("txSearchClear").classList.add("hidden");
     applyFilters();
   });
 }
 
-/* MODAL */
-function openTxModal(tx) {
-  if (!txModal) return;
-  currentTx = tx;
+if (byId("pgPrev"))
+  byId("pgPrev").addEventListener("click", () => changePage(-1));
 
-  const status = statusInfo(tx);
-  const title  = friendlyTitle(tx);
-  const amt    = formatNaira(Math.abs(Number(tx.amount || 0)));
-  const meta   = tx.metadata || {};
+if (byId("pgNext"))
+  byId("pgNext").addEventListener("click", () => changePage(1));
 
-  const heroClass = status.cls === 'success' ? 'txm-success'
-                  : status.cls === 'failed'  ? 'txm-failed'
-                  : status.cls === 'refunded'? 'txm-refunded'
-                  : 'txm-processing';
-  if (txmHero) {
-    txmHero.classList.remove('txm-success', 'txm-failed', 'txm-processing', 'txm-refunded');
-    txmHero.classList.add(heroClass);
-  }
+// ============================================================
+// FETCH TRANSACTIONS
+// ============================================================
 
-  const iconSvg = status.cls === 'success' ? ICONS.check
-                : status.cls === 'failed'  ? ICONS.x
-                : status.cls === 'refunded'? ICONS.undo
-                : ICONS.clock;
-  if (txmHeroIcon) txmHeroIcon.innerHTML = iconSvg;
+function extractTransactions(json) {
+  const candidates = [
+    json?.data?.transactions,
+    json?.data?.rows,
+    json?.transactions,
+    json?.data?.data?.transactions,
+    json?.data?.items,
+    json?.items
+  ];
 
-  if (txmStatus) { txmStatus.textContent = status.label; txmStatus.className = `txm-status ${status.cls}`; }
-  if (txmTitle)  txmTitle.textContent = title;
-  if (txmAmount) txmAmount.textContent = amt;
-
-  if (txmRecipient) txmRecipient.textContent = meta.phone || '—';
-  if (txmReference) txmReference.textContent = tx.reference || '—';
-  if (txmDate)      txmDate.textContent      = formatDateTimeFull(tx.created_at || tx.createdAt);
-  if (txmType)      txmType.textContent      = title;
-  if (txmNetwork)   txmNetwork.textContent   = meta.network_name || meta.network || '—';
-  if (txmRemark)    txmRemark.textContent    = tx.description || status.label;
-
-  /* ⭐ Electricity enrichment — fills meter / customer / address /
-     disco / token / units and overrides recipient + network */
-  fillElectricityFields(tx);
-
-  txModal.classList.remove('hidden');
-  requestAnimationFrame(() => txModal.classList.add('show'));
-  document.body.style.overflow = 'hidden';
+  return candidates.find(Array.isArray) || null;
 }
 
-function closeTxModal() {
-  if (!txModal) return;
-  txModal.classList.remove('show');
-  document.body.style.overflow = '';
-  setTimeout(() => {
-    txModal.classList.add('hidden');
-    currentTx = null;
-
-    /* ⭐ Reset electricity rows so they don't bleed into the next receipt */
-    ['txmMeterRow', 'txmCustomerRow', 'txmAddressRow', 'txmDiscoRow'].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-    const tb = document.getElementById('txmTokenBox');
-    if (tb) tb.style.display = 'none';
-  }, 260);
-}
-
-if (txmClose) txmClose.addEventListener('click', closeTxModal);
-if (txmDone)  txmDone.addEventListener('click', closeTxModal);
-if (txModal) {
-  txModal.addEventListener('click', (e) => { if (e.target === txModal) closeTxModal(); });
-}
-
-if (txmCopy) {
-  txmCopy.addEventListener('click', async () => {
-    if (!currentTx?.reference) return;
-    try {
-      await navigator.clipboard.writeText(currentTx.reference);
-      txmCopy.style.color = '#0a4534';
-      setTimeout(() => { txmCopy.style.color = ''; }, 900);
-    } catch {}
-  });
-}
-
-if (txmShare) {
-  txmShare.addEventListener('click', async () => {
-    if (!currentTx) return;
-    const text =
-      `Shatova Receipt\n─────────────\n` +
-      `${friendlyTitle(currentTx)}\n` +
-      `Amount: ${formatNaira(Math.abs(Number(currentTx.amount || 0)))}\n` +
-      `Status: ${statusInfo(currentTx).label}\n` +
-      `Reference: ${currentTx.reference || '—'}`;
-    if (navigator.share) {
-      try { await navigator.share({ title: 'Shatova Receipt', text }); } catch {}
-    } else {
-      try { await navigator.clipboard.writeText(text); } catch {}
-    }
-  });
-}
-
-if (txmPrint) {
-  txmPrint.addEventListener('click', () => {
-    if (!currentTx) return;
-    const meta = currentTx.metadata || {};
-    const w = window.open('', '_blank', 'width=400,height=600');
-    if (!w) return;
-    const statusLabel = statusInfo(currentTx).label;
-
-    w.document.write(`
-      <!DOCTYPE html><html><head><title>Shatova Receipt</title>
-      <style>
-        body { font-family: -apple-system, sans-serif; padding: 24px; color: #0f172a; max-width: 340px; margin: 0 auto; }
-        .head { text-align: center; padding-bottom: 16px; border-bottom: 2px dashed #e2e8f0; margin-bottom: 16px; }
-        .brand { font-size: 20px; font-weight: 800; color: #0a4534; }
-        .sub { font-size: 11px; color: #64748b; margin-top: 2px; }
-        .amount { font-size: 28px; font-weight: 800; margin: 16px 0 4px; text-align: center; color: #111827; }
-        .status { text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #0a7d4f; margin-bottom: 20px; }
-        .row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
-        .label { color: #64748b; }
-        .value { font-weight: 700; text-align: right; max-width: 60%; }
-        .remark { margin-top: 16px; padding: 12px; background: #f7f9f8; border-radius: 8px; font-size: 12px; line-height: 1.5; }
-        .footer { margin-top: 24px; padding-top: 16px; border-top: 2px dashed #e2e8f0; text-align: center; font-size: 10px; color: #94a3b8; }
-      </style></head><body>
-      <div class="head"><div class="brand">SHATOVA</div><div class="sub">Transaction Receipt</div></div>
-      <div class="amount">${formatNaira(Math.abs(Number(currentTx.amount || 0)))}</div>
-      <div class="status">${statusLabel}</div>
-      <div class="row"><span class="label">Type</span><span class="value">${friendlyTitle(currentTx)}</span></div>
-      <div class="row"><span class="label">Recipient</span><span class="value">${meta.phone || '—'}</span></div>
-      <div class="row"><span class="label">Reference</span><span class="value">${currentTx.reference || '—'}</span></div>
-      <div class="row"><span class="label">Date</span><span class="value">${formatDateTimeFull(currentTx.created_at || currentTx.createdAt)}</span></div>
-      <div class="remark">${currentTx.description || ''}</div>
-      <div class="footer">Thank you for using Shatova</div>
-      <script>window.onload = () => setTimeout(() => window.print(), 300);<\/script>
-      </body></html>
-    `);
-    w.document.close();
-  });
-}
-
-/* FETCH */
 async function fetchAllTransactions() {
-  state.loading = true;
-  if (txSkeleton) txSkeleton.classList.remove('hidden');
-  if (txReal) txReal.classList.add('hidden');
-  if (txEmpty) txEmpty.classList.add('hidden');
+  const skeleton = byId("txSkeleton");
+  const container = byId("txReal");
+  const empty = byId("txEmpty");
 
-  const params = new URLSearchParams();
-  params.set('limit', '200');
-  params.set('offset', '0');
-  params.set('type', 'all');
+  if (skeleton) skeleton.classList.remove("hidden");
+  if (container) container.classList.add("hidden");
+  if (empty) empty.classList.add("hidden");
 
   try {
-    const res = await fetch(`${API_BASE}/wallet/transactions?${params.toString()}`, {
-      headers: authHeaders(),
-    });
-    if (res.status === 401 || res.status === 403) { redirectToLogin(); return; }
+    if (!API_BASE) {
+      throw new Error("window.API_BASE is not configured.");
+    }
 
-    const json = await res.json().catch(() => ({}));
-    if (!res.ok || !json.success) {
-      if (txSkeleton) txSkeleton.classList.add('hidden');
-      if (txEmpty) {
-        txEmpty.classList.remove('hidden');
-        if (txEmptyTitle) txEmptyTitle.textContent = 'Could not load transactions';
-        if (txEmptyText)  txEmptyText.textContent  = json.message || 'Please try again.';
+    const params = new URLSearchParams({
+      limit: "200",
+      offset: "0",
+      type: "all"
+    });
+
+    const response = await fetch(
+      `${API_BASE}/wallet/transactions?${params.toString()}`,
+      {
+        method: "GET",
+        headers: authHeaders(),
+        credentials: "include"
       }
+    );
+
+    if (response.status === 401 || response.status === 403) {
+      redirectToLogin();
       return;
     }
 
-    state.allTransactions = json.data?.transactions || [];
-    if (txSkeleton) txSkeleton.classList.add('hidden');
+    const json = await response.json().catch(() => ({}));
+
+    if (!response.ok || json.success === false) {
+      throw new Error(json.message || `Request failed (${response.status}).`);
+    }
+
+    const transactions = extractTransactions(json);
+
+    if (!transactions) {
+      throw new Error("The transactions API returned an unexpected response.");
+    }
+
+    state.allTransactions = transactions;
+    state.search = state.search || "";
+
+    if (skeleton) skeleton.classList.add("hidden");
+    syncFilterControls();
     applyFilters();
 
-  } catch (err) {
-    console.error('[transactions] fetch:', err);
-    if (txSkeleton) txSkeleton.classList.add('hidden');
-    if (txEmpty) {
-      txEmpty.classList.remove('hidden');
-      if (txEmptyTitle) txEmptyTitle.textContent = 'Could not load transactions';
-      if (txEmptyText)  txEmptyText.textContent  = 'Please check your connection.';
-    }
-  } finally {
-    state.loading = false;
+  } catch (error) {
+    console.error("[Shatova transactions]", error);
+
+    if (skeleton) skeleton.classList.add("hidden");
+    if (container) container.classList.add("hidden");
+    if (empty) empty.classList.remove("hidden");
+
+    if (byId("txEmptyTitle"))
+      byId("txEmptyTitle").textContent = "Could not load transactions";
+
+    if (byId("txEmptyText"))
+      byId("txEmptyText").textContent =
+        error.message || "Please check your connection and try again.";
   }
 }
 
-/* ============================================================
-   ⭐ ELECTRICITY RECEIPT HELPERS
-   ============================================================ */
-function isElectricityTx(tx) {
-  if (!tx) return false;
-  const t = String(tx.type || '').toLowerCase();
-  const s = String(tx.service || '').toLowerCase();
-  const d = String(tx.description || '').toLowerCase();
-  const m = tx.metadata || {};
-  const pn = String(m.product_name || '').toLowerCase();
-  return (
-    t.indexOf('electric') !== -1 ||
-    s === 'electricity' ||
-    pn.indexOf('electric') !== -1 ||
-    d.indexOf('electric') !== -1
-  );
-}
+// ============================================================
+// INITIALIZE
+// ============================================================
 
-function fillElectricityFields(tx) {
-  const isElec = isElectricityTx(tx);
-
-  const meterRow    = document.getElementById('txmMeterRow');
-  const customerRow = document.getElementById('txmCustomerRow');
-  const addressRow  = document.getElementById('txmAddressRow');
-  const discoRow    = document.getElementById('txmDiscoRow');
-  const tokenBox    = document.getElementById('txmTokenBox');
-
-  /* Always reset first */
-  [meterRow, customerRow, addressRow, discoRow].forEach((r) => { if (r) r.style.display = 'none'; });
-  if (tokenBox) tokenBox.style.display = 'none';
-
-  if (!isElec) return;
-
-  const m = tx.metadata || {};
-  const pick = (keys) => { for (const k of keys) { const v = m[k]; if (v != null && v !== '') return v; } return null; };
-  const pickTop = (keys) => { for (const k of keys) { const v = tx[k]; if (v != null && v !== '') return v; } return null; };
-  const trim = (v) => typeof v === 'string' ? v.trim() : v;
-
-  const meter    = trim(pick(['meter_number', 'meterNumber', 'meter', 'customer_id', 'customerId']) || pickTop(['meter_number', 'recipient']));
-  const customer = trim(pick(['ds_customer_name', 'customer_name', 'customerName']));
-  const address  = trim(pick(['ds_customer_address', 'customer_address', 'customerAddress', 'address']));
-  const disco    = trim(pick(['ds_disco', 'disco', 'provider']) || pickTop(['network', 'provider']));
-  const token    = trim(pickTop(['token', 'Token']) || pick(['token', 'ds_token', 'electricity_token', 'token_code', 'standard_token']));
-  const units    = trim(pick(['ds_units', 'units', 'kwh', 'kWh']) || pickTop(['units', 'kwh']));
-
-  const setRow = (rowEl, textEl, value) => {
-    if (!rowEl || !textEl) return;
-    if (value) { textEl.textContent = value; rowEl.style.display = ''; }
-    else { rowEl.style.display = 'none'; }
-  };
-
-  setRow(meterRow,    document.getElementById('txmMeter'),    meter);
-  setRow(customerRow, document.getElementById('txmCustomer'), customer);
-  setRow(addressRow,  document.getElementById('txmAddress'),  address);
-  setRow(discoRow,    document.getElementById('txmDisco'),    disco);
-
-  /* Override recipient + network for electricity */
-  if (txmRecipient && meter) txmRecipient.textContent = meter;
-  if (txmNetwork && disco)   txmNetwork.textContent   = disco;
-
-  /* Token box */
-  if (tokenBox && token) {
-    const tokenEl = document.getElementById('txmToken');
-    const unitsEl = document.getElementById('txmUnits');
-    if (tokenEl) tokenEl.textContent = token;
-    tokenBox.style.display = '';
-    if (unitsEl) {
-      if (units) { unitsEl.textContent = units + ' kWh'; unitsEl.style.display = ''; }
-      else unitsEl.style.display = 'none';
-    }
-    const copyBtn = document.getElementById('txmCopyToken');
-    if (copyBtn) {
-      const fresh = copyBtn.cloneNode(true);
-      copyBtn.parentNode.replaceChild(fresh, copyBtn);
-      fresh.addEventListener('click', () => {
-        try {
-          navigator.clipboard.writeText(token);
-          const orig = fresh.textContent;
-          fresh.textContent = 'Copied ✓';
-          fresh.style.background = '#047857';
-          setTimeout(() => { fresh.textContent = orig; fresh.style.background = ''; }, 1800);
-        } catch (_) { window.prompt('Copy your token:', token); }
-      });
-    }
+async function initTransactions() {
+  if (!getToken()) {
+    redirectToLogin();
+    return;
   }
-}
 
-/* ============================================================
-   BOOT
-   ============================================================ */
-async function init() {
-  if (!getToken()) { redirectToLogin(); return; }
   await fetchAllTransactions();
 }
 
-init();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initTransactions, { once: true });
+} else {
+  initTransactions();
+}
+```
