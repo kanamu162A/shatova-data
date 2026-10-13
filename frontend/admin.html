@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -602,14 +603,51 @@ button{font-family:inherit}
 .alarm-banner button{padding:12px 22px;border-radius:11px;border:none;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit}
 .alarm-banner .alarm-view{background:#fff;color:#8d2424}
 .alarm-banner .alarm-mute{background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3)}
-.mobile-nav{display:none;position:fixed;bottom:16px;left:16px;right:16px;z-index:45;background:var(--bg-card);border-radius:22px;padding:8px 6px;box-shadow:0 10px 30px -8px rgba(15,23,42,.12);border:1px solid var(--border)}
+.mobile-nav{
+  display:none;position:fixed;bottom:10px;left:20px;right:20px;z-index:45;
+  background:rgba(255,255,255,0.72);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border-radius:16px;padding:4px 4px;
+  box-shadow:0 4px 18px -6px rgba(15,23,42,.08);
+  border:1px solid rgba(15,23,42,0.05);
+}
+[data-theme="dark"] .mobile-nav{
+  background:rgba(15,20,33,0.78);
+  border-color:rgba(255,255,255,0.06);
+  box-shadow:0 4px 18px -6px rgba(0,0,0,.35);
+}
 .mobile-nav .nav-items{display:flex;align-items:center;justify-content:space-between;width:100%}
-.mobile-nav .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 0;border-radius:12px;border:none;background:transparent;font-size:9.5px;font-weight:700;color:var(--text-muted);cursor:pointer;position:relative;font-family:inherit}
-.mobile-nav .nav-item i{font-size:18px;color:var(--text-muted)}
-.mobile-nav .nav-item.active{background:var(--primary-light);color:var(--primary-dark)}
+.mobile-nav .nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;padding:4px 0 3px;border-radius:12px;border:none;background:transparent;
+  font-size:8.5px;font-weight:600;letter-spacing:0.1px;
+  color:rgba(100,116,139,0.55);cursor:pointer;position:relative;font-family:inherit;
+  transition:color .18s,background .18s,opacity .18s;
+}
+.mobile-nav .nav-item i{font-size:14px;color:rgba(100,116,139,0.5);transition:color .18s}
+.mobile-nav .nav-item:not(.active){opacity:0.72}
+.mobile-nav .nav-item:not(.active):hover{opacity:1;color:var(--text-muted)}
+.mobile-nav .nav-item:not(.active):hover i{color:var(--text-muted)}
+.mobile-nav .nav-item.active{
+  background:rgba(10,69,52,0.10);
+  color:var(--primary-dark);
+  font-weight:800;
+  opacity:1;
+}
 .mobile-nav .nav-item.active i{color:var(--primary-dark)}
-.mobile-nav .nav-item.active::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--primary)}
-@media (max-width:900px){.mobile-nav{display:block}.content{padding-bottom:110px !important}}
+.mobile-nav .nav-item.active::after{
+  content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+  width:12px;height:2px;border-radius:2px;background:var(--primary);opacity:0.85;
+}
+[data-theme="dark"] .mobile-nav .nav-item{color:rgba(148,163,184,0.45)}
+[data-theme="dark"] .mobile-nav .nav-item i{color:rgba(148,163,184,0.4)}
+[data-theme="dark"] .mobile-nav .nav-item.active{background:rgba(34,197,94,0.12);color:#86efac}
+[data-theme="dark"] .mobile-nav .nav-item.active i{color:#86efac}
+@media (max-width:900px){.mobile-nav{display:block}.content{padding-bottom:72px !important}}
+.row-avatar.txn-electricity{background:linear-gradient(135deg,#059669,#047857)!important}
+.rank-pos.elec,.stat-card.electricity .stat-icon{background:rgba(5,150,105,0.12);color:#047857}
+
 #pageLoader{position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:5000;pointer-events:none;opacity:0;transition:opacity .2s}
 #pageLoader.active{opacity:1}
 #pageLoader::before{content:'';display:block;width:35%;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));animation:progress 1.05s infinite}
@@ -1562,6 +1600,7 @@ button.primary:hover {
           <div class="stat-card purple"><div class="stat-top"><div class="stat-icon"><i class="fas fa-arrow-up"></i></div></div><div class="stat-label">Withdrawals</div><div class="stat-value purple" id="statWithdrawals">—</div><div class="stat-sub" id="statWithdrawalsSub">Approved payouts</div></div>
           <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fas fa-signal"></i></div></div><div class="stat-label">Airtime Sales</div><div class="stat-value" id="statAirtime">—</div><div class="stat-sub" id="statAirtimeSub">0 transactions</div></div>
           <div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fas fa-wifi"></i></div></div><div class="stat-label">Data Sales</div><div class="stat-value" id="statData">—</div><div class="stat-sub" id="statDataSub">0 transactions</div></div>
+<div class="stat-card"><div class="stat-top"><div class="stat-icon"><i class="fas fa-bolt"></i></div></div><div class="stat-label">Electricity Sales</div><div class="stat-value" id="statElectricity">—</div><div class="stat-sub" id="statElectricitySub">0 transactions</div></div>
           <div class="stat-card success"><div class="stat-top"><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div><div class="stat-label">Success Rate</div><div class="stat-value success" id="statSuccess">—</div><div class="stat-sub" id="statSuccessSub">Across all VTU</div></div>
           <div class="stat-card warning"><div class="stat-top"><div class="stat-icon"><i class="fas fa-coins"></i></div></div><div class="stat-label">Est. Profit</div><div class="stat-value warning" id="statProfit">—</div><div class="stat-sub" id="statProfitSub">From completed sales</div></div>
         </div>
@@ -1619,7 +1658,7 @@ button.primary:hover {
         </div>
         <div class="an-two-col">
           <div class="an-card"><div class="an-card-head"><h3><i class="fas fa-trophy"></i> Top Services</h3><span class="hint">By volume</span></div><div class="rank-list" id="topServices"><div class="loading"><div class="ring"></div><p>Loading…</p></div></div></div>
-          <div class="an-card"><div class="an-card-head"><h3><i class="fas fa-users"></i> Top Customers</h3><span class="hint">By spend</span></div><div class="rank-list" id="topCustomers"><div class="loading"><div class="ring"></div><p>Loading…</p></div></div></div>
+          <div class="an-card"><div class="an-card-head"><h3><i class="fas fa-users"></i> Top Customers</h3><span class="hint">Successful airtime + data + electricity</span></div><div class="rank-list" id="topCustomers"><div class="loading"><div class="ring"></div><p>Loading…</p></div></div></div>
         </div>
         <div class="an-card" style="margin-bottom:16px">
           <div class="an-card-head"><h3><i class="fas fa-layer-group"></i> Operational Snapshot</h3><span class="hint" id="snapshotRange">Today</span></div>
@@ -1972,8 +2011,12 @@ button.primary:hover {
   function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
   function fmtMoney(n, c = false) {
     n = Number(n) || 0;
-    if (c) { if (n >= 1e9) return '₦'+(n/1e9).toFixed(1)+'B'; if (n >= 1e6) return '₦'+(n/1e6).toFixed(1)+'M'; if (n >= 1e3) return '₦'+(n/1e3).toFixed(1)+'K'; }
-    return '₦' + n.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    // Exact money for accuracy (2 dp). Compact only for very large display slots.
+    if (c && Math.abs(n) >= 1e7) {
+      if (n >= 1e9) return '₦'+(n/1e9).toFixed(2)+'B';
+      if (n >= 1e6) return '₦'+(n/1e6).toFixed(2)+'M';
+    }
+    return '₦' + n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
   function fmtDate(iso) { if (!iso) return '—'; const d = new Date(iso); if (isNaN(d.getTime())) return '—'; return d.toLocaleDateString('en-NG',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
   function timeAgo(iso) { if (!iso) return ''; const t = new Date(iso).getTime(); if (isNaN(t)) return ''; const d = Math.floor((Date.now()-t)/1000); if (d<60) return 'Just now'; if (d<3600) return Math.floor(d/60)+'m ago'; if (d<86400) return Math.floor(d/3600)+'h ago'; if (d<604800) return Math.floor(d/86400)+'d ago'; return fmtDate(iso); }
@@ -2017,7 +2060,21 @@ button.primary:hover {
   function getStatus(o) { if (!o) return 'pending'; const r = o.status ?? o.state ?? o.payment_status ?? o.transaction_status ?? 'pending'; const k = String(r).toLowerCase().trim(); return STAT_MAP[k] || (k || 'pending'); }
   function statusLabel(s) { const m = { success:'Success', pending:'Pending', failed:'Failed', refunded:'Refunded' }; return m[s] || (s ? s.charAt(0).toUpperCase()+s.slice(1) : 'Pending'); }
   function getAmount(o) { if (o == null) return 0; const c = [o.amount,o.Amount,o.value,o.total,o.transaction_amount,o.credit_amount,o.debit_amount,o.wallet_amount,o?.data?.amount,o?.metadata?.amount]; for (const x of c) { if (x == null || x === '') continue; const n = Number(String(x).replace(/[^0-9.-]/g,'')); if (!isNaN(n)) return n; } return 0; }
-  window.getAmount = getAmount;
+  
+  /** Accurate profit: prefer explicit profit, else amount - cost_price (success sales). */
+  function calcProfit(t) {
+    if (!t) return 0;
+    const m = t.metadata || {};
+    const explicit = t.profit ?? m.profit ?? m.user_profit;
+    if (explicit != null && explicit !== '' && !isNaN(Number(explicit))) return Number(explicit) || 0;
+    const amt = getAmount(t);
+    const cost = Number(t.cost_price ?? m.cost_price ?? m.datashop_cost ?? m.provider_cost ?? NaN);
+    if (!isNaN(cost) && amt > 0) return Math.round((amt - cost) * 100) / 100;
+    return 0;
+  }
+  window.calcProfit = calcProfit;
+
+window.getAmount = getAmount;
   function getDate(o) { return o?.created_at || o?.createdAt || o?.date || o?.timestamp || o?.updated_at || null; }
 
   function detectNetwork(t) { if (!t) return 'generic'; const m = t.metadata || {}; const a = (String(m.network || t.network || m.operator || '') + ' ' + String(t.description || m.product_name || '')).toLowerCase(); if (/mtn/.test(a)) return 'mtn'; if (/airtel|\batl\b/.test(a)) return 'airtel'; if (/\bglo\b/.test(a)) return 'glo'; if (/9mobile|etisalat|\bt2\b/.test(a)) return 't2'; return 'generic'; }
@@ -2038,6 +2095,7 @@ button.primary:hover {
     if (/manual[\s_-]?fund|manual[\s_-]?credit|admin[\s_-]?credit/.test(all)) return 'manual_fund';
     if (/manual[\s_-]?debit|admin[\s_-]?debit/.test(all)) return 'manual_debit';
     if (/\brefund\b|\breversal\b/.test(all)) return 'refund';
+    if (/\belectric|\bnepa\b|\bdisco\b|\bprepaid\b|\bpostpaid\b|\bmeter\b|\bpower\b|\bikedc\b|\bekedc\b|\baedc\b/.test(all)) return 'electricity';
     if (/\bairtime\b|\bvtu\b|\brecharge\b/.test(all)) return 'airtime';
     if (/\bdata\b|\bbundle\b|\bgig\b|\bgb\b/.test(all)) return 'data';
     if (/\btransfer\b|\bp2p\b/.test(all)) return 'transfer';
@@ -2046,9 +2104,9 @@ button.primary:hover {
     if (dir === 'credit' || dir === 'in') return 'deposit';
     return 'other';
   }
-  function kindLabel(k) { const m = { airtime:'Airtime', data:'Data', deposit:'Deposit', withdrawal:'Withdrawal', transfer:'Transfer', refund:'Refund', other:'Other', manual_fund:'Manual Credit', manual_debit:'Manual Debit' }; return m[k] || 'Transaction'; }
-  function kindAvatarClass(t) { const k = txnKind(t); if (k === 'manual_fund') return 'deposit'; if (k === 'manual_debit') return 'withdraw'; if (['deposit','withdrawal','transfer','refund','other'].includes(k)) return 'txn-' + k; return 'net-' + detectNetwork(t); }
-  function kindAvatarHtml(t) { const k = txnKind(t); const ic = { deposit:'fa-arrow-down', withdrawal:'fa-arrow-up', transfer:'fa-paper-plane', refund:'fa-rotate-left', other:'fa-receipt', manual_fund:'fa-arrow-down', manual_debit:'fa-arrow-up' }; if (ic[k]) return `<i class="fas ${ic[k]}" style="font-size:12px;color:#fff"></i>`; return NET_SVG[detectNetwork(t)] || NET_SVG.generic; }
+  function kindLabel(k) { const m = { airtime:'Airtime', data:'Data', electricity:'Electricity', deposit:'Deposit', withdrawal:'Withdrawal', transfer:'Transfer', refund:'Refund', other:'Other', manual_fund:'Manual Credit', manual_debit:'Manual Debit' }; return m[k] || 'Transaction'; }
+  function kindAvatarClass(t) { const k = txnKind(t); if (k === 'manual_fund') return 'deposit'; if (k === 'manual_debit') return 'withdraw'; if (k === 'electricity') return 'txn-electricity'; if (['deposit','withdrawal','transfer','refund','other'].includes(k)) return 'txn-' + k; return 'net-' + detectNetwork(t); }
+  function kindAvatarHtml(t) { const k = txnKind(t); const ic = { deposit:'fa-arrow-down', withdrawal:'fa-arrow-up', transfer:'fa-paper-plane', refund:'fa-rotate-left', other:'fa-receipt', manual_fund:'fa-arrow-down', manual_debit:'fa-arrow-up', electricity:'fa-bolt' }; if (ic[k]) return `<i class="fas ${ic[k]}" style="font-size:12px;color:#fff"></i>`; return NET_SVG[detectNetwork(t)] || NET_SVG.generic; }
 
   const RANGES = { '30m':{label:'Last 30 minutes',minutes:30},'1h':{label:'Last 1 hour',hours:1},'2h':{label:'Last 2 hours',hours:2},'1d':{label:'Today',startOfDay:true},'7d':{label:'Last 7 days',days:7},'30d':{label:'Last 30 days',days:30},'all':{label:'All time'} };
   function rangeCutoff(key) { const r = RANGES[key]; if (!r) return null; if (r.startOfDay) { const d = new Date(); d.setHours(0,0,0,0); return d; } if (r.minutes) return new Date(Date.now() - r.minutes*60000); if (r.hours) return new Date(Date.now() - r.hours*3600000); if (r.days) return new Date(Date.now() - r.days*86400000); return null; }
@@ -2110,7 +2168,29 @@ button.primary:hover {
   }
 
   async function fetchUsers() { try { const r = await api('/admin/users?limit=500'); state.users = pick(r); state.totalUsers = r?.meta?.total ?? state.users.length; } catch (_) { state.users = []; } }
-  async function fetchTxn() { try { const r = await api('/admin/transactions?limit=500'); state.transactions = pick(r); } catch (_) { state.transactions = []; } }
+  async function fetchTxn() {
+    try {
+      const all = [];
+      let page = 1;
+      const limit = 200;
+      const maxPages = 50; // up to 10,000 txs for accurate analytics
+      while (page <= maxPages) {
+        const r = await api(`/admin/transactions?limit=${limit}&page=${page}`);
+        const batch = pick(r);
+        if (!Array.isArray(batch) || !batch.length) break;
+        all.push(...batch);
+        const total = r?.meta?.total ?? r?.total ?? r?.data?.total ?? null;
+        if (batch.length < limit) break;
+        if (total != null && all.length >= Number(total)) break;
+        page++;
+      }
+      state.transactions = all;
+      state.transactionsTotal = all.length;
+    } catch (_) {
+      state.transactions = [];
+      state.transactionsTotal = 0;
+    }
+  }
   async function fetchDep() { try { const r = await api('/wallet/admin/deposits/all'); state.deposits = pick(r); } catch (_) { state.deposits = []; } }
   async function fetchWd() { try { const r = await api('/wallet/admin/withdrawals/all'); state.withdrawals = pick(r); } catch (_) { state.withdrawals = []; } }
   async function fetchMe() { try { const r = await api('/auth/me'); const u = r.data?.user || r.data; if (u) { const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; }; s('adminName', u.name || 'Admin'); s('adminEmail', u.email || ''); s('drawerName', u.name || 'Admin'); s('drawerEmail', u.email || ''); s('adminAvatar', (u.name || 'A').charAt(0).toUpperCase()); s('drawerAvatar', (u.name || 'A').charAt(0).toUpperCase()); } } catch (_) {} }
@@ -2197,27 +2277,64 @@ button.primary:hover {
     s('statUsersSub', cnt === 1 ? '1 registered account' : `${cnt.toLocaleString()} registered accounts`);
     const bal = users.reduce((a,u) => a + Number(u.balance ?? u.wallet_balance ?? 0) || 0, 0);
     s('statWalletBalance', fmtMoney(bal, true));
-    const dS = dep.filter(d => getStatus(d) === 'success').length;
-    const dP = dep.filter(d => getStatus(d) === 'pending').length;
-    s('statDeposits', fmtMoney(dep.reduce((a,d) => a+getAmount(d),0), true));
-    const dSub = document.getElementById('statDepositsSub'); if (dSub) dSub.innerHTML = `<span class="pill ok">${dS} successful</span>` + (dP ? ` <span class="pill warn">${dP} pending</span>` : '');
-    const wS = wd.filter(w => getStatus(w) === 'success').length;
-    const wP = wd.filter(w => getStatus(w) === 'pending').length;
-    s('statWithdrawals', fmtMoney(wd.reduce((a,w) => a+getAmount(w),0), true));
-    const wSub = document.getElementById('statWithdrawalsSub'); if (wSub) wSub.innerHTML = `<span class="pill ok">${wS} approved</span>` + (wP ? ` <span class="pill warn">${wP} pending</span>` : '');
-    const at = txns.filter(t => txnKind(t) === 'airtime'); const atO = at.filter(t => getStatus(t) === 'success');
-    s('statAirtime', fmtMoney(atO.reduce((a,t)=>a+getAmount(t),0), true));
-    s('statAirtimeSub', `${at.length} transaction${at.length===1?'':'s'}`);
-    const dt = txns.filter(t => txnKind(t) === 'data'); const dtO = dt.filter(t => getStatus(t) === 'success');
-    s('statData', fmtMoney(dtO.reduce((a,t)=>a+getAmount(t),0), true));
-    s('statDataSub', `${dt.length} transaction${dt.length===1?'':'s'}`);
-    const sc = txns.filter(t => getStatus(t) === 'success'); const fc = txns.filter(t => getStatus(t) === 'failed'); const dc = sc.length + fc.length;
-    const rate = dc > 0 ? Math.round(sc.length/dc*100) : 0;
-    s('statSuccess', `${rate}%`);
-    s('statSuccessSub', `${sc.length} of ${dc} successful`);
-    const pr = txns.reduce((a,t) => { const m = t.metadata || {}; return a + (Number(t.profit ?? m.profit ?? 0) || 0); }, 0);
+    // Deposits / withdrawals — SUCCESS amounts only (pending shown in sub)
+    const depOk = dep.filter(d => getStatus(d) === 'success');
+    const depPend = dep.filter(d => getStatus(d) === 'pending');
+    const depFail = dep.filter(d => getStatus(d) === 'failed');
+    const depSum = depOk.reduce((a,d) => a + getAmount(d), 0);
+    s('statDeposits', fmtMoney(depSum, true));
+    const dSub = document.getElementById('statDepositsSub');
+    if (dSub) dSub.innerHTML =
+      `<span class="pill ok">${depOk.length} successful · ${fmtMoney(depSum)}</span>` +
+      (depPend.length ? ` <span class="pill warn">${depPend.length} pending · ${fmtMoney(depPend.reduce((a,d)=>a+getAmount(d),0))}</span>` : '') +
+      (depFail.length ? ` <span class="pill">${depFail.length} failed</span>` : '');
+
+    const wdOk = wd.filter(w => getStatus(w) === 'success');
+    const wdPend = wd.filter(w => getStatus(w) === 'pending');
+    const wdFail = wd.filter(w => getStatus(w) === 'failed');
+    const wdSum = wdOk.reduce((a,w) => a + getAmount(w), 0);
+    s('statWithdrawals', fmtMoney(wdSum, true));
+    const wSub = document.getElementById('statWithdrawalsSub');
+    if (wSub) wSub.innerHTML =
+      `<span class="pill ok">${wdOk.length} approved · ${fmtMoney(wdSum)}</span>` +
+      (wdPend.length ? ` <span class="pill warn">${wdPend.length} pending · ${fmtMoney(wdPend.reduce((a,w)=>a+getAmount(w),0))}</span>` : '') +
+      (wdFail.length ? ` <span class="pill">${wdFail.length} failed</span>` : '');
+
+    // Product volumes — SUCCESS only
+    const at = txns.filter(t => txnKind(t) === 'airtime');
+    const atO = at.filter(t => getStatus(t) === 'success');
+    const atSum = atO.reduce((a,t) => a + getAmount(t), 0);
+    s('statAirtime', fmtMoney(atSum, true));
+    s('statAirtimeSub', `${atO.length} successful of ${at.length} total`);
+
+    const dt = txns.filter(t => txnKind(t) === 'data');
+    const dtO = dt.filter(t => getStatus(t) === 'success');
+    const dtSum = dtO.reduce((a,t) => a + getAmount(t), 0);
+    s('statData', fmtMoney(dtSum, true));
+    s('statDataSub', `${dtO.length} successful of ${dt.length} total`);
+
+    const elc = txns.filter(t => txnKind(t) === 'electricity');
+    const elcO = elc.filter(t => getStatus(t) === 'success');
+    const elcSum = elcO.reduce((a,t) => a + getAmount(t), 0);
+    const elcEl = document.getElementById('statElectricity');
+    if (elcEl) {
+      s('statElectricity', fmtMoney(elcSum, true));
+      s('statElectricitySub', `${elcO.length} successful of ${elc.length} total`);
+    }
+
+    // Success rate — success vs failed only (pending excluded from rate)
+    const sc = txns.filter(t => getStatus(t) === 'success');
+    const fc = txns.filter(t => getStatus(t) === 'failed');
+    const pc = txns.filter(t => getStatus(t) === 'pending');
+    const dc = sc.length + fc.length;
+    const rate = dc > 0 ? Math.round((sc.length / dc) * 1000) / 10 : 0; // 1 decimal
+    s('statSuccess', dc ? `${rate}%` : '—');
+    s('statSuccessSub', `${sc.length} ok · ${fc.length} failed` + (pc.length ? ` · ${pc.length} pending` : ''));
+
+    // Profit — SUCCESS sales only; derive from cost_price when profit missing
+    const pr = sc.reduce((a, t) => a + calcProfit(t), 0);
     s('statProfit', fmtMoney(pr, true));
-    s('statProfitSub', `From ${sc.length} completed sale${sc.length===1?'':'s'}`);
+    s('statProfitSub', `From ${sc.length} completed sale${sc.length === 1 ? '' : 's'}`);
     const sb = (id,c) => { const e = document.getElementById(id); if (e) e.textContent = c; };
     sb('sidebarTxnCount', (state.unifiedTransactions||[]).length);
     sb('sidebarDepositCount', (state.deposits||[]).length);
@@ -2354,36 +2471,93 @@ button.primary:hover {
   function computeAnalyticsSeries() {
     buildUnifiedTransactions();
     const list = applyRange(state.unifiedTransactions, state.range);
-    const counted = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
-    const amounts = { airtime:0, data:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
-    let totalSuccessCount = 0, totalFailedCount = 0, grossVolume = 0, successVolume = 0, totalProfit = 0, successSum = 0, successCnt = 0;
+    const counted = { airtime:0, data:0, electricity:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
+    const amounts = { airtime:0, data:0, electricity:0, deposit:0, withdrawal:0, manual_fund:0, manual_debit:0, transfer:0, refund:0, other:0 };
+    let totalSuccessCount = 0, totalFailedCount = 0, totalPendingCount = 0;
+    let grossVolume = 0, successVolume = 0, totalProfit = 0, successSum = 0, successCnt = 0;
     const userSpend = new Map();
+
     for (const t of list) {
-      const amt = getAmount(t); const st = getStatus(t); const k = txnKind(t); const m = t.metadata || {};
-      if (counted[k] !== undefined) { counted[k] += 1; amounts[k] += amt; }
-      grossVolume += amt;
+      const amt = getAmount(t);
+      const st = getStatus(t);
+      const k = txnKind(t);
+      if (counted[k] !== undefined) counted[k] += 1;
+
+      // Product money: SUCCESS only (accurate revenue)
+      if (st === 'success' && amounts[k] !== undefined) amounts[k] += amt;
+
       if (st === 'success') {
-        totalSuccessCount++; successVolume += amt; successSum += amt; successCnt++;
-        const p = Number(t.profit ?? m.profit ?? 0) || 0; totalProfit += p;
-        const isMoneyIn = ['airtime','data','deposit','manual_fund','transfer'].includes(k);
-        if (isMoneyIn && amt > 0) { const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown'); const nm = t.user_name || t.user_email || t.phone || 'Unknown'; const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 }; cur.total += amt; cur.count += 1; userSpend.set(uid, cur); }
-      } else if (st === 'failed') { totalFailedCount++; }
+        totalSuccessCount++;
+        successVolume += amt;
+        successSum += amt;
+        successCnt++;
+        totalProfit += calcProfit(t);
+        // Top customers: SUCCESS product purchases ONLY (AIRTIME / DATA).
+        // Never count deposits, withdrawals, manual fund, or refunds.
+        {
+          const svc = String(t.service || t.type || '').toUpperCase();
+          const dir = String(t.direction || '').toUpperCase();
+          const isProductSvc = svc === 'AIRTIME' || svc === 'DATA' || svc === 'ELECTRICITY' || svc === 'BILL'
+            || k === 'airtime' || k === 'data' || k === 'electricity';
+          const isMoneyMovement = k === 'deposit' || k === 'withdrawal' || k === 'manual_fund' || k === 'manual_debit' || k === 'refund'
+            || dir === 'CREDIT' && (svc === 'DEPOSIT' || /deposit|fund|credit/i.test(String(t.description||'')));
+          if (isProductSvc && !isMoneyMovement && amt > 0) {
+            const uid = String(t.user_id || t.userId || t.user_email || t.user_name || 'unknown');
+            const nm = t.user_name || t.user_email || t.phone || 'Unknown';
+            const cur = userSpend.get(uid) || { name: nm, total: 0, count: 0 };
+            cur.total += amt;
+            cur.count += 1;
+            userSpend.set(uid, cur);
+          }
+        }
+      } else if (st === 'failed') {
+        totalFailedCount++;
+      } else if (st === 'pending') {
+        totalPendingCount++;
+      }
+      // gross = all statuses (for volume trend context)
+      grossVolume += amt;
     }
+
     const denom = totalSuccessCount + totalFailedCount;
-    const rate = denom > 0 ? Math.round((totalSuccessCount / denom) * 100) : 0;
+    const rate = denom > 0 ? Math.round((totalSuccessCount / denom) * 1000) / 10 : 0;
     const avg = successCnt > 0 ? (successSum / successCnt) : 0;
-    const margin = grossVolume > 0 ? (totalProfit / grossVolume) * 100 : 0;
+    // Margin on successful sales volume only
+    const margin = successVolume > 0 ? (totalProfit / successVolume) * 100 : 0;
+
     const buckets = buildAnalyticsBuckets();
-    const seriesGross = buckets.map(()=>0), seriesSuccess = buckets.map(()=>0), seriesProfit = buckets.map(()=>0);
+    const seriesGross = buckets.map(() => 0);
+    const seriesSuccess = buckets.map(() => 0);
+    const seriesProfit = buckets.map(() => 0);
     for (const t of list) {
-      const ts = new Date(getDate(t)).getTime(); if (isNaN(ts)) continue;
-      const amt = getAmount(t); const st = getStatus(t); const m = t.metadata || {};
-      for (let i=0;i<buckets.length;i++){
+      const ts = new Date(getDate(t)).getTime();
+      if (isNaN(ts)) continue;
+      const amt = getAmount(t);
+      const st = getStatus(t);
+      for (let i = 0; i < buckets.length; i++) {
         const s = buckets[i].start.getTime(), e = buckets[i].end.getTime();
-        if (ts >= s && ts < e) { seriesGross[i] += amt; if (st === 'success') seriesSuccess[i] += amt; const p = Number(t.profit ?? m.profit ?? 0) || 0; seriesProfit[i] += p; break; }
+        if (ts >= s && ts < e) {
+          seriesGross[i] += amt;
+          if (st === 'success') {
+            seriesSuccess[i] += amt;
+            seriesProfit[i] += calcProfit(t);
+          }
+          break;
+        }
       }
     }
-    return { buckets, seriesGross, seriesSuccess, seriesProfit, counted, amounts, totalSuccessCount, totalFailedCount, rate, avg, totalProfit, margin, heroGross: grossVolume, heroTxns: list.length, topCustomers: Array.from(userSpend.values()).sort((a,b)=>b.total-a.total).slice(0,5) };
+
+    return {
+      buckets, seriesGross, seriesSuccess, seriesProfit,
+      counted, amounts,
+      totalSuccessCount, totalFailedCount, totalPendingCount,
+      rate, avg, totalProfit, margin,
+      // Hero shows SUCCESS volume (real business revenue), not pending/failed noise
+      heroGross: successVolume,
+      heroTxns: totalSuccessCount + totalFailedCount + totalPendingCount,
+      successVolume, grossVolume,
+      topCustomers: Array.from(userSpend.values()).sort((a, b) => b.total - a.total).slice(0, 5),
+    };
   }
   function destroyChart(c) { if (c) { try { c.destroy(); } catch(_){} } }
   function renderRevenueChart(series) {
@@ -2459,13 +2633,18 @@ button.primary:hover {
     s('segRefunds', fmtMoney(series.amounts.refund, true));
     renderRevenueChart(series); renderMixChart(series.counted);
     const services = [
-      { key:'airtime', label:'Airtime' }, { key:'data', label:'Data' }, { key:'deposit', label:'Deposits' },
-      { key:'withdrawal', label:'Withdrawals' }, { key:'manual_fund', label:'Manual Credit' },
-      { key:'manual_debit', label:'Manual Debit' }, { key:'transfer', label:'Transfers' }, { key:'refund', label:'Refunds' },
+      { key:'airtime', label:'Airtime' }, { key:'data', label:'Data' }, { key:'electricity', label:'Electricity' },
+      { key:'deposit', label:'Deposits' }, { key:'withdrawal', label:'Withdrawals' },
+      { key:'manual_fund', label:'Manual Credit' }, { key:'manual_debit', label:'Manual Debit' },
+      { key:'transfer', label:'Transfers' }, { key:'refund', label:'Refunds' },
     ].map(x => ({ label:x.label, sub:`${series.counted[x.key]} txns`, value: fmtMoney(series.amounts[x.key], true), raw: series.amounts[x.key] }))
      .sort((a,b)=>b.raw-a.raw).slice(0,5);
     renderTopList('topServices', services);
-    const customers = series.topCustomers.map(c => ({ label:c.name, sub:`${c.count} txn${c.count===1?'':'s'}`, value: fmtMoney(c.total, true) }));
+    const customers = series.topCustomers.map(c => ({
+      label: c.name,
+      sub: `${c.count} purchase${c.count===1?'':'s'} · airtime/data/electricity`,
+      value: fmtMoney(c.total, false) // exact ₦ — never inflate with deposits
+    }));
     renderTopList('topCustomers', customers);
   }
   window.updateAnalytics = updateAnalytics;
@@ -2584,7 +2763,7 @@ button.primary:hover {
   window.removeTracedUser = removeTracedUser;
   function updateFilterCount(tab) { const f = state.filters[tab] || {}; let c = 0; if (tab === 'transactions') { if (f.type && f.type !== 'all') c++; if (f.range && f.range !== '1d') c++; if (f.tracedUserId) c++; } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') c++; if (f.range && f.range !== '1d') c++; } if (tab === 'users') { if (f.status && f.status !== 'all') c++; } if (tab === 'archived') { if (f.userId) c++; } const el = document.getElementById(tab + 'FilterCount'); if (el) el.textContent = c; const btn = document.getElementById(tab + 'FilterBtn'); if (btn) btn.classList.toggle('active', c > 0); renderActiveFilterChips(tab); }
   window.updateFilterCount = updateFilterCount;
-  function renderActiveFilterChips(tab) { const el = document.getElementById(tab + 'ActiveFilters'); if (!el) return; const f = state.filters[tab] || {}; const chips = []; if (tab === 'transactions') { if (f.type && f.type !== 'all') { const t = { airtime:'Airtime', data:'Data', deposit:'Deposits', withdrawal:'Withdrawals', manual_fund:'Manual Credit', manual_debit:'Manual Debit', transfer:'Transfers', refund:'Refunds', other:'Others' }; chips.push({ label: t[f.type] || f.type, clear: () => { f.type = 'all'; } }); } if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } if (f.tracedUserId) chips.push({ label: `Tracing ${f.tracedUserName || ''}`, clear: () => { f.tracedUserId = null; f.tracedUserName = null; } }); } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } } if (tab === 'users' && f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (tab === 'archived' && f.userId) chips.push({ label: `User #${f.userId}`, clear: () => { f.userId = null; } }); if (!chips.length) { el.innerHTML = ''; return; } el.innerHTML = chips.map((c, i) => `<span class="active-filter-chip"><i class="fas fa-filter"></i> ${esc(c.label)}<button onclick="clearFilterChip('${tab}', ${i})"><i class="fas fa-times"></i></button></span>`).join(''); }
+  function renderActiveFilterChips(tab) { const el = document.getElementById(tab + 'ActiveFilters'); if (!el) return; const f = state.filters[tab] || {}; const chips = []; if (tab === 'transactions') { if (f.type && f.type !== 'all') { const t = { airtime:'Airtime', data:'Data', electricity:'Electricity', deposit:'Deposits', withdrawal:'Withdrawals', manual_fund:'Manual Credit', manual_debit:'Manual Debit', transfer:'Transfers', refund:'Refunds', other:'Others' }; chips.push({ label: t[f.type] || f.type, clear: () => { f.type = 'all'; } }); } if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } if (f.tracedUserId) chips.push({ label: `Tracing ${f.tracedUserName || ''}`, clear: () => { f.tracedUserId = null; f.tracedUserName = null; } }); } if (tab === 'deposits' || tab === 'withdrawals') { if (f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (f.range && f.range !== '1d') { const r = RANGES[f.range]; chips.push({ label: r?.label || f.range, clear: () => { f.range = '1d'; } }); } } if (tab === 'users' && f.status && f.status !== 'all') chips.push({ label: statusLabel(f.status), clear: () => { f.status = 'all'; } }); if (tab === 'archived' && f.userId) chips.push({ label: `User #${f.userId}`, clear: () => { f.userId = null; } }); if (!chips.length) { el.innerHTML = ''; return; } el.innerHTML = chips.map((c, i) => `<span class="active-filter-chip"><i class="fas fa-filter"></i> ${esc(c.label)}<button onclick="clearFilterChip('${tab}', ${i})"><i class="fas fa-times"></i></button></span>`).join(''); }
   window.renderActiveFilterChips = renderActiveFilterChips;
   function clearFilterChip(tab, idx) { const f = state.filters[tab] || {}; if (tab === 'transactions') { const chips = []; if (f.type && f.type !== 'all') chips.push(() => { f.type = 'all'; }); if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; }); if (f.tracedUserId) chips.push(() => { f.tracedUserId = null; f.tracedUserName = null; }); if (chips[idx]) chips[idx](); } if (tab === 'deposits' || tab === 'withdrawals') { const chips = []; if (f.status && f.status !== 'all') chips.push(() => { f.status = 'all'; }); if (f.range && f.range !== '1d') chips.push(() => { f.range = '1d'; }); if (chips[idx]) chips[idx](); } if (tab === 'users' && f.status !== 'all') f.status = 'all'; if (tab === 'archived' && f.userId) f.userId = null; updateFilterCount(tab); applyFilters(true); }
   window.clearFilterChip = clearFilterChip;
@@ -3033,7 +3212,7 @@ button.primary:hover {
     if (!id || id.endsWith(':')) return;
     if (state.adminAlertIds.has(id)) return;
     state.adminAlertIds.add(id);
-    playIphoneAlert(true);
+    playIphoneAlert(false); // real alert only when sound enabled
     if (!alarmActive && state.adminSoundEnabled) {
       alarmActive = true;
       const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch(_){} alarmLoop = setTimeout(tick, 4600); };
