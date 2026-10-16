@@ -399,6 +399,12 @@ export async function createDeposit(req, res) {
       });
     }
 
+    return res.status(409).json({
+      success: false,
+      code: 'PAYMENT_PROVIDER_NOT_CONFIGURED',
+      message: 'This payment method is not configured for Shatova yet.',
+    });
+
     /* ── Ensure wallet exists ───────────────────────────────── */
     const wallet = await ensureWallet(req.user.id);
     if (!wallet) {
