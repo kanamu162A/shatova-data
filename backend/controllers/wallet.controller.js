@@ -21,11 +21,8 @@ import {
 const MIN_DEPOSIT = 100;
 const MAX_DEPOSIT = 500_000;
 
-const PAYMENT_ACCOUNT = Object.freeze({
-  bank: 'Moniepoint MFB',
-  account_number: '6034037129',
-  account_name: 'Umar Mannir Abubakar',
-});
+// Do not expose a personal bank account as Shatova's automated funding destination.
+// Official payment instructions are returned only by an approved payment provider.
 
 /* ============================================================
    HELPERS
@@ -321,6 +318,9 @@ export async function getRecentRecipients(req, res) {
    Directly credits the wallet.
    ============================================================ */
 export async function topup(req, res) {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ success: false, message: 'Manual wallet top-ups are disabled in production.' });
+  }
   try {
     const amount = Math.round(Number(req.body?.amount) * 100) / 100;
     if (!amount || amount <= 0 || amount > 1_000_000) {
@@ -384,6 +384,21 @@ export async function createDeposit(req, res) {
       return res.status(422).json({ success: false, message: 'Unsupported payment method' });
     }
 
+    if (paymentMethod === 'bank_transfer') {
+      return res.status(409).json({
+        success: false,
+        code: 'AUTOMATED_FUNDING_NOT_ACTIVE',
+        message: 'Manual bank-transfer funding is temporarily unavailable while Shatova completes payment-provider activation.',
+      });
+    }
+    if (paymentMethod === 'paystack') {
+      return res.status(409).json({
+        success: false,
+        code: 'USE_PAYSTACK_CHECKOUT',
+        message: 'Use the Paystack checkout endpoint to initiate a payment.',
+      });
+    }
+
     /* ── Ensure wallet exists ───────────────────────────────── */
     const wallet = await ensureWallet(req.user.id);
     if (!wallet) {
@@ -436,7 +451,7 @@ export async function createDeposit(req, res) {
         amount:             Number(deposit.amount),
         status:             'pending',
         created_at:         deposit.created_at,
-        payment_account:    PAYMENT_ACCOUNT,
+        payment_account:    null,
         expires_in_seconds: 1800,
       },
     });
