@@ -20,6 +20,7 @@ import walletRoutes      from './routes/wallet.routes.js';
 import adminRoutes       from './routes/admin.routes.js';
 import walletAdminRoutes from './routes/walletAdmin.routes.js';
 import webhookRoutes     from './routes/webhook.routes.js';
+import paystackRoutes    from './routes/paystack.routes.js';
 import pricingRoutes     from './routes/pricing.routes.js';
 import electricityRoutes from './routes/electricity.routes.js';
 
@@ -135,6 +136,7 @@ app.use('/api/v1/wallet/admin', walletAdminRoutes);
 app.use('/api/v1/wallet',       walletRoutes);
 app.use('/api/v1/admin',        adminRoutes);
 app.use('/api/v1/webhooks',     webhookRoutes);
+app.use('/api/v1/paystack',     paystackRoutes);
 app.use('/api/v1/admin/pricing', pricingRoutes);
 app.use('/api/v1/electricity', electricityRoutes);
 
