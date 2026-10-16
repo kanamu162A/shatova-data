@@ -37,7 +37,12 @@ export async function initializeFunding(req, res) {
 
     const reference = makeReference();
     const amountKobo = amount * 100;
-    const callbackUrl = env.PAYSTACK_CALLBACK_URL || `${env.FRONTEND_URL.replace(/\/$/, '')}/fund-wallet.html`;
+    const frontendUrl = String(env.FRONTEND_URL || '').replace(/\/$/, '');
+    const callbackUrl = env.PAYSTACK_CALLBACK_URL || (frontendUrl && !/localhost|127\.0\.0\.1/i.test(frontendUrl)
+      ? `${frontendUrl}/fund-wallet.html`
+      : env.NODE_ENV === 'production'
+        ? 'https://shatova-data.onrender.com/fund-wallet.html'
+        : `${frontendUrl || 'http://localhost:5173'}/fund-wallet.html`);
 
     // Create intent before contacting Paystack so every checkout is auditable.
     await query(
