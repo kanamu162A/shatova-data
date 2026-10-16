@@ -104,38 +104,47 @@ export async function verifyFunding(req, res) {
 }
 
 async function settleVerifiedPayment(reference, verified) {
-  // Only provider-verified, exact-reference, exact-amount NGN payments reach this function.
-  // creditWallet is idempotent on (user_id, reference, type), so duplicate webhook/verify calls
-  // cannot create a second credit for this payment reference.
-  const { rows } = await query(
-    `SELECT id, user_id, amount_kobo, status FROM paystack_payment_intents
-      WHERE reference = $1 LIMIT 1`,
-    [reference]
-  );
-  const intent = rows[0];
-  if (!intent) throw new Error('Payment intent not found.');
-  if (Number(verified.amount) !== Number(intent.amount_kobo) || verified.currency !== 'NGN' || verified.status !== 'success') {
+  if (verified.status !== 'success' || verified.currency !== 'NGN' || verified.reference !== reference) {
     throw new Error('Verified payment does not match the payment intent.');
   }
-  if (intent.status === 'success') return;
 
-  await creditWallet({
-    userId: intent.user_id,
-    amount: Number(intent.amount_kobo) / 100,
-    reference: `PAYSTACK-${reference}`,
-    type: 'WALLET_TOPUP',
-    description: 'Wallet funding via Paystack',
+  // Serialize concurrent webhook and browser-verification attempts by locking
+  // the intent row. The wallet credit has its own idempotency reference as a
+  // second safety barrier. If the intent update fails after crediting, a retry
+  // finds the existing ledger credit and does not add money a second time.
+  return withTransaction(async (client) => {
+    const { rows } = await client.query(
+      `SELECT id, user_id, amount_kobo, status
+         FROM paystack_payment_intents
+        WHERE reference = $1
+        FOR UPDATE`,
+      [reference]
+    );
+    const intent = rows[0];
+    if (!intent) throw new Error('Payment intent not found.');
+    if (Number(verified.amount) !== Number(intent.amount_kobo)) {
+      throw new Error('Verified payment amount does not match the payment intent.');
+    }
+    if (intent.status === 'success') return;
+
+    await creditWallet({
+      userId: intent.user_id,
+      amount: Number(intent.amount_kobo) / 100,
+      reference: `PAYSTACK-${reference}`,
+      type: 'WALLET_TOPUP',
+      description: 'Wallet funding via Paystack',
+    });
+
+    await client.query(
+      `UPDATE paystack_payment_intents
+          SET status = 'success',
+              provider_transaction_id = $1,
+              paid_at = COALESCE(paid_at, NOW()),
+              updated_at = NOW()
+        WHERE reference = $2 AND status <> 'success'`,
+      [Number(verified.id), reference]
+    );
   });
-
-  await query(
-    `UPDATE paystack_payment_intents
-        SET status = 'success',
-            provider_transaction_id = $1,
-            paid_at = COALESCE(paid_at, NOW()),
-            updated_at = NOW()
-      WHERE reference = $2 AND status <> 'success'`,
-    [Number(verified.id), reference]
-  );
 }
 
 export async function paystackWebhook(req, res) {
