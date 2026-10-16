@@ -360,121 +360,21 @@ export async function topup(req, res) {
    Creates a PENDING deposit. No money moves until admin approves.
    ============================================================ */
 export async function createDeposit(req, res) {
-  try {
-    const amount = Number(req.body?.amount);
-    const paymentMethod = String(req.body?.payment_method || 'bank_transfer').toLowerCase();
+  const paymentMethod = String(req.body?.payment_method || 'bank_transfer').toLowerCase();
 
-    /* ── Validation ─────────────────────────────────────────── */
-    if (!Number.isFinite(amount) || amount <= 0) {
-      return res.status(422).json({ success: false, message: 'Enter a valid amount' });
-    }
-    if (amount < MIN_DEPOSIT) {
-      return res.status(422).json({
-        success: false,
-        message: `Minimum deposit is ₦${MIN_DEPOSIT.toLocaleString()}`,
-      });
-    }
-    if (amount > MAX_DEPOSIT) {
-      return res.status(422).json({
-        success: false,
-        message: `Maximum deposit is ₦${MAX_DEPOSIT.toLocaleString()}`,
-      });
-    }
-    if (!['bank_transfer', 'paystack', 'flutterwave'].includes(paymentMethod)) {
-      return res.status(422).json({ success: false, message: 'Unsupported payment method' });
-    }
-
-    if (paymentMethod === 'bank_transfer') {
-      return res.status(409).json({
-        success: false,
-        code: 'AUTOMATED_FUNDING_NOT_ACTIVE',
-        message: 'Manual bank-transfer funding is temporarily unavailable while Shatova completes payment-provider activation.',
-      });
-    }
-    if (paymentMethod === 'paystack') {
-      return res.status(409).json({
-        success: false,
-        code: 'USE_PAYSTACK_CHECKOUT',
-        message: 'Use the Paystack checkout endpoint to initiate a payment.',
-      });
-    }
-
+  if (paymentMethod === 'paystack') {
     return res.status(409).json({
       success: false,
-      code: 'PAYMENT_PROVIDER_NOT_CONFIGURED',
-      message: 'This payment method is not configured for Shatova yet.',
-    });
-
-    /* ── Ensure wallet exists ───────────────────────────────── */
-    const wallet = await ensureWallet(req.user.id);
-    if (!wallet) {
-      return res.status(500).json({ success: false, message: 'Could not prepare wallet.' });
-    }
-
-    /* ── Use ledger's last settled balance_after as baseline ── */
-    const { rows: lastLedger } = await query(
-      `SELECT balance_after
-         FROM wallet_ledger
-        WHERE wallet_id = $1
-          AND LOWER(COALESCE(status, 'successful')) NOT IN ('pending', 'processing')
-        ORDER BY created_at DESC, id DESC
-        LIMIT 1`,
-      [wallet.id]
-    );
-    const baseline = lastLedger[0]
-      ? Number(lastLedger[0].balance_after)
-      : Number(wallet.balance || 0);
-
-    /* ── Insert the pending deposit ─────────────────────────── */
-    const reference = generateDepositRef();
-
-    const { rows } = await query(
-      `INSERT INTO wallet_ledger
-         (wallet_id, user_id, type, direction, amount,
-          balance_before, balance_after,
-          reference, description, status, created_at, updated_at)
-       VALUES ($1, $2, 'DEPOSIT', 'CREDIT', $3, $4, $4,
-               $5, $6, 'pending', NOW(), NOW())
-       RETURNING id, reference, amount, status, created_at`,
-      [
-        wallet.id,
-        req.user.id,
-        amount,
-        baseline,
-        reference,
-        `Wallet deposit — ${paymentMethod}`,
-      ]
-    );
-
-    const deposit = rows[0];
-
-    return res.status(201).json({
-      success: true,
-      data: {
-        id:                 deposit.id,
-        deposit_id:         deposit.id,
-        reference:          deposit.reference,
-        amount:             Number(deposit.amount),
-        status:             'pending',
-        created_at:         deposit.created_at,
-        payment_account:    null,
-        expires_in_seconds: 1800,
-      },
-    });
-  } catch (err) {
-    console.error('[wallet] createDeposit:', err);
-    const isSchemaError = err.code === '42703' || err.code === '42P01';
-    const isLedgerBreak = err.code === 'P0001' && /LEDGER_BREAK/.test(err.message || '');
-    return res.status(500).json({
-      success: false,
-      message: isLedgerBreak
-        ? 'Wallet ledger is out of sync. Please contact support.'
-        : isSchemaError
-          ? 'Database schema is out of date. Run the wallet_ledger migration.'
-          : (err.message || 'Could not create deposit.'),
-      code: err.code,
+      code: 'USE_PAYSTACK_CHECKOUT',
+      message: 'Use POST /api/v1/paystack/initialize to start a Paystack checkout.',
     });
   }
+
+  return res.status(409).json({
+    success: false,
+    code: 'AUTOMATED_FUNDING_NOT_ACTIVE',
+    message: 'Manual bank-transfer deposits are disabled. Use the approved payment-provider flow once activated.',
+  });
 }
 
 /* ============================================================
