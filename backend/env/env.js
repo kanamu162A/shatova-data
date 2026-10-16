@@ -77,6 +77,10 @@ export const env = Object.freeze({
   hasEmail: Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS),
 
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+
+  // Paystack wallet funding (use sk_test_ keys outside production).
+  PAYSTACK_SECRET_KEY: cleanEnv(process.env.PAYSTACK_SECRET_KEY),
+  PAYSTACK_CALLBACK_URL: cleanEnv(process.env.PAYSTACK_CALLBACK_URL),
   RESET_TOKEN_TTL_MIN: 15,
 
   // VTU provider (DataShop)

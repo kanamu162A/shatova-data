@@ -1,593 +1,288 @@
 // frontend/js/fund-wallet.js
-// ============================================================
-// Shatova — Fund Wallet
-//   1. Enter amount
-//   2. Pay to Moniepoint account + toggle "I have sent"
-//   3. Fast verification → credited
-//   Now: FASTER polling + AUTO-REDIRECT to home on completion
-// ============================================================
+// Shatova — automatic Paystack wallet funding.
+// The browser never credits a wallet. Only the authenticated backend,
+// after provider verification, can settle the payment intent.
 
-const API_BASE = window.API_BASE;
+const API_BASE = String(window.API_BASE || '/api/v1').replace(/\/+$/, '');
+const MIN_AMOUNT = 100;
+const MAX_AMOUNT = 500000;
+const VERIFY_ATTEMPTS = 12;
+const VERIFY_DELAY_MS = 1800;
 
-/* ============================================================
-   CONFIG
-   ============================================================ */
-const PAYMENT_ACCOUNT = {
-  bank:   'Moniepoint MFB',
-  number: '6034037129',
-  name:   'Umar Mannir Abubakar',
-};
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
+const state = { amount: 0, reference: null, busy: false, verifyTimer: null };
 
-/* Auto-redirect delay after completion (ms) */
-const AUTO_HOME_DELAY_SUCCESS = 1400;
-const AUTO_HOME_DELAY_FAILED  = 2600;   // slightly longer so user reads the message
+const stepAmount = $('#stepAmount');
+const stepAccount = $('#stepAccount');
+const stepWaiting = $('#stepWaiting');
+const amountInput = $('#amountInput');
+const quickAmounts = $('#quickAmounts');
+const continueBtn = $('#continueBtn');
+const paystackPayBtn = $('#paystackPayBtn');
+const backBtn = $('#backBtn');
+const pageBackBtn = $('#pageBackBtn');
+const balanceEl = $('#balanceAmount');
+const payAmount = $('#payAmount');
+const receiptAmount = $('#receiptAmount');
+const receiptReference = $('#receiptReference');
+const receiptStatus = $('#receiptStatus');
+const progressBar = $('#progressBar');
+const waitingIcon = $('#waitingIcon');
+const waitingTitle = $('#waitingTitle');
+const waitingSub = $('#waitingSub');
+const msgSuccess = $('#msgSuccess');
+const msgFailed = $('#msgFailed');
+const tryAgainBtn = $('#tryAgainBtn');
+const goHomeBtn = $('#goHomeBtn');
+const psTransfer = $('#psTransfer');
+const psVerify = $('#psVerify');
+const psCredited = $('#psCredited');
+const paymentError = $('#paymentError');
 
-/* Polling speed */
-const POLL_INTERVAL_FAST = 350;    // first 20 tries
-const POLL_INTERVAL_SLOW = 900;    // after that
-const POLL_FAST_LIMIT    = 20;
-
-/* ============================================================
-   AUTH
-   ============================================================ */
-function getToken() {
+function token() {
   return localStorage.getItem('token') || sessionStorage.getItem('token');
 }
-function authHeaders(extra = {}) {
-  const t = getToken();
-  return {
-    'Content-Type': 'application/json',
-    ...(t ? { Authorization: `Bearer ${t}` } : {}),
-    ...extra,
-  };
+function authHeaders() {
+  const value = token();
+  return { 'Content-Type': 'application/json', ...(value ? { Authorization: 'Bearer ' + value } : {}) };
 }
-function redirectToLogin() { window.location.href = '/login.html'; }
-
-/* ============================================================
-   STATE
-   ============================================================ */
-const state = {
-  amount:         0,
-  depositId:      null,
-  pollTimer:      null,
-  sentConfirmed:  false,
-  currentStep:    'amount',
-  startedAt:      0,
-  pollCount:      0,
-  progressTimer:  null,
-  isVerifying:    false,
-  redirectTimer:  null,
-};
-
-/* ============================================================
-   DOM
-   ============================================================ */
-const $  = (s) => document.querySelector(s);
-const $$ = (s) => document.querySelectorAll(s);
-
-const stepAmount   = $('#stepAmount');
-const stepAccount  = $('#stepAccount');
-const stepWaiting  = $('#stepWaiting');
-
-const amountInput   = $('#amountInput');
-const quickAmounts  = $('#quickAmounts');
-const continueBtn   = $('#continueBtn');
-const backBtn       = $('#backBtn');
-const submitBtn     = $('#submitBtn');
-const sentToggle    = $('#sentToggle');
-const copyBtn       = $('#copyBtn');
-const tryAgainBtn   = $('#tryAgainBtn');
-const goHomeBtn     = $('#goHomeBtn');
-const pageBackBtn   = $('#pageBackBtn');
-
-const balanceEl     = $('#balanceAmount');
-const payAmount     = $('#payAmount');
-const receiptAmount = $('#receiptAmount');
-const receiptStatus = $('#receiptStatus');
-const progressBar   = $('#progressBar');
-
-const waitingIcon   = $('#waitingIcon');
-const waitingTitle  = $('#waitingTitle');
-const waitingSub    = $('#waitingSub');
-const msgSuccess    = $('#msgSuccess');
-const msgFailed     = $('#msgFailed');
-
-const psTransfer    = $('#psTransfer');
-const psVerify      = $('#psVerify');
-const psCredited    = $('#psCredited');
-
-const accountNumberEls = $$('[data-account-number], #accountNumber, .fw-account-number');
-const accountNameEls   = $$('[data-account-name],   #accountName,   .fw-account-name');
-const bankNameEls      = $$('[data-bank-name],      #bankName,      .fw-bank-name');
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-function formatNaira(n) {
-  return Number(n || 0).toLocaleString('en-NG', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+function money(value) {
+  return Number(value || 0).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
 function showStep(step) {
-  [stepAmount, stepAccount, stepWaiting].forEach((s) => s && s.classList.add('hidden'));
-  if (step) step.classList.remove('hidden');
+  [stepAmount, stepAccount, stepWaiting].forEach((node) => node?.classList.add('hidden'));
+  step?.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'auto' });
 }
+function showError(message) {
+  if (!paymentError) { alert(message); return; }
+  paymentError.textContent = message;
+  paymentError.classList.remove('hidden');
+}
+function clearError() {
+  paymentError?.classList.add('hidden');
+  if (paymentError) paymentError.textContent = '';
+}
+function goLogin() { window.location.replace('/login.html'); }
 
-function setCurrentStep(name) {
-  state.currentStep = name;
+async function requestJson(url, options = {}) {
+  const response = await fetch(url, { ...options, headers: { ...authHeaders(), ...(options.headers || {}) } });
+  const body = await response.json().catch(() => ({}));
+  if (response.status === 401 || response.status === 403) {
+    goLogin();
+    throw new Error('Your session has expired. Please sign in again.');
+  }
+  if (!response.ok || body.success === false) {
+    throw new Error(body.message || 'Request failed. Please try again.');
+  }
+  return body;
 }
 
-function paintAccountDetails() {
-  accountNumberEls.forEach((el) => { el.textContent = PAYMENT_ACCOUNT.number; });
-  accountNameEls.forEach((el)   => { el.textContent = PAYMENT_ACCOUNT.name;   });
-  bankNameEls.forEach((el)      => { el.textContent = PAYMENT_ACCOUNT.bank;   });
+async function loadBalance() {
+  try {
+    const body = await requestJson(`${API_BASE}/wallet/balance`);
+    const balance = Number(body.data?.balance ?? body.balance ?? 0);
+    if (balanceEl) balanceEl.textContent = money(balance);
+    localStorage.setItem('walletBalance', String(balance));
+  } catch (error) {
+    if (error.message && !/session has expired/i.test(error.message)) console.warn('[fund-wallet] balance unavailable:', error.message);
+  }
 }
 
-/* ============================================================
-   API
-   ============================================================ */
-async function fetchBalance() {
-  const res = await fetch(`${API_BASE}/wallet/balance`, { headers: authHeaders() });
-  if (res.status === 401 || res.status === 403) { redirectToLogin(); return 0; }
-  const json = await res.json().catch(() => ({}));
-  return Number(json.data?.balance ?? json.balance ?? 0);
-}
-
-async function createDeposit(amount) {
-  const res = await fetch(`${API_BASE}/wallet/deposit`, {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ amount: Number(amount), payment_method: 'bank_transfer' }),
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok || !json.success) throw new Error(json.message || 'Failed to create deposit');
-  return json.data || json;
-}
-
-async function checkDepositStatus(id) {
-  const res = await fetch(`${API_BASE}/wallet/deposit/${id}/status`, { headers: authHeaders() });
-  const json = await res.json().catch(() => ({}));
-  return json.data || json;
-}
-
-/* ============================================================
-   AMOUNT — step 1
-   ============================================================ */
-function updateAmountState() {
-  const amt = Number(amountInput.value) || 0;
-  state.amount = amt;
-  continueBtn.disabled = amt < 100;
-
-  quickAmounts?.querySelectorAll('.fw-quick-btn').forEach((b) => {
-    b.classList.toggle('active', Number(b.dataset.amt) === amt);
+function updateAmount() {
+  const amount = Number(String(amountInput?.value || '').replace(/\D/g, '')) || 0;
+  state.amount = amount;
+  if (continueBtn) continueBtn.disabled = !Number.isInteger(amount) || amount < MIN_AMOUNT || amount > MAX_AMOUNT;
+  quickAmounts?.querySelectorAll('.fw-quick-btn').forEach((button) => {
+    button.classList.toggle('active', Number(button.dataset.amt) === amount);
   });
 }
+amountInput?.addEventListener('input', () => {
+  amountInput.value = amountInput.value.replace(/\D/g, '').slice(0, 7);
+  updateAmount();
+});
+quickAmounts?.addEventListener('click', (event) => {
+  const button = event.target.closest('.fw-quick-btn');
+  if (!button || !amountInput) return;
+  amountInput.value = button.dataset.amt;
+  updateAmount();
+});
 
-if (amountInput) {
-  amountInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 7);
-    updateAmountState();
-  });
-}
+continueBtn?.addEventListener('click', () => {
+  const amount = Number(amountInput?.value);
+  if (!Number.isInteger(amount) || amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
+    showError(`Enter an amount from ₦${MIN_AMOUNT} to ₦${MAX_AMOUNT.toLocaleString()}.`);
+    return;
+  }
+  state.amount = amount;
+  clearError();
+  if (payAmount) payAmount.textContent = money(amount);
+  if (receiptAmount) receiptAmount.textContent = money(amount);
+  showStep(stepAccount);
+});
 
-if (quickAmounts) {
-  quickAmounts.addEventListener('click', (e) => {
-    const btn = e.target.closest('.fw-quick-btn');
-    if (!btn) return;
-    amountInput.value = btn.dataset.amt;
-    updateAmountState();
-  });
-}
-
-/* ============================================================
-   STEP 1 → STEP 2
-   ============================================================ */
-if (continueBtn) {
-  continueBtn.addEventListener('click', () => {
-    const amt = Number(amountInput.value);
-    if (!amt || amt < 100) return;
-    if (amt > 500000) {
-      alert('Maximum deposit is ₦500,000');
-      return;
-    }
-
-    state.amount        = amt;
-    state.sentConfirmed = false;
-
-    sentToggle?.classList.remove('active');
-    if (submitBtn) submitBtn.disabled = true;
-
-    if (payAmount)     payAmount.textContent     = formatNaira(amt);
-    if (receiptAmount) receiptAmount.textContent = formatNaira(amt);
-
-    paintAccountDetails();
-    setCurrentStep('account');
-    showStep(stepAccount);
-  });
-}
-
-/* ============================================================
-   BACK
-   ============================================================ */
-function handleBack() {
-  if (state.currentStep === 'account') {
-    setCurrentStep('amount');
+function goBack() {
+  if (!stepAccount?.classList.contains('hidden')) {
     showStep(stepAmount);
     return;
   }
-  if (state.currentStep === 'waiting') return;
+  if (!stepWaiting?.classList.contains('hidden')) return;
   window.location.href = '/home.html';
 }
+backBtn?.addEventListener('click', goBack);
+pageBackBtn?.addEventListener('click', goBack);
 
-if (backBtn)     backBtn.addEventListener('click', handleBack);
-if (pageBackBtn) pageBackBtn.addEventListener('click', handleBack);
-
-/* ============================================================
-   COPY ACCOUNT NUMBER
-   ============================================================ */
-if (copyBtn) {
-  copyBtn.addEventListener('click', async () => {
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(PAYMENT_ACCOUNT.number);
-      } else {
-        const ta = document.createElement('textarea');
-        ta.value = PAYMENT_ACCOUNT.number;
-        ta.style.position = 'fixed';
-        ta.style.opacity  = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-      }
-      copyBtn.classList.add('copied');
-      setTimeout(() => copyBtn.classList.remove('copied'), 900);
-    } catch {}
-  });
-}
-
-/* ============================================================
-   TOGGLE
-   ============================================================ */
-if (sentToggle) {
-  sentToggle.addEventListener('click', () => {
-    state.sentConfirmed = !state.sentConfirmed;
-    sentToggle.classList.toggle('active', state.sentConfirmed);
-    if (submitBtn) submitBtn.disabled = !state.sentConfirmed;
-  });
-}
-
-/* ============================================================
-   SUBMIT → STEP 3
-   ============================================================ */
-if (submitBtn) {
-  submitBtn.addEventListener('click', async () => {
-    if (!state.sentConfirmed) return;
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="fw-spinner"></span> Confirming…';
-
-    try {
-      const result = await createDeposit(state.amount);
-      state.depositId = result?.id || result?.deposit_id;
-      if (!state.depositId) throw new Error('Could not start verification');
-
-      setCurrentStep('waiting');
-      showStep(stepWaiting);
-      startVerification();
-    } catch (err) {
-      alert(err.message || 'Something went wrong. Please try again.');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Confirm payment';
-    }
-  });
-}
-
-/* ============================================================
-   VERIFICATION
-   ============================================================ */
-
-function stopAllTimers() {
-  if (state.pollTimer)     { clearTimeout(state.pollTimer);      state.pollTimer     = null; }
-  if (state.progressTimer) { clearInterval(state.progressTimer); state.progressTimer = null; }
-  if (state.redirectTimer) { clearTimeout(state.redirectTimer);  state.redirectTimer = null; }
-  state.isVerifying = false;
-}
-
-function setProgressStep(step) {
-  [psTransfer, psVerify, psCredited].forEach((el) => el?.classList.remove('active', 'done'));
-  if (step >= 1 && psTransfer) psTransfer.classList.add('done');
-  if (step >= 2 && psVerify)   psVerify.classList.add('done');
-  if (step >= 3 && psCredited) psCredited.classList.add('done');
-
-  if (step === 1 && psVerify)   psVerify.classList.add('active');
-  if (step === 2 && psCredited) psCredited.classList.add('active');
-}
-
-/* ------------------------------------------------------------
-   Status classifiers
-   ------------------------------------------------------------ */
-function normalizeStatus(s) {
-  return String(s || '').toLowerCase().trim();
-}
-
-function isSuccessStatus(s) {
-  return ['successful', 'success', 'completed', 'complete', 'credited', 'approved', 'paid']
-    .includes(normalizeStatus(s));
-}
-
-function isDeclinedStatus(s) {
-  return ['declined', 'rejected', 'disapproved', 'denied']
-    .includes(normalizeStatus(s));
-}
-
-function isFailedStatus(s) {
-  return ['failed', 'cancelled', 'canceled', 'expired', 'error']
-    .includes(normalizeStatus(s));
-}
-
-function pickReasonMessage(result) {
-  if (!result || typeof result !== 'object') return '';
-  const meta = result.metadata || {};
-  const candidates = [
-    result.admin_note,
-    result.admin_message,
-    result.reason,
-    result.decline_reason,
-    result.failure_reason,
-    result.message,
-    result.description,
-    meta.admin_note,
-    meta.reason,
-    meta.fail_reason,
-    meta.message,
-  ];
-  for (const c of candidates) {
-    if (c && String(c).trim().length > 0) return String(c).trim();
+paystackPayBtn?.addEventListener('click', async () => {
+  if (state.busy) return;
+  if (!token()) { goLogin(); return; }
+  if (!Number.isInteger(state.amount) || state.amount < MIN_AMOUNT || state.amount > MAX_AMOUNT) {
+    showError('Please choose a valid funding amount first.');
+    return;
   }
-  return '';
+
+  state.busy = true;
+  clearError();
+  paystackPayBtn.disabled = true;
+  paystackPayBtn.innerHTML = '<span class="fw-spinner"></span> Preparing secure checkout…';
+
+  try {
+    const body = await requestJson(`${API_BASE}/paystack/initialize`, {
+      method: 'POST',
+      body: JSON.stringify({ amount: state.amount }),
+    });
+    const checkoutUrl = body.data?.authorization_url;
+    if (!checkoutUrl || !/^https:\/\/checkout\.paystack\.com\//i.test(checkoutUrl)) {
+      throw new Error('The secure checkout link was not returned. Please try again.');
+    }
+    state.reference = body.data.reference;
+    // Hosted checkout is on Paystack; this page resumes from the callback URL.
+    window.location.assign(checkoutUrl);
+  } catch (error) {
+    showError(error.message || 'Unable to start payment. Please try again.');
+    state.busy = false;
+    paystackPayBtn.disabled = false;
+    paystackPayBtn.textContent = 'Continue to secure payment';
+  }
+});
+
+function setProgress(step) {
+  [psTransfer, psVerify, psCredited].forEach((el) => el?.classList.remove('active', 'done'));
+  if (step >= 1) psTransfer?.classList.add('done');
+  if (step >= 2) psVerify?.classList.add('done');
+  if (step >= 3) psCredited?.classList.add('done');
+  if (step === 2) psVerify?.classList.add('active');
+  if (step === 3) psCredited?.classList.add('active');
 }
-
-/* ============================================================
-   START VERIFICATION — FASTER polling
-   ============================================================ */
-function startVerification() {
-  if (state.isVerifying) return;
-  state.isVerifying = true;
-
-  /* Reset UI */
+function setWaiting() {
+  showStep(stepWaiting);
   waitingIcon?.classList.remove('success', 'failed');
   waitingIcon?.classList.add('pending');
   if (waitingTitle) waitingTitle.textContent = 'Verifying your payment';
-  if (waitingSub)   waitingSub.textContent   = 'This usually takes a few seconds.';
+  if (waitingSub) waitingSub.textContent = 'Please keep this page open while Shatova confirms the payment with Paystack.';
   if (receiptStatus) {
-    receiptStatus.textContent = 'Processing';
-    receiptStatus.className   = 'fw-status-pending';
+    receiptStatus.textContent = 'Verifying';
+    receiptStatus.className = 'fw-status-pending';
   }
   msgSuccess?.classList.add('hidden');
   msgFailed?.classList.add('hidden');
   tryAgainBtn?.classList.add('hidden');
   goHomeBtn?.classList.add('hidden');
-
-  /* Progress bar — quick ease toward 70% */
-  let progress = 0;
-  if (progressBar) progressBar.style.width = '0%';
-  stopAllTimers();
-  state.isVerifying = true;
-  state.progressTimer = setInterval(() => {
-    progress += 2.2;
-    if (progress >= 70) {
-      progress = 70;
-      clearInterval(state.progressTimer);
-      state.progressTimer = null;
-    }
-    if (progressBar) progressBar.style.width = progress + '%';
-  }, 60);
-
-  setProgressStep(1);
-  state.startedAt = Date.now();
-  state.pollCount = 0;
-
-  const pollOnce = async () => {
-    state.pollCount++;
-    try {
-      const result = await checkDepositStatus(state.depositId);
-      const status = result?.status;
-
-      if (isSuccessStatus(status)) {
-        return completeVerification('success', result);
-      }
-      if (isDeclinedStatus(status)) {
-        return completeVerification('declined', result);
-      }
-      if (isFailedStatus(status)) {
-        return completeVerification('failed', result);
-      }
-
-      if (state.pollCount >= 2) setProgressStep(2);
-      scheduleNext();
-    } catch {
-      scheduleNext();
-    }
-  };
-
-  const scheduleNext = () => {
-    if (!state.isVerifying) return;
-    const delay = state.pollCount < POLL_FAST_LIMIT
-      ? POLL_INTERVAL_FAST
-      : POLL_INTERVAL_SLOW;
-    state.pollTimer = setTimeout(pollOnce, delay);
-  };
-
-  /* Fire first poll immediately */
-  state.pollTimer = setTimeout(pollOnce, 200);
+  if (progressBar) progressBar.style.width = '25%';
+  setProgress(1);
 }
 
-/* ============================================================
-   COMPLETE VERIFICATION — success · declined · failed
-   + AUTO-REDIRECT to home
-   ============================================================ */
-function completeVerification(kind, result) {
-  stopAllTimers();
-  const elapsed = Date.now() - state.startedAt;
-
-  if (kind === 'success') {
-    waitingIcon?.classList.remove('pending', 'failed');
-    waitingIcon?.classList.add('success');
-    if (waitingTitle) waitingTitle.textContent = 'Payment confirmed';
-    if (waitingSub)   waitingSub.textContent   = 'Your wallet has been credited. Returning home…';
-    if (receiptStatus) {
-      receiptStatus.textContent = 'Successful';
-      receiptStatus.className   = 'fw-status-success';
-    }
-    if (progressBar) progressBar.style.width = '100%';
-    setProgressStep(3);
-
-    msgSuccess?.classList.remove('hidden');
-    msgFailed?.classList.add('hidden');
-    tryAgainBtn?.classList.add('hidden');
-    goHomeBtn?.classList.add('hidden');
-
-    /* Update balance in cache immediately */
-    fetchBalance().then((bal) => {
-      if (balanceEl) balanceEl.textContent = formatNaira(bal);
-      localStorage.setItem('walletBalance', String(bal));
-    }).catch(() => {});
-
-    /* AUTO-REDIRECT after brief success view */
-    state.redirectTimer = setTimeout(() => {
-      window.location.replace('/home.html');
-    }, AUTO_HOME_DELAY_SUCCESS);
+function finishSuccess(data) {
+  if (state.verifyTimer) clearTimeout(state.verifyTimer);
+  state.verifyTimer = null;
+  waitingIcon?.classList.remove('pending', 'failed');
+  waitingIcon?.classList.add('success');
+  if (waitingTitle) waitingTitle.textContent = 'Payment confirmed';
+  if (waitingSub) waitingSub.textContent = 'Your wallet funding was verified successfully.';
+  if (receiptStatus) {
+    receiptStatus.textContent = 'Successful';
+    receiptStatus.className = 'fw-status-success';
   }
-
-  else if (kind === 'declined') {
-    waitingIcon?.classList.remove('pending', 'success');
-    waitingIcon?.classList.add('failed');
-    if (waitingTitle) waitingTitle.textContent = 'Payment could not be confirmed';
-    if (waitingSub) {
-      waitingSub.textContent =
-        'Your transfer was reviewed but could not be approved. No funds were added. Returning home…';
-    }
-    if (receiptStatus) {
-      receiptStatus.textContent = 'Not approved';
-      receiptStatus.className   = 'fw-status-failed';
-    }
-    if (progressBar) progressBar.style.width = '100%';
-
-    msgSuccess?.classList.add('hidden');
-    msgFailed?.classList.remove('hidden');
-    tryAgainBtn?.classList.add('hidden');
-    goHomeBtn?.classList.add('hidden');
-
-    const reason = pickReasonMessage(result);
-    const strongEl = msgFailed?.querySelector('strong');
-    const textEl   = msgFailed?.querySelector('small, span, p');
-    if (strongEl) strongEl.textContent = 'Payment not approved';
-    if (textEl) {
-      textEl.textContent = reason
-        ? reason
-        : 'We reviewed your transfer but could not approve it. No funds were added. Please contact support if you need help.';
-    }
-
-    /* AUTO-REDIRECT after slightly longer delay */
-    state.redirectTimer = setTimeout(() => {
-      window.location.replace('/home.html');
-    }, AUTO_HOME_DELAY_FAILED);
-  }
-
-  else {
-    waitingIcon?.classList.remove('pending', 'success');
-    waitingIcon?.classList.add('failed');
-    if (waitingTitle) waitingTitle.textContent = 'Payment not received';
-    if (waitingSub) {
-      waitingSub.textContent =
-        "We couldn't find your transfer in the Moniepoint account. Returning home…";
-    }
-    if (receiptStatus) {
-      receiptStatus.textContent = 'Not received';
-      receiptStatus.className   = 'fw-status-failed';
-    }
-    if (progressBar) progressBar.style.width = '100%';
-
-    msgSuccess?.classList.add('hidden');
-    msgFailed?.classList.remove('hidden');
-    tryAgainBtn?.classList.add('hidden');
-    goHomeBtn?.classList.add('hidden');
-
-    const reason = pickReasonMessage(result);
-    const strongEl = msgFailed?.querySelector('strong');
-    const textEl   = msgFailed?.querySelector('small, span, p');
-    if (strongEl) strongEl.textContent = 'We could not verify your transfer';
-    if (textEl) {
-      textEl.textContent = reason
-        ? reason
-        : 'If you already sent the money, please wait a moment and try again.';
-    }
-
-    /* AUTO-REDIRECT after longer delay so user reads the error */
-    state.redirectTimer = setTimeout(() => {
-      window.location.replace('/home.html');
-    }, AUTO_HOME_DELAY_FAILED);
-  }
-
-  try { console.debug(`[fund-wallet] finished in ${elapsed}ms as "${kind}"`); } catch {}
-}
-
-/* ============================================================
-   RETRY / HOME — kept for backward compat, auto-redirect
-   will fire first anyway
-   ============================================================ */
-if (tryAgainBtn) {
-  tryAgainBtn.addEventListener('click', () => {
-    stopAllTimers();
-    state.sentConfirmed = false;
-    sentToggle?.classList.remove('active');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Confirm payment';
-    }
-    setCurrentStep('account');
-    showStep(stepAccount);
-  });
-}
-
-if (goHomeBtn) {
-  goHomeBtn.addEventListener('click', () => {
-    stopAllTimers();
-    window.location.replace('/home.html');
-  });
-}
-
-window.addEventListener('beforeunload', stopAllTimers);
-
-/* ============================================================
-   BALANCE
-   ============================================================ */
-async function loadBalance() {
-  try {
-    const bal = await fetchBalance();
-    if (balanceEl) balanceEl.textContent = formatNaira(bal);
-    localStorage.setItem('walletBalance', String(bal));
-  } catch {}
-}
-
-/* ============================================================
-   BOOT
-   ============================================================ */
-function boot() {
-  if (!getToken()) { redirectToLogin(); return; }
-  paintAccountDetails();
-
-  const cached = localStorage.getItem('walletBalance');
-  if (cached && balanceEl) balanceEl.textContent = formatNaira(Number(cached));
-
+  if (progressBar) progressBar.style.width = '100%';
+  setProgress(3);
+  msgSuccess?.classList.remove('hidden');
+  msgFailed?.classList.add('hidden');
+  tryAgainBtn?.classList.add('hidden');
+  goHomeBtn?.classList.remove('hidden');
+  if (receiptAmount && data?.amount != null) receiptAmount.textContent = money(data.amount);
   loadBalance();
-  updateAmountState();
-  setCurrentStep('amount');
+}
+function finishPending(message) {
+  if (state.verifyTimer) clearTimeout(state.verifyTimer);
+  state.verifyTimer = null;
+  waitingIcon?.classList.remove('pending', 'success');
+  waitingIcon?.classList.add('failed');
+  if (waitingTitle) waitingTitle.textContent = 'Payment not confirmed yet';
+  if (waitingSub) waitingSub.textContent = message || 'We could not confirm the payment yet. If you completed checkout, check again shortly or contact support.';
+  if (receiptStatus) {
+    receiptStatus.textContent = 'Pending';
+    receiptStatus.className = 'fw-status-pending';
+  }
+  msgFailed?.classList.remove('hidden');
+  tryAgainBtn?.classList.remove('hidden');
+  goHomeBtn?.classList.remove('hidden');
+}
+async function verifyReturnedPayment(reference, attempt = 1) {
+  try {
+    const body = await requestJson(`${API_BASE}/paystack/verify/${encodeURIComponent(reference)}`);
+    const result = body.data || {};
+    if (result.status === 'success') {
+      finishSuccess(result);
+      return;
+    }
+    if (attempt < VERIFY_ATTEMPTS) {
+      if (waitingSub) waitingSub.textContent = `Waiting for provider confirmation… Check ${attempt} of ${VERIFY_ATTEMPTS}.`;
+      state.verifyTimer = setTimeout(() => verifyReturnedPayment(reference, attempt + 1), VERIFY_DELAY_MS);
+      return;
+    }
+    finishPending('Paystack has not confirmed this payment yet. Your wallet has not been credited by this page. You can check again or contact support.');
+  } catch (error) {
+    if (attempt < VERIFY_ATTEMPTS && !/session has expired/i.test(error.message || '')) {
+      state.verifyTimer = setTimeout(() => verifyReturnedPayment(reference, attempt + 1), VERIFY_DELAY_MS);
+      return;
+    }
+    finishPending(error.message || 'Unable to verify this payment right now. Please try again.');
+  }
+}
+
+tryAgainBtn?.addEventListener('click', () => {
+  const reference = state.reference;
+  if (reference) {
+    setWaiting();
+    verifyReturnedPayment(reference, 1);
+  } else {
+    showStep(stepAmount);
+  }
+});
+goHomeBtn?.addEventListener('click', () => window.location.replace('/home.html'));
+
+async function boot() {
+  if (!token()) { goLogin(); return; }
+  const cached = localStorage.getItem('walletBalance');
+  if (cached && balanceEl) balanceEl.textContent = money(Number(cached));
+  loadBalance();
+  updateAmount();
+
+  const params = new URLSearchParams(window.location.search);
+  const reference = params.get('reference') || params.get('trxref');
+  if (reference) {
+    state.reference = reference;
+    if (receiptReference) receiptReference.textContent = reference;
+    setWaiting();
+    if (continueBtn) continueBtn.disabled = true;
+    await verifyReturnedPayment(reference);
+    // Remove sensitive/payment query parameters after capturing the reference.
+    history.replaceState({}, document.title, window.location.pathname);
+    return;
+  }
   showStep(stepAmount);
 }
-
+window.addEventListener('beforeunload', () => {
+  if (state.verifyTimer) clearTimeout(state.verifyTimer);
+});
 boot();

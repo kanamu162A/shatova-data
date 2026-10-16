@@ -1315,3 +1315,22 @@ body.dark .fw-msg-failed {
     opacity: 0;
   }
 }
+
+/* Automatic Paystack checkout */
+.fw-paystack-card { width: 100%; box-sizing: border-box; padding: 20px 16px 16px; border: 1px solid rgba(10,69,52,.10); border-radius: 20px; background: rgba(255,255,255,.88); box-shadow: 0 12px 34px rgba(10,69,52,.07); }
+[data-theme="dark"] .fw-paystack-card, .theme-dark .fw-paystack-card, body.dark .fw-paystack-card { background: rgba(23,27,25,.94); border-color: rgba(255,255,255,.08); }
+.fw-paystack-mark { width: 42px; height: 42px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 14px; color: #0a6b4b; background: rgba(34,197,94,.10); }
+.fw-paystack-mark svg { width: 24px; height: 24px; }
+.fw-paystack-card .fw-pay-head-label, .fw-paystack-card .fw-pay-head-amount { text-align: center; }
+.fw-paystack-title { margin: 20px 0 7px; text-align: center; font-size: 14px; font-weight: 650; letter-spacing: -.2px; color: #183b2f; }
+.fw-paystack-copy { margin: 0 auto 16px; max-width: 260px; text-align: center; font-size: 10px; line-height: 1.7; color: #75817b; }
+[data-theme="dark"] .fw-paystack-title, .theme-dark .fw-paystack-title, body.dark .fw-paystack-title { color: #e5f2ec; }
+[data-theme="dark"] .fw-paystack-copy, .theme-dark .fw-paystack-copy, body.dark .fw-paystack-copy { color: #a0aaa4; }
+.fw-paystack-benefits { display: grid; gap: 10px; padding: 14px 0; margin-bottom: 8px; border-top: 1px solid rgba(10,69,52,.08); border-bottom: 1px solid rgba(10,69,52,.08); }
+.fw-paystack-benefits > div { display: flex; align-items: flex-start; gap: 8px; font-size: 10px; line-height: 1.5; color: #4f6259; }
+[data-theme="dark"] .fw-paystack-benefits > div, .theme-dark .fw-paystack-benefits > div, body.dark .fw-paystack-benefits > div { color: #b9c6bf; }
+.fw-benefit-check { display: inline-grid; place-items: center; flex: 0 0 15px; width: 15px; height: 15px; border-radius: 50%; background: rgba(34,197,94,.13); color: #13834f; font-size: 10px; font-weight: 700; }
+.fw-paystack-note { margin: 14px 0; font-size: 9px; line-height: 1.6; }
+.fw-paystack-back { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 10px auto 0; width: 100%; min-height: 34px; font-size: 10px; }
+.fw-inline-error { margin: 10px 0; padding: 10px 11px; border-radius: 10px; color: #9f2525; background: rgba(220,38,38,.08); font-size: 10px; line-height: 1.5; }
+.fw-inline-error.hidden { display: none !important; }

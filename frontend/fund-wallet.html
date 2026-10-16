@@ -79,71 +79,33 @@
       <button class="fw-btn-primary" id="continueBtn" disabled>Continue</button>
     </section>
 
-    <!-- ═══════════════════════════════════════════
-         STEP 2 — Pay to this account
-         ═══════════════════════════════════════════ -->
+    <!-- STEP 2 — Secure automatic checkout -->
     <section class="fw-step hidden" id="stepAccount">
-
-      <div class="fw-pay-head">
-        <div class="fw-pay-head-label">AMOUNT TO PAY</div>
+      <div class="fw-paystack-card">
+        <div class="fw-paystack-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4.5 6v5.2c0 4.4 3 7.8 7.5 9.8 4.5-2 7.5-5.4 7.5-9.8V6L12 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div class="fw-pay-head-label">AMOUNT TO FUND</div>
         <div class="fw-pay-head-amount">₦<span id="payAmount">0.00</span></div>
-      </div>
-
-      <div class="fw-label">Transfer to this account</div>
-
-      <div class="fw-account-card">
-        <div class="fw-acct-row">
-          <div class="fw-acct-info">
-            <div class="fw-acct-label">Bank</div>
-            <div class="fw-acct-value">Moniepoint MFB</div>
-          </div>
+        <h2 class="fw-paystack-title">Secure automatic payment</h2>
+        <p class="fw-paystack-copy">Continue to Paystack to pay with the payment methods available to you. Shatova will verify the payment before adding money to your wallet.</p>
+        <div class="fw-paystack-benefits">
+          <div><span class="fw-benefit-check">✓</span><span>Verified payment confirmation</span></div>
+          <div><span class="fw-benefit-check">✓</span><span>No transfer screenshot or manual approval</span></div>
+          <div><span class="fw-benefit-check">✓</span><span>Wallet credit is protected against duplicate callbacks</span></div>
         </div>
-
-        <div class="fw-acct-row highlight">
-          <div class="fw-acct-info">
-            <div class="fw-acct-label">Account Number</div>
-            <div class="fw-acct-value fw-mono" id="acctNo">6034037129</div>
-          </div>
-          <button class="fw-copy" id="copyBtn" aria-label="Copy account number">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-          </button>
+        <div class="fw-warning fw-paystack-note">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <div>Only complete payment on the official Paystack checkout page. Do not close the page until you return to Shatova.</div>
         </div>
-
-        <div class="fw-acct-row">
-          <div class="fw-acct-info">
-            <div class="fw-acct-label">Account Name</div>
-            <div class="fw-acct-value">Umar Mannir Abubakar</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="fw-warning">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        <div>
-          Use your <strong>own bank account</strong>. If the name doesn't match what you registered, the deposit will be rejected.
-        </div>
-      </div>
-
-      <div class="fw-label">After payment</div>
-
-      <button class="fw-sent-toggle" id="sentToggle" type="button">
-        <span class="fw-sent-check">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-        </span>
-        <span class="fw-sent-text">
-          <strong>I have sent the money</strong>
-          <small>Tap to confirm your transfer</small>
-        </span>
-      </button>
-
-      <div class="fw-btn-row">
-        <button class="fw-btn-ghost" id="backBtn" aria-label="Back">
+        <p class="fw-inline-error hidden" id="paymentError" role="alert"></p>
+        <button class="fw-btn-primary" id="paystackPayBtn" type="button">Continue to secure payment</button>
+        <button class="fw-btn-ghost fw-paystack-back" id="backBtn" type="button" aria-label="Back to amount">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          <span>Change amount</span>
         </button>
-        <button class="fw-btn-primary" id="submitBtn" disabled>Confirm payment</button>
       </div>
     </section>
-
     <!-- ═══════════════════════════════════════════
          STEP 3 — Verifying
          ═══════════════════════════════════════════ -->
@@ -154,8 +116,8 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
 
-        <div class="fw-waiting-title" id="waitingTitle">Waiting for payment</div>
-        <div class="fw-waiting-sub" id="waitingSub">We're checking your transfer. This usually takes a few seconds.</div>
+        <div class="fw-waiting-title" id="waitingTitle">Checking payment</div>
+        <div class="fw-waiting-sub" id="waitingSub">We are securely verifying your Paystack payment.</div>
 
         <div class="fw-progress">
           <div class="fw-progress-bar" id="progressBar"></div>
@@ -183,11 +145,11 @@
           </div>
           <div class="fw-receipt-row">
             <span>Bank</span>
-            <strong>Moniepoint MFB</strong>
+            <strong>Paystack</strong>
           </div>
           <div class="fw-receipt-row">
             <span>Account</span>
-            <strong class="fw-mono">6034037129</strong>
+            <strong class="fw-mono" id="receiptReference">—</strong>
           </div>
           <div class="fw-receipt-row">
             <span>Status</span>
@@ -206,8 +168,8 @@
         <div class="fw-msg fw-msg-failed hidden" id="msgFailed">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           <div>
-            <strong>Payment not received</strong>
-            We couldn't find your transfer. Contact support if you've already sent the money.
+            <strong>Payment not confirmed</strong>
+            Payment has not been confirmed yet. If you completed checkout, wait a moment and check again.
           </div>
         </div>
 
