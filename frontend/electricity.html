@@ -46,6 +46,137 @@
     *, *::before, *::after { box-sizing: border-box; }
 
     /* ========== ULTRA PRO polish ========== */
+
+    /* Mobile-first: 99% phone users */
+    html, body.elx-body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    .elx-shell {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .elx-main {
+      padding: 6px 14px calc(24px + env(safe-area-inset-bottom, 0px) + 80px);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .elx-hdr {
+      padding: 10px 14px 12px;
+      padding-top: max(10px, env(safe-area-inset-top, 0px));
+    }
+    .elx-card, .elx-row, .elx-prod {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .elx-input-row {
+      width: 100%;
+      max-width: 100%;
+    }
+    .elx-input {
+      font-size: 16px !important; /* prevent iOS zoom */
+      min-height: 48px;
+    }
+    .elx-btn {
+      min-height: 48px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .elx-pick-btn {
+      min-height: 48px;
+      flex-shrink: 0;
+    }
+    /* Recent meters dropdown — under input like native autocomplete */
+    .elx-meter-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+    .elx-recent-drop {
+      display: none;
+      position: absolute;
+      left: 0; right: 0;
+      top: calc(100% + 6px);
+      z-index: 50;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      border-radius: 14px;
+      box-shadow:
+        0 4px 6px -2px rgba(15, 23, 42, 0.06),
+        0 12px 28px -8px rgba(15, 23, 42, 0.14);
+      overflow: hidden;
+      max-height: min(240px, 42vh);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .elx-recent-drop.open { display: block; }
+    .elx-recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      padding: 13px 14px;
+      border: none;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .12s;
+    }
+    .elx-recent-item:last-child { border-bottom: none; }
+    .elx-recent-item:active,
+    .elx-recent-item:hover { background: #f8fafc; }
+    .elx-recent-item .ri-num {
+      font-size: 14.5px;
+      font-weight: 650;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+    .elx-recent-item .ri-meta {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+    .elx-recent-item .ri-x {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #cbd5e1;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .elx-recent-item .ri-x:hover { background: #fef2f2; color: #dc2626; }
+    .elx-recent-foot {
+      padding: 8px 12px;
+      border-top: 1px solid rgba(15, 23, 42, 0.06);
+      display: flex;
+      justify-content: flex-end;
+    }
+    .elx-recent-foot button {
+      border: none; background: none;
+      font-size: 11.5px; font-weight: 650;
+      color: #64748b; cursor: pointer;
+      font-family: inherit; padding: 4px 6px;
+    }
+    @media (max-width: 380px) {
+      .elx-main { padding-left: 12px; padding-right: 12px; }
+      .elx-info .name { font-size: 12.5px; }
+      .elx-prod-name .n { font-size: 13px; }
+    }
+
     .elx-main { padding: 8px 16px 128px; }
     .elx-scroll-region { gap: 12px; }
     .elx-card {
@@ -974,20 +1105,17 @@
           <div class="elx-card">
             <div class="elx-label">Customer ID</div>
             <div class="elx-input-row">
-              <input id="meter" class="elx-input" type="tel" inputmode="numeric" placeholder="Enter meter number" maxlength="13" autocomplete="off" />
+              <div class="elx-meter-wrap">
+                <input id="meter" class="elx-input" type="tel" inputmode="numeric" placeholder="Enter customer ID" maxlength="13" autocomplete="off" autocapitalize="off" spellcheck="false" />
+                <div class="elx-recent-drop" id="recentDrop" role="listbox" aria-label="Recent meters">
+                  <div id="recentMeterList"></div>
+                  <div class="elx-recent-foot"><button type="button" id="clearRecentMeters">Clear recent</button></div>
+                </div>
+              </div>
               <button class="elx-pick-btn" id="btnPick" title="Pick from contacts">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 Pick
               </button>
-            </div>
-
-            <!-- Recent meter numbers (like airtime/data recent phones) -->
-            <div class="elx-recent" id="recentMeters" style="display:none;">
-              <div class="elx-recent-head">
-                <span class="lbl">Recent meters</span>
-                <button type="button" class="clear" id="clearRecentMeters">Clear</button>
-              </div>
-              <div class="elx-recent-chips" id="recentMeterChips"></div>
             </div>
 
             <div id="verifyMsg"></div>
@@ -1287,26 +1415,39 @@
       renderRecentMeters();
     }
     function renderRecentMeters() {
-      var wrap = $('recentMeters');
-      var chips = $('recentMeterChips');
-      if (!wrap || !chips) return;
+      var drop = $('recentDrop');
+      var listEl = $('recentMeterList');
+      if (!drop || !listEl) return;
       var list = loadRecentMeters();
+      var foot = drop.querySelector('.elx-recent-foot');
       if (!list.length) {
-        wrap.style.display = 'none';
-        chips.innerHTML = '';
+        listEl.innerHTML = '';
+        drop.classList.remove('open');
+        if (foot) foot.style.display = 'none';
         return;
       }
-      wrap.style.display = 'block';
-      chips.innerHTML = list.map(function (item) {
-        var meta = [item.name, item.disco].filter(Boolean).join(' · ') || 'Meter';
+      if (foot) foot.style.display = 'flex';
+      listEl.innerHTML = list.map(function (item) {
+        var meta = [item.name, item.disco].filter(Boolean).join(' · ');
         return (
-          '<button type="button" class="elx-meter-chip" data-meter="' + esc(item.meter) + '">' +
-            '<span class="mc-ico"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>' +
-            '<span class="mc-body"><span class="mc-num">' + esc(item.meter) + '</span><span class="mc-meta">' + esc(meta) + '</span></span>' +
-            '<span class="mc-x" data-remove="' + esc(item.meter) + '" title="Remove">×</span>' +
+          '<button type="button" class="elx-recent-item" data-meter="' + esc(item.meter) + '">' +
+            '<span><span class="ri-num">' + esc(item.meter) + '</span>' +
+            (meta ? '<span class="ri-meta">' + esc(meta) + '</span>' : '') +
+            '</span>' +
+            '<span class="ri-x" data-remove="' + esc(item.meter) + '" title="Remove">×</span>' +
           '</button>'
         );
       }).join('');
+    }
+    function openRecentDrop() {
+      var drop = $('recentDrop');
+      if (!drop) return;
+      renderRecentMeters();
+      if (loadRecentMeters().length) drop.classList.add('open');
+    }
+    function closeRecentDrop() {
+      var drop = $('recentDrop');
+      if (drop) drop.classList.remove('open');
     }
     function applyRecentMeter(meter) {
       meter = String(meter || '').replace(/\D/g, '').slice(0, 13);
@@ -1318,7 +1459,8 @@
       $('verifiedBlock').classList.add('elx-hidden');
       $('btnVerify').classList.remove('elx-hidden');
       $('verifyMsg').innerHTML = '';
-      input.focus();
+      closeRecentDrop();
+      input.blur();
     }
 
     function showStep(n) {
@@ -1530,17 +1672,32 @@
       if (rm) {
         e.preventDefault(); e.stopPropagation();
         removeRecentMeter(rm.getAttribute('data-remove'));
+        renderRecentMeters();
+        if (!loadRecentMeters().length) closeRecentDrop();
         return;
       }
-      var chip = e.target.closest('.elx-meter-chip[data-meter]');
-      if (chip) {
+      var item = e.target.closest('.elx-recent-item[data-meter]');
+      if (item && !e.target.closest('[data-remove]')) {
         e.preventDefault();
-        applyRecentMeter(chip.getAttribute('data-meter'));
+        applyRecentMeter(item.getAttribute('data-meter'));
         return;
       }
+      // close dropdown when tapping outside
+      if (!e.target.closest('.elx-meter-wrap')) closeRecentDrop();
     });
     var clearBtn = $('clearRecentMeters');
-    if (clearBtn) clearBtn.addEventListener('click', function () { clearRecentMeters(); });
+    if (clearBtn) clearBtn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      clearRecentMeters();
+      closeRecentDrop();
+    });
+
+    // Open recent list on focus / tap (like native autocomplete)
+    var meterInput = $('meter');
+    if (meterInput) {
+      meterInput.addEventListener('focus', function () { openRecentDrop(); });
+      meterInput.addEventListener('click', function () { openRecentDrop(); });
+    }
 
 
     $('btnPick').addEventListener('click', function () {
