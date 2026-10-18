@@ -8,6 +8,9 @@
 //      - status: 'processing' → 200 (ambiguous — user sees "Processing")
 //      - status: 'failed'     → 200 (with failure data; frontend shows error)
 //      - definite 4xx from provider → 502
+//   ⭐ v11 changes (only these):
+//      - PLAN_UNAVAILABLE now 409 (refresh signal)
+//      - getPurchaseSummary() appended
 // ============================================================
 
 import * as dataService from '../services/data.service.js';
@@ -117,8 +120,11 @@ export async function verifyCustomer(req, res) {
    🚫 INSUFFICIENT BALANCE
       400 { success: false, code: 'INSUFFICIENT_BALANCE', message, data }
 
-   🚫 INVALID PHONE / PLAN / UNAVAILABLE
-      400 { success: false, code: 'INVALID_PHONE' | 'INVALID_PLAN' | 'PLAN_UNAVAILABLE', ... }
+   🚫 INVALID PHONE / PLAN
+      400 { success: false, code: 'INVALID_PHONE' | 'INVALID_PLAN', ... }
+
+   🚫 PLAN CHANGED SINCE LOAD (product/price no longer live)
+      409 { success: false, code: 'PLAN_UNAVAILABLE', message }
 
    🚫 PROVIDER ERROR (unrecoverable from service's perspective)
       502 { success: false, code: 'PURCHASE_FAILED', message }
@@ -189,7 +195,7 @@ export async function purchase(req, res) {
       code === 'NETWORK_MISMATCH'     ? 400 :
       code === 'INVALID_PHONE'        ? 400 :
       code === 'INVALID_PLAN'         ? 400 :
-      code === 'PLAN_UNAVAILABLE'     ? 400 :
+      code === 'PLAN_UNAVAILABLE'     ? 409 :
       code === 'PRODUCT_NOT_FOUND'    ? 404 :
       code === 'PROVIDER_REJECTED'    ? 502 :
       code === 'PURCHASE_FAILED'      ? 502 :
@@ -253,6 +259,35 @@ export async function getStatus(req, res) {
 }
 
 /* ============================================================
+   GET /data/summary   (appended)
+   ------------------------------------------------------------
+   200 {
+     success: true,
+     data: {
+       today:     { count, total, success, failed, processing },
+       yesterday: { count, total, success, failed, processing }
+     }
+   }
+   ============================================================ */
+export async function getPurchaseSummary(req, res) {
+  try {
+    const userId = req.user?._id || req.user?.id || req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const summary = await dataService.getPurchaseSummary(userId);
+    res.json({ success: true, data: summary });
+  } catch (err) {
+    console.error('[data.getPurchaseSummary]', err);
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Failed to load summary',
+    });
+  }
+}
+
+/* ============================================================
    Default export
    ============================================================ */
 export default {
@@ -262,4 +297,5 @@ export default {
   verifyCustomer,
   purchase,
   getStatus,
+  getPurchaseSummary,
 };
