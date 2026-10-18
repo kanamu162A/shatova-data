@@ -651,11 +651,24 @@ export async function fetchAllProductsForPricing() {
 }
 
 /* ============================================================
-   LIVE PRODUCT CATALOGUE  (appended — v14 untouched)
+   LIVE PRODUCT CATALOGUE  (v14 untouched above this point)
    ------------------------------------------------------------
-   Defensive mapping: accepts every plausible field name that
-   DataShop might use. Logs the raw response length + first
-   item's keys so we can diagnose if it still returns 0.
+   DataShop returns a nested tree:
+     [
+       { product_type: 'data',
+         providers: [
+           { provider: 'MTN',
+             categories: [
+               { category: 'MTN SHARE', products: [ {...}, {...} ] },
+               ...
+             ]
+           },
+           ...
+         ]
+       },
+       ...
+     ]
+   We flatten providers → categories → products before mapping.
    ============================================================ */
 const LIVE_CACHE_TTL_MS = 60_000;
 let _liveCache = { at: 0, products: [] };
@@ -688,15 +701,42 @@ export async function getLiveProducts({ force = false } = {}) {
   _liveInflight = (async () => {
     try {
       const raw = await listProducts({ service: 'data' });
-      const arr = Array.isArray(raw) ? raw : [];
 
-      console.log(`[datashop.live] raw response length: ${arr.length}`);
-      if (arr[0]) {
-        console.log(`[datashop.live] first item keys:`, Object.keys(arr[0]).join(', '));
-        console.log(`[datashop.live] first item sample:`, JSON.stringify(arr[0]).slice(0, 600));
+      /* ── Flatten the nested provider → category → product tree ── */
+      const flat = [];
+      const pushGroup = (group) => {
+        if (!group) return;
+        const providers = Array.isArray(group.providers) ? group.providers : [];
+        for (const prov of providers) {
+          const categories = Array.isArray(prov.categories) ? prov.categories : [];
+          for (const cat of categories) {
+            const products = Array.isArray(cat.products) ? cat.products : [];
+            for (const p of products) {
+              flat.push({
+                ...p,
+                provider: p.provider || prov.provider || '',
+                category: p.category || cat.category || '',
+              });
+            }
+          }
+        }
+      };
+
+      if (Array.isArray(raw)) {
+        if (raw.length && raw[0] && Array.isArray(raw[0].providers)) {
+          for (const group of raw) pushGroup(group);
+        } else {
+          for (const p of raw) flat.push(p);
+        }
       }
 
-      const products = arr
+      console.log(`[datashop.live] flattened ${flat.length} raw products`);
+      if (flat[0]) {
+        console.log(`[datashop.live] flat sample keys:`, Object.keys(flat[0]).join(', '));
+        console.log(`[datashop.live] flat sample:`, JSON.stringify(flat[0]).slice(0, 400));
+      }
+
+      const products = flat
         .map((p) => {
           const code = pickFirst(p, [
             'product_name', 'productName', 'product_code', 'productCode',
@@ -713,9 +753,7 @@ export async function getLiveProducts({ force = false } = {}) {
           const network = normalizeNetworkLive(rawNetwork);
 
           const category = pickFirst(p, ['category', 'service', 'product_type', 'type']) || 'MOBILE DATA';
-
           const validity = pickFirst(p, ['validity', 'duration', 'plan_type', 'bundle_type']) || '';
-
           const description = pickFirst(p, ['description', 'desc', 'remark']) || '';
 
           const priceRaw = pickFirst(p, [
@@ -724,9 +762,9 @@ export async function getLiveProducts({ force = false } = {}) {
           ]);
           const price = Number(priceRaw) || 0;
 
-          /* Treat missing availability flags as available */
           const available =
             p.available === false ? false :
+            p.availability === false ? false :
             p.is_active === false ? false :
             p.status === 'inactive' ? false :
             true;
