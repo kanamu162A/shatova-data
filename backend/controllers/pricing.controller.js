@@ -1,7 +1,7 @@
 // controllers/pricing.controller.js
 // ============================================================
-// Admin pricing console — Datashop live costs + margin
-// + v12: write endpoint to set sell_price / is_active per plan
+// Admin pricing console — reads from data_plans
+// + write endpoint to set sell_price / is_active per plan
 // ============================================================
 
 import { query } from '../config/database.js';
@@ -12,6 +12,10 @@ let cache = { at: 0, payload: null };
 
 /* ============================================================
    GET /admin/pricing/datashop
+   ------------------------------------------------------------
+   Kept 100% identical to your original — this is just the
+   DataShop-side catalogue for reference. You don't use it
+   from the pricing page.
    ============================================================ */
 export async function getDatashopPricing(req, res) {
   try {
@@ -32,19 +36,15 @@ export async function getDatashopPricing(req, res) {
     let localMap = new Map();
     try {
       const { rows } = await query(
-        `SELECT product_code AS code,
-                selling_price,
-                cost_price,
-                is_active
-           FROM products
-          WHERE product_code IS NOT NULL`
+        `SELECT plan_id AS code, sell_price, cost_price, is_active
+           FROM data_plans`
       );
       localMap = new Map(rows.map((r) => [String(r.code), r]));
-    } catch (_) { /* products table doesn't exist yet */ }
+    } catch (_) { /* data_plans missing — skip */ }
 
     const products = payload.products.map((p) => {
       const local = localMap.get(String(p.code)) || null;
-      const selling = local ? Number(local.selling_price) : null;
+      const selling = local ? Number(local.sell_price) : null;
       const margin  = selling != null ? selling - p.cost_price : null;
       const marginPct = selling && selling > 0
         ? Math.round(((selling - p.cost_price) / selling) * 1000) / 10
@@ -85,7 +85,7 @@ export async function getDatashopPricing(req, res) {
 }
 
 /* ============================================================
-   POST /admin/pricing/refresh
+   POST /admin/pricing/refresh   (unchanged)
    ============================================================ */
 export async function forceRefreshPricing(req, res) {
   try {
@@ -114,7 +114,7 @@ export async function forceRefreshPricing(req, res) {
 }
 
 /* ============================================================
-   GET /admin/pricing/debug
+   GET /admin/pricing/debug   (unchanged)
    ============================================================ */
 export async function debugDatashop(req, res) {
   try {
@@ -164,91 +164,118 @@ export async function debugDatashop(req, res) {
 }
 
 /* ============================================================
-   POST /admin/pricing/product/:code
+   GET /admin/data-plans
    ------------------------------------------------------------
-   Set a sell price (and optionally toggle availability) for one
-   plan in data_plans. This is what tells Shatova how much to
-   charge the customer, independently of the live DataShop cost.
-
-   Body: { selling_price: 380, is_active: true }
+   Returns all plans from data_plans in the shape the pricing
+   page (pricing.html) expects.
    ============================================================ */
-export async function setProductSellingPrice(req, res) {
+export async function getDataPlans(req, res) {
   try {
-    const code = String(req.params.code || '').trim();
-    if (!code) {
-      return res.status(400).json({ success: false, message: 'plan code is required' });
+    const { rows } = await query(
+      `SELECT plan_id, provider, category, display_name,
+              validity, description,
+              cost_price, sell_price, profit,
+              is_active, sort_order, updated_at
+         FROM data_plans
+        ORDER BY provider ASC, category ASC, cost_price ASC`
+    );
+
+    const data = rows.map((r) => ({
+      plan_id:      r.plan_id,
+      provider:     r.provider,
+      category:     r.category,
+      display_name: r.display_name,
+      validity:     r.validity || '',
+      description:  r.description || '',
+      cost_price:   Number(r.cost_price || 0),
+      sell_price:   Number(r.sell_price || 0),
+      profit:       Number(r.profit || 0),
+      is_active:    r.is_active === true,
+      sort_order:   Number(r.sort_order || 0),
+      updated_at:   r.updated_at,
+    }));
+
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error('[pricing] getDataPlans:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Could not load data plans',
+    });
+  }
+}
+
+/* ============================================================
+   PATCH /admin/data-plans/:plan_id
+   ------------------------------------------------------------
+   Updates sell_price (and optionally is_active) for one plan.
+   The plan MUST already exist — we do not INSERT partial rows.
+   Body: { sell_price: 380, is_active: true }
+   ============================================================ */
+export async function updateDataPlan(req, res) {
+  try {
+    const planId = String(req.params.plan_id || '').trim();
+    if (!planId) {
+      return res.status(400).json({ success: false, message: 'plan_id is required' });
     }
 
     const body = req.body || {};
-    const hasPrice  = body.selling_price !== undefined;
-    const hasActive = body.is_active !== undefined;
+    const hasPrice  = body.sell_price   !== undefined;
+    const hasActive = body.is_active    !== undefined;
 
     if (!hasPrice && !hasActive) {
       return res.status(400).json({
         success: false,
-        message: 'Provide selling_price and/or is_active',
+        message: 'Provide sell_price and/or is_active',
       });
     }
 
-    let sellingPrice = null;
+    let sellPrice = null;
     if (hasPrice) {
-      sellingPrice = Number(body.selling_price);
-      if (!Number.isFinite(sellingPrice) || sellingPrice < 0) {
+      sellPrice = Number(body.sell_price);
+      if (!Number.isFinite(sellPrice) || sellPrice <= 0) {
         return res.status(400).json({
           success: false,
-          message: 'selling_price must be a non-negative number',
+          message: 'sell_price must be a positive number',
         });
       }
     }
 
-    /* Upsert into data_plans.
-       - If the row exists: update sell_price / is_active.
-       - If not: insert a minimal row so the override is stored.
-       We rely on the DB default for any missing required columns. */
-    if (hasPrice && hasActive) {
-      await query(
-        `INSERT INTO data_plans (plan_id, sell_price, is_active, updated_at)
-         VALUES ($1, $2, $3, NOW())
-         ON CONFLICT (plan_id) DO UPDATE
-           SET sell_price = EXCLUDED.sell_price,
-               is_active  = EXCLUDED.is_active,
-               updated_at = NOW()`,
-        [code, sellingPrice, !!body.is_active]
-      );
-    } else if (hasPrice) {
-      await query(
-        `INSERT INTO data_plans (plan_id, sell_price, updated_at)
-         VALUES ($1, $2, NOW())
-         ON CONFLICT (plan_id) DO UPDATE
-           SET sell_price = EXCLUDED.sell_price,
-               updated_at = NOW()`,
-        [code, sellingPrice]
-      );
-    } else {
-      await query(
-        `INSERT INTO data_plans (plan_id, is_active, updated_at)
-         VALUES ($1, $2, NOW())
-         ON CONFLICT (plan_id) DO UPDATE
-           SET is_active  = EXCLUDED.is_active,
-               updated_at = NOW()`,
-        [code, !!body.is_active]
-      );
-    }
+    const sets   = [];
+    const params = [];
+    const push   = (col, val) => {
+      params.push(val);
+      sets.push(`${col} = $${params.length}`);
+    };
+
+    if (hasPrice)  push('sell_price', sellPrice);
+    if (hasActive) push('is_active', !!body.is_active);
+    sets.push('updated_at = NOW()');
+    params.push(planId);
 
     const { rows } = await query(
-      `SELECT plan_id, sell_price, is_active
-         FROM data_plans WHERE plan_id = $1 LIMIT 1`,
-      [code]
+      `UPDATE data_plans SET ${sets.join(', ')}
+        WHERE plan_id = $${params.length}
+        RETURNING plan_id, provider, category, display_name,
+                  cost_price, sell_price, profit, is_active, updated_at`,
+      params
     );
 
-    console.log(`[pricing] setProductSellingPrice ${code} →`, rows[0]);
+    if (!rows.length) {
+      return res.status(404).json({
+        success: false,
+        message: `Plan "${planId}" not found in data_plans`,
+      });
+    }
 
-    return res.json({ success: true, data: rows[0] || null });
+    console.log(`[pricing] updated ${planId}:`, rows[0]);
+
+    return res.json({ success: true, data: rows[0] });
   } catch (err) {
-    console.error('[pricing] setProductSellingPrice:', err);
+    console.error('[pricing] updateDataPlan:', err);
     return res.status(500).json({
       success: false,
-      message: err.message || 'Could not update selling price',
+      message: err.message || 'Could not update plan',
     });
   }
 }
@@ -257,5 +284,6 @@ export default {
   getDatashopPricing,
   forceRefreshPricing,
   debugDatashop,
-  setProductSellingPrice,
+  getDataPlans,
+  updateDataPlan,
 };
