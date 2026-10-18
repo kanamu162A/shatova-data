@@ -1,831 +1,1084 @@
-// services/datashop.service.js
+// services/data.service.js
 // ============================================================
-// DataShop Africa — API Service (v14 — definite vs ambiguous)
+// Shatova — Data Service (v12 — admin sell prices + live cost guard)
+//   ⭐ v10 behaviour preserved 100% for:
+//        holdFunds / releaseHold / dropHold
+//        datashop_submitted flag
+//        2h "not found" refund policy
+//        reconciler
+//        audit
+//   ⭐ v11 change: live catalogue (getNetworks/getCategories/getBundles)
+//   ⭐ v12 change:
+//        getBundles now merges admin sell_price (data_plans) with live cost
+//        purchaseData guard: sell_price must be >= live cost, else 409
+//        getPurchaseSummary (unchanged from v11)
 // ============================================================
 
-import axios from 'axios';
-import crypto from 'crypto';
-import { env } from '../env/env.js';
+import { query } from '../config/database.js';
+import * as datashop from './datashop.service.js';
+import * as wallet    from './wallet.service.js';
 
-const BASE_URL = env.VTU_API_BASE || 'https://app.datashop.africa/api/v2';
-const API_KEY  = env.VTU_API_KEY  || '';
-
-const DEBUG = String(env.DATASHOP_DEBUG || '').toLowerCase() === 'true' ||
-              process.env.NODE_ENV !== 'production';
-
-if (API_KEY) {
-  console.log(`[datashop] Base URL: ${BASE_URL}`);
-  console.log(`[datashop] API Key:  ${API_KEY.slice(0, 12)}...${API_KEY.slice(-4)}`);
-  if (env.DATASHOP_WEBHOOK_SECRET) {
-    console.log(`[datashop] Webhook secret: ${String(env.DATASHOP_WEBHOOK_SECRET).slice(0, 10)}...`);
-  } else {
-    console.warn('[datashop] ⚠ DATASHOP_WEBHOOK_SECRET is missing — webhook signature verification disabled');
-  }
-} else {
-  console.warn('[datashop] ⚠ VTU_API_KEY is missing');
-}
-
-const TIMEOUTS = { purchase: 30000, status: 15000, list: 60000, default: 30000 };
-
-const client = axios.create({
-  baseURL: BASE_URL,
-  timeout: TIMEOUTS.default,
-  headers: {
-    'Content-Type': 'application/json',
-    ...(API_KEY ? { 'Authorization': `Bearer ${API_KEY}` } : {}),
-  },
-});
-
-function debug(...args) { if (DEBUG) console.log(...args); }
-
-/* ============================================================
-   USER-SAFE ERROR NORMALIZER
-   ============================================================ */
-export function normalizeProviderError(rawMessage) {
-  const msg = String(rawMessage || '').toLowerCase();
-
-  if (msg.includes('insufficient wallet balance') ||
-      msg.includes('insufficient balance') ||
-      msg.includes('wallet balance') ||
-      msg.includes('insufficient funds') ||
-      msg.includes('balance is too low') ||
-      msg.includes('not enough balance') ||
-      msg.includes('hold')) {
-    return 'Service temporarily unavailable. Please try again in a moment.';
-  }
-  if (msg.includes('timeout') || msg.includes('timed out') ||
-      msg.includes('etimedout') || msg.includes('econnaborted')) {
-    return 'The service is taking longer than usual. We will notify you once it completes.';
-  }
-  if (msg.includes('network') || msg.includes('econnrefused') ||
-      msg.includes('enotfound') || msg.includes('socket hang up')) {
-    return 'We are having trouble reaching the service. Please try again in a moment.';
-  }
-  if (msg.includes('invalid phone') || msg.includes('invalid customer') ||
-      msg.includes('invalid number') || msg.includes('phone number is invalid')) {
-    return 'The phone number entered is invalid for this network.';
-  }
-  if (msg.includes('out of stock') || msg.includes('unavailable') ||
-      msg.includes('not available') || msg.includes('product not found') ||
-      msg.includes('plan not found') || msg.includes('invalid product')) {
-    return 'This product is temporarily unavailable. Please try another option.';
-  }
-  if (msg.includes('provider') || msg.includes('upstream') ||
-      msg.includes('datashop') || msg.includes('internal') ||
-      msg.includes('bad gateway') || msg.includes('service unavailable') ||
-      /5\d{2}/.test(msg)) {
-    return 'Service temporarily unavailable. Please try again in a moment.';
-  }
-  return 'We could not complete this transaction. Please try again.';
-}
-
-/* ============================================================
-   ENDPOINT CACHE
-   ============================================================ */
-const resolvedPaths = {
-  services: null, providers: null, products: null, status: null, balance: null,
-};
-
-const CANDIDATES = {
-  services:  ['/list-services', '/services', '/get-services'],
-  providers: ['/list-providers', '/providers', '/get-providers'],
-  products:  ['/list-products', '/products', '/get-products'],
-};
-
-const BALANCE_CANDIDATES = [
-  '/balance', '/wallet/balance', '/user/balance', '/account/balance',
-  '/me', '/user', '/profile', '/dashboard',
-  '/v2/balance', '/v2/wallet/balance', '/v2/me',
-  '/api/balance', '/api/wallet', '/api/me',
-  '/get-balance', '/check-balance', '/wallet', '/account',
-  '/user/me', '/auth/me',
+const PROVIDER_ORDER = { mtn: 1, airtel: 2, glo: 3, t2: 4, '9mobile': 4 };
+const CATEGORY_PRIORITY = [
+  { match: 'share',       weight: 1 },
+  { match: 'mobile data', weight: 2 },
+  { match: 'social',      weight: 3 },
+  { match: 'sme',         weight: 4 },
+  { match: 'gifting',     weight: 5 },
+  { match: 'always on',   weight: 6 },
+  { match: 'fibre',       weight: 7 },
+  { match: 'corporate',   weight: 8 },
 ];
 
-/* ============================================================
-   ERROR CLASSIFIER — definite vs ambiguous
-   ============================================================ */
-function wrapError(err, context = {}) {
-  const status = err.response?.status;
-  const raw = err.response?.data?.message
-           || err.response?.data?.error
-           || err.message
-           || 'Unknown error';
+/* ── Reconciliation scheduling ── */
+const RECONCILE_FIRST_MS               = 20_000;
+const RECONCILE_INTERVAL_MS            = 60_000;
+const RECONCILE_MAX_ATTEMPTS           = 15;
+const MIN_AGE_BEFORE_NOT_FOUND_REFUND  = 120;
 
-  const wrapped = new Error(normalizeProviderError(raw));
-  wrapped.code = 'PROVIDER_FAILED';
-  wrapped.isUserSafe = true;
-  wrapped.rawMessage = raw;
-  wrapped.providerResponse = err.response?.data;
-  wrapped.statusCode = status;
-  wrapped.context = context;
+/* Global markup fallback — used only when a plan has NO admin sell_price.
+   Set to 0 to mean "sell at cost" (no loss, no margin). */
+const GLOBAL_MARKUP_PCT = 0;
 
-  const isTimeout = err.code === 'ECONNABORTED' || /timeout/i.test(err.message || '');
-  const isNetworkError = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET', 'EHOSTUNREACH', 'ENETUNREACH']
-    .includes(err.code);
-  const isServer5xx = typeof status === 'number' && status >= 500;
-
-  const lower = String(raw).toLowerCase();
-  const UNAVAILABLE_PATTERNS = [
-    'not available', 'temporarily unavailable', 'unavailable at the moment',
-    'select another product', 'out of stock', 'no longer available',
-    'sold out', 'product not found', 'plan not found', 'invalid product',
-    'invalid phone', 'invalid customer', 'invalid number',
-    'wrong number', 'duplicate', 'invalid api key', 'unauthorized',
-  ];
-  const isDefiniteProviderRejection = UNAVAILABLE_PATTERNS.some((p) => lower.includes(p));
-
-  wrapped.isTimeout = isTimeout;
-  wrapped.isNetworkError = isNetworkError;
-  wrapped.isServer5xx = isServer5xx;
-  wrapped.isDefiniteProviderRejection = isDefiniteProviderRejection;
-  wrapped.unavailable = isDefiniteProviderRejection;
-
-  if (isDefiniteProviderRejection) {
-    wrapped.mayHaveSucceeded = false;
-    wrapped.isDefiniteFailure = true;
-  } else if (isTimeout || isNetworkError || isServer5xx) {
-    wrapped.mayHaveSucceeded = true;
-    wrapped.isDefiniteFailure = false;
-  } else if (typeof status === 'number' && status >= 400 && status < 500) {
-    wrapped.mayHaveSucceeded = false;
-    wrapped.isDefiniteFailure = true;
-  } else {
-    wrapped.mayHaveSucceeded = false;
-    wrapped.isDefiniteFailure = true;
-  }
-
-  return wrapped;
+function normalizeNetwork(key = '') {
+  const k = String(key).toLowerCase();
+  if (k.includes('mtn'))    return 'mtn';
+  if (k.includes('airtel')) return 'airtel';
+  if (k.includes('glo'))    return 'glo';
+  if (k.includes('t2') || k.includes('9mobile') || k.includes('etisalat')) return 't2';
+  return k;
 }
-
-/* ============================================================
-   REQUEST HELPERS
-   ============================================================ */
-async function smartGet(key, params = {}) {
-  const cached = resolvedPaths[key];
-  const paths  = cached ? [cached] : CANDIDATES[key];
-  let lastErr;
-  for (const path of paths) {
-    try {
-      const res = await client.get(path, { params, timeout: TIMEOUTS.list });
-      resolvedPaths[key] = path;
-      console.log(`[datashop] ✅ ${key} → ${path} (200)`);
-      return res;
-    } catch (err) {
-      const status = err.response?.status;
-      if (status !== 404) throw wrapError(err, { key, path });
-      lastErr = err;
-    }
-  }
-  throw new Error(`DataShop ${key} endpoint not found.`);
+function providerWeight(key) { return PROVIDER_ORDER[normalizeNetwork(key)] ?? 99; }
+function categoryWeight(name = '') {
+  const n = String(name).toLowerCase().trim();
+  for (const p of CATEGORY_PRIORITY) if (n.includes(p.match)) return p.weight;
+  return 999;
 }
-
-async function smartPost(path, body, opts = {}) {
-  try {
-    return await client.post(path, body, { timeout: opts.timeout || TIMEOUTS.purchase });
-  } catch (err) {
-    throw wrapError(err, { path });
-  }
-}
-
-/* ============================================================
-   PURCHASES
-   ============================================================ */
-export async function buyAirtime({ customer_id, product_name, amount, reference }) {
-  if (!API_KEY) {
-    return { ok: false, status: 'failed', mayHaveSucceeded: false,
-             data: null, error: 'Payment provider not configured',
-             rawError: 'no API key', isTimeout: false };
-  }
-  const body = { customer_id, product_name, amount: Number(amount), reference };
-  console.log(`\n[datashop.buyAirtime] ═══════════════════════════════════`);
-  console.log(`[datashop.buyAirtime] → ${BASE_URL}/purchase`);
-  console.log(`[datashop.buyAirtime] → body:`, JSON.stringify(body));
-
-  try {
-    const res = await smartPost('/purchase', body);
-    console.log(`[datashop.buyAirtime] ← HTTP ${res.status}`);
-    console.log(`[datashop.buyAirtime] ← response:`, JSON.stringify(res.data).slice(0, 800));
-    console.log(`[datashop.buyAirtime] ═══════════════════════════════════\n`);
-    return { ok: true, status: 'submitted', mayHaveSucceeded: true,
-             data: res.data, error: null, rawError: null, isTimeout: false };
-  } catch (err) {
-    console.error(`[datashop.buyAirtime] ← ERROR`);
-    console.error(`[datashop.buyAirtime] ← HTTP status:`, err.statusCode);
-    console.error(`[datashop.buyAirtime] ← message:`, err.rawMessage);
-    console.error(`[datashop.buyAirtime] ← raw response:`, JSON.stringify(err.providerResponse || {}).slice(0, 800));
-    console.error(`[datashop.buyAirtime] ═══════════════════════════════════\n`);
-    return {
-      ok: false,
-      status: err.mayHaveSucceeded ? 'unknown' : 'failed',
-      mayHaveSucceeded: !!err.mayHaveSucceeded,
-      data: err.providerResponse || null,
-      error: err.message,
-      rawError: err.rawMessage || err.message,
-      isTimeout: !!err.isTimeout,
-      unavailable: !!err.unavailable,
-    };
-  }
-}
-
-export async function buyData({ customer_id, product_name, amount, quantity, reference }) {
-  if (!API_KEY) {
-    return { ok: false, status: 'failed', mayHaveSucceeded: false,
-             data: null, error: 'Payment provider not configured',
-             rawError: 'no API key', isTimeout: false };
-  }
-  const body = { customer_id, product_name, reference };
-  if (amount   != null) body.amount   = Number(amount);
-  if (quantity)         body.quantity = quantity;
-
-  console.log(`\n[datashop.buyData] ════════════════════════════════════════`);
-  console.log(`[datashop.buyData] → ${BASE_URL}/purchase`);
-  console.log(`[datashop.buyData] → body:`, JSON.stringify(body));
-
-  try {
-    const res = await smartPost('/purchase', body);
-    console.log(`[datashop.buyData] ← HTTP ${res.status}`);
-    console.log(`[datashop.buyData] ← response:`, JSON.stringify(res.data).slice(0, 800));
-    console.log(`[datashop.buyData] ════════════════════════════════════════\n`);
-    return { ok: true, status: 'submitted', mayHaveSucceeded: true,
-             data: res.data, error: null, rawError: null, isTimeout: false };
-  } catch (err) {
-    console.error(`[datashop.buyData] ← ERROR`);
-    console.error(`[datashop.buyData] ← HTTP status:`, err.statusCode);
-    console.error(`[datashop.buyData] ← message:`, err.rawMessage);
-    console.error(`[datashop.buyData] ← raw response:`, JSON.stringify(err.providerResponse || {}).slice(0, 800));
-    console.error(`[datashop.buyData] ════════════════════════════════════════\n`);
-    return {
-      ok: false,
-      status: err.mayHaveSucceeded ? 'unknown' : 'failed',
-      mayHaveSucceeded: !!err.mayHaveSucceeded,
-      data: err.providerResponse || null,
-      error: err.message,
-      rawError: err.rawMessage || err.message,
-      isTimeout: !!err.isTimeout,
-      unavailable: !!err.unavailable,
-    };
-  }
-}
-
-/* ============================================================
-   LIST ENDPOINTS
-   ============================================================ */
-export async function listServices() {
-  const res = await smartGet('services');
-  const d = res.data?.data || res.data || {};
-  const list = Array.isArray(d) ? d : (d.services || d.list || []);
-  return Array.isArray(list) ? list : [];
-}
-
-export async function listProviders(service = 'data') {
-  const res = await smartGet('providers', service ? { service } : {});
-  const d = res.data?.data || res.data || {};
-  const list = Array.isArray(d) ? d : (d.providers || d.list || []);
-  return Array.isArray(list) ? list : [];
-}
-
-export async function listProducts({ service = 'data', provider, network } = {}) {
-  const params = {};
-  if (service)  params.service  = service;
-  if (provider) params.provider = provider;
-  if (network)  params.network  = network;
-  const res = await smartGet('products', params);
-  const d = res.data?.data || res.data || {};
-  const list = Array.isArray(d) ? d : (d.products || d.list || []);
-  return Array.isArray(list) ? list : [];
-}
-
-export async function getProduct(productName) {
-  if (!productName) throw new Error('productName is required');
-  try {
-    const res = await client.get(`/products/${encodeURIComponent(productName)}`, { timeout: TIMEOUTS.status });
-    return res.data?.data || res.data || null;
-  } catch {
-    const res = await client.get('/get-product', { params: { product_name: productName }, timeout: TIMEOUTS.status });
-    return res.data?.data || res.data || null;
-  }
-}
-
-export async function verifyCustomer({ customer_id, product_name }) {
-  const res = await smartPost('/verify-customer', { customer_id, product_name }, { timeout: TIMEOUTS.status });
-  return res.data?.data || res.data || {};
-}
-
-/* ============================================================
-   LEGACY REF DETECTION
-   ============================================================ */
-function isLegacyReference(reference) {
-  const ref = String(reference || '');
-  if (/^shatova-(data|airtime)-/i.test(ref)) return false;
-  return true;
-}
-
-/* ============================================================
-   TRANSACTION STATUS
-   ============================================================ */
-export async function checkTransactionStatus(reference) {
-  if (!reference) throw new Error('Reference is required');
-  if (isLegacyReference(reference)) {
-    debug(`[datashop] skip legacy ref ${reference}`);
-    const err = new Error('Transaction not found on DataShop');
-    err.code = 'LEGACY_REFERENCE';
-    err.silent = true;
-    throw err;
-  }
-
-  if (resolvedPaths.status) {
-    const tpl = resolvedPaths.status;
-    try {
-      let res;
-      if (tpl.includes(':ref')) {
-        const path = tpl.replace(':ref', encodeURIComponent(reference));
-        res = await client.get(path, { timeout: TIMEOUTS.status });
-      } else {
-        res = await client.get(tpl, { params: { reference }, timeout: TIMEOUTS.status });
-      }
-      debug(`[datashop] ✅ status ${reference} via cached ${tpl}`);
-      return unwrapArray(res.data);
-    } catch (err) {
-      const status = err.response?.status;
-      if (status === 404) {
-        debug(`[datashop] cached status 404 → clearing`);
-        resolvedPaths.status = null;
-      }
-    }
-  }
-
-  const candidates = [
-    { path: `/transactions/${encodeURIComponent(reference)}`, isPath: true },
-    { path: `/transaction/${encodeURIComponent(reference)}`,  isPath: true },
-    { path: `/purchases/${encodeURIComponent(reference)}`,    isPath: true },
-    { path: `/purchase/${encodeURIComponent(reference)}`,     isPath: true },
-    { path: `/status/${encodeURIComponent(reference)}`,       isPath: true },
-    { path: `/transactions`,       params: { reference } },
-    { path: `/transaction`,        params: { reference } },
-    { path: `/get-transaction`,    params: { reference } },
-    { path: `/transaction-status`, params: { reference } },
-    { path: `/status`,             params: { reference } },
-    { path: `/purchase/status`,    params: { reference } },
-    { path: `/purchases`,          params: { reference } },
-  ];
-
-  let lastErr;
-  for (const c of candidates) {
-    try {
-      const res = c.isPath
-        ? await client.get(c.path, { timeout: TIMEOUTS.status })
-        : await client.get(c.path, { params: c.params, timeout: TIMEOUTS.status });
-      resolvedPaths.status = c.isPath
-        ? c.path.replace(encodeURIComponent(reference), ':ref')
-        : c.path;
-      const unwrapped = unwrapArray(res.data);
-      debug(`[datashop] ✅ status ${reference} via ${c.path}`);
-      return unwrapped;
-    } catch (err) {
-      const status = err.response?.status;
-      if (status !== 404) {
-        if (err.response?.data && status < 500) return err.response.data;
-      }
-      lastErr = err;
-    }
-  }
-
-  const err = new Error('Transaction not found on DataShop');
-  err.code = 'NOT_FOUND';
-  throw err;
-}
-
-export const checkAirtimeStatus   = checkTransactionStatus;
-export const checkDataStatus      = checkTransactionStatus;
-export const fetchTransaction     = checkTransactionStatus;
-export const getTransactionStatus = checkTransactionStatus;
-
-function unwrapArray(body) {
-  if (Array.isArray(body?.data) && body.data.length) {
-    return { ...body, data: body.data[0] };
-  }
-  return body;
-}
-
-/* ============================================================
-   STATUS NORMALIZER
-   ============================================================ */
-export function normalizeProviderStatus(providerResponse) {
-  if (!providerResponse) return 'processing';
-  if (typeof providerResponse !== 'object') return 'processing';
-
-  const outer = providerResponse;
-  const inner = (outer.data && typeof outer.data === 'object' && !Array.isArray(outer.data))
-    ? outer.data : {};
-
-  const candidates = [
-    inner.transaction_status, inner.transactionStatus,
-    inner.payment_status, inner.paymentStatus,
-    inner.state, inner.status, inner.result,
-    outer.transaction_status, outer.transactionStatus,
-    outer.payment_status, outer.state,
-    typeof outer.status === 'string' ? outer.status : null,
-    outer.code, outer.result,
-  ];
-
-  const SUCCESS = ['success','successful','succeeded','completed','complete','delivered','approved','done','paid','processed','sent'];
-  const FAILED  = ['fail','failed','failure','rejected','cancelled','canceled','declined','error','refunded','invalid','not successful','expired'];
-  const PENDING = ['processing','pending','in_progress','in-progress','submitted','queued','initiated','awaiting','in progress','new'];
-
-  for (const raw of candidates) {
-    if (raw == null) continue;
-    if (typeof raw === 'boolean') continue;
-    const s = String(raw).toLowerCase().trim();
-    if (!s) continue;
-    if (FAILED.some((k) => s.includes(k))) return 'failed';
-    if (SUCCESS.some((k) => s.includes(k))) return 'successful';
-    if (PENDING.some((k) => s.includes(k))) return 'processing';
-  }
-  if (typeof outer.status === 'boolean') return outer.status ? 'successful' : 'failed';
-  return 'processing';
-}
-
-export function generateReference(prefix = 'shatova-data') {
-  const ts   = Date.now().toString(36);
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `${prefix}-${ts}-${rand}`.slice(0, 40);
-}
-
-/* ============================================================
-   POLL HELPER
-   ============================================================ */
-export async function pollTransactionUntilResolved(reference, options = {}) {
-  const maxMs    = options.maxMs    || 60000;
-  const interval = options.interval || 3000;
-  const startedAt = Date.now();
-  let polls = 0;
-  let lastDetails = null;
-
-  while (Date.now() - startedAt < maxMs) {
-    polls++;
-    try {
-      const details = await getTransactionDetails(reference);
-      lastDetails = details;
-      if (details && details.status && details.status !== 'processing') {
-        return { status: details.status, details, polls, elapsed: Date.now() - startedAt };
-      }
-    } catch (err) {
-      if (err.code === 'LEGACY_REFERENCE' || err.code === 'NOT_FOUND') {
-        return { status: 'not_found', details: null, polls, elapsed: Date.now() - startedAt };
-      }
-    }
-    await new Promise((r) => setTimeout(r, interval));
-  }
-  return { status: 'timeout', details: lastDetails, polls, elapsed: Date.now() - startedAt };
-}
-
-/* ============================================================
-   BALANCE
-   ============================================================ */
-export async function getDatashopBalance() {
-  if (resolvedPaths.balance) {
-    try {
-      const res = await client.get(resolvedPaths.balance, { timeout: TIMEOUTS.status });
-      const b = extractBalance(res.data);
-      if (b != null) return b;
-    } catch (err) {
-      if (err.response?.status === 404) resolvedPaths.balance = null;
-    }
-  }
-  for (const path of BALANCE_CANDIDATES) {
-    try {
-      const res = await client.get(path, { timeout: TIMEOUTS.status });
-      const b = extractBalance(res.data);
-      if (b != null) {
-        resolvedPaths.balance = path;
-        console.log(`[datashop] ✅ balance → ${path} = ₦${b}`);
-        return b;
-      }
-    } catch (_) {}
-  }
-  console.warn('[datashop] balance: no working endpoint found');
-  return null;
-}
-
-function extractBalance(body) {
-  if (!body || typeof body !== 'object') return null;
-  const candidates = [
-    body.balance, body.wallet_balance, body.walletBalance,
-    body.available_balance, body.availableBalance, body.current_balance,
-    body.data?.balance, body.data?.wallet_balance, body.data?.available_balance,
-    body.data?.wallet?.balance, body.wallet?.balance,
-    body.user?.balance, body.user?.wallet?.balance,
-    body.data?.user?.balance, body.data?.user?.wallet?.balance,
-    body.account?.balance, body.data?.account?.balance,
-  ];
-  for (const c of candidates) {
-    if (c == null) continue;
-    const n = Number(String(c).replace(/[^0-9.-]/g, ''));
-    if (!isNaN(n) && isFinite(n)) return n;
-  }
-  return null;
-}
-
-/* ============================================================
-   WEBHOOK
-   ============================================================ */
-export function verifyWebhookSignature(rawBody, header, secret = null) {
-  const key = secret || env.DATASHOP_WEBHOOK_SECRET || process.env.DATASHOP_WEBHOOK_SECRET || '';
-  if (!key) { console.warn('[datashop.webhook] ⚠ no signing secret'); return false; }
-  if (!header) { console.warn('[datashop.webhook] ⚠ no signature header'); return false; }
-  const provided = String(header).replace(/^sha256=/i, '').trim();
-  if (!provided) return false;
-  const payload = Buffer.isBuffer(rawBody) ? rawBody : Buffer.from(String(rawBody || ''), 'utf8');
-  const expected = crypto.createHmac('sha256', key).update(payload).digest('hex');
-  try {
-    const a = Buffer.from(provided, 'hex');
-    const b = Buffer.from(expected, 'hex');
-    if (a.length !== b.length) return false;
-    return crypto.timingSafeEqual(a, b);
-  } catch { return false; }
-}
-
-export function normalizeWebhookPayload(body) {
-  const b = body || {};
-  const event = String(b.event || b.type || b.event_type || b.eventType || b.action || 'unknown').toLowerCase();
-  const data = b.data || b.payload || b.transaction || b;
-  const reference = String(
-    data.reference || data.tx_ref || data.transaction_reference || data.provider_reference || b.reference || ''
-  ).trim();
-  const status = String(
-    data.transaction_status || data.transactionStatus || data.status || b.status || ''
-  ).toLowerCase();
-  const rawAmount = data.paid_amount ?? data.paidAmount ?? data.amount ?? data.value ?? b.amount ?? 0;
-  const paidAmount = Number(String(rawAmount).replace(/[^0-9.-]/g, '')) || 0;
-  const remark = String(data.remark || data.message || data.description || b.remark || b.message || '').trim();
-  const customerId = String(data.customer_id || data.customerId || data.phone || '').trim();
-  const productName = String(data.product_name || data.productName || data.plan_id || '').trim();
-  const provider = String(data.provider || data.network || '').trim();
-  return { event, reference, status, paidAmount, remark, customerId, productName, provider, raw: b };
-}
-
-export async function getTransactionDetails(reference) {
-  if (!reference) throw new Error('reference is required');
-  let response;
-  try { response = await checkTransactionStatus(reference); }
-  catch (err) {
-    if (err.code === 'LEGACY_REFERENCE' || err.code === 'NOT_FOUND') return null;
-    throw err;
-  }
-  if (!response) return null;
-  const payload = response.data || response;
+function mapRow(row) {
   return {
-    reference: String(payload.reference || reference),
-    status:    normalizeProviderStatus(response),
-    rawStatus: String(payload.transaction_status || payload.status || '').toLowerCase(),
-    amount:    Number(payload.paid_amount ?? payload.amount ?? 0) || 0,
-    quantity:  String(payload.quantity || ''),
-    provider:  String(payload.provider || ''),
-    customerId: String(payload.customer_id || ''),
-    productName: String(payload.product_name || ''),
-    remark:    String(payload.remark || payload.message || ''),
-    createdAt: payload.created_at || null,
-    raw:       payload,
+    plan_id:      row.plan_id,
+    product_name: row.plan_id,
+    name:         row.display_name || row.plan_id,
+    provider:     normalizeNetwork(row.provider),
+    category:     row.category || 'MOBILE DATA',
+    quantity:     '',
+    validity:     row.validity || '',
+    description:  row.description || '',
+    price:        Number(row.sell_price ?? row.cost_price ?? 0),
+    available:    row.is_active === true,
+    require_validation: false,
   };
 }
 
-/* ============================================================
-   PRICING CONSOLE
-   ============================================================ */
-const PRICE_SERVICES = ['data', 'airtime', 'tv', 'electricity', 'exam'];
-
-export function normalizePricingRow(p, service) {
-  const code =
-    p.product_name || p.product_code || p.code || p.plan_id ||
-    p.id || p.slug || p.name || '';
-  const name = p.name || p.title || p.product_name || code;
-  const network = (
-    p.network || p.provider || p.operator ||
-    p.service_provider || p.telco || ''
-  ).toString().toUpperCase();
-  const cost = Number(
-    p.amount ?? p.price ?? p.cost ?? p.user_amount ??
-    p.plan_amount ?? p.value ?? p.amount_payable ?? 0
-  ) || 0;
-  return {
-    category:    String(service || p.service || p.category || 'data').toLowerCase(),
-    code:        String(code),
-    name:        String(name),
-    network,
-    validity:    p.validity || p.duration || p.plan_type || '',
-    cost_price:  cost,
-    description: p.description || p.desc || p.remark || '',
-    _raw_keys:   Object.keys(p || {}).slice(0, 25),
-  };
+/* ⭐ Return the final user-facing price for a live product, using the admin
+   override from data_plans if one exists. If no override exists, apply
+   the global markup. Never returns less than the live cost (unless the
+   admin deliberately set a lower sell_price — in which case callers that
+   care about loss get a signal via `below_cost = true`). */
+function computeSellPrice(livePrice, overrideSellPrice) {
+  const live = Number(livePrice) || 0;
+  if (overrideSellPrice != null && Number(overrideSellPrice) > 0) {
+    const sell = Number(overrideSellPrice);
+    return { price: sell, source: 'override', below_cost: sell < live };
+  }
+  const sell = Math.round(live * (1 + GLOBAL_MARKUP_PCT / 100) * 100) / 100;
+  return { price: sell, source: 'markup', below_cost: sell < live };
 }
 
-export async function fetchAllProductsForPricing() {
-  const products = [];
-  const errors   = [];
-  const attempts = [
-    ...PRICE_SERVICES.map((s) => ({ service: s, label: s })),
-    { service: null, label: 'all' },
-  ];
-  for (const a of attempts) {
-    try {
-      const list = a.service ? await listProducts({ service: a.service }) : await listProducts({});
-      const arr = Array.isArray(list) ? list : [];
-      console.log(`[pricing] service=${a.label} → ${arr.length} raw item(s)`);
-      if (arr[0]) console.log(`[pricing] ${a.label} sample keys:`, Object.keys(arr[0]).join(', '));
-      arr.forEach((p) => products.push(normalizePricingRow(p, a.service || p.service || 'data')));
-    } catch (err) {
-      console.warn(`[pricing] service=${a.label} failed:`, err.message);
-      errors.push({ category: a.label, error: err.message });
-    }
+/* ============================================================
+   TRANSACTION HELPERS
+   ============================================================ */
+async function createTransaction({
+  userId, reference, network, planId, productName, phone,
+  amount, userPrice, costPrice, profit, paymentMethod, meta = {},
+}) {
+  const { rows } = await query(
+    `INSERT INTO transactions
+       (user_id, reference, type, service, direction, amount, status,
+        description, metadata, network,
+        cost_price, profit,
+        created_at, updated_at)
+     VALUES ($1, $2, 'DATA', 'data', 'DEBIT', $3, 'PENDING',
+             $4, $5::jsonb, $6,
+             $7, $8,
+             NOW(), NOW())
+     RETURNING *`,
+    [
+      userId, reference, userPrice,
+      `${network.toUpperCase()} ${productName} → ${phone}`,
+      JSON.stringify({
+        network, plan_id: planId, product_name: productName, phone,
+        base_price: amount, user_price: userPrice,
+        payment_method: paymentMethod,
+        datashop_submitted: false,
+        ...meta,
+      }),
+      network.toUpperCase(),
+      costPrice, profit,
+    ]
+  );
+  return rows[0];
+}
+
+async function updateTransaction(reference, fields = {}) {
+  const sets = [];
+  const params = [];
+
+  const push = (col, val) => {
+    params.push(val);
+    sets.push(`${col} = $${params.length}`);
+  };
+
+  if (fields.status)                     push('status', String(fields.status).toUpperCase());
+  if (fields.description !== undefined)  push('description', fields.description);
+  if (fields.remark !== undefined)       push('remark', fields.remark);
+  if (fields.provider_reference)         push('provider_reference', fields.provider_reference);
+  if (fields.cost_price !== undefined)   push('cost_price', Number(fields.cost_price) || 0);
+  if (fields.profit !== undefined)       push('profit', Number(fields.profit) || 0);
+
+  if (fields.metadata) {
+    params.push(JSON.stringify(fields.metadata));
+    sets.push(`metadata = metadata || $${params.length}::jsonb`);
   }
-  const seen = new Set();
-  const unique = products.filter((p) => {
-    const key = (p.code && String(p.code)) || (p.name && String(p.name));
-    if (!key) return false;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
+
+  if (!sets.length) return null;
+  sets.push('updated_at = NOW()');
+  params.push(reference);
+
+  try {
+    const { rows } = await query(
+      `UPDATE transactions SET ${sets.join(', ')} WHERE reference = $${params.length} RETURNING *`,
+      params
+    );
+    if (!rows.length) console.error(`[data] ❌ updateTransaction: no row for ${reference}`);
+    else console.log(`[data] ✅ tx → ${rows[0].status} | ${reference}`);
+    return rows[0] || null;
+  } catch (err) {
+    console.error(`[data] ❌❌ updateTransaction FAILED ${reference}:`, err.message);
+    throw err;
+  }
+}
+
+async function findTransactionByReference(reference) {
+  const { rows } = await query(`SELECT * FROM transactions WHERE reference = $1 LIMIT 1`, [reference]);
+  return rows[0] || null;
+}
+
+async function markDatashopSubmitted(reference) {
+  try {
+    await query(
+      `UPDATE transactions
+          SET metadata = metadata || $1::jsonb,
+              updated_at = NOW()
+        WHERE reference = $2`,
+      [
+        JSON.stringify({
+          datashop_submitted: true,
+          datashop_submitted_at: new Date().toISOString(),
+        }),
+        reference,
+      ]
+    );
+  } catch (err) {
+    console.error(`[data] ⚠ could not write datashop_submitted flag for ${reference}:`, err.message);
+  }
+}
+
+/* ============================================================
+   GET NETWORKS  (LIVE)
+   ============================================================ */
+export async function getNetworks() {
+  const products = await datashop.getLiveProducts().catch(() => []);
+  const counts = {};
+  for (const p of products) {
+    if (!p.available) continue;
+    const k = normalizeNetwork(p.network);
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  const networks = Object.keys(counts).map((key) => ({
+    key,
+    name: key.toUpperCase(),
+    products: counts[key],
+  })).sort((a, b) => providerWeight(a.key) - providerWeight(b.key));
+
+  if (!networks.length) {
+    return [
+      { key: 'mtn',    name: 'MTN',     products: 0 },
+      { key: 'airtel', name: 'Airtel',  products: 0 },
+      { key: 'glo',    name: 'Glo',     products: 0 },
+      { key: 't2',     name: '9mobile', products: 0 },
+    ];
+  }
+  return networks;
+}
+
+/* ============================================================
+   GET CATEGORIES  (LIVE)
+   ============================================================ */
+export async function getCategories(networkKey = 'all') {
+  const net = String(networkKey || 'all').toLowerCase();
+  const products = await datashop.getLiveProducts().catch(() => []);
+  const map = new Map();
+
+  for (const p of products) {
+    const pn = normalizeNetwork(p.network);
+    if (net !== 'all' && pn !== net) continue;
+    const cat = p.category || 'MOBILE DATA';
+    const k = `${pn}||${cat}`;
+    if (!map.has(k)) map.set(k, { provider: pn, category: cat, available: 0, total: 0 });
+    const row = map.get(k);
+    row.total += 1;
+    if (p.available) row.available += 1;
+  }
+
+  const categories = [...map.values()].sort((a, b) => {
+    const aAvail = a.available > 0 ? 0 : 1, bAvail = b.available > 0 ? 0 : 1;
+    if (aAvail !== bAvail) return aAvail - bAvail;
+    const aP = providerWeight(a.provider), bP = providerWeight(b.provider);
+    if (aP !== bP) return aP - bP;
+    const aC = categoryWeight(a.category), bC = categoryWeight(b.category);
+    if (aC !== bC) return aC - bC;
+    return String(a.category).localeCompare(String(b.category));
   });
-  console.log(`[pricing] raw=${products.length} unique=${unique.length} errors=${errors.length}`);
-  return { products: unique, errors };
+  return categories;
 }
 
 /* ============================================================
-   LIVE PRODUCT CATALOGUE  (v14 untouched above this point)
+   GET BUNDLES  (LIVE cost + admin sell_price merge)
    ------------------------------------------------------------
-   DataShop returns a nested tree:
-     [
-       { product_type: 'data',      providers: [...] },  ← keep
-       { product_type: 'airtime',   providers: [...] },  ← skip
-       { product_type: 'electricity', ... },             ← skip
-       { product_type: 'tv',        ... },               ← skip
-       { product_type: 'exam',      ... },               ← skip
-     ]
-   We ONLY flatten the data group(s). Everything else is ignored,
-   so the data catalogue never contains airtime / electricity /
-   TV / exam products.
+   Steps:
+     1. Live products from DataShop  (what to show)
+     2. Admin overrides from data_plans (what to charge)
+     3. merge → final `price` per plan
+   Any plan with a `sell_price` in data_plans uses it; otherwise
+   `live_price × (1 + GLOBAL_MARKUP_PCT / 100)`.
    ============================================================ */
-const LIVE_CACHE_TTL_MS = 60_000;
-let _liveCache = { at: 0, products: [] };
-let _liveInflight = null;
+export async function getBundles({ network, category } = {}) {
+  const net = String(network || '').toLowerCase();
+  if (!net) throw new Error('network is required');
 
-function pickFirst(obj, keys) {
-  for (const k of keys) {
-    if (obj[k] != null && obj[k] !== '') return obj[k];
-  }
-  return undefined;
-}
+  const products = await datashop.getLiveProducts().catch(() => []);
+  const cat = category ? String(category).toUpperCase() : null;
 
-function normalizeNetworkLive(raw) {
-  const s = String(raw || '').toLowerCase().trim();
-  if (!s) return '';
-  if (s.includes('mtn'))    return 'mtn';
-  if (s.includes('airtel')) return 'airtel';
-  if (s.includes('glo'))    return 'glo';
-  if (s.includes('9mobile') || s.includes('etisalat') || s === 't2' || s.includes('t2')) return 't2';
-  return s;
-}
+  /* Pull admin overrides once */
+  let overrideMap = new Map();
+  try {
+    const { rows } = await query(
+      `SELECT plan_id, sell_price, is_active
+         FROM data_plans
+        WHERE plan_id IS NOT NULL`
+    );
+    overrideMap = new Map(rows.map((r) => [String(r.plan_id).toLowerCase(), r]));
+  } catch (_) { /* data_plans missing — use markup only */ }
 
-function isDataGroup(group) {
-  if (!group) return false;
-  const t = String(group.product_type || group.service || group.type || '').toLowerCase().trim();
-  return t === 'data';
-}
+  const rows = products
+    .filter((p) => normalizeNetwork(p.network) === net)
+    .filter((p) => (cat ? String(p.category).toUpperCase() === cat : true))
+    .map((p) => {
+      const livePrice = Number(p.price) || 0;
+      const override  = overrideMap.get(String(p.product_name).toLowerCase());
+      const overrideSell = override && override.sell_price != null
+        ? Number(override.sell_price)
+        : null;
+      const { price, below_cost } = computeSellPrice(livePrice, overrideSell);
 
-export async function getLiveProducts({ force = false } = {}) {
-  const now = Date.now();
-  if (!force && _liveCache.products.length && now - _liveCache.at < LIVE_CACHE_TTL_MS) {
-    return _liveCache.products;
-  }
-  if (_liveInflight) return _liveInflight;
-
-  _liveInflight = (async () => {
-    try {
-      const raw = await listProducts({ service: 'data' });
-
-      /* ── Flatten ONLY the data group(s) ── */
-      const flat = [];
-      const pushGroup = (group) => {
-        if (!group) return;
-        const providers = Array.isArray(group.providers) ? group.providers : [];
-        for (const prov of providers) {
-          const categories = Array.isArray(prov.categories) ? prov.categories : [];
-          for (const cat of categories) {
-            const products = Array.isArray(cat.products) ? cat.products : [];
-            for (const p of products) {
-              /* Guard: only accept products whose own product_type
-                 is data or missing (some rows omit it). */
-              const pt = String(p.product_type || '').toLowerCase().trim();
-              if (pt && pt !== 'data') continue;
-
-              flat.push({
-                ...p,
-                provider: p.provider || prov.provider || '',
-                category: p.category || cat.category || '',
-              });
-            }
-          }
-        }
+      return {
+        plan_id:      p.product_name,
+        product_name: p.product_name,
+        name:         p.name,
+        provider:     normalizeNetwork(p.network),
+        category:     p.category || 'MOBILE DATA',
+        quantity:     '',
+        validity:     p.validity || '',
+        description:  p.description || '',
+        price,                       // ⭐ admin sell price (or markup)
+        cost_price:   livePrice,     // live DataShop cost
+        available:    p.available === true && (override ? override.is_active !== false : true),
+        below_cost,                  // true if admin accidentally priced below cost
+        require_validation: false,
       };
+    })
+    .sort((a, b) => {
+      if (a.available !== b.available) return a.available ? -1 : 1;
+      return a.price - b.price;
+    });
 
-      if (Array.isArray(raw)) {
-        if (raw.length && raw[0] && Array.isArray(raw[0].providers)) {
-          /* Nested shape — filter to data groups only */
-          for (const group of raw) {
-            if (isDataGroup(group)) pushGroup(group);
-          }
+  return rows;
+}
+
+/* ============================================================
+   VERIFY CUSTOMER
+   ============================================================ */
+export async function verifyCustomer({ phone, productName }) {
+  if (!phone || !productName) throw new Error('phone and productName are required');
+  const result = await datashop.verifyCustomer({ customer_id: phone, product_name: productName });
+  return {
+    verified: result.verified !== false,
+    customer_id: result.customer_id || phone,
+    customer_name: result.customer_name || null,
+    provider: result.provider || null,
+  };
+}
+
+/* ============================================================
+   PURCHASE — hold / submit-flag / release / drop
+   ------------------------------------------------------------
+   v12 guard: the admin sell_price MUST be >= live cost.
+   If DataShop raised the cost above the admin sell_price,
+   the purchase is blocked with PRICE_CHANGED (409) so the
+   user is never sold at a loss.
+   ------------------------------------------------------------
+   Everything below the guard (create tx → hold → mark submitted
+   → buy → interpret → release/drop → persist) is unchanged
+   from v10.
+   ============================================================ */
+export async function purchaseData({
+  userId, planId, phone, mode = 'single', paymentMethod = 'wallet',
+}) {
+  if (!userId) throw new Error('User ID is required');
+  if (!planId) throw new Error('planId is required');
+  if (!phone)  throw new Error('phone is required');
+
+  const cleanPhone = String(phone).replace(/\D/g, '');
+  if (!/^0\d{10}$/.test(cleanPhone)) throw new Error('Invalid Nigerian phone number');
+
+  /* ⭐ LIVE COST + ADMIN SELL PRICE */
+  const live = await datashop.getLiveProduct(planId).catch(() => null);
+  if (!live) {
+    const e = new Error('This product is no longer available. Please refresh.');
+    e.code = 'PLAN_UNAVAILABLE';
+    throw e;
+  }
+  if (live.available !== true) {
+    const e = new Error('This plan is currently unavailable. Please choose another.');
+    e.code = 'PLAN_UNAVAILABLE';
+    throw e;
+  }
+  const liveCost = Number(live.price) || 0;
+  if (!liveCost || liveCost <= 0) {
+    const e = new Error('Invalid product price');
+    e.code = 'INVALID_PLAN';
+    throw e;
+  }
+
+  /* Admin override (may be null if not priced) */
+  const { rows: planRows } = await query(
+    `SELECT plan_id, provider, display_name, sell_price, is_active
+       FROM data_plans WHERE plan_id = $1 LIMIT 1`,
+    [planId]
+  );
+  const plan = planRows[0] || {
+    plan_id: planId,
+    provider: live.network,
+    display_name: live.name,
+    sell_price: null,
+    is_active: true,
+  };
+
+  if (plan.is_active === false) {
+    const e = new Error('This plan is currently unavailable. Please choose another.');
+    e.code = 'PLAN_UNAVAILABLE';
+    throw e;
+  }
+
+  const overrideSell = plan.sell_price != null && Number(plan.sell_price) > 0
+    ? Number(plan.sell_price)
+    : null;
+
+  const { price: userPrice, source: priceSource, below_cost } =
+    computeSellPrice(liveCost, overrideSell);
+
+  /* ⭐ LOSS GUARD — block if we'd sell below provider cost */
+  if (below_cost) {
+    console.warn(
+      `[data] 🚫 ${planId} blocked — sell ₦${userPrice} < cost ₦${liveCost} (source=${priceSource})`
+    );
+    const e = new Error(
+      'This plan’s price is being updated. Please refresh and try another bundle.'
+    );
+    e.code = 'PRICE_CHANGED';
+    e.data = {
+      plan_id:     planId,
+      live_cost:   liveCost,
+      sell_price:  userPrice,
+      source:      priceSource,
+    };
+    throw e;
+  }
+
+  const rawPrice  = liveCost;
+  const costPrice = liveCost;
+  let   profit    = Math.round((userPrice - costPrice) * 100) / 100;
+
+  const reference = datashop.generateReference('shatova-data');
+
+  console.log(`[data] ═══ START ${reference} ═══`);
+  console.log(`[data]   plan=${planId} phone=${cleanPhone} live_cost=₦${liveCost} user_price=₦${userPrice} (${priceSource})`);
+
+  const txRecord = await createTransaction({
+    userId, reference,
+    network: normalizeNetwork(plan.provider || live.network),
+    planId,
+    productName: plan.display_name || live.name || planId,
+    phone: cleanPhone,
+    amount: rawPrice,
+    userPrice, costPrice, profit,
+    paymentMethod,
+    meta: {
+      mode,
+      live_price_verified_at: new Date().toISOString(),
+      price_source: priceSource,
+      live_cost: liveCost,
+    },
+  }).catch((err) => {
+    console.error('[data] ❌ tx create failed:', err.message);
+    throw new Error('Could not create transaction record');
+  });
+
+  console.log(`[data] ✅ tx created (id=${txRecord.id})`);
+
+  let finalStatus  = 'failed';
+  let remark       = 'Unknown error';
+  let dsResult     = null;
+  let held         = false;
+  let walletBefore = null;
+  let walletAfter  = null;
+  let caughtErr    = null;
+  let dsCost       = costPrice;
+  let dsProfit     = profit;
+  let ambiguous    = false;
+  let submitted    = false;
+
+  try {
+    /* ⭐ STEP 1: Hold funds */
+    if (paymentMethod === 'wallet') {
+      try {
+        const w = await wallet.getWallet(userId);
+        walletBefore = Number(w?.balance || 0);
+
+        const holdResult = await wallet.holdFunds({
+          userId,
+          amount: userPrice,
+          reference,
+          description: `Data purchase — ${plan.display_name || planId}`,
+        });
+
+        held = true;
+        walletAfter = Number(holdResult?.balance_after ?? (walletBefore - userPrice));
+        console.log(`[data] 🔒 hold placed ₦${userPrice} | ${walletBefore} → ${walletAfter}`);
+      } catch (err) {
+        console.error('[data] ❌ holdFunds failed:', err.message);
+        finalStatus = 'failed';
+        remark      = err.message || 'Insufficient balance';
+        const e = new Error(remark);
+        e.code = err.code || 'INSUFFICIENT_BALANCE';
+        e.data = err.data || { balance: walletBefore, required: userPrice };
+        throw e;
+      }
+    }
+
+    /* ⭐ STEP 2a: WRITE THE FLAG — before calling Datashop */
+    await markDatashopSubmitted(reference);
+    submitted = true;
+    console.log(`[data] 📝 marked datashop_submitted=true for ${reference}`);
+
+    /* ⭐ STEP 2b: Call DataShop */
+    dsResult = await datashop.buyData({
+      customer_id: cleanPhone,
+      product_name: plan.plan_id,
+      reference,
+    });
+
+    console.log(`[data] 📡 datashop result:`);
+    console.log(`[data]   ok=${dsResult.ok} status=${dsResult.status} mayHaveSucceeded=${dsResult.mayHaveSucceeded} isTimeout=${dsResult.isTimeout}`);
+
+    /* ⭐ STEP 3: Interpret */
+    if (dsResult.ok && !dsResult.mayHaveSucceeded) {
+      const normalized = datashop.normalizeProviderStatus(dsResult.data);
+      finalStatus = normalized === 'successful' ? 'success'
+                  : normalized === 'failed'     ? 'failed'
+                  : 'processing';
+      const payload = dsResult.data?.data || {};
+      remark = payload.remark || dsResult.data?.message || 'Submitted';
+
+    } else if (dsResult.ok && dsResult.mayHaveSucceeded) {
+      const normalized = datashop.normalizeProviderStatus(dsResult.data);
+      if (normalized === 'successful')   finalStatus = 'success';
+      else if (normalized === 'failed')  finalStatus = 'failed';
+      else                                finalStatus = 'processing';
+
+      const payload = dsResult.data?.data || {};
+      remark = payload.remark || dsResult.data?.message
+            || (finalStatus === 'success' ? 'Purchase successful' : 'Confirming with provider…');
+
+      if (payload.paid_amount) {
+        dsCost   = Number(payload.paid_amount) || costPrice;
+        dsProfit = Math.round((userPrice - dsCost) * 100) / 100;
+      }
+
+    } else if (!dsResult.ok && dsResult.mayHaveSucceeded) {
+      finalStatus = 'processing';
+      ambiguous   = true;
+      remark = dsResult.error
+            || 'Taking longer than usual. We are confirming with the provider.';
+      console.warn(`[data] ⚠ AMBIGUOUS — treating as processing: ${remark}`);
+
+    } else {
+      finalStatus = 'failed';
+      remark      = dsResult.error || 'Purchase could not be completed';
+      console.warn(`[data] ❌ definite failure: ${remark}`);
+    }
+
+    console.log(`[data] ✅ interpreted → ${finalStatus} | ambiguous=${ambiguous} | cost=₦${dsCost} profit=₦${dsProfit}`);
+    console.log(`[data]   remark="${remark}"`);
+
+  } catch (err) {
+    caughtErr = caughtErr || err;
+  }
+
+  /* ⭐ STEP 4: Release or drop the hold. */
+  if (held) {
+    if (finalStatus === 'success') {
+      try {
+        await wallet.releaseHold({
+          userId,
+          reference,
+          transactionId: txRecord.id,
+          description: `Data purchase — ${plan.display_name || planId}`,
+        });
+        console.log(`[data] 🔓 hold released for ${reference}`);
+      } catch (err) {
+        console.error('[data] ❌ releaseHold failed:', err.message);
+      }
+    } else if (finalStatus === 'failed') {
+      try {
+        await wallet.dropHold({ userId, reference });
+        console.log(`[data] 🔙 hold dropped for ${reference} (money returned)`);
+      } catch (err) {
+        console.error('[data] ❌ dropHold failed:', err.message);
+      }
+    } else {
+      console.log(`[data] ⏸ hold kept HELD for ${reference} — reconciler will decide`);
+    }
+  }
+
+  /* ⭐ STEP 5: Persist final state */
+  const payload = dsResult?.data?.data || {};
+  const metadata = {
+    ds_reference:      payload.reference || reference,
+    ds_status:         payload.transaction_status || '',
+    ds_quantity:       payload.quantity || '',
+    ds_provider:       payload.provider || plan.provider || '',
+    ds_paid_amount:    Number(payload.paid_amount || 0),
+    ds_balance_before: Number(payload.balance_before ?? 0),
+    ds_balance_after:  Number(payload.balance_after  ?? 0),
+    wallet_before:     walletBefore,
+    wallet_after:      walletAfter,
+    processor:         payload.processor || '',
+    ambiguous:         ambiguous,
+    datashop_submitted: submitted,
+    reconcile_attempts: 0,
+    reconcile_next_at:  finalStatus === 'processing'
+      ? new Date(Date.now() + RECONCILE_FIRST_MS).toISOString()
+      : null,
+  };
+
+  try {
+    await updateTransaction(reference, {
+      status: finalStatus.toUpperCase(),
+      description: remark,
+      remark,
+      provider_reference: payload.reference || reference,
+      cost_price: dsCost,
+      profit:     dsProfit,
+      metadata,
+    });
+  } catch (err) {
+    console.error(`[data] ❌❌❌ could not save final state:`, err.message);
+  }
+
+  console.log(`[data] ═══ DONE ${reference} → ${finalStatus.toUpperCase()} ═══`);
+
+  if (caughtErr) {
+    const e = new Error(caughtErr.message || 'Purchase failed');
+    e.code = caughtErr.code || 'PURCHASE_FAILED';
+    e.data = { reference };
+    throw e;
+  }
+
+  return {
+    reference,
+    status: finalStatus,
+    ambiguous,
+    product: plan.display_name || planId,
+    amount: userPrice,
+    original_amount: rawPrice,
+    cost_price: dsCost,
+    profit: dsProfit,
+    network: normalizeNetwork(plan.provider || live.network),
+    phone: cleanPhone,
+    remark,
+    quantity: payload.quantity || '',
+    provider: payload.provider || plan.provider || '',
+    wallet_before: walletBefore,
+    wallet_after:  walletAfter,
+    ds_balance_before: metadata.ds_balance_before,
+    ds_balance_after:  metadata.ds_balance_after,
+  };
+}
+
+/* ============================================================
+   GET STATUS
+   ============================================================ */
+export async function getStatus(reference) {
+  if (!reference) throw new Error('reference is required');
+
+  const txRecord = await findTransactionByReference(reference);
+  if (!txRecord) throw new Error('Transaction not found');
+
+  const currentStatus = String(txRecord.status || '').toLowerCase();
+  const meta = txRecord.metadata || {};
+
+  if (['success', 'failed'].includes(currentStatus)) {
+    return {
+      reference: txRecord.reference,
+      status:    currentStatus,
+      remark:    txRecord.remark || txRecord.description || '',
+      amount:    Number(txRecord.amount) || 0,
+      recipient: meta.phone || '',
+      product:   meta.product_name || '',
+      wallet_before: meta.wallet_before ?? null,
+      wallet_after:  meta.wallet_after  ?? null,
+    };
+  }
+
+  if (meta.datashop_submitted === false) {
+    return {
+      reference,
+      status: currentStatus || 'pending',
+      remark: txRecord.remark || txRecord.description || 'Preparing to submit…',
+      amount: Number(txRecord.amount) || 0,
+      recipient: meta.phone || '',
+      product:   meta.product_name || '',
+      wallet_before: meta.wallet_before ?? null,
+      wallet_after:  meta.wallet_after  ?? null,
+    };
+  }
+
+  let ds;
+  try {
+    ds = await datashop.checkTransactionStatus(reference);
+  } catch {
+    return {
+      reference,
+      status: currentStatus || 'processing',
+      remark: txRecord.remark || txRecord.description || 'Still processing',
+      amount: Number(txRecord.amount) || 0,
+      recipient: meta.phone || '',
+      product:   meta.product_name || '',
+      wallet_before: meta.wallet_before ?? null,
+      wallet_after:  meta.wallet_after  ?? null,
+    };
+  }
+
+  const normalized = datashop.normalizeProviderStatus(ds);
+  let newStatus = currentStatus;
+  if (normalized === 'successful')      newStatus = 'success';
+  else if (normalized === 'failed')     newStatus = 'failed';
+  else                                  newStatus = 'processing';
+
+  const dsPayload = ds?.data || ds || {};
+  const dsRemark = dsPayload.remark || ds?.message || txRecord.remark || txRecord.description;
+  const amount = Number(meta.user_price || txRecord.amount);
+  const dsCost = Number(dsPayload.paid_amount || txRecord.cost_price || 0);
+  const dsProfit = Math.round((amount - dsCost) * 100) / 100;
+
+  if (newStatus !== currentStatus && (newStatus === 'success' || newStatus === 'failed')) {
+    try {
+      if (newStatus === 'success') {
+        await wallet.releaseHold({
+          userId: txRecord.user_id,
+          reference,
+          transactionId: txRecord.id,
+          description: `Data purchase — ${meta.product_name || ''}`,
+        });
+        console.log(`[data.getStatus] 🔓 released ${reference}`);
+      } else {
+        await wallet.dropHold({ userId: txRecord.user_id, reference });
+        console.log(`[data.getStatus] 🔙 dropped ${reference}`);
+      }
+    } catch (err) {
+      console.warn('[data.getStatus] wallet op:', err.message);
+    }
+
+    await updateTransaction(reference, {
+      status: newStatus.toUpperCase(),
+      description: dsRemark,
+      remark: dsRemark,
+      provider_reference: dsPayload.reference || meta.ds_reference || reference,
+      cost_price: dsCost,
+      profit: dsProfit,
+      metadata: {
+        ds_status: dsPayload.transaction_status || '',
+        ds_quantity: dsPayload.quantity || meta.ds_quantity || '',
+      },
+    });
+  }
+
+  return {
+    reference,
+    status: newStatus,
+    remark: dsRemark,
+    amount: Number(txRecord.amount) || 0,
+    recipient: meta.phone || '',
+    product: meta.product_name || '',
+    wallet_before: meta.wallet_before ?? null,
+    wallet_after:  meta.wallet_after  ?? null,
+  };
+}
+
+/* ============================================================
+   RECONCILER — run from cron every 60s
+   ============================================================ */
+export async function reconcileProcessingDataTransactions(limit = 50) {
+  const { rows } = await query(
+    `SELECT id, reference, user_id, amount, cost_price, status, metadata, remark, description, created_at
+       FROM transactions
+      WHERE type = 'DATA'
+        AND status IN ('PROCESSING', 'PENDING')
+        AND service = 'data'
+        AND (
+          (metadata->>'reconcile_next_at') IS NULL
+          OR (metadata->>'reconcile_next_at')::timestamptz <= NOW()
+        )
+      ORDER BY created_at ASC
+      LIMIT $1`,
+    [limit]
+  );
+
+  if (!rows.length) return { checked: 0, finalized: 0, stillPending: 0, refunded: 0 };
+
+  console.log(`[reconcile] found ${rows.length} pending/processing DATA tx`);
+
+  let finalized    = 0;
+  let stillPending = 0;
+  let refunded     = 0;
+
+  for (const tx of rows) {
+    const ref = tx.reference;
+    const meta = tx.metadata || {};
+    const attempts = Number(meta.reconcile_attempts || 0);
+    const createdAtMs = new Date(tx.created_at).getTime();
+    const ageMs = Date.now() - createdAtMs;
+    const ageMinutes = Math.floor(ageMs / 60000);
+
+    const submitted = meta.datashop_submitted;
+    if ((submitted === false || submitted === undefined) && ageMs > 30_000) {
+      console.warn(`[reconcile] 🚫 ${ref} — never submitted to Datashop (${Math.floor(ageMs / 1000)}s old) → refund`);
+
+      await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch((e) => {
+        console.warn(`[reconcile] dropHold failed for ${ref}:`, e.message);
+      });
+
+      await updateTransaction(ref, {
+        status: 'FAILED',
+        description: 'Purchase never reached provider — refunded',
+        remark: 'Purchase never reached provider — refunded',
+        metadata: {
+          reconcile_result: 'never_submitted',
+          reconcile_attempts: attempts + 1,
+          reconcile_next_at: null,
+          reconciled_at: new Date().toISOString(),
+        },
+      }).catch(() => {});
+
+      refunded++;
+      continue;
+    }
+
+    try {
+      const ds = await datashop.checkTransactionStatus(ref);
+      const normalized = datashop.normalizeProviderStatus(ds);
+      const payload = ds?.data || ds || {};
+      const dsRemark = payload.remark || ds?.message || '';
+
+      if (normalized === 'successful') {
+        await wallet.releaseHold({
+          userId: tx.user_id,
+          reference: ref,
+          transactionId: tx.id,
+          description: `Data purchase — ${meta.product_name || ''}`,
+        }).catch(() => {});
+
+        await updateTransaction(ref, {
+          status: 'SUCCESS',
+          description: dsRemark || 'Purchase successful',
+          remark: dsRemark || 'Purchase successful',
+          provider_reference: payload.reference || meta.ds_reference || ref,
+          cost_price: Number(payload.paid_amount || tx.cost_price || 0),
+          metadata: {
+            ds_status: payload.transaction_status || '',
+            reconcile_attempts: attempts + 1,
+            reconcile_next_at: null,
+            reconciled_at: new Date().toISOString(),
+          },
+        });
+        finalized++;
+        console.log(`[reconcile] ✅ ${ref} → SUCCESS`);
+
+      } else if (normalized === 'failed') {
+        await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
+
+        await updateTransaction(ref, {
+          status: 'FAILED',
+          description: dsRemark || 'Purchase failed',
+          remark: dsRemark || 'Purchase failed',
+          metadata: {
+            ds_status: payload.transaction_status || '',
+            reconcile_attempts: attempts + 1,
+            reconcile_next_at: null,
+            reconciled_at: new Date().toISOString(),
+          },
+        });
+        finalized++;
+        console.log(`[reconcile] ❌ ${ref} → FAILED (hold dropped)`);
+
+      } else {
+        const nextAt = new Date(Date.now() + RECONCILE_INTERVAL_MS).toISOString();
+
+        if (attempts + 1 >= RECONCILE_MAX_ATTEMPTS) {
+          console.warn(`[reconcile] ⚠ ${ref} exceeded ${RECONCILE_MAX_ATTEMPTS} attempts — giving up and refunding`);
+          await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
+
+          await updateTransaction(ref, {
+            status: 'FAILED',
+            description: 'Could not confirm with provider. Amount reversed.',
+            remark: 'Could not confirm with provider. Amount reversed.',
+            metadata: {
+              reconcile_attempts: attempts + 1,
+              reconcile_next_at: null,
+              reconciled_at: new Date().toISOString(),
+              reconciled_reason: 'max_attempts_exceeded',
+            },
+          });
+          finalized++;
         } else {
-          /* Flat shape fallback — filter to data products only */
-          for (const p of raw) {
-            const pt = String(p.product_type || '').toLowerCase().trim();
-            if (pt && pt !== 'data') continue;
-            flat.push(p);
-          }
+          await updateTransaction(ref, {
+            metadata: {
+              reconcile_attempts: attempts + 1,
+              reconcile_next_at: nextAt,
+              last_checked_at: new Date().toISOString(),
+            },
+          });
+          stillPending++;
         }
       }
 
-      console.log(`[datashop.live] flattened ${flat.length} data products`);
-      if (flat[0]) {
-        console.log(`[datashop.live] flat sample keys:`, Object.keys(flat[0]).join(', '));
-        console.log(`[datashop.live] flat sample:`, JSON.stringify(flat[0]).slice(0, 400));
+    } catch (err) {
+      const isNotFound =
+        err.code === 'NOT_FOUND' ||
+        err.code === 'LEGACY_REFERENCE' ||
+        /not found on DataShop/i.test(err.message || '');
+
+      if (isNotFound) {
+        const newAttempts   = attempts + 1;
+        const notFoundCount = Number(meta.not_found_count || 0) + 1;
+
+        if (notFoundCount >= RECONCILE_MAX_ATTEMPTS && ageMinutes >= MIN_AGE_BEFORE_NOT_FOUND_REFUND) {
+          console.warn(`[reconcile] 🔙 ${ref} — not found ${notFoundCount}× and ${ageMinutes}min old → refund`);
+
+          await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
+
+          await updateTransaction(ref, {
+            status: 'FAILED',
+            description: 'Not received by provider after 2h — auto-refunded',
+            remark: 'Not received by provider after 2h — auto-refunded',
+            metadata: {
+              reconcile_attempts: newAttempts,
+              not_found_count: notFoundCount,
+              reconcile_result: 'not_found_after_2h',
+              reconcile_next_at: null,
+              reconciled_at: new Date().toISOString(),
+            },
+          });
+          finalized++;
+        } else {
+          const nextAt = new Date(Date.now() + RECONCILE_INTERVAL_MS * 5).toISOString();
+
+          await updateTransaction(ref, {
+            metadata: {
+              reconcile_attempts: newAttempts,
+              not_found_count: notFoundCount,
+              reconcile_next_at: nextAt,
+              last_not_found_at: new Date().toISOString(),
+              waiting_reason: 'datashop_index_delay',
+            },
+          }).catch(() => {});
+          stillPending++;
+          console.log(
+            `[reconcile] 🔎 ${ref} — not found (${notFoundCount}, age=${ageMinutes}min) — still waiting`
+          );
+        }
+      } else {
+        console.warn(`[reconcile] ⚠ ${ref} error: ${err.message}`);
+        const nextAt = new Date(Date.now() + RECONCILE_INTERVAL_MS).toISOString();
+
+        await updateTransaction(ref, {
+          metadata: {
+            reconcile_attempts: attempts + 1,
+            reconcile_next_at: nextAt,
+            last_error: String(err.message || '').slice(0, 200),
+          },
+        }).catch(() => {});
+        stillPending++;
       }
-
-      const products = flat
-        .map((p) => {
-          const code = pickFirst(p, [
-            'product_name', 'productName', 'product_code', 'productCode',
-            'code', 'plan_id', 'planId', 'plan_code', 'id', 'slug',
-          ]);
-          if (!code) return null;
-
-          const name = pickFirst(p, ['name', 'title', 'display_name', 'product_name']) || code;
-
-          const rawNetwork = pickFirst(p, [
-            'network', 'provider', 'operator', 'telco', 'service_provider',
-            'network_name', 'provider_name',
-          ]);
-          const network = normalizeNetworkLive(rawNetwork);
-
-          const category = pickFirst(p, ['category', 'service', 'product_type', 'type']) || 'MOBILE DATA';
-          const validity = pickFirst(p, ['validity', 'duration', 'plan_type', 'bundle_type']) || '';
-          const description = pickFirst(p, ['description', 'desc', 'remark']) || '';
-
-          const priceRaw = pickFirst(p, [
-            'price', 'amount', 'cost', 'selling_price', 'sell_price',
-            'user_amount', 'plan_amount', 'value', 'amount_payable',
-          ]);
-          const price = Number(priceRaw) || 0;
-
-          const available =
-            p.available === false ? false :
-            p.availability === false ? false :
-            p.is_active === false ? false :
-            p.status === 'inactive' ? false :
-            true;
-
-          return {
-            product_name: String(code),
-            name:         String(name),
-            network,
-            category:     String(category),
-            validity:     String(validity),
-            description:  String(description),
-            price,
-            available,
-            raw:          p,
-          };
-        })
-        .filter(Boolean);
-
-      _liveCache = { at: Date.now(), products };
-      console.log(`[datashop.live] mapped ${products.length} live data products`);
-      if (products[0]) {
-        console.log(`[datashop.live] mapped sample:`, JSON.stringify(products[0]).slice(0, 400));
-      }
-      return products;
-    } finally {
-      _liveInflight = null;
     }
-  })();
+  }
 
-  return _liveInflight;
+  console.log(`[reconcile] done — finalized=${finalized} refunded=${refunded} stillPending=${stillPending}`);
+  return { checked: rows.length, finalized, refunded, stillPending };
 }
 
-export async function getLiveProduct(productName) {
-  if (!productName) return null;
-  const products = await getLiveProducts();
-  const key = String(productName).toLowerCase();
-  return products.find((p) => p.product_name.toLowerCase() === key) || null;
+/* ============================================================
+   AUDIT — run hourly
+   ============================================================ */
+export async function auditFailedTransactions(hoursBack = 24) {
+  const { rows } = await query(
+    `SELECT id, reference, user_id, amount, status, cost_price, created_at, metadata
+       FROM transactions
+      WHERE type = 'DATA'
+        AND service = 'data'
+        AND status IN ('FAILED', 'SUCCESS')
+        AND (audit_reviewed IS NULL OR audit_reviewed = FALSE)
+        AND created_at > NOW() - INTERVAL '${Number(hoursBack)} hours'
+      ORDER BY created_at DESC
+      LIMIT 200`
+  );
+
+  if (!rows.length) return { checked: 0, mismatches: 0 };
+
+  let mismatches = 0;
+  let checked = 0;
+
+  for (const tx of rows) {
+    checked++;
+    try {
+      const ds = await datashop.checkTransactionStatus(tx.reference);
+      const normalized = datashop.normalizeProviderStatus(ds);
+
+      const ourStatus =
+        String(tx.status).toLowerCase() === 'success' ? 'successful' :
+        String(tx.status).toLowerCase() === 'failed'  ? 'failed' :
+        'processing';
+
+      const dsStatus =
+        normalized === 'successful' ? 'successful' :
+        normalized === 'failed'     ? 'failed' :
+        'processing';
+
+      if (dsStatus === 'processing') continue;
+      if (dsStatus === ourStatus) continue;
+
+      mismatches++;
+
+      if (ourStatus === 'failed' && dsStatus === 'successful') {
+        console.error(
+          `[audit] 🚨 ${tx.reference}: DB=FAILED but DataShop=SUCCESS — ` +
+          `user was refunded but got the product. user=${tx.user_id} amount=₦${tx.amount}`
+        );
+
+        await query(
+          `INSERT INTO audit_mismatches
+             (reference, user_id, amount, our_status, ds_status, created_at, severity)
+           VALUES ($1, $2, $3, $4, $5, NOW(), 'CRITICAL')
+           ON CONFLICT (reference) DO NOTHING`,
+          [tx.reference, tx.user_id, tx.amount, ourStatus, dsStatus]
+        ).catch(() => {});
+      }
+
+      if (ourStatus === 'successful' && dsStatus === 'failed') {
+        console.error(
+          `[audit] ⚠ ${tx.reference}: DB=SUCCESS but DataShop=FAILED — ` +
+          `user charged but didn't get product. user=${tx.user_id} amount=₦${tx.amount}`
+        );
+
+        await query(
+          `INSERT INTO audit_mismatches
+             (reference, user_id, amount, our_status, ds_status, created_at, severity)
+           VALUES ($1, $2, $3, $4, $5, NOW(), 'HIGH')
+           ON CONFLICT (reference) DO NOTHING`,
+          [tx.reference, tx.user_id, tx.amount, ourStatus, dsStatus]
+        ).catch(() => {});
+      }
+
+    } catch (err) {
+      /* Datashop unreachable — skip */
+    }
+  }
+
+  console.log(`[audit] checked=${checked} mismatches=${mismatches}`);
+  return { checked, mismatches };
 }
 
-export function _clearLiveCache() { _liveCache = { at: 0, products: [] }; }
+/* ============================================================
+   PURCHASE SUMMARY  (today / yesterday, Nigeria time)
+   ============================================================ */
+export async function getPurchaseSummary(userId) {
+  if (!userId) throw new Error('userId is required');
+
+  const { rows } = await query(
+    `WITH bounds AS (
+       SELECT
+         (NOW() AT TIME ZONE 'Africa/Lagos')::date                             AS today,
+         ((NOW() AT TIME ZONE 'Africa/Lagos')::date - INTERVAL '1 day')::date  AS yesterday
+     )
+     SELECT
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.today)::int AS today_count,
+       COALESCE(SUM(amount) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.today), 0)::numeric AS today_total,
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.today AND status = 'SUCCESS')::int AS today_success,
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.today AND status = 'FAILED')::int AS today_failed,
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.today AND status IN ('PENDING','PROCESSING'))::int AS today_processing,
+
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.yesterday)::int AS yesterday_count,
+       COALESCE(SUM(amount) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.yesterday), 0)::numeric AS yesterday_total,
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.yesterday AND status = 'SUCCESS')::int AS yesterday_success,
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.yesterday AND status = 'FAILED')::int AS yesterday_failed,
+       COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Africa/Lagos')::date = bounds.yesterday AND status IN ('PENDING','PROCESSING'))::int AS yesterday_processing
+     FROM transactions, bounds
+     WHERE user_id = $1
+       AND type    = 'DATA'
+       AND service = 'data'`,
+    [userId]
+  );
+
+  const r = rows[0] || {};
+  const n = (v) => Number(v) || 0;
+  return {
+    today: {
+      count:      n(r.today_count),
+      total:      n(r.today_total),
+      success:    n(r.today_success),
+      failed:     n(r.today_failed),
+      processing: n(r.today_processing),
+    },
+    yesterday: {
+      count:      n(r.yesterday_count),
+      total:      n(r.yesterday_total),
+      success:    n(r.yesterday_success),
+      failed:     n(r.yesterday_failed),
+      processing: n(r.yesterday_processing),
+    },
+  };
+}
 
 export default {
-  buyAirtime, buyData, listServices, listProviders, listProducts, getProduct,
-  verifyCustomer, checkTransactionStatus, checkAirtimeStatus, checkDataStatus,
-  fetchTransaction, getTransactionStatus, normalizeProviderStatus,
-  normalizeProviderError, generateReference, getDatashopBalance,
-  verifyWebhookSignature, normalizeWebhookPayload, getTransactionDetails,
-  fetchAllProductsForPricing, normalizePricingRow, pollTransactionUntilResolved,
-  getLiveProducts, getLiveProduct, _clearLiveCache,
+  getNetworks,
+  getCategories,
+  getBundles,
+  verifyCustomer,
+  purchase,
+  getStatus,
+  getPurchaseSummary,
+  reconcileProcessingDataTransactions,
+  auditFailedTransactions,
 };
