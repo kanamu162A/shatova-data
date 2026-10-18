@@ -653,12 +653,30 @@ export async function fetchAllProductsForPricing() {
 /* ============================================================
    LIVE PRODUCT CATALOGUE  (appended — v14 untouched)
    ------------------------------------------------------------
-   60-second in-memory cache of the provider catalogue.
-   No existing function is modified or removed.
+   Defensive mapping: accepts every plausible field name that
+   DataShop might use. Logs the raw response length + first
+   item's keys so we can diagnose if it still returns 0.
    ============================================================ */
 const LIVE_CACHE_TTL_MS = 60_000;
 let _liveCache = { at: 0, products: [] };
 let _liveInflight = null;
+
+function pickFirst(obj, keys) {
+  for (const k of keys) {
+    if (obj[k] != null && obj[k] !== '') return obj[k];
+  }
+  return undefined;
+}
+
+function normalizeNetworkLive(raw) {
+  const s = String(raw || '').toLowerCase().trim();
+  if (!s) return '';
+  if (s.includes('mtn'))    return 'mtn';
+  if (s.includes('airtel')) return 'airtel';
+  if (s.includes('glo'))    return 'glo';
+  if (s.includes('9mobile') || s.includes('etisalat') || s === 't2' || s.includes('t2')) return 't2';
+  return s;
+}
 
 export async function getLiveProducts({ force = false } = {}) {
   const now = Date.now();
@@ -671,32 +689,67 @@ export async function getLiveProducts({ force = false } = {}) {
     try {
       const raw = await listProducts({ service: 'data' });
       const arr = Array.isArray(raw) ? raw : [];
+
+      console.log(`[datashop.live] raw response length: ${arr.length}`);
+      if (arr[0]) {
+        console.log(`[datashop.live] first item keys:`, Object.keys(arr[0]).join(', '));
+        console.log(`[datashop.live] first item sample:`, JSON.stringify(arr[0]).slice(0, 600));
+      }
+
       const products = arr
         .map((p) => {
-          const code =
-            p.product_name || p.product_code || p.code ||
-            p.plan_id || p.slug || p.id || '';
+          const code = pickFirst(p, [
+            'product_name', 'productName', 'product_code', 'productCode',
+            'code', 'plan_id', 'planId', 'plan_code', 'id', 'slug',
+          ]);
           if (!code) return null;
-          const networkRaw = String(
-            p.network || p.provider || p.operator || p.service_provider || ''
-          ).toLowerCase();
+
+          const name = pickFirst(p, ['name', 'title', 'display_name', 'product_name']) || code;
+
+          const rawNetwork = pickFirst(p, [
+            'network', 'provider', 'operator', 'telco', 'service_provider',
+            'network_name', 'provider_name',
+          ]);
+          const network = normalizeNetworkLive(rawNetwork);
+
+          const category = pickFirst(p, ['category', 'service', 'product_type', 'type']) || 'MOBILE DATA';
+
+          const validity = pickFirst(p, ['validity', 'duration', 'plan_type', 'bundle_type']) || '';
+
+          const description = pickFirst(p, ['description', 'desc', 'remark']) || '';
+
+          const priceRaw = pickFirst(p, [
+            'price', 'amount', 'cost', 'selling_price', 'sell_price',
+            'user_amount', 'plan_amount', 'value', 'amount_payable',
+          ]);
+          const price = Number(priceRaw) || 0;
+
+          /* Treat missing availability flags as available */
+          const available =
+            p.available === false ? false :
+            p.is_active === false ? false :
+            p.status === 'inactive' ? false :
+            true;
+
           return {
             product_name: String(code),
-            name:         String(p.name || p.title || code),
-            network:      networkRaw,
-            category:     String(p.category || p.service || 'MOBILE DATA'),
-            validity:     String(p.validity || p.duration || ''),
-            description:  String(p.description || ''),
-            price:        Number(p.amount ?? p.price ?? p.cost ?? 0) || 0,
-            available:    p.available !== false && p.is_active !== false,
+            name:         String(name),
+            network,
+            category:     String(category),
+            validity:     String(validity),
+            description:  String(description),
+            price,
+            available,
             raw:          p,
           };
         })
         .filter(Boolean);
 
       _liveCache = { at: Date.now(), products };
-      console.log(`[datashop.live] fetched ${products.length} live products`);
-      if (arr[0]) console.log(`[datashop.live] sample keys:`, Object.keys(arr[0]).join(', '));
+      console.log(`[datashop.live] mapped ${products.length} live products`);
+      if (products[0]) {
+        console.log(`[datashop.live] mapped sample:`, JSON.stringify(products[0]).slice(0, 400));
+      }
       return products;
     } finally {
       _liveInflight = null;
