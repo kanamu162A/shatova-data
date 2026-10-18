@@ -655,20 +655,15 @@ export async function fetchAllProductsForPricing() {
    ------------------------------------------------------------
    DataShop returns a nested tree:
      [
-       { product_type: 'data',
-         providers: [
-           { provider: 'MTN',
-             categories: [
-               { category: 'MTN SHARE', products: [ {...}, {...} ] },
-               ...
-             ]
-           },
-           ...
-         ]
-       },
-       ...
+       { product_type: 'data',      providers: [...] },  ← keep
+       { product_type: 'airtime',   providers: [...] },  ← skip
+       { product_type: 'electricity', ... },             ← skip
+       { product_type: 'tv',        ... },               ← skip
+       { product_type: 'exam',      ... },               ← skip
      ]
-   We flatten providers → categories → products before mapping.
+   We ONLY flatten the data group(s). Everything else is ignored,
+   so the data catalogue never contains airtime / electricity /
+   TV / exam products.
    ============================================================ */
 const LIVE_CACHE_TTL_MS = 60_000;
 let _liveCache = { at: 0, products: [] };
@@ -691,6 +686,12 @@ function normalizeNetworkLive(raw) {
   return s;
 }
 
+function isDataGroup(group) {
+  if (!group) return false;
+  const t = String(group.product_type || group.service || group.type || '').toLowerCase().trim();
+  return t === 'data';
+}
+
 export async function getLiveProducts({ force = false } = {}) {
   const now = Date.now();
   if (!force && _liveCache.products.length && now - _liveCache.at < LIVE_CACHE_TTL_MS) {
@@ -702,7 +703,7 @@ export async function getLiveProducts({ force = false } = {}) {
     try {
       const raw = await listProducts({ service: 'data' });
 
-      /* ── Flatten the nested provider → category → product tree ── */
+      /* ── Flatten ONLY the data group(s) ── */
       const flat = [];
       const pushGroup = (group) => {
         if (!group) return;
@@ -712,6 +713,11 @@ export async function getLiveProducts({ force = false } = {}) {
           for (const cat of categories) {
             const products = Array.isArray(cat.products) ? cat.products : [];
             for (const p of products) {
+              /* Guard: only accept products whose own product_type
+                 is data or missing (some rows omit it). */
+              const pt = String(p.product_type || '').toLowerCase().trim();
+              if (pt && pt !== 'data') continue;
+
               flat.push({
                 ...p,
                 provider: p.provider || prov.provider || '',
@@ -724,13 +730,21 @@ export async function getLiveProducts({ force = false } = {}) {
 
       if (Array.isArray(raw)) {
         if (raw.length && raw[0] && Array.isArray(raw[0].providers)) {
-          for (const group of raw) pushGroup(group);
+          /* Nested shape — filter to data groups only */
+          for (const group of raw) {
+            if (isDataGroup(group)) pushGroup(group);
+          }
         } else {
-          for (const p of raw) flat.push(p);
+          /* Flat shape fallback — filter to data products only */
+          for (const p of raw) {
+            const pt = String(p.product_type || '').toLowerCase().trim();
+            if (pt && pt !== 'data') continue;
+            flat.push(p);
+          }
         }
       }
 
-      console.log(`[datashop.live] flattened ${flat.length} raw products`);
+      console.log(`[datashop.live] flattened ${flat.length} data products`);
       if (flat[0]) {
         console.log(`[datashop.live] flat sample keys:`, Object.keys(flat[0]).join(', '));
         console.log(`[datashop.live] flat sample:`, JSON.stringify(flat[0]).slice(0, 400));
@@ -784,7 +798,7 @@ export async function getLiveProducts({ force = false } = {}) {
         .filter(Boolean);
 
       _liveCache = { at: Date.now(), products };
-      console.log(`[datashop.live] mapped ${products.length} live products`);
+      console.log(`[datashop.live] mapped ${products.length} live data products`);
       if (products[0]) {
         console.log(`[datashop.live] mapped sample:`, JSON.stringify(products[0]).slice(0, 400));
       }
