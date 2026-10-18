@@ -1,6 +1,8 @@
 // services/catalog.service.js
 // ============================================================
 // Shatova — Catalog Sync Service
+//   ⭐ v2: removed `profit` from INSERT (generated column),
+//           normalized provider names to match DB CHECK constraint.
 // ============================================================
 
 import { query } from '../config/database.js';
@@ -15,6 +17,17 @@ function providerKey(name = '') {
   if (k.includes('glo'))    return 'glo';
   if (k.includes('9mobile') || k.includes('etisalat') || k.includes('t2')) return 't2';
   return k;
+}
+
+/* Map any incoming provider string → one of:
+   MTN | Airtel | Glo | T2   (the exact values the DB CHECK allows) */
+function mapProvider(raw, fallback = 'MTN') {
+  const k = String(raw || '').toLowerCase().trim();
+  if (k.includes('mtn'))    return 'MTN';
+  if (k.includes('airtel')) return 'Airtel';
+  if (k.includes('glo'))    return 'Glo';
+  if (k.includes('9mobile') || k.includes('etisalat') || k === 't2' || k.includes('t2')) return 'T2';
+  return fallback;
 }
 
 function deriveCategory(product) {
@@ -88,7 +101,7 @@ export async function syncDataProvider(provider) {
         continue;
       }
 
-      const providerName = String(p.provider || provider).toUpperCase();
+      const providerName = mapProvider(p.provider || provider, mapProvider(provider));
       const category     = deriveCategory(p);
       const name         = displayName(p);
       const validity     = extractValidity(p);
@@ -100,11 +113,15 @@ export async function syncDataProvider(provider) {
         continue;
       }
 
+      /* ⚠ profit is a generated column — DO NOT include it here.
+         Postgres fills it from (sell_price - cost_price) automatically.
+         On insert, sell_price defaults to cost (no margin) — you can
+         adjust it later from the admin pricing page. */
       const { rows } = await query(
         `INSERT INTO data_plans
            (provider, category, plan_id, display_name, validity, description,
-            cost_price, sell_price, profit, is_active, sort_order, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $7, 0, $8, 0, NOW(), NOW())
+            cost_price, sell_price, is_active, sort_order, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, 0, NOW(), NOW())
          ON CONFLICT (plan_id)
          DO UPDATE SET
            provider     = EXCLUDED.provider,
