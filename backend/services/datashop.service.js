@@ -650,6 +650,71 @@ export async function fetchAllProductsForPricing() {
   return { products: unique, errors };
 }
 
+/* ============================================================
+   LIVE PRODUCT CATALOGUE  (appended — v14 untouched)
+   ------------------------------------------------------------
+   60-second in-memory cache of the provider catalogue.
+   No existing function is modified or removed.
+   ============================================================ */
+const LIVE_CACHE_TTL_MS = 60_000;
+let _liveCache = { at: 0, products: [] };
+let _liveInflight = null;
+
+export async function getLiveProducts({ force = false } = {}) {
+  const now = Date.now();
+  if (!force && _liveCache.products.length && now - _liveCache.at < LIVE_CACHE_TTL_MS) {
+    return _liveCache.products;
+  }
+  if (_liveInflight) return _liveInflight;
+
+  _liveInflight = (async () => {
+    try {
+      const raw = await listProducts({ service: 'data' });
+      const arr = Array.isArray(raw) ? raw : [];
+      const products = arr
+        .map((p) => {
+          const code =
+            p.product_name || p.product_code || p.code ||
+            p.plan_id || p.slug || p.id || '';
+          if (!code) return null;
+          const networkRaw = String(
+            p.network || p.provider || p.operator || p.service_provider || ''
+          ).toLowerCase();
+          return {
+            product_name: String(code),
+            name:         String(p.name || p.title || code),
+            network:      networkRaw,
+            category:     String(p.category || p.service || 'MOBILE DATA'),
+            validity:     String(p.validity || p.duration || ''),
+            description:  String(p.description || ''),
+            price:        Number(p.amount ?? p.price ?? p.cost ?? 0) || 0,
+            available:    p.available !== false && p.is_active !== false,
+            raw:          p,
+          };
+        })
+        .filter(Boolean);
+
+      _liveCache = { at: Date.now(), products };
+      console.log(`[datashop.live] fetched ${products.length} live products`);
+      if (arr[0]) console.log(`[datashop.live] sample keys:`, Object.keys(arr[0]).join(', '));
+      return products;
+    } finally {
+      _liveInflight = null;
+    }
+  })();
+
+  return _liveInflight;
+}
+
+export async function getLiveProduct(productName) {
+  if (!productName) return null;
+  const products = await getLiveProducts();
+  const key = String(productName).toLowerCase();
+  return products.find((p) => p.product_name.toLowerCase() === key) || null;
+}
+
+export function _clearLiveCache() { _liveCache = { at: 0, products: [] }; }
+
 export default {
   buyAirtime, buyData, listServices, listProviders, listProducts, getProduct,
   verifyCustomer, checkTransactionStatus, checkAirtimeStatus, checkDataStatus,
@@ -657,4 +722,5 @@ export default {
   normalizeProviderError, generateReference, getDatashopBalance,
   verifyWebhookSignature, normalizeWebhookPayload, getTransactionDetails,
   fetchAllProductsForPricing, normalizePricingRow, pollTransactionUntilResolved,
+  getLiveProducts, getLiveProduct, _clearLiveCache,
 };
