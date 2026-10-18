@@ -10,6 +10,7 @@
 //      - definite 4xx from provider → 502
 //   ⭐ v11 changes (only these):
 //      - PLAN_UNAVAILABLE now 409 (refresh signal)
+//      - PRICE_CHANGED now 409 (loss guard signal)
 //      - getPurchaseSummary() appended
 // ============================================================
 
@@ -123,8 +124,11 @@ export async function verifyCustomer(req, res) {
    🚫 INVALID PHONE / PLAN
       400 { success: false, code: 'INVALID_PHONE' | 'INVALID_PLAN', ... }
 
-   🚫 PLAN CHANGED SINCE LOAD (product/price no longer live)
+   🚫 PLAN UNAVAILABLE
       409 { success: false, code: 'PLAN_UNAVAILABLE', message }
+
+   🚫 PRICE CHANGED (sell_price < cost_price — loss guard)
+      409 { success: false, code: 'PRICE_CHANGED', message, data: { plan_id, live_cost, sell_price } }
 
    🚫 PROVIDER ERROR (unrecoverable from service's perspective)
       502 { success: false, code: 'PURCHASE_FAILED', message }
@@ -196,6 +200,7 @@ export async function purchase(req, res) {
       code === 'INVALID_PHONE'        ? 400 :
       code === 'INVALID_PLAN'         ? 400 :
       code === 'PLAN_UNAVAILABLE'     ? 409 :
+      code === 'PRICE_CHANGED'        ? 409 :
       code === 'PRODUCT_NOT_FOUND'    ? 404 :
       code === 'PROVIDER_REJECTED'    ? 502 :
       code === 'PURCHASE_FAILED'      ? 502 :
