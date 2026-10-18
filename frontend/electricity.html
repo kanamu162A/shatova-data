@@ -45,6 +45,188 @@
 
     *, *::before, *::after { box-sizing: border-box; }
 
+    /* ========== ULTRA PRO polish ========== */
+    .elx-main { padding: 8px 16px 128px; }
+    .elx-scroll-region { gap: 12px; }
+    .elx-card {
+      background: var(--elx-card);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 16px -6px rgba(15, 23, 42, 0.08);
+    }
+    .elx-card.tight { padding: 14px 15px; }
+    .elx-row {
+      display: flex; align-items: center; gap: 12px;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 16px;
+      padding: 14px 16px 14px 14px;
+      cursor: pointer;
+      transition: transform .16s var(--elx-ease), box-shadow .22s, border-color .16s;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.035), 0 4px 12px -4px rgba(15, 23, 42, 0.07);
+    }
+    .elx-row:hover {
+      border-color: rgba(5, 150, 105, 0.28);
+      box-shadow: 0 8px 22px -8px rgba(5, 150, 105, 0.16), 0 2px 6px rgba(15,23,42,.04);
+      transform: translateY(-2px);
+    }
+    .elx-row:active { transform: scale(.985); border-color: rgba(5, 150, 105, 0.4); }
+    .elx-prod {
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: transform .16s var(--elx-ease), border-color .16s, box-shadow .22s;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.035), 0 4px 12px -4px rgba(15, 23, 42, 0.07);
+    }
+    .elx-prod:hover {
+      border-color: rgba(37, 99, 235, 0.28);
+      box-shadow: 0 8px 22px -8px rgba(37, 99, 235, 0.14), 0 2px 6px rgba(15,23,42,.04);
+      transform: translateY(-2px);
+    }
+    .elx-prod:active { transform: scale(.985); border-color: var(--elx-green); }
+    .elx-btn {
+      width: 100%;
+      padding: 15px 18px; border-radius: 14px;
+      font-weight: 700; font-size: 14.5px;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; letter-spacing: .01em;
+      transition: transform .12s, opacity .15s, box-shadow .2s, background .15s;
+      border: 1px solid transparent;
+    }
+    .elx-btn.blue {
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      color: #fff;
+      border-color: rgba(37, 99, 235, 0.35);
+      box-shadow: 0 4px 14px -2px rgba(37, 99, 235, .35), inset 0 1px 0 rgba(255,255,255,.18);
+    }
+    .elx-btn.green {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border-color: rgba(5, 150, 105, 0.35);
+      box-shadow: 0 4px 14px -2px rgba(5, 150, 105, .32), inset 0 1px 0 rgba(255,255,255,.18);
+    }
+    .elx-btn.ghost {
+      background: #fff;
+      border: 1.5px solid rgba(15, 23, 42, 0.1);
+      color: var(--elx-ink);
+      box-shadow: 0 1px 3px rgba(15,23,42,.04);
+    }
+    .elx-btn.pay-now {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border: 1px solid rgba(5, 150, 105, 0.35);
+      box-shadow: 0 6px 18px -4px rgba(5, 150, 105, .4), inset 0 1px 0 rgba(255,255,255,.2);
+      padding: 16px 18px; font-size: 15px; font-weight: 800;
+    }
+    .elx-btn:active:not(:disabled) { transform: scale(.98); }
+    .elx-btn:disabled { opacity: .42; cursor: not-allowed; box-shadow: none !important; }
+    .elx-input {
+      width: 100%; background: #fff;
+      border: 1.5px solid rgba(15, 23, 42, 0.1);
+      color: var(--elx-ink);
+      padding: 14px 16px; border-radius: 14px;
+      font-size: 15.5px; outline: none;
+      font-family: inherit; font-weight: 600;
+      box-shadow: 0 1px 2px rgba(15,23,42,.03);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .elx-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .12), 0 1px 2px rgba(15,23,42,.04);
+    }
+    .elx-pick-btn {
+      padding: 0 14px;
+      border: 1.5px solid rgba(15, 23, 42, 0.1);
+      border-radius: 14px;
+      background: #fff; color: var(--elx-ink);
+      font-weight: 650; font-size: 12.5px;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+      white-space: nowrap; font-family: inherit;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+    .elx-confirm-product, .elx-purchasing-for {
+      border: 1px solid rgba(15, 23, 42, 0.08) !important;
+      border-radius: 16px !important;
+      padding: 14px 16px !important;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04), 0 4px 12px -4px rgba(15,23,42,.06) !important;
+    }
+    .elx-pay-method {
+      border: 1.5px solid rgba(15, 23, 42, 0.09) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04) !important;
+    }
+    .elx-pay-method.selected {
+      border-color: #2563eb !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12), 0 4px 12px rgba(37,99,235,.1) !important;
+    }
+    .elx-recent { margin: 12px 0 0; }
+    .elx-recent-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; padding: 0 2px;
+    }
+    .elx-recent-head .lbl {
+      font-size: 10.5px; font-weight: 750; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: .12em;
+    }
+    .elx-recent-head .clear {
+      font-size: 11px; font-weight: 650; color: #64748b;
+      background: none; border: none; cursor: pointer;
+      padding: 4px 8px; border-radius: 8px; font-family: inherit;
+    }
+    .elx-recent-head .clear:active { background: #f1f5f9; color: #0f172a; }
+    .elx-recent-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .elx-meter-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 12px 10px 10px;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.09);
+      border-radius: 14px;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04), 0 3px 10px -4px rgba(15,23,42,.06);
+      cursor: pointer; font-family: inherit;
+      transition: transform .14s, border-color .15s, box-shadow .2s;
+      max-width: 100%;
+    }
+    .elx-meter-chip:hover {
+      border-color: rgba(5, 150, 105, 0.35);
+      box-shadow: 0 6px 16px -6px rgba(5, 150, 105, 0.18);
+      transform: translateY(-1px);
+    }
+    .elx-meter-chip:active { transform: scale(.97); }
+    .elx-meter-chip .mc-ico {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: linear-gradient(145deg, #ecfdf5, #d1fae5);
+      color: #059669;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid rgba(5, 150, 105, 0.15);
+    }
+    .elx-meter-chip .mc-ico svg { width: 15px; height: 15px; }
+    .elx-meter-chip .mc-body { min-width: 0; text-align: left; }
+    .elx-meter-chip .mc-num {
+      font-size: 13px; font-weight: 750; color: #0f172a;
+      letter-spacing: .02em; font-variant-numeric: tabular-nums;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .elx-meter-chip .mc-meta {
+      font-size: 10.5px; color: #94a3b8; font-weight: 550;
+      margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 140px;
+    }
+    .elx-meter-chip .mc-x {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: none; background: #f1f5f9; color: #94a3b8;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; padding: 0; font-size: 12px; line-height: 1;
+    }
+    .elx-meter-chip .mc-x:hover { background: #fee2e2; color: #dc2626; }
+
+
     body.elx-body {
       background: var(--elx-bg);
       color: var(--elx-ink);
@@ -798,6 +980,16 @@
                 Pick
               </button>
             </div>
+
+            <!-- Recent meter numbers (like airtime/data recent phones) -->
+            <div class="elx-recent" id="recentMeters" style="display:none;">
+              <div class="elx-recent-head">
+                <span class="lbl">Recent meters</span>
+                <button type="button" class="clear" id="clearRecentMeters">Clear</button>
+              </div>
+              <div class="elx-recent-chips" id="recentMeterChips"></div>
+            </div>
+
             <div id="verifyMsg"></div>
           </div>
 
@@ -1057,6 +1249,78 @@
       return Math.round(Number(amt || 0) - computeWalletDebit(amt));
     }
 
+
+    /* ---- Recent meters (localStorage) — same idea as airtime/data phones ---- */
+    var RECENT_METERS_KEY = 'shatova_recent_meters';
+    var RECENT_METERS_MAX = 8;
+
+    function loadRecentMeters() {
+      try {
+        var raw = localStorage.getItem(RECENT_METERS_KEY);
+        var list = raw ? JSON.parse(raw) : [];
+        return Array.isArray(list) ? list : [];
+      } catch (_) { return []; }
+    }
+    function saveRecentMeters(list) {
+      try { localStorage.setItem(RECENT_METERS_KEY, JSON.stringify(list.slice(0, RECENT_METERS_MAX))); } catch (_) {}
+    }
+    function pushRecentMeter(meter, meta) {
+      meter = String(meter || '').replace(/\D/g, '');
+      if (meter.length < 8) return;
+      var list = loadRecentMeters().filter(function (x) { return x.meter !== meter; });
+      list.unshift({
+        meter: meter,
+        name: (meta && meta.name) || '',
+        disco: (meta && meta.disco) || state.provider || '',
+        product: (meta && meta.product) || state.productName || '',
+        at: Date.now()
+      });
+      saveRecentMeters(list);
+      renderRecentMeters();
+    }
+    function removeRecentMeter(meter) {
+      saveRecentMeters(loadRecentMeters().filter(function (x) { return x.meter !== meter; }));
+      renderRecentMeters();
+    }
+    function clearRecentMeters() {
+      saveRecentMeters([]);
+      renderRecentMeters();
+    }
+    function renderRecentMeters() {
+      var wrap = $('recentMeters');
+      var chips = $('recentMeterChips');
+      if (!wrap || !chips) return;
+      var list = loadRecentMeters();
+      if (!list.length) {
+        wrap.style.display = 'none';
+        chips.innerHTML = '';
+        return;
+      }
+      wrap.style.display = 'block';
+      chips.innerHTML = list.map(function (item) {
+        var meta = [item.name, item.disco].filter(Boolean).join(' · ') || 'Meter';
+        return (
+          '<button type="button" class="elx-meter-chip" data-meter="' + esc(item.meter) + '">' +
+            '<span class="mc-ico"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>' +
+            '<span class="mc-body"><span class="mc-num">' + esc(item.meter) + '</span><span class="mc-meta">' + esc(meta) + '</span></span>' +
+            '<span class="mc-x" data-remove="' + esc(item.meter) + '" title="Remove">×</span>' +
+          '</button>'
+        );
+      }).join('');
+    }
+    function applyRecentMeter(meter) {
+      meter = String(meter || '').replace(/\D/g, '').slice(0, 13);
+      var input = $('meter');
+      if (!input) return;
+      input.value = meter;
+      state.meterNumber = meter;
+      $('btnVerify').disabled = meter.length < 11;
+      $('verifiedBlock').classList.add('elx-hidden');
+      $('btnVerify').classList.remove('elx-hidden');
+      $('verifyMsg').innerHTML = '';
+      input.focus();
+    }
+
     function showStep(n) {
       [1,2,3,4,5].forEach(function (i) {
         var el = $('step' + i);
@@ -1065,6 +1329,7 @@
       $('btnBack').style.display = 'flex';
       var main = document.querySelector('.elx-main');
       if (main) main.scrollTop = 0;
+      if (n === 3) renderRecentMeters();
     }
     function setHeader(eyebrow, title) {
       $('hdrEyebrow').textContent = eyebrow;
@@ -1245,6 +1510,7 @@
 
         setHeader(state.productName, 'Checkout');
         showStep(3);
+        renderRecentMeters();
         setTimeout(function () { $('meter').focus(); }, 250);
         return;
       }
@@ -1258,6 +1524,24 @@
       $('btnVerify').classList.remove('elx-hidden');
       $('verifyMsg').innerHTML = '';
     });
+
+    document.addEventListener('click', function (e) {
+      var rm = e.target.closest('[data-remove]');
+      if (rm) {
+        e.preventDefault(); e.stopPropagation();
+        removeRecentMeter(rm.getAttribute('data-remove'));
+        return;
+      }
+      var chip = e.target.closest('.elx-meter-chip[data-meter]');
+      if (chip) {
+        e.preventDefault();
+        applyRecentMeter(chip.getAttribute('data-meter'));
+        return;
+      }
+    });
+    var clearBtn = $('clearRecentMeters');
+    if (clearBtn) clearBtn.addEventListener('click', function () { clearRecentMeters(); });
+
 
     $('btnPick').addEventListener('click', function () {
       alert('Contact picker not enabled. Please type the meter number.');
@@ -1290,6 +1574,11 @@
 
     function finishVerify(v) {
       state.verified = v;
+      pushRecentMeter(state.meterNumber || v.meter_number, {
+        name: v.customer_name || '',
+        disco: v.disco || v.service_name || state.provider || '',
+        product: state.productName || ''
+      });
       $('dService').textContent = v.disco || v.service_name || state.provider || '—';
       $('dId').textContent      = v.meter_number || state.meterNumber;
       $('dName').textContent    = v.customer_name || '—';
