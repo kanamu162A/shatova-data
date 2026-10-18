@@ -1,16 +1,16 @@
 // services/data.service.js
 // ============================================================
-// Shatova — Data Service (v11 — live prices + purchase summary)
-//   ⭐ v10 behaviour preserved 100% for:
+// Shatova — Data Service (v13 — DB is source of truth)
+//   ⭐ Buy Data reads sell_price from data_plans (admin-controlled)
+//   ⭐ Purchase uses sell_price, not live DataShop cost
+//   ⭐ Loss guard: blocks purchase if sell_price < cost_price
+//   ⭐ All v10 safeguards preserved:
 //        holdFunds / releaseHold / dropHold
 //        datashop_submitted flag
 //        2h "not found" refund policy
 //        reconciler
 //        audit
-//   ⭐ v11 changes (only these):
-//        getNetworks / getCategories / getBundles → LIVE
-//        purchaseData → pre-debit LIVE price guard
-//        getPurchaseSummary() appended
+//        getPurchaseSummary
 // ============================================================
 
 import { query } from '../config/database.js';
@@ -29,11 +29,10 @@ const CATEGORY_PRIORITY = [
   { match: 'corporate',   weight: 8 },
 ];
 
-/* ── Reconciliation scheduling ── */
-const RECONCILE_FIRST_MS               = 20_000;    // first check 20s after purchase
-const RECONCILE_INTERVAL_MS            = 60_000;    // then every 60s
-const RECONCILE_MAX_ATTEMPTS           = 15;        // ~15 minutes of retries
-const MIN_AGE_BEFORE_NOT_FOUND_REFUND  = 120;       // 2 hours — do NOT refund "not found" before this
+const RECONCILE_FIRST_MS               = 20_000;
+const RECONCILE_INTERVAL_MS            = 60_000;
+const RECONCILE_MAX_ATTEMPTS           = 15;
+const MIN_AGE_BEFORE_NOT_FOUND_REFUND  = 120;
 
 function normalizeNetwork(key = '') {
   const k = String(key).toLowerCase();
@@ -144,11 +143,6 @@ async function findTransactionByReference(reference) {
   return rows[0] || null;
 }
 
-/* ⭐ Mark intent-to-submit BEFORE the Datashop call.
-   If the process dies during the network call, the reconciler
-   sees `datashop_submitted: true` and knows to retry. If it dies
-   BEFORE this flag is written, the reconciler sees `false` and
-   refunds immediately. */
 async function markDatashopSubmitted(reference) {
   try {
     await query(
@@ -170,20 +164,19 @@ async function markDatashopSubmitted(reference) {
 }
 
 /* ============================================================
-   GET NETWORKS  (v11 — LIVE)
+   GET NETWORKS  (from data_plans)
    ============================================================ */
 export async function getNetworks() {
-  const products = await datashop.getLiveProducts().catch(() => []);
-  const counts = {};
-  for (const p of products) {
-    if (!p.available) continue;
-    const k = normalizeNetwork(p.network);
-    counts[k] = (counts[k] || 0) + 1;
-  }
-  const networks = Object.keys(counts).map((key) => ({
-    key,
-    name: key.toUpperCase(),
-    products: counts[key],
+  const { rows } = await query(
+    `SELECT provider, COUNT(*)::int AS active_count
+       FROM data_plans
+      WHERE is_active = TRUE
+      GROUP BY provider`
+  );
+  const networks = rows.map((r) => ({
+    key: normalizeNetwork(r.provider),
+    name: r.provider,
+    products: r.active_count || 0,
   })).sort((a, b) => providerWeight(a.key) - providerWeight(b.key));
 
   if (!networks.length) {
@@ -198,25 +191,32 @@ export async function getNetworks() {
 }
 
 /* ============================================================
-   GET CATEGORIES  (v11 — LIVE)
+   GET CATEGORIES  (from data_plans)
    ============================================================ */
 export async function getCategories(networkKey = 'all') {
   const net = String(networkKey || 'all').toLowerCase();
-  const products = await datashop.getLiveProducts().catch(() => []);
-  const map = new Map();
-
-  for (const p of products) {
-    const pn = normalizeNetwork(p.network);
-    if (net !== 'all' && pn !== net) continue;
-    const cat = p.category || 'MOBILE DATA';
-    const k = `${pn}||${cat}`;
-    if (!map.has(k)) map.set(k, { provider: pn, category: cat, available: 0, total: 0 });
-    const row = map.get(k);
-    row.total += 1;
-    if (p.available) row.available += 1;
+  const params = [];
+  let where = 'WHERE is_active = TRUE';
+  if (net !== 'all') {
+    const netMap = {
+      mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2', '9mobile': 'T2',
+    };
+    params.push(netMap[net] || net.toUpperCase());
+    where += ` AND provider = $${params.length}`;
   }
-
-  const categories = [...map.values()].sort((a, b) => {
+  const { rows } = await query(
+    `SELECT provider, category, COUNT(*)::int AS available
+       FROM data_plans ${where}
+      GROUP BY provider, category`,
+    params
+  );
+  const categories = rows.map((r) => ({
+    provider: normalizeNetwork(r.provider),
+    category: r.category,
+    available: r.available,
+    total: r.available,
+  }));
+  categories.sort((a, b) => {
     const aAvail = a.available > 0 ? 0 : 1, bAvail = b.available > 0 ? 0 : 1;
     if (aAvail !== bAvail) return aAvail - bAvail;
     const aP = providerWeight(a.provider), bP = providerWeight(b.provider);
@@ -229,37 +229,46 @@ export async function getCategories(networkKey = 'all') {
 }
 
 /* ============================================================
-   GET BUNDLES  (v11 — LIVE)
+   GET BUNDLES  (from data_plans — admin sell_price)
    ============================================================ */
 export async function getBundles({ network, category } = {}) {
   const net = String(network || '').toLowerCase();
   if (!net) throw new Error('network is required');
 
-  const products = await datashop.getLiveProducts().catch(() => []);
-  const cat = category ? String(category).toUpperCase() : null;
+  const netMap = {
+    mtn: 'MTN', airtel: 'Airtel', glo: 'Glo', t2: 'T2', '9mobile': 'T2',
+  };
+  const provider = netMap[net] || net.toUpperCase();
 
-  const rows = products
-    .filter((p) => normalizeNetwork(p.network) === net)
-    .filter((p) => (cat ? String(p.category).toUpperCase() === cat : true))
-    .map((p) => ({
-      plan_id:      p.product_name,
-      product_name: p.product_name,
-      name:         p.name,
-      provider:     normalizeNetwork(p.network),
-      category:     p.category || 'MOBILE DATA',
-      quantity:     '',
-      validity:     p.validity || '',
-      description:  p.description || '',
-      price:        Number(p.price) || 0,
-      available:    p.available === true,
-      require_validation: false,
-    }))
-    .sort((a, b) => {
-      if (a.available !== b.available) return a.available ? -1 : 1;
-      return a.price - b.price;
-    });
+  const params = [provider];
+  let where = `WHERE provider = $1 AND is_active = TRUE`;
+  if (category) {
+    params.push(String(category).toUpperCase());
+    where += ` AND UPPER(category) = $${params.length}`;
+  }
 
-  return rows;
+  const { rows } = await query(
+    `SELECT plan_id, provider, category, display_name, validity, description,
+            cost_price, sell_price, profit, is_active, sort_order
+       FROM data_plans ${where}
+      ORDER BY sort_order ASC, cost_price ASC`,
+    params
+  );
+
+  return rows.map((row) => ({
+    plan_id:      row.plan_id,
+    product_name: row.plan_id,
+    name:         row.display_name || row.plan_id,
+    provider:     normalizeNetwork(row.provider),
+    category:     row.category || 'MOBILE DATA',
+    quantity:     '',
+    validity:     row.validity || '',
+    description:  row.description || '',
+    price:        Number(row.sell_price ?? 0),
+    cost_price:   Number(row.cost_price ?? 0),
+    available:    row.is_active === true,
+    require_validation: false,
+  }));
 }
 
 /* ============================================================
@@ -279,15 +288,9 @@ export async function verifyCustomer({ phone, productName }) {
 /* ============================================================
    PURCHASE — hold / submit-flag / release / drop
    ------------------------------------------------------------
-   v11 change: LIVE price is fetched BEFORE we touch the wallet.
-   If the plan disappeared or the provider price changed since
-   the user loaded the catalogue, we abort with
-   PLAN_UNAVAILABLE / INVALID_PLAN — the wallet is never debited
-   for a stale price.
-   ------------------------------------------------------------
-   Everything below the guard (create tx → hold → mark submitted
-   → buy → interpret → release/drop → persist) is unchanged
-   from v10.
+   sell_price and cost_price read from data_plans.
+   If sell_price < cost_price → 409 PRICE_CHANGED.
+   DataShop is only contacted to actually deliver the bundle.
    ============================================================ */
 export async function purchaseData({
   userId, planId, phone, mode = 'single', paymentMethod = 'wallet',
@@ -299,46 +302,45 @@ export async function purchaseData({
   const cleanPhone = String(phone).replace(/\D/g, '');
   if (!/^0\d{10}$/.test(cleanPhone)) throw new Error('Invalid Nigerian phone number');
 
-  /* ⭐ LIVE PRICE GUARD — data_plans prices are no longer trusted */
-  const live = await datashop.getLiveProduct(planId).catch(() => null);
-  if (!live) {
-    const e = new Error('This product is no longer available. Please refresh.');
-    e.code = 'PLAN_UNAVAILABLE';
-    throw e;
-  }
-  if (live.available !== true) {
+  const { rows: planRows } = await query(
+    `SELECT plan_id, provider, display_name, cost_price, sell_price, is_active
+       FROM data_plans WHERE plan_id = $1 LIMIT 1`,
+    [planId]
+  );
+  const plan = planRows[0];
+  if (!plan) throw new Error('Product not found');
+  if (plan.is_active !== true) {
     const e = new Error('This plan is currently unavailable. Please choose another.');
     e.code = 'PLAN_UNAVAILABLE';
     throw e;
   }
-  if (!live.price || live.price <= 0) {
+
+  const costPrice = Number(plan.cost_price ?? 0);
+  const userPrice = Number(plan.sell_price ?? 0);
+
+  if (!userPrice || userPrice <= 0) {
     const e = new Error('Invalid product price');
     e.code = 'INVALID_PLAN';
     throw e;
   }
 
-  /* DB row kept ONLY for the legacy display_name used in descriptions.
-     cost_price / sell_price from the DB are IGNORED for charging. */
-  const { rows: planRows } = await query(
-    `SELECT plan_id, provider, display_name
-       FROM data_plans WHERE plan_id = $1 LIMIT 1`,
-    [planId]
-  );
-  const plan = planRows[0] || {
-    plan_id: planId,
-    provider: live.network,
-    display_name: live.name,
-  };
+  /* ⭐ LOSS GUARD */
+  if (userPrice < costPrice) {
+    const e = new Error(
+      'This plan is temporarily unavailable. Please refresh and try another bundle.'
+    );
+    e.code = 'PRICE_CHANGED';
+    e.data = { plan_id: planId, live_cost: costPrice, sell_price: userPrice };
+    throw e;
+  }
 
-  const rawPrice  = Number(live.price);
-  const costPrice = Number(live.price);
-  const userPrice = rawPrice;
-  let   profit    = 0; // resolved after actual dsCost is known
+  const rawPrice = userPrice;
+  let   profit   = Math.round((userPrice - costPrice) * 100) / 100;
 
   const reference = datashop.generateReference('shatova-data');
 
   console.log(`[data] ═══ START ${reference} ═══`);
-  console.log(`[data]   plan=${planId} phone=${cleanPhone} live_user_price=₦${userPrice}`);
+  console.log(`[data]   plan=${planId} phone=${cleanPhone} user=₦${userPrice} cost=₦${costPrice}`);
 
   const txRecord = await createTransaction({
     userId, reference,
@@ -349,7 +351,7 @@ export async function purchaseData({
     amount: rawPrice,
     userPrice, costPrice, profit,
     paymentMethod,
-    meta: { mode, live_price_verified_at: new Date().toISOString() },
+    meta: { mode },
   }).catch((err) => {
     console.error('[data] ❌ tx create failed:', err.message);
     throw new Error('Could not create transaction record');
@@ -370,7 +372,7 @@ export async function purchaseData({
   let submitted    = false;
 
   try {
-    /* ⭐ STEP 1: Hold funds */
+    /* STEP 1: Hold funds */
     if (paymentMethod === 'wallet') {
       try {
         const w = await wallet.getWallet(userId);
@@ -397,12 +399,12 @@ export async function purchaseData({
       }
     }
 
-    /* ⭐ STEP 2a: WRITE THE FLAG — before calling Datashop */
+    /* STEP 2a: WRITE FLAG */
     await markDatashopSubmitted(reference);
     submitted = true;
     console.log(`[data] 📝 marked datashop_submitted=true for ${reference}`);
 
-    /* ⭐ STEP 2b: Call DataShop */
+    /* STEP 2b: Call DataShop */
     dsResult = await datashop.buyData({
       customer_id: cleanPhone,
       product_name: plan.plan_id,
@@ -412,7 +414,7 @@ export async function purchaseData({
     console.log(`[data] 📡 datashop result:`);
     console.log(`[data]   ok=${dsResult.ok} status=${dsResult.status} mayHaveSucceeded=${dsResult.mayHaveSucceeded} isTimeout=${dsResult.isTimeout}`);
 
-    /* ⭐ STEP 3: Interpret */
+    /* STEP 3: Interpret */
     if (dsResult.ok && !dsResult.mayHaveSucceeded) {
       const normalized = datashop.normalizeProviderStatus(dsResult.data);
       finalStatus = normalized === 'successful' ? 'success'
@@ -456,17 +458,12 @@ export async function purchaseData({
     caughtErr = caughtErr || err;
   }
 
-  /* ⭐ STEP 4: Release or drop the hold.
-     • success    → release (money spent)
-     • failed     → drop    (money returned)
-     • processing → LEAVE HELD — let the reconciler decide */
+  /* STEP 4: Release or drop */
   if (held) {
     if (finalStatus === 'success') {
       try {
         await wallet.releaseHold({
-          userId,
-          reference,
-          transactionId: txRecord.id,
+          userId, reference, transactionId: txRecord.id,
           description: `Data purchase — ${plan.display_name || planId}`,
         });
         console.log(`[data] 🔓 hold released for ${reference}`);
@@ -485,7 +482,7 @@ export async function purchaseData({
     }
   }
 
-  /* ⭐ STEP 5: Persist final state */
+  /* STEP 5: Persist */
   const payload = dsResult?.data?.data || {};
   const metadata = {
     ds_reference:      payload.reference || reference,
@@ -551,7 +548,7 @@ export async function purchaseData({
 }
 
 /* ============================================================
-   GET STATUS
+   GET STATUS  (unchanged from v10)
    ============================================================ */
 export async function getStatus(reference) {
   if (!reference) throw new Error('reference is required');
@@ -661,10 +658,7 @@ export async function getStatus(reference) {
 }
 
 /* ============================================================
-   RECONCILER — run from cron every 60s
-   ⭐ Handles PENDING and PROCESSING
-   ⭐ Refunds immediately if datashop_submitted is false/undefined
-   ⭐ Refuses to refund on "not found" until 2 HOURS have passed
+   RECONCILER — cron every 60s (unchanged from v10)
    ============================================================ */
 export async function reconcileProcessingDataTransactions(limit = 50) {
   const { rows } = await query(
@@ -698,16 +692,12 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
     const ageMs = Date.now() - createdAtMs;
     const ageMinutes = Math.floor(ageMs / 60000);
 
-    /* ── CASE 1: Never submitted to Datashop ──
-       Grace period of 30s in case the flag write is still in flight. */
     const submitted = meta.datashop_submitted;
     if ((submitted === false || submitted === undefined) && ageMs > 30_000) {
       console.warn(`[reconcile] 🚫 ${ref} — never submitted to Datashop (${Math.floor(ageMs / 1000)}s old) → refund`);
-
       await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch((e) => {
         console.warn(`[reconcile] dropHold failed for ${ref}:`, e.message);
       });
-
       await updateTransaction(ref, {
         status: 'FAILED',
         description: 'Purchase never reached provider — refunded',
@@ -719,12 +709,10 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
           reconciled_at: new Date().toISOString(),
         },
       }).catch(() => {});
-
       refunded++;
       continue;
     }
 
-    /* ── CASE 2: Submitted to Datashop — check the real status ── */
     try {
       const ds = await datashop.checkTransactionStatus(ref);
       const normalized = datashop.normalizeProviderStatus(ds);
@@ -733,12 +721,9 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
 
       if (normalized === 'successful') {
         await wallet.releaseHold({
-          userId: tx.user_id,
-          reference: ref,
-          transactionId: tx.id,
+          userId: tx.user_id, reference: ref, transactionId: tx.id,
           description: `Data purchase — ${meta.product_name || ''}`,
         }).catch(() => {});
-
         await updateTransaction(ref, {
           status: 'SUCCESS',
           description: dsRemark || 'Purchase successful',
@@ -757,7 +742,6 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
 
       } else if (normalized === 'failed') {
         await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
-
         await updateTransaction(ref, {
           status: 'FAILED',
           description: dsRemark || 'Purchase failed',
@@ -773,13 +757,10 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
         console.log(`[reconcile] ❌ ${ref} → FAILED (hold dropped)`);
 
       } else {
-        /* Still processing at Datashop — retry until max attempts */
         const nextAt = new Date(Date.now() + RECONCILE_INTERVAL_MS).toISOString();
-
         if (attempts + 1 >= RECONCILE_MAX_ATTEMPTS) {
           console.warn(`[reconcile] ⚠ ${ref} exceeded ${RECONCILE_MAX_ATTEMPTS} attempts — giving up and refunding`);
           await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
-
           await updateTransaction(ref, {
             status: 'FAILED',
             description: 'Could not confirm with provider. Amount reversed.',
@@ -811,18 +792,11 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
         /not found on DataShop/i.test(err.message || '');
 
       if (isNotFound) {
-        /* ⭐ Datashop's lookup API is eventually consistent.
-           A "not found" does NOT mean the purchase failed. Wait
-           2 hours before refunding, giving Datashop's index time
-           to catch up. */
         const newAttempts   = attempts + 1;
         const notFoundCount = Number(meta.not_found_count || 0) + 1;
-
         if (notFoundCount >= RECONCILE_MAX_ATTEMPTS && ageMinutes >= MIN_AGE_BEFORE_NOT_FOUND_REFUND) {
           console.warn(`[reconcile] 🔙 ${ref} — not found ${notFoundCount}× and ${ageMinutes}min old → refund`);
-
           await wallet.dropHold({ userId: tx.user_id, reference: ref }).catch(() => {});
-
           await updateTransaction(ref, {
             status: 'FAILED',
             description: 'Not received by provider after 2h — auto-refunded',
@@ -837,9 +811,7 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
           });
           finalized++;
         } else {
-          /* Back off — wait 5 minutes before next try */
           const nextAt = new Date(Date.now() + RECONCILE_INTERVAL_MS * 5).toISOString();
-
           await updateTransaction(ref, {
             metadata: {
               reconcile_attempts: newAttempts,
@@ -850,14 +822,11 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
             },
           }).catch(() => {});
           stillPending++;
-          console.log(
-            `[reconcile] 🔎 ${ref} — not found (${notFoundCount}, age=${ageMinutes}min) — still waiting`
-          );
+          console.log(`[reconcile] 🔎 ${ref} — not found (${notFoundCount}, age=${ageMinutes}min) — still waiting`);
         }
       } else {
         console.warn(`[reconcile] ⚠ ${ref} error: ${err.message}`);
         const nextAt = new Date(Date.now() + RECONCILE_INTERVAL_MS).toISOString();
-
         await updateTransaction(ref, {
           metadata: {
             reconcile_attempts: attempts + 1,
@@ -875,8 +844,7 @@ export async function reconcileProcessingDataTransactions(limit = 50) {
 }
 
 /* ============================================================
-   AUDIT — run hourly
-   ⭐ Skips transactions marked audit_reviewed = TRUE
+   AUDIT — hourly (unchanged from v10)
    ============================================================ */
 export async function auditFailedTransactions(hoursBack = 24) {
   const { rows } = await query(
@@ -901,55 +869,34 @@ export async function auditFailedTransactions(hoursBack = 24) {
     try {
       const ds = await datashop.checkTransactionStatus(tx.reference);
       const normalized = datashop.normalizeProviderStatus(ds);
-
       const ourStatus =
         String(tx.status).toLowerCase() === 'success' ? 'successful' :
         String(tx.status).toLowerCase() === 'failed'  ? 'failed' :
         'processing';
-
       const dsStatus =
         normalized === 'successful' ? 'successful' :
         normalized === 'failed'     ? 'failed' :
         'processing';
-
       if (dsStatus === 'processing') continue;
       if (dsStatus === ourStatus) continue;
-
       mismatches++;
-
       if (ourStatus === 'failed' && dsStatus === 'successful') {
-        console.error(
-          `[audit] 🚨 ${tx.reference}: DB=FAILED but DataShop=SUCCESS — ` +
-          `user was refunded but got the product. user=${tx.user_id} amount=₦${tx.amount}`
-        );
-
+        console.error(`[audit] 🚨 ${tx.reference}: DB=FAILED but DataShop=SUCCESS — user was refunded but got the product. user=${tx.user_id} amount=₦${tx.amount}`);
         await query(
-          `INSERT INTO audit_mismatches
-             (reference, user_id, amount, our_status, ds_status, created_at, severity)
-           VALUES ($1, $2, $3, $4, $5, NOW(), 'CRITICAL')
-           ON CONFLICT (reference) DO NOTHING`,
+          `INSERT INTO audit_mismatches (reference, user_id, amount, our_status, ds_status, created_at, severity)
+           VALUES ($1, $2, $3, $4, $5, NOW(), 'CRITICAL') ON CONFLICT (reference) DO NOTHING`,
           [tx.reference, tx.user_id, tx.amount, ourStatus, dsStatus]
         ).catch(() => {});
       }
-
       if (ourStatus === 'successful' && dsStatus === 'failed') {
-        console.error(
-          `[audit] ⚠ ${tx.reference}: DB=SUCCESS but DataShop=FAILED — ` +
-          `user charged but didn't get product. user=${tx.user_id} amount=₦${tx.amount}`
-        );
-
+        console.error(`[audit] ⚠ ${tx.reference}: DB=SUCCESS but DataShop=FAILED — user charged but didn't get product. user=${tx.user_id} amount=₦${tx.amount}`);
         await query(
-          `INSERT INTO audit_mismatches
-             (reference, user_id, amount, our_status, ds_status, created_at, severity)
-           VALUES ($1, $2, $3, $4, $5, NOW(), 'HIGH')
-           ON CONFLICT (reference) DO NOTHING`,
+          `INSERT INTO audit_mismatches (reference, user_id, amount, our_status, ds_status, created_at, severity)
+           VALUES ($1, $2, $3, $4, $5, NOW(), 'HIGH') ON CONFLICT (reference) DO NOTHING`,
           [tx.reference, tx.user_id, tx.amount, ourStatus, dsStatus]
         ).catch(() => {});
       }
-
-    } catch (err) {
-      /* Datashop unreachable — skip */
-    }
+    } catch (err) { /* Datashop unreachable — skip */ }
   }
 
   console.log(`[audit] checked=${checked} mismatches=${mismatches}`);
@@ -957,10 +904,7 @@ export async function auditFailedTransactions(hoursBack = 24) {
 }
 
 /* ============================================================
-   PURCHASE SUMMARY  (appended — today / yesterday, Nigeria time)
-   ------------------------------------------------------------
-   Uses Africa/Lagos for the day boundary so "today" flips at
-   00:00 WAT, not 00:00 UTC.
+   PURCHASE SUMMARY  (today / yesterday, Nigeria time)
    ============================================================ */
 export async function getPurchaseSummary(userId) {
   if (!userId) throw new Error('userId is required');
@@ -1009,3 +953,15 @@ export async function getPurchaseSummary(userId) {
     },
   };
 }
+
+export default {
+  getNetworks,
+  getCategories,
+  getBundles,
+  verifyCustomer,
+  purchaseData,
+  getStatus,
+  getPurchaseSummary,
+  reconcileProcessingDataTransactions,
+  auditFailedTransactions,
+};
