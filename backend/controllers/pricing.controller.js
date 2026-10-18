@@ -1,6 +1,7 @@
 // controllers/pricing.controller.js
 // ============================================================
 // Admin pricing console — Datashop live costs + margin
+// + v12: write endpoint to set sell_price / is_active per plan
 // ============================================================
 
 import { query } from '../config/database.js';
@@ -28,7 +29,6 @@ export async function getDatashopPricing(req, res) {
       cache = { at: now, payload };
     }
 
-    /* Join with local products table (silent if missing) */
     let localMap = new Map();
     try {
       const { rows } = await query(
@@ -115,9 +115,6 @@ export async function forceRefreshPricing(req, res) {
 
 /* ============================================================
    GET /admin/pricing/debug
-   ------------------------------------------------------------
-   TEMPORARY — exposes raw Datashop responses so we can see
-   exactly what shape the API returns. Remove after debugging.
    ============================================================ */
 export async function debugDatashop(req, res) {
   try {
@@ -165,3 +162,100 @@ export async function debugDatashop(req, res) {
     return res.status(500).json({ success: false, message: err.message });
   }
 }
+
+/* ============================================================
+   POST /admin/pricing/product/:code
+   ------------------------------------------------------------
+   Set a sell price (and optionally toggle availability) for one
+   plan in data_plans. This is what tells Shatova how much to
+   charge the customer, independently of the live DataShop cost.
+
+   Body: { selling_price: 380, is_active: true }
+   ============================================================ */
+export async function setProductSellingPrice(req, res) {
+  try {
+    const code = String(req.params.code || '').trim();
+    if (!code) {
+      return res.status(400).json({ success: false, message: 'plan code is required' });
+    }
+
+    const body = req.body || {};
+    const hasPrice  = body.selling_price !== undefined;
+    const hasActive = body.is_active !== undefined;
+
+    if (!hasPrice && !hasActive) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provide selling_price and/or is_active',
+      });
+    }
+
+    let sellingPrice = null;
+    if (hasPrice) {
+      sellingPrice = Number(body.selling_price);
+      if (!Number.isFinite(sellingPrice) || sellingPrice < 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'selling_price must be a non-negative number',
+        });
+      }
+    }
+
+    /* Upsert into data_plans.
+       - If the row exists: update sell_price / is_active.
+       - If not: insert a minimal row so the override is stored.
+       We rely on the DB default for any missing required columns. */
+    if (hasPrice && hasActive) {
+      await query(
+        `INSERT INTO data_plans (plan_id, sell_price, is_active, updated_at)
+         VALUES ($1, $2, $3, NOW())
+         ON CONFLICT (plan_id) DO UPDATE
+           SET sell_price = EXCLUDED.sell_price,
+               is_active  = EXCLUDED.is_active,
+               updated_at = NOW()`,
+        [code, sellingPrice, !!body.is_active]
+      );
+    } else if (hasPrice) {
+      await query(
+        `INSERT INTO data_plans (plan_id, sell_price, updated_at)
+         VALUES ($1, $2, NOW())
+         ON CONFLICT (plan_id) DO UPDATE
+           SET sell_price = EXCLUDED.sell_price,
+               updated_at = NOW()`,
+        [code, sellingPrice]
+      );
+    } else {
+      await query(
+        `INSERT INTO data_plans (plan_id, is_active, updated_at)
+         VALUES ($1, $2, NOW())
+         ON CONFLICT (plan_id) DO UPDATE
+           SET is_active  = EXCLUDED.is_active,
+               updated_at = NOW()`,
+        [code, !!body.is_active]
+      );
+    }
+
+    const { rows } = await query(
+      `SELECT plan_id, sell_price, is_active
+         FROM data_plans WHERE plan_id = $1 LIMIT 1`,
+      [code]
+    );
+
+    console.log(`[pricing] setProductSellingPrice ${code} →`, rows[0]);
+
+    return res.json({ success: true, data: rows[0] || null });
+  } catch (err) {
+    console.error('[pricing] setProductSellingPrice:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Could not update selling price',
+    });
+  }
+}
+
+export default {
+  getDatashopPricing,
+  forceRefreshPricing,
+  debugDatashop,
+  setProductSellingPrice,
+};
