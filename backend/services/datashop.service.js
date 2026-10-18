@@ -590,7 +590,7 @@ export async function getTransactionDetails(reference) {
 }
 
 /* ============================================================
-   PRICING CONSOLE  ← used by controllers/pricing.controller.js
+   PRICING CONSOLE — required by controllers/pricing.controller.js
    ============================================================ */
 const PRICE_SERVICES = ['data', 'airtime', 'tv', 'electricity', 'exam'];
 
@@ -651,7 +651,7 @@ export async function fetchAllProductsForPricing() {
 }
 
 /* ============================================================
-   LIVE PRODUCT CATALOGUE  (data-only, nested flatten)
+   LIVE PRODUCT CATALOGUE — nested flatten, data-only
    ============================================================ */
 const LIVE_CACHE_TTL_MS = 60_000;
 let _liveCache = { at: 0, products: [] };
