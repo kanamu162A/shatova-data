@@ -13,5 +13,6 @@ router.get('/bundles',    dataController.getBundles);
 router.post('/verify-customer', dataController.verifyCustomer);
 router.post('/purchase', dataController.purchase);
 router.get('/status',    dataController.getStatus);
+router.get('/summary',   dataController.getPurchaseSummary);
 
 export default router;
