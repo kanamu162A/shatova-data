@@ -89,7 +89,7 @@ const resolvedPaths = {
 const CANDIDATES = {
   services:  ['/list-services', '/services', '/get-services'],
   providers: ['/list-providers', '/providers', '/get-providers'],
-  products:  ['/list-products', '/products', '/get-products'],
+  products:  ['/get-products', '/products', '/list-products'],
 };
 
 const BALANCE_CANDIDATES = [
@@ -604,7 +604,7 @@ export function normalizePricingRow(p, service) {
     p.service_provider || p.telco || ''
   ).toString().toUpperCase();
   const cost = Number(
-    p.amount ?? p.price ?? p.cost ?? p.user_amount ??
+    p.fixed_price ?? p.amount ?? p.price ?? p.cost ?? p.user_amount ??
     p.plan_amount ?? p.value ?? p.amount_payable ?? 0
   ) || 0;
   return {
@@ -753,7 +753,7 @@ export async function getLiveProducts({ force = false } = {}) {
           const description = pickFirst(p, ['description', 'desc', 'remark']) || '';
 
           const priceRaw = pickFirst(p, [
-            'price', 'amount', 'cost', 'selling_price', 'sell_price',
+            'fixed_price', 'price', 'amount', 'cost', 'selling_price', 'sell_price',
             'user_amount', 'plan_amount', 'value', 'amount_payable',
           ]);
           const price = Number(priceRaw) || 0;
