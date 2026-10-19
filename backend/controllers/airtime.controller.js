@@ -630,8 +630,11 @@ export async function purchase(req, res) {
   }
 
   if (lastErr) {
+    // ⭐ CRITICAL FIX: Only refund on DEFINITE failures. 
+    // Ambiguous errors (network, timeouts, validation errors) become PROCESSING.
     const apiErr = lastErr;
-    const isAmbiguous = apiErr.isTimeout || apiErr.isNetworkError;
+    const isAmbiguous = apiErr.isTimeout || apiErr.isNetworkError || !apiErr.isDefiniteProviderRejection;
+
     if (isAmbiguous) {
       const remark = buildRemark({
         status: 'processing',
@@ -668,6 +671,7 @@ export async function purchase(req, res) {
       });
     }
 
+    // Definite failure -> safe to refund
     await dropHold({ userId, reference });
     const safeMessage = normalizeProviderError(apiErr.rawMessage || apiErr.message);
     const remark = buildRemark({
