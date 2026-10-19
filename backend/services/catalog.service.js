@@ -1,8 +1,9 @@
 // services/catalog.service.js
 // ============================================================
 // Shatova — Catalog Sync Service
-//   ⭐ v2: removed `profit` from INSERT (generated column),
-//           normalized provider names to match DB CHECK constraint.
+//   ⭐ v3: user-friendly display_name (1GB instead of "1000mb")
+//           + provider names normalized to DB CHECK values
+//           + profit column removed from INSERT
 // ============================================================
 
 import { query } from '../config/database.js';
@@ -19,8 +20,6 @@ function providerKey(name = '') {
   return k;
 }
 
-/* Map any incoming provider string → one of:
-   MTN | Airtel | Glo | T2   (the exact values the DB CHECK allows) */
 function mapProvider(raw, fallback = 'MTN') {
   const k = String(raw || '').toLowerCase().trim();
   if (k.includes('mtn'))    return 'MTN';
@@ -46,13 +45,62 @@ function deriveCategory(product) {
   return 'MOBILE DATA';
 }
 
+/* Format MB → GB, days → friendly validity */
+function formatSize(qty) {
+  const raw = String(qty || '').trim();
+  if (!raw) return '';
+
+  // If it's already like "1GB", "500MB", "1.5GB" — return as-is
+  if (/^\d+(\.\d+)?\s*(gb|mb)$/i.test(raw)) {
+    return raw.replace(/\s+/g, '').toUpperCase();
+  }
+
+  // If it's just a number (from description), assume MB
+  const numMatch = raw.match(/^(\d+(?:\.\d+)?)\s*(mb|gb|m|g)?$/i);
+  if (numMatch) {
+    const n = Number(numMatch[1]);
+    const unit = (numMatch[2] || 'mb').toLowerCase();
+    if (unit === 'gb' || unit === 'g') return `${n}GB`;
+    if (n >= 1024 && n % 1024 === 0) return `${n / 1024}GB`;
+    return `${n}MB`;
+  }
+
+  return raw;
+}
+
+function formatValidity(v) {
+  const raw = String(v || '').trim().toLowerCase();
+  if (!raw) return '';
+  // "1 month" → "30 Days", "2 days" → "2 Days"
+  if (raw.includes('month')) {
+    const m = raw.match(/(\d+)/);
+    const n = m ? Number(m[1]) : 1;
+    return `${n * 30} Days`;
+  }
+  if (raw.includes('day')) {
+    const m = raw.match(/(\d+)/);
+    return m ? `${m[1]} Days` : raw;
+  }
+  if (raw.includes('week')) {
+    const m = raw.match(/(\d+)/);
+    return m ? `${Number(m[1]) * 7} Days` : raw;
+  }
+  return String(v).trim();
+}
+
+/* Build "1GB · 7 Days" from data, not from description */
 function displayName(product) {
-  if (product.description && String(product.description).length > 3) return product.description;
-  if (product.name && String(product.name).length > 3) return product.name;
-  const qty = product.quantity || '';
-  const validity = product.validity || '';
-  const parts = [qty, validity].filter(Boolean);
-  return parts.length ? parts.join(' ╖ ') : (product.product_name || product.plan_id || 'Data plan');
+  const size = formatSize(product.quantity || product.data_size || product.size);
+  const validity = formatValidity(product.validity || product.duration);
+
+  if (size && validity) return `${size} · ${validity}`;
+  if (size) return size;
+  if (validity) return validity;
+
+  // Last resort — clean up description
+  const desc = String(product.description || '').trim();
+  if (desc) return desc.replace(/^Get\s+/i, '').replace(/\.$/, '');
+  return product.product_name || product.plan_id || 'Data plan';
 }
 
 function extractPlanId(p) {
@@ -84,9 +132,6 @@ export async function syncDataProvider(provider) {
   }
 
   console.log(`[catalog] ${provider}: got ${products.length} products`);
-  if (products.length) {
-    console.log(`[catalog] ${provider} sample:`, JSON.stringify(products[0], null, 2));
-  }
 
   if (!Array.isArray(products) || !products.length) {
     console.warn(`[catalog] ${provider}: no products returned`);
@@ -96,10 +141,7 @@ export async function syncDataProvider(provider) {
   for (const p of products) {
     try {
       const planId = extractPlanId(p);
-      if (!planId) {
-        console.warn(`[catalog] ${provider}: skipping item without plan_id`);
-        continue;
-      }
+      if (!planId) continue;
 
       const providerName = mapProvider(p.provider || provider, mapProvider(provider));
       const category     = deriveCategory(p);
@@ -113,10 +155,6 @@ export async function syncDataProvider(provider) {
         continue;
       }
 
-      /* ⚠ profit is a generated column — DO NOT include it here.
-         Postgres fills it from (sell_price - cost_price) automatically.
-         On insert, sell_price defaults to cost (no margin) — you can
-         adjust it later from the admin pricing page. */
       const { rows } = await query(
         `INSERT INTO data_plans
            (provider, category, plan_id, display_name, validity, description,
