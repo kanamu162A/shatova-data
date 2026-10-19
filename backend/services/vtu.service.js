@@ -23,7 +23,7 @@ if (KEY) {
 }
 
 /* ============================================================
-   ERROR NORMALIZER  (unchanged — working)
+   ERROR NORMALIZER
    ============================================================ */
 export function normalizeProviderError(rawMessage) {
   const msg = String(rawMessage || '').toLowerCase();
@@ -63,16 +63,14 @@ export function normalizeProviderError(rawMessage) {
 }
 
 /* ============================================================
-   STATUS NORMALIZER — strict, terminal-biased  (REPLACED)
+   STATUS NORMALIZER
    Returns ONLY: 'successful' | 'failed' | 'processing'
    ============================================================ */
 
-// Internal helper — returns 'successful' | 'failed' | 'processing' | 'unknown'
 function matchStatusString(raw) {
   const s = String(raw == null ? '' : raw).toLowerCase().trim();
   if (!s) return 'unknown';
 
-  // FAILED must be checked BEFORE success, so "not successful" → failed
   const FAILED = [
     'fail', 'failed', 'failure', 'reject', 'rejected', 'cancel', 'cancelled',
     'canceled', 'decline', 'declined', 'error', 'refund', 'refunded',
@@ -97,15 +95,11 @@ function matchStatusString(raw) {
 }
 
 export function normalizeProviderStatus(payload) {
-  // No payload → we cannot confirm → treat as failed.
-  // Caller decides whether to retry; default must NOT be 'processing'.
   if (payload == null) return 'failed';
-
   if (typeof payload === 'string') {
     const v = matchStatusString(payload);
     return v === 'unknown' ? 'failed' : v;
   }
-
   if (typeof payload !== 'object') return 'failed';
 
   const outer = payload;
@@ -116,24 +110,15 @@ export function normalizeProviderStatus(payload) {
         ? outer.data[0]
         : {};
 
-  // Every plausible status signal, in priority order
   const candidates = [
-    inner.transaction_status,
-    inner.transactionStatus,
-    inner.payment_status,
-    inner.paymentStatus,
-    inner.delivery_status,
-    inner.state,
-    inner.status,
-    inner.result,
+    inner.transaction_status, inner.transactionStatus,
+    inner.payment_status, inner.paymentStatus,
+    inner.delivery_status, inner.state, inner.status, inner.result,
     inner.transaction && inner.transaction.status,
-    outer.transaction_status,
-    outer.transactionStatus,
-    outer.payment_status,
-    outer.state,
+    outer.transaction_status, outer.transactionStatus,
+    outer.payment_status, outer.state,
     typeof outer.status === 'string' ? outer.status : null,
-    outer.code,
-    outer.result,
+    outer.code, outer.result,
   ];
 
   for (const raw of candidates) {
@@ -142,32 +127,25 @@ export function normalizeProviderStatus(payload) {
     if (verdict !== 'unknown') return verdict;
   }
 
-  // Boolean status is authoritative
-  if (typeof outer.status === 'boolean') {
-    return outer.status ? 'successful' : 'failed';
-  }
-  if (typeof inner.status === 'boolean') {
-    return inner.status ? 'successful' : 'failed';
-  }
+  if (typeof outer.status === 'boolean') return outer.status ? 'successful' : 'failed';
+  if (typeof inner.status === 'boolean') return inner.status ? 'successful' : 'failed';
 
-  // HTTP-style code fallback
   const code = Number(outer.code != null ? outer.code : inner.code);
   if (Number.isFinite(code)) {
     if (code >= 200 && code < 300) return 'successful';
     if (code >= 400) return 'failed';
   }
 
-  // ⚠️ Unknown → FAILED, never 'processing'
   return 'failed';
 }
 
 /* ============================================================
-   SHARED CALLER  (unchanged — working)
+   SHARED CALLER
    ============================================================ */
 async function request(method, path, body) {
   const url = `${BASE}${path}`;
-
   let res;
+
   try {
     res = await fetch(url, {
       method,
@@ -217,7 +195,7 @@ async function request(method, path, body) {
 }
 
 /* ============================================================
-   PROVIDER BALANCE  (unchanged — working)
+   PROVIDER BALANCE
    ============================================================ */
 const BALANCE_PATHS = [
   '/account/wallet-balance',
@@ -258,7 +236,7 @@ export async function getDatashopBalance() {
 export const getProviderBalance = getDatashopBalance;
 
 /* ============================================================
-   PRODUCTS  (unchanged — working)
+   PRODUCTS
    ============================================================ */
 const PRODUCT_PATHS = ['/list-products', '/products', '/get-products'];
 let _cachedProductPath = null;
@@ -311,7 +289,7 @@ export async function listProviders(service = 'data') {
 }
 
 /* ============================================================
-   AIRTIME  (FIXED)
+   AIRTIME (FIXED - PADS REFERENCE)
    ============================================================ */
 const AIRTIME_FALLBACKS = {
   mtn:    ['mtn-airtime', 'mtn'],
@@ -327,7 +305,7 @@ export async function buyAirtime({ network, product_name, phone, customer_id, am
   const fallbacks = AIRTIME_FALLBACKS[net] || [primary];
   const toTry = [primary, ...fallbacks.filter(p => p !== primary)];
 
-  // ⭐ Pad the reference to ensure it's at least 25 characters
+  // ⭐ FIX: Pad the reference to ensure it's at least 25 characters
   let safeRef = String(reference);
   while (safeRef.length < 25) {
     safeRef += Math.random().toString(36).slice(2, 5).toUpperCase();
@@ -340,7 +318,7 @@ export async function buyAirtime({ network, product_name, phone, customer_id, am
         customer_id: String(customer_id || phone || ''),
         product_name: String(name),
         amount: Number(amount),
-        reference: safeRef, // ⭐ Send the safe reference
+        reference: safeRef, // ⭐ Send the padded reference
       });
       result.product_used = name;
       return result;
@@ -364,7 +342,7 @@ export async function buyAirtime({ network, product_name, phone, customer_id, am
 }
 
 /* ============================================================
-   DATA  (unchanged — working)
+   DATA
    ============================================================ */
 export async function buyData({ planId, product_name, phone, customer_id, reference, amount, quantity }) {
   const body = {
@@ -379,7 +357,7 @@ export async function buyData({ planId, product_name, phone, customer_id, refere
 }
 
 /* ============================================================
-   STATUS CHECKS  (FIXED — no silent swallowing)
+   STATUS CHECKS
    ============================================================ */
 const STATUS_PATHS = [
   (ref) => `/transactions/${encodeURIComponent(ref)}`,
@@ -410,12 +388,8 @@ export async function checkTransactionStatus(reference) {
     } catch (err) {
       lastErr = err;
 
-      // 404 = wrong path → try next path
       if (err.statusCode === 404) continue;
 
-      // Provider returned a body (even on 4xx) → that body IS the answer.
-      // DataShop often returns 200 with {status:false} for failed txns,
-      // or 400 with the failure reason. Return it so the caller can normalize.
       if (err.providerResponse && typeof err.providerResponse === 'object') {
         const d = err.providerResponse.data;
         if (Array.isArray(d) && d.length) {
@@ -424,7 +398,6 @@ export async function checkTransactionStatus(reference) {
         return err.providerResponse;
       }
 
-      // Network / 5xx with no body → cannot determine → bubble up (caller retries)
       throw err;
     }
 
@@ -435,7 +408,6 @@ export async function checkTransactionStatus(reference) {
     return res.raw;
   }
 
-  // Every path 404'd — transaction is unknown to provider
   const e = new Error('Transaction not found on DataShop');
   e.code = 'PROVIDER_NOT_FOUND';
   e.isUserSafe = true;
@@ -449,7 +421,7 @@ export const fetchTransaction     = checkTransactionStatus;
 export const getTransactionStatus = checkTransactionStatus;
 
 /* ============================================================
-   VERIFY CUSTOMER  (unchanged — working)
+   VERIFY CUSTOMER
    ============================================================ */
 export async function verifyCustomer({ customer_id, phone, product_name }) {
   const res = await request('POST', '/verify-customer', {
@@ -460,7 +432,7 @@ export async function verifyCustomer({ customer_id, phone, product_name }) {
 }
 
 /* ============================================================
-   REFERENCE  (unchanged — working)
+   REFERENCE
    ============================================================ */
 export function generateReference(prefix = 'SHAT') {
   const ts = Date.now().toString(36).toUpperCase();
