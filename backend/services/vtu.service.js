@@ -311,7 +311,7 @@ export async function listProviders(service = 'data') {
 }
 
 /* ============================================================
-   AIRTIME  (unchanged — working)
+   AIRTIME  (FIXED)
    ============================================================ */
 const AIRTIME_FALLBACKS = {
   mtn:    ['mtn-airtime', 'mtn'],
@@ -327,6 +327,12 @@ export async function buyAirtime({ network, product_name, phone, customer_id, am
   const fallbacks = AIRTIME_FALLBACKS[net] || [primary];
   const toTry = [primary, ...fallbacks.filter(p => p !== primary)];
 
+  // ⭐ Pad the reference to ensure it's at least 25 characters
+  let safeRef = String(reference);
+  while (safeRef.length < 25) {
+    safeRef += Math.random().toString(36).slice(2, 5).toUpperCase();
+  }
+
   let lastErr;
   for (const name of toTry) {
     try {
@@ -334,7 +340,7 @@ export async function buyAirtime({ network, product_name, phone, customer_id, am
         customer_id: String(customer_id || phone || ''),
         product_name: String(name),
         amount: Number(amount),
-        reference: String(reference),
+        reference: safeRef, // ⭐ Send the safe reference
       });
       result.product_used = name;
       return result;
