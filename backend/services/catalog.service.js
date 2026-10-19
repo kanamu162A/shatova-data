@@ -1,16 +1,20 @@
 // services/catalog.service.js
 // ============================================================
-// Shatova — Catalog Sync Service (v4 — professional display)
-//   ⭐ display_name: "2GB · 1 Month", "500MB · 2 Days"
-//   ⭐ Validity labels: 1 Day / 2 Days / 1 Week / 2 Weeks /
-//                        1 Month / 3 Months — but ONLY when
-//                        DataShop's raw validity is exact.
-//   ⭐ Never fabricates validity. What DataShop says is
-//      what the customer sees (converted to the shortest
-//      accurate label).
-//   ⭐ Sizes: 1024MB → 1GB, 500MB → 500MB, 1.5GB → 1.5GB
-//   ⭐ Provider names normalized to DB CHECK values.
-//   ⭐ profit column removed from INSERT (generated).
+// Shatova — Catalog Sync Service (v6 — month-bucket validity)
+//   ⭐ display_name = "Size · Validity" only (no description)
+//   ⭐ Validity:
+//        1 day    → 1 Day
+//        2–6 days → N Days
+//        7–13 days → 1 Week
+//        14–19 days → 2 Weeks
+//        >= 20 days → 1 Month (bucket: 20–45d)
+//        >= 46 days → 2 Months (46–75d)
+//        >= 76 days → 3 Months (76–120d)
+//        >= 121 days → 6 Months (121–200d)
+//        >= 201 days → 1 Year
+//   ⭐ Sizes: 1024MB → 1GB, 500MB → 500MB
+//   ⭐ Provider names normalized to DB CHECK values
+//   ⭐ profit column NOT in INSERT (generated)
 // ============================================================
 
 import { query } from '../config/database.js';
@@ -52,13 +56,7 @@ function deriveCategory(product) {
   return 'MOBILE DATA';
 }
 
-/* ─────────────────────────────────────────────────────────────
-   SIZE FORMATTER
-   → "1024MB" becomes "1GB"
-   → "500MB" stays "500MB"
-   → "1.5GB" stays "1.5GB"
-   → "2000MB" becomes "2GB" only when divisible by 1024
-   ───────────────────────────────────────────────────────────── */
+/* Format raw size → "1GB", "500MB", "1.5GB" */
 function formatSize(qty) {
   const raw = String(qty || '').trim();
   if (!raw) return '';
@@ -84,73 +82,51 @@ function formatSize(qty) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   VALIDITY FORMATTER — the professional core
-   Converts raw DataShop validity → the shortest accurate label.
-
-   1 day → "1 Day"          2 days → "2 Days"
-   7 days → "1 Week"        14 days → "2 Weeks"
-   21 days → "21 Days"      30 days → "1 Month"
-   60 days → "2 Months"     90 days → "3 Months"
-   1 month → "1 Month"      2 months → "2 Months"
-   1 week  → "1 Week"       2 weeks → "2 Weeks"
-
-   ⚠ Never changes the number. Never fabricates.
-   ⚠ 21 days is NOT "1 Month". It's 21 days.
+   VALIDITY → friendly label
+   Rule: >= 20 days is a Month (bucketed)
    ───────────────────────────────────────────────────────────── */
+function formatValidityFromDays(days) {
+  const d = Number(days) || 0;
+  if (d <= 0) return '';
+
+  if (d === 1)              return '1 Day';
+  if (d < 7)                return `${d} Days`;
+  if (d < 14)               return '1 Week';
+  if (d < 20)               return '2 Weeks';
+  if (d <= 45)              return '1 Month';    // 20–45 days
+  if (d <= 75)              return '2 Months';   // 46–75 days
+  if (d <= 120)             return '3 Months';   // 76–120 days
+  if (d <= 200)             return '6 Months';   // 121–200 days
+  return '1 Year';                               // 201+ days
+}
+
+/* Parse DataShop's raw validity into days, then format */
 function formatValidity(v) {
   const raw = String(v || '').trim().toLowerCase();
   if (!raw) return '';
 
-  // Normalize weeks → days
   if (raw.includes('week')) {
     const m = raw.match(/(\d+)/);
     const n = m ? Number(m[1]) : 1;
     return formatValidityFromDays(n * 7);
   }
-
-  // Normalize months → days
   if (raw.includes('month')) {
     const m = raw.match(/(\d+)/);
     const n = m ? Number(m[1]) : 1;
     return formatValidityFromDays(n * 30);
   }
-
-  // Already in days
   if (raw.includes('day')) {
     const m = raw.match(/(\d+)/);
     if (!m) return String(v).trim();
     return formatValidityFromDays(Number(m[1]));
   }
-
-  // Bare number → days
   const numMatch = raw.match(/^(\d+)$/);
   if (numMatch) return formatValidityFromDays(Number(numMatch[1]));
 
   return String(v).trim();
 }
 
-/* Convert a day count to the most readable label */
-function formatValidityFromDays(days) {
-  const d = Number(days) || 0;
-  if (d <= 0) return '';
-
-  if (d === 1)  return '1 Day';
-  if (d === 7)  return '1 Week';
-  if (d === 14) return '2 Weeks';
-  if (d === 30) return '1 Month';
-  if (d === 60) return '2 Months';
-  if (d === 90) return '3 Months';
-  if (d === 180) return '6 Months';
-  if (d === 365) return '1 Year';
-
-  // Fall back to exact day count — never round
-  return `${d} ${d === 1 ? 'Day' : 'Days'}`;
-}
-
-/* ─────────────────────────────────────────────────────────────
-   DISPLAY NAME
-   Composes: "2GB · 1 Month", "500MB · 2 Days", "1.5GB · 1 Week"
-   ───────────────────────────────────────────────────────────── */
+/* display_name = "1GB · 1 Month" — no description, no marketing text */
 function displayName(product) {
   const size     = formatSize(product.quantity || product.data_size || product.size);
   const validity = formatValidity(product.validity || product.duration);
@@ -158,15 +134,6 @@ function displayName(product) {
   if (size && validity) return `${size} · ${validity}`;
   if (size)             return size;
   if (validity)         return validity;
-
-  // Last resort — clean up DataShop's description
-  const desc = String(product.description || '').trim();
-  if (desc) {
-    return desc
-      .replace(/^Get\s+/i, '')
-      .replace(/\s*for\s*₦[\d,]+\.?/i, '')
-      .replace(/\.$/, '');
-  }
 
   return product.product_name || product.plan_id || 'Data plan';
 }
