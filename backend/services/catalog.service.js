@@ -1,20 +1,11 @@
 // services/catalog.service.js
 // ============================================================
-// Shatova — Catalog Sync Service (v6 — month-bucket validity)
-//   ⭐ display_name = "Size · Validity" only (no description)
-//   ⭐ Validity:
-//        1 day    → 1 Day
-//        2–6 days → N Days
-//        7–13 days → 1 Week
-//        14–19 days → 2 Weeks
-//        >= 20 days → 1 Month (bucket: 20–45d)
-//        >= 46 days → 2 Months (46–75d)
-//        >= 76 days → 3 Months (76–120d)
-//        >= 121 days → 6 Months (121–200d)
-//        >= 201 days → 1 Year
-//   ⭐ Sizes: 1024MB → 1GB, 500MB → 500MB
+// Shatova — Catalog Sync Service (v7 — permanent 21d→30d)
+//   ⭐ 21-day plans are stored as 30 days and shown as "1 Month"
+//   ⭐ Reruns are safe — each cron tick re-applies the rule
+//   ⭐ Description never shown to customers
+//   ⭐ profit column NOT written (generated)
 //   ⭐ Provider names normalized to DB CHECK values
-//   ⭐ profit column NOT in INSERT (generated)
 // ============================================================
 
 import { query } from '../config/database.js';
@@ -82,58 +73,89 @@ function formatSize(qty) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   VALIDITY → friendly label
-   Rule: >= 20 days is a Month (bucketed)
+   VALIDITY → normalized to DB stored value + display label
+   Rule: any plan whose DataShop validity is 20–45 days
+         is stored as "30 days" and displayed as "1 Month".
+   This runs on EVERY cron tick, so SQL-only fixes aren't
+   required — the code enforces the rule permanently.
    ───────────────────────────────────────────────────────────── */
-function formatValidityFromDays(days) {
-  const d = Number(days) || 0;
-  if (d <= 0) return '';
+function normalizeValidity(rawValidity) {
+  const raw = String(rawValidity || '').trim().toLowerCase();
+  if (!raw) return { stored: '', label: '' };
 
-  if (d === 1)              return '1 Day';
-  if (d < 7)                return `${d} Days`;
-  if (d < 14)               return '1 Week';
-  if (d < 20)               return '2 Weeks';
-  if (d <= 45)              return '1 Month';    // 20–45 days
-  if (d <= 75)              return '2 Months';   // 46–75 days
-  if (d <= 120)             return '3 Months';   // 76–120 days
-  if (d <= 200)             return '6 Months';   // 121–200 days
-  return '1 Year';                               // 201+ days
-}
-
-/* Parse DataShop's raw validity into days, then format */
-function formatValidity(v) {
-  const raw = String(v || '').trim().toLowerCase();
-  if (!raw) return '';
-
+  // Weeks
   if (raw.includes('week')) {
     const m = raw.match(/(\d+)/);
     const n = m ? Number(m[1]) : 1;
-    return formatValidityFromDays(n * 7);
+    return daysToValidity(n * 7);
   }
+  // Months
   if (raw.includes('month')) {
     const m = raw.match(/(\d+)/);
     const n = m ? Number(m[1]) : 1;
-    return formatValidityFromDays(n * 30);
+    return daysToValidity(n * 30);
   }
+  // Days
   if (raw.includes('day')) {
     const m = raw.match(/(\d+)/);
-    if (!m) return String(v).trim();
-    return formatValidityFromDays(Number(m[1]));
+    if (!m) return { stored: String(rawValidity).trim(), label: String(rawValidity).trim() };
+    return daysToValidity(Number(m[1]));
   }
+  // Bare number
   const numMatch = raw.match(/^(\d+)$/);
-  if (numMatch) return formatValidityFromDays(Number(numMatch[1]));
+  if (numMatch) return daysToValidity(Number(numMatch[1]));
 
-  return String(v).trim();
+  return { stored: String(rawValidity).trim(), label: String(rawValidity).trim() };
+}
+
+/* Convert day count → { stored, label } */
+function daysToValidity(days) {
+  const d = Number(days) || 0;
+  if (d <= 0) return { stored: '', label: '' };
+
+  // ⭐ 20–45 days → stored as 30 days, shown as 1 Month
+  if (d >= 20 && d <= 45) {
+    return { stored: '30 days', label: '1 Month' };
+  }
+  // 46–75 → 2 Months
+  if (d >= 46 && d <= 75) {
+    return { stored: '60 days', label: '2 Months' };
+  }
+  // 76–120 → 3 Months
+  if (d >= 76 && d <= 120) {
+    return { stored: '90 days', label: '3 Months' };
+  }
+  // 121–200 → 6 Months
+  if (d >= 121 && d <= 200) {
+    return { stored: '180 days', label: '6 Months' };
+  }
+  // 201+ → 1 Year
+  if (d >= 201) {
+    return { stored: '365 days', label: '1 Year' };
+  }
+  // 14–19 → 2 Weeks
+  if (d >= 14 && d < 20) {
+    return { stored: `${d} days`, label: '2 Weeks' };
+  }
+  // 7–13 → 1 Week
+  if (d >= 7 && d < 14) {
+    return { stored: '7 days', label: '1 Week' };
+  }
+  // 1–6 → N Days
+  return {
+    stored: `${d} ${d === 1 ? 'day' : 'days'}`,
+    label:  `${d} ${d === 1 ? 'Day' : 'Days'}`,
+  };
 }
 
 /* display_name = "1GB · 1 Month" — no description, no marketing text */
-function displayName(product) {
-  const size     = formatSize(product.quantity || product.data_size || product.size);
-  const validity = formatValidity(product.validity || product.duration);
+function displayName(product, validityLabel) {
+  const size = formatSize(product.quantity || product.data_size || product.size);
+  const label = validityLabel || '';
 
-  if (size && validity) return `${size} · ${validity}`;
-  if (size)             return size;
-  if (validity)         return validity;
+  if (size && label) return `${size} · ${label}`;
+  if (size)          return size;
+  if (label)         return label;
 
   return product.product_name || product.plan_id || 'Data plan';
 }
@@ -180,8 +202,6 @@ export async function syncDataProvider(provider) {
 
       const providerName = mapProvider(p.provider || provider, mapProvider(provider));
       const category     = deriveCategory(p);
-      const name         = displayName(p);
-      const validity     = extractValidity(p);
       const cost         = extractPrice(p);
       const isActive     = p.available !== false;
 
@@ -189,6 +209,11 @@ export async function syncDataProvider(provider) {
         console.warn(`[catalog] ${provider}: skipping ${planId} — zero price`);
         continue;
       }
+
+      /* ⭐ Normalize validity from DataShop's raw value
+           "21 days" → stored: "30 days", label: "1 Month" */
+      const norm = normalizeValidity(extractValidity(p));
+      const name = displayName(p, norm.label);
 
       const { rows } = await query(
         `INSERT INTO data_plans
@@ -206,7 +231,7 @@ export async function syncDataProvider(provider) {
            is_active    = EXCLUDED.is_active,
            updated_at   = NOW()
          RETURNING (xmax = 0) AS inserted`,
-        [providerName, category, planId, name, validity, p.description || '', cost, isActive]
+        [providerName, category, planId, name, norm.stored, p.description || '', cost, isActive]
       );
 
       if (rows[0]?.inserted) result.inserted++;
