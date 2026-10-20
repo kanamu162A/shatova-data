@@ -101,29 +101,35 @@ button{font-family:inherit}
 .tf-pills button{padding:4px 9px;font-size:10px;font-weight:700;border-radius:5px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;white-space:nowrap;transition:all .16s;font-family:inherit;flex-shrink:0}
 .tf-pills button:hover:not(.active){color:var(--text);background:var(--bg-hover)}
 .tf-pills button.active{background:rgba(255,255,255,.95);color:var(--primary-dark);box-shadow:0 1px 2px rgba(15,23,42,0.045),0 2px 5px rgba(15,23,42,0.035);font-weight:800}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
-.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:all .26s;min-width:0;position:relative;overflow:hidden;box-shadow:var(--shadow-xs);animation:fadeUp .45s both}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;transition:all .26s;min-width:0;position:relative;overflow:hidden;box-shadow:var(--shadow-xs);animation:fadeUp .45s both}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--primary-gradient);opacity:0;transition:opacity .28s}
 .stat-card:hover{border-color:rgba(10,69,52,0.14);box-shadow:var(--shadow-hover-card);transform:translateY(-2px)}
 .stat-card:hover::before{opacity:1}
-.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.stat-card .stat-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12.5px;background:var(--primary-light);color:var(--primary-dark)}
+.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.stat-card .stat-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11.5px;background:var(--primary-light);color:var(--primary-dark)}
 .stat-card.success .stat-icon{background:var(--success-light);color:var(--success-dark)}
 .stat-card.warning .stat-icon{background:var(--warning-light);color:var(--warning-dark)}
 .stat-card.info .stat-icon{background:var(--info-light);color:var(--info-dark)}
 .stat-card.purple .stat-icon{background:var(--purple-light);color:var(--purple-dark)}
-.stat-label{font-size:9.5px;font-weight:800;color:var(--text-muted);letter-spacing:0.9px;text-transform:uppercase;margin-bottom:4px}
-.stat-value{font-size:20px;font-weight:900;color:var(--text);letter-spacing:-0.6px;line-height:1.1;word-break:break-word;font-variant-numeric:tabular-nums}
+.stat-label{font-size:9px;font-weight:800;color:var(--text-muted);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:3px}
+.stat-value{font-size:17px;font-weight:900;color:var(--text);letter-spacing:-0.5px;line-height:1.15;word-break:break-word;font-variant-numeric:tabular-nums}
 .stat-value.success{color:var(--success-dark)}
 .stat-value.warning{color:var(--warning-dark)}
 .stat-value.purple{color:var(--purple-dark)}
 .stat-value.primary{color:var(--primary-dark)}
 .stat-value.info{color:var(--info-dark)}
-.stat-sub{font-size:10.5px;color:var(--text-muted);font-weight:500;margin-top:6px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.stat-sub .pill{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:800;background:var(--bg-input);color:var(--text-muted)}
+.stat-sub{font-size:10px;color:var(--text-muted);font-weight:500;margin-top:5px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.stat-sub .pill{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:999px;font-size:8.5px;font-weight:800;background:var(--bg-input);color:var(--text-muted)}
 .stat-sub .pill.warn{background:var(--warning-light);color:var(--warning-dark)}
 .stat-sub .pill.ok{background:var(--success-light);color:var(--success-dark)}
 .stat-card.is-hidden,.panel.is-hidden{display:none !important}
+@media (max-width:480px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat-card{padding:10px 12px}
+  .stat-value{font-size:15.5px}
+  .stat-card .stat-icon{width:28px;height:28px;font-size:11px}
+}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow-xs)}
 .panel:hover{border-color:rgba(10,69,52,0.10);box-shadow:var(--shadow-hover-card)}
@@ -277,17 +283,17 @@ button{font-family:inherit}
 .txn-card.static{cursor:default}
 .txn-card.static:hover{transform:none;box-shadow:var(--shadow-xs);border-color:var(--border)}
 .txn-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;letter-spacing:-.4px;flex-shrink:0;overflow:hidden}
-.txn-avatar.net-mtn{background:linear-gradient(135deg,#FFDD00,#E0A800)}
-.txn-avatar.net-airtel{background:linear-gradient(135deg,#FF1A1A,#A80000)}
-.txn-avatar.net-glo{background:linear-gradient(135deg,#00C55E,#008A40)}
-.txn-avatar.net-t2{background:linear-gradient(135deg,#00856A,#005240)}
-.txn-avatar.net-generic{background:var(--primary-gradient)}
+.txn-avatar.net-mtn,.row-avatar.net-mtn{background:linear-gradient(135deg,#FFDD00,#E0A800)}
+.txn-avatar.net-airtel,.row-avatar.net-airtel{background:linear-gradient(135deg,#FF1A1A,#A80000)}
+.txn-avatar.net-glo,.row-avatar.net-glo{background:linear-gradient(135deg,#00C55E,#008A40)}
+.txn-avatar.net-t2,.row-avatar.net-t2{background:linear-gradient(135deg,#00856A,#005240)}
+.txn-avatar.net-generic,.row-avatar.net-generic{background:var(--primary-gradient)}
 .txn-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
 .txn-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
 .txn-avatar.txn-refund{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
 .txn-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
 .txn-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
-.txn-avatar svg.net-shape{width:100%;height:100%;display:block}
+.txn-avatar svg.net-shape,.row-avatar svg.net-shape{width:100%;height:100%;display:block}
 .txn-body{min-width:0;display:flex;flex-direction:column;gap:4px}
 .txn-name-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .txn-name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
@@ -1657,83 +1663,6 @@ button.primary:hover {
           </div>
         </div>
         
-        <!-- PROFIT & LOSS WIDGET (NEW) -->
-        <div class="an-mini-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 20px;">
-          
-          <!-- TODAY -->
-          <div class="an-card" style="padding: 18px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--success-light); color: var(--success-dark); display: flex; align-items: center; justify-content: center; font-size: 14px;"><i class="fas fa-sun"></i></div>
-                <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Today's P&L</span>
-              </div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px;">
-              <div>
-                <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px;">Sales Volume</div>
-                <div style="font-size: 20px; font-weight: 900; color: var(--text);" id="ana-today-total">—</div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px;">Est. Profit</div>
-                <div style="font-size: 20px; font-weight: 900; color: var(--success-dark);" id="ana-today-profit">—</div>
-              </div>
-            </div>
-
-            <div style="display: flex; gap: 6px;">
-              <div style="flex: 1; background: var(--bg-soft); border-radius: 6px; padding: 6px; text-align: center;">
-                <div style="font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Txns</div>
-                <div style="font-size: 12px; font-weight: 800; color: var(--text);" id="ana-today-count">0</div>
-              </div>
-              <div style="flex: 1; background: var(--success-light); border-radius: 6px; padding: 6px; text-align: center;">
-                <div style="font-size: 8px; font-weight: 800; color: var(--success-dark); text-transform: uppercase;">Success</div>
-                <div style="font-size: 12px; font-weight: 800; color: var(--success-dark);" id="ana-today-success">0</div>
-              </div>
-              <div style="flex: 1; background: var(--danger-light); border-radius: 6px; padding: 6px; text-align: center;">
-                <div style="font-size: 8px; font-weight: 800; color: var(--danger-dark); text-transform: uppercase;">Failed</div>
-                <div style="font-size: 12px; font-weight: 800; color: var(--danger-dark);" id="ana-today-failed">0</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- YESTERDAY -->
-          <div class="an-card" style="padding: 18px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--bg-input); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-size: 14px;"><i class="fas fa-moon"></i></div>
-                <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Yesterday's P&L</span>
-              </div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px;">
-              <div>
-                <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px;">Sales Volume</div>
-                <div style="font-size: 20px; font-weight: 900; color: var(--text);" id="ana-yest-total">—</div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px;">Est. Profit</div>
-                <div style="font-size: 20px; font-weight: 900; color: var(--success-dark);" id="ana-yest-profit">—</div>
-              </div>
-            </div>
-
-            <div style="display: flex; gap: 6px;">
-              <div style="flex: 1; background: var(--bg-soft); border-radius: 6px; padding: 6px; text-align: center;">
-                <div style="font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Txns</div>
-                <div style="font-size: 12px; font-weight: 800; color: var(--text);" id="ana-yest-count">0</div>
-              </div>
-              <div style="flex: 1; background: var(--success-light); border-radius: 6px; padding: 6px; text-align: center;">
-                <div style="font-size: 8px; font-weight: 800; color: var(--success-dark); text-transform: uppercase;">Success</div>
-                <div style="font-size: 12px; font-weight: 800; color: var(--success-dark);" id="ana-yest-success">0</div>
-              </div>
-              <div style="flex: 1; background: var(--danger-light); border-radius: 6px; padding: 6px; text-align: center;">
-                <div style="font-size: 8px; font-weight: 800; color: var(--danger-dark); text-transform: uppercase;">Failed</div>
-                <div style="font-size: 12px; font-weight: 800; color: var(--danger-dark);" id="ana-yest-failed">0</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
         <div class="an-grid">
           <div class="an-card">
             <div class="an-card-head"><h3><i class="fas fa-chart-area"></i> Product Sales &amp; Revenue Trend</h3><span class="hint" id="chartRangeLabel">Today</span></div>
@@ -2704,35 +2633,8 @@ window.getAmount = getAmount;
     if (!items.length) { el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:11.5px">No data for this period.</div>`; return; }
     el.innerHTML = items.map((it, i) => `<div class="rank-item"><div class="rank-pos">${i+1}</div><div style="min-width:0"><div class="rank-name">${esc(it.label)}</div><div class="rank-sub">${esc(it.sub)}</div></div><div class="rank-val">${it.value}</div></div>`).join('');
   }
-  async function fetchSalesSummaryForAnalytics() {
-    try {
-      const res = await api('/data/summary');
-      const d = res.data || {};
-      const s = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
-      
-      // Today
-      s('ana-today-total', fmtMoney(d.today?.total || 0, true));
-      s('ana-today-profit', fmtMoney(d.today?.profit || 0, true));
-      s('ana-today-count', d.today?.count || 0);
-      s('ana-today-success', d.today?.success || 0);
-      s('ana-today-failed', d.today?.failed || 0);
-
-      // Yesterday
-      s('ana-yest-total', fmtMoney(d.yesterday?.total || 0, true));
-      s('ana-yest-profit', fmtMoney(d.yesterday?.profit || 0, true));
-      s('ana-yest-count', d.yesterday?.count || 0);
-      s('ana-yest-success', d.yesterday?.success || 0);
-      s('ana-yest-failed', d.yesterday?.failed || 0);
-      
-    } catch (err) {
-      console.warn('Failed to load P&L summary:', err);
-    }
-  }
-
   function updateAnalytics() {
     if (state.activeTab !== 'analytics') return;
-    
-    fetchSalesSummaryForAnalytics(); 
     
     const series = computeAnalyticsSeries();
     const notice = document.getElementById('analyticsDataNotice');
