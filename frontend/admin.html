@@ -603,47 +603,68 @@ button{font-family:inherit}
 .alarm-banner .alarm-view{background:#fff;color:#8d2424}
 .alarm-banner .alarm-mute{background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3)}
 .mobile-nav{
-  display:none;position:fixed;bottom:10px;left:20px;right:20px;z-index:45;
-  background:rgba(255,255,255,0.72);
-  backdrop-filter:blur(16px) saturate(160%);
-  -webkit-backdrop-filter:blur(16px) saturate(160%);
-  border-radius:16px;padding:4px 4px;
-  box-shadow:0 4px 18px -6px rgba(15,23,42,.08);
-  border:1px solid rgba(15,23,42,0.05);
+  display:none;position:fixed;bottom:8px;left:14px;right:14px;z-index:45;
+  background:rgba(255,255,255,0.78);
+  backdrop-filter:blur(18px) saturate(170%);
+  -webkit-backdrop-filter:blur(18px) saturate(170%);
+  border-radius:14px;padding:2px 3px;
+  box-shadow:0 2px 12px -4px rgba(15,23,42,.07), 0 1px 2px rgba(15,23,42,.03);
+  border:1px solid rgba(15,23,42,0.045);
 }
 [data-theme="dark"] .mobile-nav{
-  background:rgba(15,20,33,0.78);
+  background:rgba(15,20,33,0.82);
   border-color:rgba(255,255,255,0.06);
-  box-shadow:0 4px 18px -6px rgba(0,0,0,.35);
+  box-shadow:0 2px 12px -4px rgba(0,0,0,.35);
 }
-.mobile-nav .nav-items{display:flex;align-items:center;justify-content:space-between;width:100%}
+.mobile-nav .nav-items{display:flex;align-items:center;justify-content:space-between;width:100%;gap:0}
 .mobile-nav .nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:1px;padding:4px 0 3px;border-radius:12px;border:none;background:transparent;
-  font-size:8.5px;font-weight:600;letter-spacing:0.1px;
-  color:rgba(100,116,139,0.55);cursor:pointer;position:relative;font-family:inherit;
-  transition:color .18s,background .18s,opacity .18s;
+  gap:0;padding:5px 0 4px;border-radius:10px;border:none !important;
+  background:transparent !important;
+  font-size:8px;font-weight:600;letter-spacing:0.15px;
+  color:rgba(100,116,139,0.5) !important;cursor:pointer;position:relative;font-family:inherit;
+  transition:color .18s,background .18s,opacity .18s,transform .18s;
+  box-shadow:none !important;transform:none !important;
+  min-height:0;
 }
-.mobile-nav .nav-item i{font-size:14px;color:rgba(100,116,139,0.5);transition:color .18s}
-.mobile-nav .nav-item:not(.active){opacity:0.72}
-.mobile-nav .nav-item:not(.active):hover{opacity:1;color:var(--text-muted)}
-.mobile-nav .nav-item:not(.active):hover i{color:var(--text-muted)}
+.mobile-nav .nav-item i{
+  font-size:13px;color:rgba(100,116,139,0.45) !important;
+  transition:color .18s,transform .18s;margin-bottom:1px;
+  transform:none !important;
+}
+.mobile-nav .nav-item span{line-height:1.1}
+.mobile-nav .nav-item:not(.active){opacity:0.78}
+.mobile-nav .nav-item:not(.active):hover{
+  opacity:1;color:var(--text-muted) !important;background:rgba(10,69,52,0.04) !important;
+}
+.mobile-nav .nav-item:not(.active):hover i{color:var(--text-muted) !important}
+/* Soft fade active — never solid dark green */
 .mobile-nav .nav-item.active{
-  background:rgba(10,69,52,0.10);
-  color:var(--primary-dark);
-  font-weight:800;
+  background:rgba(10,69,52,0.07) !important;
+  color:var(--primary-dark) !important;
+  font-weight:700;
   opacity:1;
+  box-shadow:none !important;
+  transform:none !important;
+  border:none !important;
 }
-.mobile-nav .nav-item.active i{color:var(--primary-dark)}
+.mobile-nav .nav-item.active i{
+  color:var(--primary) !important;
+  transform:none !important;
+}
 .mobile-nav .nav-item.active::after{
-  content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
-  width:12px;height:2px;border-radius:2px;background:var(--primary);opacity:0.85;
+  content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);
+  width:10px;height:2px;border-radius:2px;background:var(--primary);opacity:0.55;
 }
-[data-theme="dark"] .mobile-nav .nav-item{color:rgba(148,163,184,0.45)}
-[data-theme="dark"] .mobile-nav .nav-item i{color:rgba(148,163,184,0.4)}
-[data-theme="dark"] .mobile-nav .nav-item.active{background:rgba(34,197,94,0.12);color:#86efac}
-[data-theme="dark"] .mobile-nav .nav-item.active i{color:#86efac}
-@media (max-width:900px){.mobile-nav{display:block}.content{padding-bottom:72px !important}}
+[data-theme="dark"] .mobile-nav .nav-item{color:rgba(148,163,184,0.42) !important}
+[data-theme="dark"] .mobile-nav .nav-item i{color:rgba(148,163,184,0.38) !important}
+[data-theme="dark"] .mobile-nav .nav-item.active{
+  background:rgba(34,197,94,0.08) !important;
+  color:#86efac !important;
+}
+[data-theme="dark"] .mobile-nav .nav-item.active i{color:#86efac !important}
+[data-theme="dark"] .mobile-nav .nav-item.active::after{background:#86efac;opacity:0.5}
+@media (max-width:900px){.mobile-nav{display:block}.content{padding-bottom:58px !important}}
 .row-avatar.txn-electricity{background:linear-gradient(135deg,#059669,#047857)!important}
 .rank-pos.elec,.stat-card.electricity .stat-icon{background:rgba(5,150,105,0.12);color:#047857}
 
@@ -3320,21 +3341,40 @@ window.getAmount = getAmount;
     if (!id || id.endsWith(':')) return;
     if (state.adminAlertIds.has(id)) return;
     state.adminAlertIds.add(id);
-    playIphoneAlert(false); // real alert only when sound enabled
-    if (!alarmActive && state.adminSoundEnabled) {
+
+    // Mark seen so polling does not double-fire
+    const rawId = String(item?.id || item?.reference || '');
+    if (type === 'deposit' && rawId) state.seenDepositIds.add(rawId);
+    if (type === 'withdrawal' && rawId) state.seenWithdrawalIds.add(rawId);
+
+    // SOUND + LOOP — fires even while admin is already on the page
+    playIphoneAlert(true);
+    if (!alarmActive) {
       alarmActive = true;
-      const tick = () => { if (!alarmActive) return; try { playIphoneAlert(true); } catch(_){} alarmLoop = setTimeout(tick, 4600); };
+      const tick = () => {
+        if (!alarmActive) return;
+        try { playIphoneAlert(true); } catch (_) {}
+        alarmLoop = setTimeout(tick, 4600);
+      };
       alarmLoop = setTimeout(tick, 4600);
-      alarmStop = setTimeout(() => stopAlarm(), 60000);
+      if (alarmStop) clearTimeout(alarmStop);
+      alarmStop = setTimeout(() => stopAlarm(), 90000);
     }
+
     try { window.__notifyAdmin?.(type, item); } catch (_) {}
+
     state.adminAlerts.unshift({ id, type, item, createdAt: Date.now() });
     state.adminAlerts = state.adminAlerts.slice(0, 30);
     renderAdminAlerts();
+
     const name = item.user_name || item.name || item.user_email || 'User';
     const amt = fmtMoney(getAmount(item));
     toast(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} needs approval · ${name} · ${amt}`, 'info');
-    showAlarmBanner(type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert', `${name} · ${amt} is waiting for approval.`);
+    // Full-screen banner always shows — even if the admin is looking at the page
+    showAlarmBanner(
+      type === 'deposit' ? '🚨 New Deposit Alert' : '🚨 New Withdrawal Alert',
+      `${name} · ${amt} is waiting for approval.`
+    );
   }
   function renderAdminAlerts() {
     const l = document.getElementById('adminAlertList'); const b = document.getElementById('adminAlertBadge'); const btn = document.getElementById('adminAlertBtn');
@@ -3467,8 +3507,91 @@ window.getAmount = getAmount;
       state.adminAlerts.sort((a,b) => b.createdAt - a.createdAt);
       renderAdminAlerts();
     })();
+    // Full data refresh every 3s
     setInterval(() => refreshAll(true), 3000);
-    try { const es = new EventSource(`${API_BASE}/admin/events?token=${encodeURIComponent(token)}`); es.addEventListener('new-approval', e => { try { const p = JSON.parse(e.data || '{}'); if (p.type === 'deposit' || p.type === 'withdrawal') { addAlert(p.type, p.item || {}); refreshAll(true); } } catch (_) {} }); es.onerror = () => {}; } catch (_) {}
+
+    // Tight pending-only poll every 2s while tab is visible (catches alerts even without SSE)
+    setInterval(async () => {
+      if (document.hidden) return;
+      try {
+        await Promise.all([fetchDep(), fetchWd()]);
+        detectNewApprovals();
+        renderDeposits();
+        renderWithdrawals();
+        updateOverview();
+      } catch (_) {}
+    }, 2000);
+
+    // Robust live SSE — auto-reconnects for as long as the page is open
+    (function startLiveEvents() {
+      let es = null;
+      let retryMs = 1500;
+      let stopped = false;
+
+      function connect() {
+        if (stopped || !token) return;
+        try { if (es) { es.close(); es = null; } } catch (_) {}
+        try {
+          const url = `${API_BASE}/admin/events?token=${encodeURIComponent(token)}`;
+          es = new EventSource(url);
+
+          const handlePayload = (raw) => {
+            try {
+              const p = JSON.parse(raw || '{}');
+              const type = p.type === 'deposit' || p.type === 'withdrawal' ? p.type : null;
+              if (type) {
+                addAlert(type, p.item || p || {});
+                refreshAll(true);
+              }
+            } catch (_) {}
+          };
+
+          es.addEventListener('new-approval', (e) => handlePayload(e.data));
+          es.addEventListener('deposit', (e) => {
+            try {
+              const p = JSON.parse(e.data || '{}');
+              addAlert('deposit', p.item || p || {});
+              refreshAll(true);
+            } catch (_) {}
+          });
+          es.addEventListener('withdrawal', (e) => {
+            try {
+              const p = JSON.parse(e.data || '{}');
+              addAlert('withdrawal', p.item || p || {});
+              refreshAll(true);
+            } catch (_) {}
+          });
+          es.onmessage = (e) => handlePayload(e.data);
+
+          es.onopen = () => {
+            retryMs = 1500;
+            console.log('[Live] SSE connected — alerts will fire on-page');
+          };
+
+          es.onerror = () => {
+            try { es.close(); } catch (_) {}
+            es = null;
+            const wait = Math.min(retryMs, 30000);
+            retryMs = Math.min(retryMs * 1.6, 30000);
+            setTimeout(connect, wait);
+          };
+        } catch (err) {
+          console.warn('[Live] SSE start failed:', err);
+          setTimeout(connect, retryMs);
+          retryMs = Math.min(retryMs * 1.6, 30000);
+        }
+      }
+
+      connect();
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && !es) connect();
+      });
+      window.addEventListener('online', () => connect());
+
+      window.__stopLiveEvents = () => { stopped = true; try { if (es) es.close(); } catch (_) {} };
+    })();
+
     const ch = document.getElementById('adminSoundChip'); if (ch && !state.adminSoundEnabled) ch.classList.add('show');
   }
   init();
