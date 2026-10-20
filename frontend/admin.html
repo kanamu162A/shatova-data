@@ -208,10 +208,14 @@ button{font-family:inherit}
 .row-actions .view{border-color:var(--border);color:var(--text-secondary)}
 .row-actions .view:hover:not(:disabled){background:var(--primary-light);border-color:var(--primary-dark);color:var(--primary-dark)}
 .row-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:2px solid var(--bg-card);font-weight:800;font-size:13px;letter-spacing:-0.4px;color:#fff}
-.row-avatar.deposit,.row-avatar.withdraw{border-radius:50%}
-.row-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
-.row-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.row-avatar.deposit,.row-avatar.withdraw,
+.row-avatar.txn-deposit,.row-avatar.txn-withdrawal{border-radius:50%}
+.row-avatar.deposit,.row-avatar.txn-deposit{background:linear-gradient(135deg,#10b981,#098658)}
+.row-avatar.withdraw,.row-avatar.txn-withdrawal{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.row-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
+.row-avatar.txn-refund{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
 .row-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
+.row-avatar.txn-electricity{background:linear-gradient(135deg,#059669,#047857)}
 .status{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:5px;font-size:8.5px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;border:1px solid transparent;white-space:nowrap}
 .status::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.9}
 .status.pending{background:var(--warning-light);color:var(--warning-dark);border-color:rgba(179,115,8,0.1)}
@@ -288,11 +292,12 @@ button{font-family:inherit}
 .txn-avatar.net-glo,.row-avatar.net-glo{background:linear-gradient(135deg,#00C55E,#008A40)}
 .txn-avatar.net-t2,.row-avatar.net-t2{background:linear-gradient(135deg,#00856A,#005240)}
 .txn-avatar.net-generic,.row-avatar.net-generic{background:var(--primary-gradient)}
-.txn-avatar.deposit{background:linear-gradient(135deg,#10b981,#098658)}
-.txn-avatar.withdraw{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.txn-avatar.deposit,.txn-avatar.txn-deposit{background:linear-gradient(135deg,#10b981,#098658);border-radius:50%}
+.txn-avatar.withdraw,.txn-avatar.txn-withdrawal{background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-radius:50%}
 .txn-avatar.txn-refund{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
 .txn-avatar.txn-transfer{background:linear-gradient(135deg,#f59e0b,#b37308)}
 .txn-avatar.txn-other{background:linear-gradient(135deg,#64748b,#475569)}
+.txn-avatar.txn-electricity{background:linear-gradient(135deg,#059669,#047857)}
 .txn-avatar svg.net-shape,.row-avatar svg.net-shape{width:100%;height:100%;display:block}
 .txn-body{min-width:0;display:flex;flex-direction:column;gap:4px}
 .txn-name-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
@@ -2140,8 +2145,36 @@ window.getAmount = getAmount;
     return k === 'airtime' || k === 'data' || k === 'electricity';
   }
   function kindLabel(k) { const m = { airtime:'Airtime', data:'Data', electricity:'Electricity', deposit:'Deposit', withdrawal:'Withdrawal', transfer:'Transfer', refund:'Refund', other:'Other', manual_fund:'Manual Credit', manual_debit:'Manual Debit' }; return m[k] || 'Transaction'; }
-  function kindAvatarClass(t) { const k = txnKind(t); if (k === 'manual_fund') return 'deposit'; if (k === 'manual_debit') return 'withdraw'; if (k === 'electricity') return 'txn-electricity'; if (['deposit','withdrawal','transfer','refund','other'].includes(k)) return 'txn-' + k; return 'net-' + detectNetwork(t); }
-  function kindAvatarHtml(t) { const k = txnKind(t); const ic = { deposit:'fa-arrow-down', withdrawal:'fa-arrow-up', transfer:'fa-paper-plane', refund:'fa-rotate-left', other:'fa-receipt', manual_fund:'fa-arrow-down', manual_debit:'fa-arrow-up', electricity:'fa-bolt' }; if (ic[k]) return `<i class="fas ${ic[k]}" style="font-size:12px;color:#fff"></i>`; return NET_SVG[detectNetwork(t)] || NET_SVG.generic; }
+  function kindAvatarClass(t) {
+    const k = txnKind(t);
+    // Money-in: green circle + down arrow
+    if (k === 'deposit' || k === 'manual_fund') return 'txn-deposit';
+    // Money-out: purple circle + up arrow
+    if (k === 'withdrawal' || k === 'manual_debit') return 'txn-withdrawal';
+    if (k === 'electricity') return 'txn-electricity';
+    if (k === 'transfer') return 'txn-transfer';
+    if (k === 'refund') return 'txn-refund';
+    if (k === 'other') return 'txn-other';
+    // Airtime / Data → network brand logo
+    return 'net-' + detectNetwork(t);
+  }
+  function kindAvatarHtml(t) {
+    const k = txnKind(t);
+    // Clear directional icons for wallet movements
+    const icons = {
+      deposit:       'fa-arrow-down',   // money coming in
+      manual_fund:  'fa-arrow-down',   // admin credit / fund
+      withdrawal:    'fa-arrow-up',     // money going out
+      manual_debit:  'fa-arrow-up',     // admin debit
+      transfer:      'fa-paper-plane',
+      refund:        'fa-rotate-left',
+      electricity:   'fa-bolt',
+      other:         'fa-receipt'
+    };
+    if (icons[k]) return `<i class="fas ${icons[k]}" style="font-size:13px;color:#fff"></i>`;
+    // Airtime / Data → MTN / Airtel / Glo / 9mobile brand logo
+    return NET_SVG[detectNetwork(t)] || NET_SVG.generic;
+  }
 
   const RANGES = { '30m':{label:'Last 30 minutes',minutes:30},'1h':{label:'Last 1 hour',hours:1},'2h':{label:'Last 2 hours',hours:2},'1d':{label:'Today',startOfDay:true},'7d':{label:'Last 7 days',days:7},'30d':{label:'Last 30 days',days:30},'all':{label:'All time'} };
   function rangeCutoff(key) { const r = RANGES[key]; if (!r) return null; if (r.startOfDay) { const d = new Date(); d.setHours(0,0,0,0); return d; } if (r.minutes) return new Date(Date.now() - r.minutes*60000); if (r.hours) return new Date(Date.now() - r.hours*3600000); if (r.days) return new Date(Date.now() - r.days*86400000); return null; }
