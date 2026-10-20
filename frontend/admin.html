@@ -1979,7 +1979,7 @@ button.primary:hover {
 <div class="modal-overlay" id="approveModal"><div class="modal"><div class="head"><h3><i class="fas fa-check-circle"></i> Approve Withdrawal</h3><button class="close" onclick="closeApproveModal()"><i class="fas fa-times"></i></button></div><div id="approveBody"></div><div class="input-group"><label>Transaction Reference</label><input type="text" id="approveRef" placeholder="Enter bank reference" autocomplete="off"></div><div class="input-group"><label>Notes (Optional)</label><textarea id="approveNotes" placeholder="Add notes…" rows="2"></textarea></div><div class="btns"><button class="secondary" id="approveCancelBtn" onclick="closeApproveModal()">Cancel</button><button class="primary" id="approveSubmitBtn" onclick="submitApprove()"><i class="fas fa-check"></i> Approve</button></div></div></div>
 <div class="modal-overlay" id="rejectModal"><div class="modal"><div class="head"><h3><i class="fas fa-times-circle danger"></i> Reject Withdrawal</h3><button class="close" onclick="closeRejectModal()"><i class="fas fa-times"></i></button></div><div id="rejectBody"></div><div class="input-group"><label>Reason for Rejection</label><textarea id="rejectReason" placeholder="Type the reason…" rows="3"></textarea></div><div class="btns"><button class="secondary" id="rejectCancelBtn" onclick="closeRejectModal()">Cancel</button><button class="danger" id="rejectSubmitBtn" onclick="submitReject()"><i class="fas fa-ban"></i> Reject</button></div></div></div>
 <div class="modal-overlay" id="approveDepositModal"><div class="modal"><div class="head"><h3><i class="fas fa-check-circle"></i> Approve Deposit</h3><button class="close" onclick="closeApproveDepositModal()"><i class="fas fa-times"></i></button></div><div id="approveDepositBody"></div><div class="input-group"><label>Bank Reference *</label><input type="text" id="approveDepositRef" placeholder="e.g. MONIEPOINT-…" autocomplete="off"></div><div class="input-group"><label>Notes (optional)</label><textarea id="approveDepositNotes" placeholder="Add notes…" rows="2"></textarea></div><div class="btns"><button class="secondary" id="approveDepositCancelBtn" onclick="closeApproveDepositModal()">Cancel</button><button class="primary" id="approveDepositBtn" onclick="submitApproveDeposit()"><i class="fas fa-check"></i> Credit Wallet</button></div></div></div>
-<div class="modal-overlay" id="rejectDepositModal"><div class="modal"><div class="head"><h3><i class="fas fa-times-circle danger"></i> Reject Deposit</h3><button class="close" onclick="closeRejectDepositModal()"><i class="fas fa-times"></i></button></div><div id="rejectDepositBody"></div><div class="input-group"><label>Reason for Rejection *</label><textarea id="rejectDepositReason" placeholder="Reason…" rows="3"></textarea></div><div class="btns"><button class="secondary" id="rejectDepositCancelBtn" onclick="closeRejectDepositModal()">Cancel</button><button class="danger" id="rejectDepositBtn" onclick="submitRejectDeposit()"><i class="fas fa-ban"></i> Reject</button></div></div></div>
+<div class="modal-overlay" id="rejectDepositModal"><div class="modal"><div class="head"><h3><i class="fas fa-times-circle danger"></i> Reject Deposit</h3><button class="close" onclick="closeRejectDepositModal()"><i class="fas fa-times"></i></button></div><div id="rejectDepositBody"></div><div class="input-group"><label>Reason for Rejection *</label><select id="rejectDepositReason" style="width:100%;height:42px;border-radius:9px;border:1.5px solid var(--border);background:var(--bg-card);color:var(--text);font-size:13px;font-weight:600;padding:0 12px;font-family:inherit;outline:none;cursor:pointer"><option value="">Select a reason…</option><option value="Payment not received">Payment not received</option><option value="Wrong amount transferred">Wrong amount transferred</option><option value="Duplicate deposit request">Duplicate deposit request</option><option value="Invalid bank reference">Invalid bank reference</option><option value="Suspicious / fraudulent activity">Suspicious / fraudulent activity</option><option value="User cancelled request">User cancelled request</option><option value="Other">Other (see notes)</option></select></div><div class="input-group" id="rejectDepositNotesWrap" style="display:none"><label>Extra notes (optional)</label><textarea id="rejectDepositNotes" placeholder="Add extra details if needed…" rows="2"></textarea></div><div class="btns"><button class="secondary" id="rejectDepositCancelBtn" onclick="closeRejectDepositModal()">Cancel</button><button class="danger" id="rejectDepositBtn" onclick="submitRejectDeposit()"><i class="fas fa-ban"></i> Reject</button></div></div></div>
 
 <div id="pageLoader"></div>
 <div class="alarm-banner" id="alarmBanner"><div class="alarm-icon"><i class="fas fa-bell"></i></div><h2 id="alarmBannerTitle">🚨 New Approval Alert</h2><p id="alarmBannerText">A new deposit is waiting for your approval.</p><div class="alarm-actions"><button class="alarm-view" onclick="handleAlarmView()"><i class="fas fa-eye"></i> Review Now</button><button class="alarm-mute" onclick="handleAlarmMute()"><i class="fas fa-volume-xmark"></i> Mute Alarm</button></div></div>
@@ -2462,39 +2462,66 @@ window.getAmount = getAmount;
   }
 
   window.recentTxGoTo = function(pg) {
+    buildUnifiedTransactions();
     const list = applyRange(state.unifiedTransactions, state.range)
       .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const tp = Math.max(1, Math.ceil(list.length / 5));
-    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
+    const np = Math.min(Math.max(parseInt(pg, 10) || 1, 1), tp);
     state.recentTxPage = np;
     renderRecentTx();
-    document.getElementById('panelRecentTx')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { document.getElementById('panelRecentTx')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (_) {}
   };
   window.txnGoTo = function(pg) {
-    const t = (state.cache.txns || []).length || (typeof getFilteredTxns === 'function' ? getFilteredTxns().length : 0);
-    const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
-    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
+    const list = (typeof getFilteredTxns === 'function') ? getFilteredTxns() : (state.cache.txns || []);
+    state.cache.txns = list;
+    const tp = Math.max(1, Math.ceil(list.length / state.PER_PAGE));
+    const np = Math.min(Math.max(parseInt(pg, 10) || 1, 1), tp);
     state.txnPage = np;
     renderTransactions();
-    document.getElementById('transactionsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { document.getElementById('transactionsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (_) {}
   };
   window.depositGoTo = function(pg) {
-    const t = (state.cache.deposits || []).length;
-    const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
-    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
+    const list = (typeof getFilteredDeposits === 'function') ? getFilteredDeposits() : (state.cache.deposits || []);
+    state.cache.deposits = list;
+    const tp = Math.max(1, Math.ceil(list.length / state.PER_PAGE));
+    const np = Math.min(Math.max(parseInt(pg, 10) || 1, 1), tp);
     state.depositPage = np;
     renderDeposits();
-    document.getElementById('depositsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { document.getElementById('depositsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (_) {}
   };
   window.withdrawalGoTo = function(pg) {
-    const t = (state.cache.withdrawals || []).length;
-    const tp = Math.max(1, Math.ceil(t / state.PER_PAGE));
-    const np = Math.min(Math.max(Number(pg) || 1, 1), tp);
+    const list = (typeof getFilteredWithdrawals === 'function') ? getFilteredWithdrawals() : (state.cache.withdrawals || []);
+    state.cache.withdrawals = list;
+    const tp = Math.max(1, Math.ceil(list.length / state.PER_PAGE));
+    const np = Math.min(Math.max(parseInt(pg, 10) || 1, 1), tp);
     state.withdrawalPage = np;
     renderWithdrawals();
-    document.getElementById('withdrawalsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { document.getElementById('withdrawalsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (_) {}
   };
-  window.archivedGoTo = function(pg) { loadArchived(pg); };
+  window.archivedGoTo = function(pg) { loadArchived(parseInt(pg, 10) || 1); };
+
+  // Event delegation fallback — ensures Next/Prev always work even if inline handlers fail
+  document.addEventListener('click', function(ev) {
+    const btn = ev.target.closest('.page-btn[data-page]');
+    if (!btn || btn.disabled || btn.classList.contains('ellipsis') || btn.classList.contains('active')) return;
+    const footer = btn.closest('.panel-footer');
+    if (!footer || !footer.id) return;
+    const page = parseInt(btn.getAttribute('data-page'), 10);
+    if (!page || page < 1) return;
+    const map = {
+      recentTxPagination: 'recentTxGoTo',
+      transactionsPagination: 'txnGoTo',
+      depositsPagination: 'depositGoTo',
+      withdrawalsPagination: 'withdrawalGoTo',
+      archivedPagination: 'archivedGoTo'
+    };
+    const fn = map[footer.id];
+    if (fn && typeof window[fn] === 'function') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      window[fn](page);
+    }
+  }, true);
 
   function renderRecentTx() {
     const c = $('#recentTxList');
@@ -2983,12 +3010,69 @@ window.getAmount = getAmount;
   window.closeApproveDepositModal = closeApproveDepositModal;
   async function submitApproveDeposit() { if (!state.currentApproveDeposit || state.depositApprovePending) return; stopAlarm(); const ref = $('#approveDepositRef').value.trim(); const notes = $('#approveDepositNotes').value.trim(); if (ref.length < 4) { toast('Enter bank reference', 'error'); return; } state.depositApprovePending = true; const b = $('#approveDepositBtn'); const c = $('#approveDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crediting…'; if (c) c.disabled = true; try { const did = state.currentApproveDeposit.id || state.currentApproveDeposit.reference; const r = await api(`/wallet/admin/deposit/${state.currentApproveDeposit.id}/approve`, { method: 'POST', body: JSON.stringify({ transaction_reference: ref, approval_notes: notes || null }) }); const cr = r?.data?.deposit?.amount || getAmount(state.currentApproveDeposit); toast(`Wallet credited — ${fmtMoney(cr)}`, 'success'); removeAlertForItem('deposit', did); state.depositApprovePending = false; $('#approveDepositModal').classList.remove('active'); state.currentApproveDeposit = null; resetDAB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositApprovePending = false; } }
   window.submitApproveDeposit = submitApproveDeposit;
-  function openRejectDepositModal(id) { const d = (state.deposits||[]).find(x => String(x.id) === String(id)); if (!d) return; state.currentRejectDeposit = d; stopAlarm(); $('#rejectDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">+${fmtMoney(getAmount(d))}</span></div>`; $('#rejectDepositReason').value = ''; resetDRB(); $('#rejectDepositModal').classList.add('active'); }
+  function openRejectDepositModal(id) {
+    const d = (state.deposits||[]).find(x => String(x.id) === String(id));
+    if (!d) return;
+    state.currentRejectDeposit = d;
+    stopAlarm();
+    $('#rejectDepositBody').innerHTML = `<div class="row-detail"><span class="lbl">User</span><span class="val">${esc(d.user_name||d.name||'—')}</span></div><div class="row-detail"><span class="lbl">Amount</span><span class="val danger">+${fmtMoney(getAmount(d))}</span></div><div class="row-detail"><span class="lbl">Reference</span><span class="val mono">${esc(d.reference||d.tx_ref||'—')}</span></div>`;
+    const sel = $('#rejectDepositReason');
+    if (sel) sel.value = '';
+    const notes = $('#rejectDepositNotes');
+    if (notes) notes.value = '';
+    const wrap = $('#rejectDepositNotesWrap');
+    if (wrap) wrap.style.display = 'none';
+    if (sel && !sel._wired) {
+      sel._wired = true;
+      sel.addEventListener('change', () => {
+        const w = $('#rejectDepositNotesWrap');
+        if (w) w.style.display = sel.value === 'Other' ? 'block' : 'none';
+      });
+    }
+    resetDRB();
+    $('#rejectDepositModal').classList.add('active');
+  }
   window.openRejectDepositModal = openRejectDepositModal;
   function resetDRB() { state.depositRejectPending = false; const b = $('#rejectDepositBtn'); if (b) { b.disabled = false; b.innerHTML = '<i class="fas fa-ban"></i> Reject'; } const c = $('#rejectDepositCancelBtn'); if (c) c.disabled = false; }
   function closeRejectDepositModal() { if (state.depositRejectPending) return; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); }
   window.closeRejectDepositModal = closeRejectDepositModal;
-  async function submitRejectDeposit() { if (!state.currentRejectDeposit || state.depositRejectPending) return; stopAlarm(); const r = $('#rejectDepositReason').value.trim(); if (r.length < 5) { toast('Please give a reason', 'error'); return; } state.depositRejectPending = true; const b = $('#rejectDepositBtn'); const c = $('#rejectDepositCancelBtn'); const o = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting…'; if (c) c.disabled = true; try { const did = state.currentRejectDeposit.id || state.currentRejectDeposit.reference; await api(`/wallet/admin/deposit/${state.currentRejectDeposit.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: r }) }); toast('Deposit rejected', 'error'); removeAlertForItem('deposit', did); state.depositRejectPending = false; $('#rejectDepositModal').classList.remove('active'); state.currentRejectDeposit = null; resetDRB(); await refreshAll(true); } catch (e) { toast(e.message, 'error'); b.disabled = false; b.innerHTML = o; if (c) c.disabled = false; state.depositRejectPending = false; } }
+  async function submitRejectDeposit() {
+    if (!state.currentRejectDeposit || state.depositRejectPending) return;
+    stopAlarm();
+    const sel = $('#rejectDepositReason');
+    const reason = (sel?.value || '').trim();
+    if (!reason) { toast('Please select a rejection reason', 'error'); return; }
+    let finalReason = reason;
+    if (reason === 'Other') {
+      const notes = ($('#rejectDepositNotes')?.value || '').trim();
+      if (notes.length < 3) { toast('Please add a short note for “Other”', 'error'); return; }
+      finalReason = 'Other: ' + notes;
+    }
+    state.depositRejectPending = true;
+    const b = $('#rejectDepositBtn');
+    const c = $('#rejectDepositCancelBtn');
+    const o = b.innerHTML;
+    b.disabled = true;
+    b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting…';
+    if (c) c.disabled = true;
+    try {
+      const did = state.currentRejectDeposit.id || state.currentRejectDeposit.reference;
+      await api(`/wallet/admin/deposit/${state.currentRejectDeposit.id}/reject`, { method: 'POST', body: JSON.stringify({ reason: finalReason }) });
+      toast('Deposit rejected', 'error');
+      removeAlertForItem('deposit', did);
+      state.depositRejectPending = false;
+      $('#rejectDepositModal').classList.remove('active');
+      state.currentRejectDeposit = null;
+      resetDRB();
+      await refreshAll(true);
+    } catch (e) {
+      toast(e.message, 'error');
+      b.disabled = false;
+      b.innerHTML = o;
+      if (c) c.disabled = false;
+      state.depositRejectPending = false;
+    }
+  }
   window.submitRejectDeposit = submitRejectDeposit;
 
   /* MANUAL FUND */
