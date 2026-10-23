@@ -1,12 +1,11 @@
 // controllers/wallet.controller.js
 // ============================================================
-// User-facing wallet controller
+// User-facing wallet controller (egress-friendly)
 //   • Reads: balance, ledger, transactions, recipients
 //   • Fund wallet: writes a pending DEPOSIT row (no money moves)
 //   • Deposit status: polled by fund-wallet.js
 //   • Dev topup: direct credit
 // ============================================================
-
 import crypto from 'node:crypto';
 import { query } from '../config/database.js';
 import {
@@ -20,7 +19,6 @@ import {
    ============================================================ */
 const MIN_DEPOSIT = 100;
 const MAX_DEPOSIT = 500_000;
-
 const PAYMENT_ACCOUNT = Object.freeze({
   bank: 'Moniepoint MFB',
   account_number: '6034037129',
@@ -79,12 +77,14 @@ export async function getBalance(req, res) {
 
 /* ============================================================
    GET /wallet/ledger
-   Raw ledger — one row per wallet movement.
    ============================================================ */
 export async function getLedger(req, res) {
   try {
-    const limit  = Math.min(Math.max(Number(req.query.limit) || 50, 1), 200);
+    // default 20, hard max 50
+    const limit  = Math.min(Math.max(Number(req.query.limit) || 20, 1), 50);
     const offset = Math.max(Number(req.query.offset) || 0, 0);
+    const includeTotal =
+      req.query.include_total === '1' || req.query.include_total === 'true';
 
     const { rows } = await query(
       `SELECT id, reference, type, direction, amount,
@@ -97,10 +97,14 @@ export async function getLedger(req, res) {
       [req.user.id, limit, offset]
     );
 
-    const { rows: cnt } = await query(
-      'SELECT COUNT(*)::int AS total FROM wallet_ledger WHERE user_id = $1',
-      [req.user.id]
-    );
+    let total = null;
+    if (includeTotal) {
+      const { rows: cnt } = await query(
+        'SELECT COUNT(*)::int AS total FROM wallet_ledger WHERE user_id = $1',
+        [req.user.id]
+      );
+      total = cnt[0]?.total || 0;
+    }
 
     return res.json({
       success: true,
@@ -117,7 +121,7 @@ export async function getLedger(req, res) {
           status:         r.status,
           created_at:     r.created_at,
         })),
-        total: cnt[0]?.total || 0,
+        total,
         limit,
         offset,
       },
@@ -130,16 +134,17 @@ export async function getLedger(req, res) {
 
 /* ============================================================
    GET /wallet/transactions
-   Merged + deduplicated history — VTU purchases + wallet movements
-   exactly once per reference.
+   Merged + deduplicated history
    ============================================================ */
 export async function getTransactions(req, res) {
   try {
-    const limit  = Math.min(Math.max(Number(req.query.limit) || 30, 1), 100);
+    // default 20, hard max 50
+    const limit  = Math.min(Math.max(Number(req.query.limit) || 20, 1), 50);
     const offset = Math.max(Number(req.query.offset) || 0, 0);
     const filter = String(req.query.type || 'all').toLowerCase();
+    const includeTotal =
+      req.query.include_total === '1' || req.query.include_total === 'true';
 
-    /* ── Filter conditions ───────────────────────────────────── */
     let txWhere = '';
     let wlWhere = '';
 
@@ -160,15 +165,6 @@ export async function getTransactions(req, res) {
       wlWhere = ` AND 1 = 0`;
     }
 
-    /* ── Deduplicated merge ─────────────────────────────────────
-       Rules:
-         1. VTU purchases — the `transactions` row wins; the
-            matching `wallet_ledger` VTU_PURCHASE row is dropped.
-         2. Deposits — if both a pending DEPOSIT and a successful
-            WALLET_TOPUP exist with the same reference, only the
-            WALLET_TOPUP (settlement) row is shown.
-         3. Withdrawals — appear once from wallet_ledger.
-    ──────────────────────────────────────────────────────────── */
     const { rows } = await query(
       `WITH filtered_tx AS (
          SELECT
@@ -189,7 +185,6 @@ export async function getTransactions(req, res) {
          FROM wallet_ledger wl
          WHERE wl.user_id = $1 ${wlWhere}
        ),
-       /* Wallet rows that don't have a matching transaction row */
        standalone_wallet AS (
          SELECT wl.*
            FROM filtered_wl wl
@@ -198,7 +193,6 @@ export async function getTransactions(req, res) {
                    WHERE t.reference = wl.reference
                 )
        ),
-       /* One row per reference — prefer the successful settlement */
        dedup_wallet AS (
          SELECT DISTINCT ON (reference) *
            FROM standalone_wallet
@@ -226,25 +220,28 @@ export async function getTransactions(req, res) {
       [req.user.id, limit, offset]
     );
 
-    /* ── Deduplicated count ──────────────────────────────────── */
-    const { rows: cnt } = await query(
-      `WITH filtered_tx AS (
-         SELECT reference FROM transactions t WHERE t.user_id = $1 ${txWhere}
-       ),
-       filtered_wl AS (
-         SELECT reference FROM wallet_ledger wl WHERE wl.user_id = $1 ${wlWhere}
-       ),
-       standalone AS (
-         SELECT reference FROM filtered_wl wl
-          WHERE NOT EXISTS (
-                  SELECT 1 FROM filtered_tx t WHERE t.reference = wl.reference
-                )
-       )
-       SELECT
-         (SELECT COUNT(*)::int FROM filtered_tx)
-       + (SELECT COUNT(DISTINCT reference)::int FROM standalone) AS total`,
-      [req.user.id]
-    );
+    let total = null;
+    if (includeTotal) {
+      const { rows: cnt } = await query(
+        `WITH filtered_tx AS (
+           SELECT reference FROM transactions t WHERE t.user_id = $1 ${txWhere}
+         ),
+         filtered_wl AS (
+           SELECT reference FROM wallet_ledger wl WHERE wl.user_id = $1 ${wlWhere}
+         ),
+         standalone AS (
+           SELECT reference FROM filtered_wl wl
+            WHERE NOT EXISTS (
+                    SELECT 1 FROM filtered_tx t WHERE t.reference = wl.reference
+                  )
+         )
+         SELECT
+           (SELECT COUNT(*)::int FROM filtered_tx)
+         + (SELECT COUNT(DISTINCT reference)::int FROM standalone) AS total`,
+        [req.user.id]
+      );
+      total = cnt[0]?.total || 0;
+    }
 
     return res.json({
       success: true,
@@ -264,7 +261,7 @@ export async function getTransactions(req, res) {
           updated_at:         r.created_at,
           source:             r.source,
         })),
-        total: cnt[0]?.total || 0,
+        total,
         limit,
         offset,
         filter,
@@ -318,7 +315,6 @@ export async function getRecentRecipients(req, res) {
 
 /* ============================================================
    POST /wallet/topup  — DEV ONLY
-   Directly credits the wallet.
    ============================================================ */
 export async function topup(req, res) {
   try {
@@ -357,14 +353,12 @@ export async function topup(req, res) {
 
 /* ============================================================
    POST /wallet/deposit
-   Creates a PENDING deposit. No money moves until admin approves.
    ============================================================ */
 export async function createDeposit(req, res) {
   try {
     const amount = Number(req.body?.amount);
     const paymentMethod = String(req.body?.payment_method || 'bank_transfer').toLowerCase();
 
-    /* ── Validation ─────────────────────────────────────────── */
     if (!Number.isFinite(amount) || amount <= 0) {
       return res.status(422).json({ success: false, message: 'Enter a valid amount' });
     }
@@ -384,13 +378,11 @@ export async function createDeposit(req, res) {
       return res.status(422).json({ success: false, message: 'Unsupported payment method' });
     }
 
-    /* ── Ensure wallet exists ───────────────────────────────── */
     const wallet = await ensureWallet(req.user.id);
     if (!wallet) {
       return res.status(500).json({ success: false, message: 'Could not prepare wallet.' });
     }
 
-    /* ── Use ledger's last settled balance_after as baseline ── */
     const { rows: lastLedger } = await query(
       `SELECT balance_after
          FROM wallet_ledger
@@ -400,13 +392,12 @@ export async function createDeposit(req, res) {
         LIMIT 1`,
       [wallet.id]
     );
+
     const baseline = lastLedger[0]
       ? Number(lastLedger[0].balance_after)
       : Number(wallet.balance || 0);
 
-    /* ── Insert the pending deposit ─────────────────────────── */
     const reference = generateDepositRef();
-
     const { rows } = await query(
       `INSERT INTO wallet_ledger
          (wallet_id, user_id, type, direction, amount,
@@ -444,6 +435,7 @@ export async function createDeposit(req, res) {
     console.error('[wallet] createDeposit:', err);
     const isSchemaError = err.code === '42703' || err.code === '42P01';
     const isLedgerBreak = err.code === 'P0001' && /LEDGER_BREAK/.test(err.message || '');
+
     return res.status(500).json({
       success: false,
       message: isLedgerBreak
@@ -458,9 +450,6 @@ export async function createDeposit(req, res) {
 
 /* ============================================================
    GET /wallet/deposit/:id/status
-   Polled by fund-wallet.js every 5 seconds.
-   The DEPOSIT row's status flips to 'successful' when admin approves
-   or 'rejected' when admin rejects.
    ============================================================ */
 export async function getDepositStatus(req, res) {
   try {
