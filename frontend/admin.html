@@ -2428,6 +2428,9 @@ body {
     cache: { txns: [], deposits: [], withdrawals: [] },
     adminStats: null,
     analyticsLastUpdated: 0,
+    apiOnline: true,
+    apiStatusDetail: '',
+    transactionFetchError: false,
   };
 
   const $ = (s) => document.querySelector(s);
@@ -2622,11 +2625,63 @@ window.getAmount = getAmount;
   window.switchTab = switchTab;
 
   function pick(res) { const d = res?.data; if (Array.isArray(d)) return d; if (Array.isArray(d?.users)) return d.users; if (Array.isArray(d?.transactions)) return d.transactions; if (Array.isArray(d?.deposits)) return d.deposits; if (Array.isArray(d?.withdrawals)) return d.withdrawals; if (Array.isArray(d?.data)) return d.data; return []; }
+  function setApiStatus(online, detail) {
+    state.apiOnline = online;
+    state.apiStatusDetail = detail || '';
+    let bar = document.getElementById('apiStatusBar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'apiStatusBar';
+      bar.style.cssText = 'display:none;position:sticky;top:0;z-index:80;padding:10px 14px;font-size:12px;font-weight:700;text-align:center;border-bottom:1px solid transparent';
+      const main = document.querySelector('.main-area') || document.body;
+      const content = document.querySelector('.content');
+      if (content && content.parentNode) content.parentNode.insertBefore(bar, content);
+      else main.prepend(bar);
+    }
+    if (online) {
+      bar.style.display = 'none';
+      bar.innerHTML = '';
+      return;
+    }
+    bar.style.display = 'block';
+    bar.style.background = 'linear-gradient(90deg,rgba(161,34,34,0.12),rgba(245,158,11,0.12))';
+    bar.style.color = 'var(--danger-dark)';
+    bar.style.borderBottomColor = 'rgba(161,34,34,0.2)';
+    const msg = detail || 'Cannot reach the server. Data may be outdated.';
+    bar.innerHTML = `<i class="fas fa-triangle-exclamation"></i> ${esc(msg)} <button type="button" onclick="refreshAll()" style="margin-left:10px;padding:4px 10px;border-radius:6px;border:1px solid currentColor;background:transparent;color:inherit;font-weight:800;font-size:11px;cursor:pointer;font-family:inherit">Retry</button>`;
+  }
+
   async function api(endpoint, options = {}) {
-    const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...options.headers } });
-    if (res.status === 401 || res.status === 403) { localStorage.removeItem('token'); window.location.href = '/login.html'; throw new Error('Session expired'); }
+    let res;
+    try {
+      res = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...options.headers },
+      });
+    } catch (netErr) {
+      setApiStatus(false, 'Network error — check connection or backend.');
+      const e = new Error('Network error'); e.status = 0; throw e;
+    }
+    // Supabase free-tier overage / project paused often returns 402
+    if (res.status === 402) {
+      setApiStatus(false, 'API quota exceeded (Supabase egress). Upgrade plan or wait for the next billing cycle. Admin is offline.');
+      const e = new Error('Quota exceeded (402)'); e.status = 402; throw e;
+    }
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+      throw new Error('Session expired');
+    }
     const j = await res.json().catch(() => ({}));
-    if (!res.ok || !j.success) { const e = new Error(j.message || 'Request failed'); e.status = res.status; throw e; }
+    if (!res.ok || j.success === false) {
+      const e = new Error(j.message || `Request failed (${res.status})`);
+      e.status = res.status;
+      if (res.status >= 500) setApiStatus(false, j.message || 'Server error. Try again shortly.');
+      throw e;
+    }
+    // Successful call restores banner
+    if (state.apiOnline === false) setApiStatus(true);
+    else state.apiOnline = true;
     return j;
   }
 
@@ -2928,6 +2983,11 @@ window.getAmount = getAmount;
   function renderRecentTx() {
     const c = $('#recentTxList');
     if (!c) return;
+    if (state.transactionFetchError && !(state.unifiedTransactions || []).length) {
+      c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-plug-circle-xmark"></i></div><div class="title">Could not load transactions</div><div class="desc">${esc(state.apiStatusDetail || 'Check API / Supabase quota, then tap Retry.')}</div><button class="action-btn" onclick="refreshAll()"><i class="fas fa-rotate"></i> Retry</button></div>`;
+      const p = $('#recentTxPagination'); if (p) { p.style.display = 'none'; p.innerHTML = ''; }
+      return;
+    }
     const list = applyRange(state.unifiedTransactions, state.range)
       .sort((a, b) => new Date(getDate(b)) - new Date(getDate(a)));
     const total = list.length;
@@ -2939,7 +2999,7 @@ window.getAmount = getAmount;
     const end = Math.min(start + per, total);
     const items = list.slice(start, end);
     const panel = document.getElementById('panelRecentTx');
-    if (panel) panel.classList.toggle('is-hidden', total === 0);
+    if (panel) panel.classList.toggle('is-hidden', false);
     if (!items.length) {
       c.innerHTML = `<div class="empty-state"><div class="icon"><i class="fas fa-receipt"></i></div><div class="title">No transactions</div><div class="desc">Nothing matches the current filter.</div></div>`;
       const p = $('#recentTxPagination'); if (p) { p.style.display = 'none'; p.innerHTML = ''; }
@@ -3614,26 +3674,32 @@ window.getAmount = getAmount;
     const tasks = [fetchMe(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()];
     if (!silent || state.activeTab === 'users' || state.activeTab === 'fund') tasks.push(fetchUsers());
     if (!silent || state.activeTab === 'analytics' || state.activeTab === 'overview') tasks.push(fetchStats());
-    await Promise.all(tasks);
+    const results = await Promise.allSettled(tasks);
+    const anyOk = results.some(r => r.status === 'fulfilled');
+    if (anyOk && state.apiOnline !== false) setApiStatus(true);
     buildUnifiedTransactions();
     state.txnPage = savedPages.txn;
     state.depositPage = savedPages.deposit;
     state.withdrawalPage = savedPages.withdrawal;
     state.recentTxPage = savedPages.recent;
-    updateOverview();
-    renderTransactions();
-    renderDeposits();
-    renderWithdrawals();
-    if (!silent || state.activeTab === 'users') renderUsers();
-    updateAnalytics();
-    syncOverviewRangeUI();
-    detectNewApprovals();
-    renderAdminAlerts();
-    renderDW();
+    // Always paint UI — never leave permanent "Loading…"
+    try { updateOverview(); } catch (_) {}
+    try { renderTransactions(); } catch (_) {}
+    try { renderDeposits(); } catch (_) {}
+    try { renderWithdrawals(); } catch (_) {}
+    if (!silent || state.activeTab === 'users') try { renderUsers(); } catch (_) {}
+    try { updateAnalytics(); } catch (_) {}
+    try { syncOverviewRangeUI(); } catch (_) {}
+    try { detectNewApprovals(); } catch (_) {}
+    try { renderAdminAlerts(); } catch (_) {}
+    try { renderDW(); } catch (_) {}
     if (state.activeTab === 'mismatches') loadMismatches();
     if (state.activeTab === 'drift') loadDrift();
     if (state.activeTab === 'archived') loadArchived(state.archived.page);
-    if (!silent) toast('Updated', 'success');
+    if (!silent) {
+      if (anyOk) toast('Updated', 'success');
+      else toast(state.apiStatusDetail || 'Could not reach API', 'error');
+    }
   }
   window.refreshAll = refreshAll;
 
@@ -3959,18 +4025,16 @@ window.getAmount = getAmount;
       state.adminAlerts.sort((a,b) => b.createdAt - a.createdAt);
       renderAdminAlerts();
     })();
-    // ── Egress-friendly polling ──────────────────────────────────────────
-    // Full refresh: every 45s when tab visible (Analytics uses /admin/stats, not bulk txs)
-    // Pending check: every 15s deposits/withdrawals only
-    // Analytics tab: extra stats refresh every 60s (lightweight aggregate query)
-    // Real-time alerts: SSE (almost zero egress)
+    // ── Egress-safe polling (Supabase free = 5 GB egress) ────────────────
+    // Full refresh: 90s · Pending only: 45s · Analytics stats: 2 min
+    // Prefer SSE for instant alerts (tiny payload). Skip polls when offline/hidden.
     setInterval(() => {
-      if (document.hidden) return;
+      if (document.hidden || state.apiOnline === false) return;
       refreshAll(true);
-    }, 45000);
+    }, 90000);
 
     setInterval(async () => {
-      if (document.hidden) return;
+      if (document.hidden || state.apiOnline === false) return;
       try {
         await Promise.all([fetchDep(), fetchWd()]);
         detectNewApprovals();
@@ -3978,16 +4042,16 @@ window.getAmount = getAmount;
         if (state.activeTab === 'withdrawals') renderWithdrawals();
         if (state.activeTab === 'overview') updateOverview();
       } catch (_) {}
-    }, 15000);
+    }, 45000);
 
     setInterval(async () => {
-      if (document.hidden) return;
+      if (document.hidden || state.apiOnline === false) return;
       if (state.activeTab !== 'analytics') return;
       try {
         await fetchStats();
         updateAnalytics();
       } catch (_) {}
-    }, 60000);
+    }, 120000);
 
     // Robust live SSE — auto-reconnects for as long as the page is open
     (function startLiveEvents() {
@@ -4002,13 +4066,23 @@ window.getAmount = getAmount;
           const url = `${API_BASE}/admin/events?token=${encodeURIComponent(token)}`;
           es = new EventSource(url);
 
+          const lightRefreshPending = async () => {
+            try {
+              await Promise.all([fetchDep(), fetchWd()]);
+              detectNewApprovals();
+              if (state.activeTab === 'deposits') renderDeposits();
+              if (state.activeTab === 'withdrawals') renderWithdrawals();
+              if (state.activeTab === 'overview') updateOverview();
+            } catch (_) {}
+          };
+
           const handlePayload = (raw) => {
             try {
               const p = JSON.parse(raw || '{}');
               const type = p.type === 'deposit' || p.type === 'withdrawal' ? p.type : null;
               if (type) {
                 addAlert(type, p.item || p || {});
-                refreshAll(true);
+                lightRefreshPending(); // no full refreshAll — saves egress
               }
             } catch (_) {}
           };
@@ -4018,14 +4092,14 @@ window.getAmount = getAmount;
             try {
               const p = JSON.parse(e.data || '{}');
               addAlert('deposit', p.item || p || {});
-              refreshAll(true);
+              lightRefreshPending();
             } catch (_) {}
           });
           es.addEventListener('withdrawal', (e) => {
             try {
               const p = JSON.parse(e.data || '{}');
               addAlert('withdrawal', p.item || p || {});
-              refreshAll(true);
+              lightRefreshPending();
             } catch (_) {}
           });
           es.onmessage = (e) => handlePayload(e.data);
