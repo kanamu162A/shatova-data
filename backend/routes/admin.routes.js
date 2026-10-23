@@ -6,7 +6,6 @@
 //     mismatches, wallet drift, and datashop wallet endpoints
 //   ⭐ Protected by BOTH authenticate + requireAdmin
 // ============================================================
-
 import express from 'express';
 import * as adminController from '../controllers/admin.controller.js';
 import * as adminPricing    from '../controllers/adminPricing.controller.js';
@@ -56,7 +55,6 @@ router.get ('/mismatches',             adminController.listMismatches);
 router.post('/mismatches/:id/resolve', adminController.resolveMismatch);
 
 /* ── DATA PLAN PRICING (used by /pricing.html) ─────────────── */
-// Note: These are handled by adminPricing.controller.js 
 router.get  ('/data-plans',         adminPricing.listDataPlans);
 router.patch('/data-plans/:planId', adminPricing.updateDataPlan);
 router.post ('/data-plans/bulk',    adminPricing.bulkUpdatePrices);
