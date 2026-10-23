@@ -1,26 +1,24 @@
 // jobs/money-audit.job.js
 // ============================================================
-// Shatova — Money Audit Job
-//   ⭐ Every 5 minutes, verifies:
-//      1. No PENDING tx stuck > 10 min
-//      2. No PROCESSING tx stuck > 30 min
-//      3. No tx SUCCESS without DataShop confirmation
-//      4. No tx FAILED that actually succeeded at DataShop
-//      5. Wallet ledger is internally consistent
+// Shatova — Money Audit Job (egress-friendly)
+//   Runs 3× daily. Caps external API calls and DB scans.
 // ============================================================
-
 import cron from 'node-cron';
 import { query } from '../config/database.js';
 import * as datashop from '../services/datashop.service.js';
 
-/* ---------- 1. Stuck transactions ---------- */
+const MAX_DS_CHECKS = 10; // max DataShop status lookups per run
+
+/* ---------- 1. Stuck transactions (local only) ---------- */
 async function checkStuckTransactions() {
   const { rows: pending } = await query(
     `SELECT id, reference, user_id, amount, created_at
        FROM transactions
       WHERE status = 'PENDING'
         AND created_at < NOW() - INTERVAL '10 minutes'
-        AND created_at > NOW() - INTERVAL '24 hours'`
+        AND created_at > NOW() - INTERVAL '24 hours'
+      ORDER BY created_at ASC
+      LIMIT 50`
   );
 
   const { rows: processing } = await query(
@@ -28,40 +26,39 @@ async function checkStuckTransactions() {
        FROM transactions
       WHERE status = 'PROCESSING'
         AND created_at < NOW() - INTERVAL '30 minutes'
-        AND created_at > NOW() - INTERVAL '24 hours'`
+        AND created_at > NOW() - INTERVAL '24 hours'
+      ORDER BY created_at ASC
+      LIMIT 50`
   );
 
   const stuck = [...pending, ...processing];
-
   if (stuck.length) {
     console.error(`[audit] 🚨 ${stuck.length} STUCK transaction(s):`);
     for (const tx of stuck) {
-      console.error(`[audit]   ${tx.reference} | user=${tx.user_id} | ₦${tx.amount} | since ${tx.created_at}`);
+      console.error(
+        `[audit]   ${tx.reference} | user=${tx.user_id} | ₦${tx.amount} | since ${tx.created_at}`
+      );
     }
   }
-
   return stuck;
 }
 
-/* ---------- 2. Verify SUCCESS transactions against DataShop ---------- */
+/* ---------- 2. Sample SUCCESS vs DataShop (capped) ---------- */
 async function verifySuccessTransactions() {
-  // Check the last 50 SUCCESS transactions in the last 24 hours
   const { rows } = await query(
     `SELECT id, reference, user_id, amount, metadata, created_at
        FROM transactions
       WHERE status = 'SUCCESS'
-        AND created_at > NOW() - INTERVAL '24 hours'
+        AND created_at > NOW() - INTERVAL '6 hours'
       ORDER BY created_at DESC
-      LIMIT 50`
+      LIMIT ${MAX_DS_CHECKS}`
   );
 
   const mismatches = [];
-
   for (const tx of rows) {
     try {
       const ds = await datashop.checkTransactionStatus(tx.reference);
       const status = datashop.normalizeProviderStatus(ds);
-
       if (status === 'failed') {
         mismatches.push({
           reference: tx.reference,
@@ -69,35 +66,31 @@ async function verifySuccessTransactions() {
           amount:    tx.amount,
           issue:     'DB says SUCCESS but DataShop says FAILED',
         });
-
-        console.error(`[audit] 🚨 ${tx.reference}: DB=SUCCESS but DataShop=FAILED — user was charged, product not delivered`);
+        console.error(`[audit] 🚨 ${tx.reference}: DB=SUCCESS but DataShop=FAILED`);
       }
-    } catch (err) {
+    } catch (_) {
       // DataShop unreachable — skip
     }
   }
-
   return mismatches;
 }
 
-/* ---------- 3. Verify FAILED transactions actually failed at DataShop ---------- */
+/* ---------- 3. Sample FAILED vs DataShop (capped) ---------- */
 async function verifyFailedTransactions() {
   const { rows } = await query(
     `SELECT id, reference, user_id, amount, created_at
        FROM transactions
       WHERE status = 'FAILED'
-        AND created_at > NOW() - INTERVAL '24 hours'
+        AND created_at > NOW() - INTERVAL '6 hours'
       ORDER BY created_at DESC
-      LIMIT 50`
+      LIMIT ${MAX_DS_CHECKS}`
   );
 
   const suspicious = [];
-
   for (const tx of rows) {
     try {
       const ds = await datashop.checkTransactionStatus(tx.reference);
       const status = datashop.normalizeProviderStatus(ds);
-
       if (status === 'successful') {
         suspicious.push({
           reference: tx.reference,
@@ -105,56 +98,61 @@ async function verifyFailedTransactions() {
           amount:    tx.amount,
           issue:     'DB says FAILED but DataShop says SUCCESS',
         });
-
-        console.error(`[audit] 🚨 ${tx.reference}: DB=FAILED but DataShop=SUCCESS — user was refunded but got the product`);
+        console.error(`[audit] 🚨 ${tx.reference}: DB=FAILED but DataShop=SUCCESS`);
       }
-    } catch (err) {}
+    } catch (_) {}
   }
-
   return suspicious;
 }
 
-/* ---------- 4. Wallet vs ledger consistency ---------- */
+/* ---------- 4. Wallet vs last ledger row (cheap) ---------- */
 async function checkWalletIntegrity() {
-  const { rows } = await query(
-    `SELECT w.id, w.user_id, w.balance,
-            COALESCE(SUM(CASE WHEN wl.direction = 'CREDIT' THEN wl.amount ELSE -wl.amount END), 0) AS ledger_net
-       FROM wallets w
-       LEFT JOIN wallet_ledger wl ON wl.wallet_id = w.id
-      GROUP BY w.id, w.user_id, w.balance
-     HAVING w.balance != COALESCE(SUM(CASE WHEN wl.direction = 'CREDIT' THEN wl.amount ELSE -wl.amount END), 0)`
-  );
+  const { rows } = await query(`
+    WITH last_ledger AS (
+      SELECT DISTINCT ON (wallet_id)
+            wallet_id, balance_after
+        FROM wallet_ledger
+       WHERE LOWER(COALESCE(status, 'successful')) NOT IN ('pending', 'processing')
+       ORDER BY wallet_id, created_at DESC, id DESC
+    )
+    SELECT
+      w.id AS wallet_id,
+      w.user_id,
+      w.balance,
+      COALESCE(ll.balance_after, 0) AS ledger_balance,
+      (w.balance - COALESCE(ll.balance_after, 0)) AS drift
+    FROM wallets w
+    LEFT JOIN last_ledger ll ON ll.wallet_id = w.id
+    WHERE w.balance IS DISTINCT FROM COALESCE(ll.balance_after, 0)
+    ORDER BY ABS(w.balance - COALESCE(ll.balance_after, 0)) DESC
+    LIMIT 50
+  `);
 
   if (rows.length) {
-    console.error(`[audit] 🚨 ${rows.length} wallet(s) out of sync (auto-fixed by reconcile job)`);
+    console.error(
+      `[audit] 🚨 ${rows.length} wallet(s) out of sync (reconcile job handles repair)`
+    );
   }
   return rows;
 }
 
-/* ---------- 5. DataShop ↔ Our ledger total ---------- */
+/* ---------- 5. DataShop balance snapshot (24h only) ---------- */
 async function checkDataShopBalance() {
   try {
     const dsBalance = await datashop.getDatashopBalance();
-
-    // Our expected DataShop balance:
-    // Starting DS balance was captured somewhere (env var or settings table)
-    // Every successful tx → DS balance decreases by cost_price
-    // We don't have the original, so this is a snapshot for manual review
-
-    console.log(`[audit] DataShop balance: ₦${dsBalance}`);
-
-    // Sum of all our successful data + airtime purchases (cost_price)
     const { rows } = await query(
       `SELECT
-        COALESCE(SUM(cost_price), 0) AS total_spent_at_ds,
-        COUNT(*) AS tx_count
+         COALESCE(SUM(cost_price), 0) AS total_spent_at_ds,
+         COUNT(*)::int AS tx_count
        FROM transactions
       WHERE status = 'SUCCESS'
-        AND cost_price IS NOT NULL`
+        AND cost_price IS NOT NULL
+        AND created_at > NOW() - INTERVAL '24 hours'`
     );
-
-    console.log(`[audit] Total spent at DataShop (from our records): ₦${rows[0]?.total_spent_at_ds || 0} over ${rows[0]?.tx_count || 0} txs`);
-
+    console.log(`[audit] DataShop balance: ₦${dsBalance}`);
+    console.log(
+      `[audit] Spent at DS (24h): ₦${rows[0]?.total_spent_at_ds || 0} over ${rows[0]?.tx_count || 0} txs`
+    );
     return { dsBalance, ourRecords: rows[0] };
   } catch (err) {
     console.warn('[audit] Could not fetch DataShop balance:', err.message);
@@ -165,27 +163,28 @@ async function checkDataShopBalance() {
 /* ---------- RUN ---------- */
 async function runAudit() {
   console.log('[audit] 🔍 Running money audit…');
-
   const stuck = await checkStuckTransactions();
   const mismatchSuccess = await verifySuccessTransactions();
   const mismatchFailed = await verifyFailedTransactions();
   const walletDrift = await checkWalletIntegrity();
   await checkDataShopBalance();
 
-  const totalIssues = stuck.length + mismatchSuccess.length + mismatchFailed.length + walletDrift.length;
+  const totalIssues =
+    stuck.length + mismatchSuccess.length + mismatchFailed.length + walletDrift.length;
 
   if (totalIssues === 0) {
     console.log('[audit] ✅ All clear — no money issues detected');
   } else {
     console.error(`[audit] 🚨 ${totalIssues} issue(s) found — review above`);
-    // TODO: send yourself an email/Slack alert here
   }
 }
 
 export function startMoneyAuditJob() {
-  cron.schedule('*/5 * * * *', runAudit, { timezone: 'Africa/Lagos' });
-  console.log('[audit] money audit scheduled: every 5 minutes');
-
-  // Run once at startup
-  setTimeout(runAudit, 10_000);
+  // 3× per day: 08:00, 14:00, 20:00 Africa/Lagos
+  cron.schedule('0 8,14,20 * * *', runAudit, { timezone: 'Africa/Lagos' });
+  console.log('[audit] money audit scheduled: 3× daily (08:00, 14:00, 20:00 WAT)');
+  // First run 5 minutes after boot
+  setTimeout(runAudit, 5 * 60_000);
 }
+
+export default { startMoneyAuditJob, runAudit };
