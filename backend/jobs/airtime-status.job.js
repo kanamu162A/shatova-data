@@ -1,6 +1,6 @@
 // jobs/airtime-status.job.js
 // ============================================================
-// Airtime status poller — MONEY-SAFE v2
+// Airtime status poller — MONEY-SAFE v2 (egress-friendly)
 //   ⭐ Fixes "reference too short" bug which caused false refunds.
 //   ⭐ Never fails a tx on "not found" if we suspect it was delivered.
 // ============================================================
@@ -9,12 +9,12 @@ import { checkAirtimeStatus, normalizeProviderStatus } from '../services/vtu.ser
 import { releaseHold, dropHold } from '../services/wallet.service.js';
 import { buildRemark } from '../utils/remark.js';
 
-const INTERVAL_MS         = 60 * 1000;
+const INTERVAL_MS         = 90 * 1000;   // was 60s → 90s
 const GRACE_AFTER_SECS    = 90;
 const RECHECK_AFTER_SECS  = 60;
-const BATCH_SIZE          = 30;
-const MAX_TX_AGE_HOURS    = 72;           // stop polling after 72h
-const NOT_FOUND_FAIL_SECS = 6 * 60 * 60;  // 6 hours
+const BATCH_SIZE          = 20;          // was 30 → 20
+const MAX_TX_AGE_HOURS    = 72;
+const NOT_FOUND_FAIL_SECS = 6 * 60 * 60; // 6 hours
 
 let timer = null;
 let running = false;
@@ -25,7 +25,6 @@ function ageSecs(createdAt) {
 
 function isFatalNotFoundError(err) {
   const m = String(err?.message || err || '').toLowerCase();
-  // ⭐ The exact error DataShop sends for short refs
   if (m.includes('reference field must be at least')) return true;
   return false;
 }
@@ -78,7 +77,6 @@ function interpret(check) {
     if (!s) continue;
     if (SUCCESS.some((k) => s === k || s.includes(k))) return 'successful';
   }
-
   try {
     const n = normalizeProviderStatus(check);
     if (n === 'failed') return 'failed';
@@ -109,20 +107,19 @@ async function probe(tx) {
       return { kind, check, ref, error: null, fatal: false };
     } catch (err) {
       lastErr = err;
-      
+
       if (isFatalNotFoundError(err)) {
-        // ⭐ If DataShop says the ref is too short, we MUST assume it succeeded.
-        // We cannot verify it. We return 'processing' forever.
-        console.warn(`[airtime-status] ${tx.reference} FATAL: ${err.message}. Assuming processing to prevent loss.`);
+        console.warn(
+          `[airtime-status] ${tx.reference} FATAL: ${err.message}. Assuming processing to prevent loss.`
+        );
         sawFatal = true;
         continue;
       }
-
       if (isNotFoundError(err)) {
         sawNotFound = true;
         continue;
       }
-      
+
       console.warn(`[airtime-status] ${tx.reference} probe ${ref}: ${err.message}`);
     }
   }
@@ -130,11 +127,9 @@ async function probe(tx) {
   if (sawFatal) {
     return { kind: 'fatal_ref', check: null, ref: tx.reference, error: lastErr?.message, fatal: true };
   }
-
   if (sawNotFound) {
     return { kind: 'not_found', check: null, ref: tx.reference, error: lastErr?.message, fatal: false };
   }
-
   return { kind: 'processing', check: null, ref: tx.reference, error: lastErr?.message, fatal: false };
 }
 
@@ -228,25 +223,25 @@ async function tick() {
     );
 
     if (!rows.length) return;
+
     console.log(`[airtime-status] Checking ${rows.length} transaction(s)…`);
 
     for (const tx of rows) {
       try {
         const age = ageSecs(tx.created_at);
         const result = await probe(tx);
-
-        console.log(`[airtime-status] ${tx.reference} age=${Math.round(age)}s → ${result.kind} (${result.error || 'ok'})`);
+        console.log(
+          `[airtime-status] ${tx.reference} age=${Math.round(age)}s → ${result.kind} (${result.error || 'ok'})`
+        );
 
         if (result.kind === 'successful') {
           await markSuccess(tx, result.check);
           continue;
         }
-
         if (result.kind === 'failed') {
           await markFailed(tx, result.error || result.check?.message || 'Provider failed', result.check);
           continue;
         }
-
         if (result.kind === 'not_found') {
           if (age >= NOT_FOUND_FAIL_SECS) {
             await markFailed(tx, `Not found on DataShop after 6h — auto-refunded`, null);
@@ -255,13 +250,10 @@ async function tick() {
           }
           continue;
         }
-
-        // ⭐ If we get FATAL_REF, we just leave it in PROCESSING forever.
         if (result.kind === 'fatal_ref') {
           console.log(`[airtime-status] ${tx.reference} Fatal ref error — leaving PROCESSING`);
           continue;
         }
-
         console.log(`[airtime-status] ${tx.reference} still pending/unknown on DataShop — leave PROCESSING`);
       } catch (err) {
         console.warn(`[airtime-status] ${tx.reference} check error:`, err.message);
@@ -278,7 +270,7 @@ export function startAirtimeStatusJob() {
   if (timer) return;
   console.log('[airtime-status] MONEY-SAFE v2 | rejecting short refs | never auto-fail on fatal errors');
   timer = setInterval(tick, INTERVAL_MS);
-  setTimeout(tick, 8_000);
+  setTimeout(tick, 15_000); // first tick after 15s (was 8s)
 }
 
 export function stopAirtimeStatusJob() {
