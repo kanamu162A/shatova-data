@@ -2036,6 +2036,8 @@ button.primary:hover {
     charts: { revenue: null, mix: null },
     notificationBootstrapped: false,
     cache: { txns: [], deposits: [], withdrawals: [] },
+    adminStats: null,
+    analyticsLastUpdated: 0,
   };
 
   const $ = (s) => document.querySelector(s);
@@ -2214,7 +2216,10 @@ window.getAmount = getAmount;
     if ($('#pageTitle')) $('#pageTitle').textContent = m.title || 'Admin';
     if ($('#pageSub')) $('#pageSub').textContent = m.sub || '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (tab === 'analytics') setTimeout(() => updateAnalytics(), 60);
+    if (tab === 'analytics') setTimeout(async () => {
+      try { await fetchStats(); } catch (_) {}
+      updateAnalytics();
+    }, 40);
     if (tab === 'users') setTimeout(() => { const i = document.getElementById('userSearch'); if (i) i.focus(); }, 150);
     if (tab === 'transactions') setTimeout(() => { const i = document.getElementById('txnSearch'); if (i) i.focus(); }, 150);
     if (tab === 'deposits') setTimeout(() => { const i = document.getElementById('depositSearch'); if (i) i.focus(); }, 150);
@@ -2235,30 +2240,37 @@ window.getAmount = getAmount;
     return j;
   }
 
-  async function fetchUsers() { try { const r = await api('/admin/users?limit=500'); state.users = pick(r); state.totalUsers = r?.meta?.total ?? state.users.length; } catch (_) { state.users = []; } }
+  async function fetchUsers() {
+    try {
+      // Soft limit — enough for admin UI, low egress
+      const r = await api('/admin/users?limit=50');
+      state.users = pick(r);
+      state.totalUsers = r?.meta?.total ?? r?.data?.total ?? state.users.length;
+    } catch (_) { state.users = []; }
+  }
   async function fetchTxn() {
     state.transactionFetchError = false;
     try {
-      const all = [];
-      let page = 1;
-      const limit = 200;
-      const maxPages = 50; // up to 10,000 txs for accurate analytics
-      while (page <= maxPages) {
-        const r = await api(`/admin/transactions?limit=${limit}&page=${page}`);
-        const batch = pick(r);
-        if (!Array.isArray(batch) || !batch.length) break;
-        all.push(...batch);
-        const total = r?.meta?.total ?? r?.total ?? r?.data?.total ?? null;
-        if (batch.length < limit) break;
-        if (total != null && all.length >= Number(total)) break;
-        page++;
-      }
-      state.transactions = all;
-      state.transactionsTotal = all.length;
+      // Egress-safe: single page only (max 30 rows). No multi-page scrape.
+      // Analytics use this recent window; full history is on the Transactions tab via pager.
+      const limit = 30;
+      const r = await api(`/admin/transactions?limit=${limit}&offset=0`);
+      const batch = pick(r);
+      state.transactions = Array.isArray(batch) ? batch : [];
+      state.transactionsTotal = r?.meta?.total ?? r?.data?.total ?? state.transactions.length;
     } catch (_) {
       state.transactionFetchError = true;
       state.transactions = [];
       state.transactionsTotal = 0;
+    }
+  }
+  async function fetchStats() {
+    try {
+      const r = await api('/admin/stats');
+      state.adminStats = r.data || r || null;
+      state.analyticsLastUpdated = Date.now();
+    } catch (_) {
+      // keep previous stats if any
     }
   }
   async function fetchDep() { try { const r = await api('/wallet/admin/deposits/all'); state.deposits = pick(r); } catch (_) { state.deposits = []; } }
@@ -2695,17 +2707,42 @@ window.getAmount = getAmount;
   }
   function updateAnalytics() {
     if (state.activeTab !== 'analytics') return;
-    
+
     const series = computeAnalyticsSeries();
+    const st = state.adminStats || {};
     const notice = document.getElementById('analyticsDataNotice');
-    if (notice) notice.style.display = state.transactionFetchError ? 'block' : 'none';
+    if (notice) {
+      // Pro notice: stats API is source of truth; charts use recent sample only
+      if (state.transactionFetchError && !state.adminStats) {
+        notice.style.display = 'block';
+        notice.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Could not load analytics. Tap Refresh to retry.';
+      } else {
+        notice.style.display = 'block';
+        const ago = state.analyticsLastUpdated
+          ? Math.max(0, Math.round((Date.now() - state.analyticsLastUpdated) / 1000))
+          : null;
+        const ageTxt = ago == null ? '' : ago < 60 ? ` · updated ${ago}s ago` : ` · updated ${Math.floor(ago/60)}m ago`;
+        notice.style.borderColor = 'rgba(10,69,52,.18)';
+        notice.style.background = 'var(--primary-light)';
+        notice.style.color = 'var(--primary-dark)';
+        notice.innerHTML = '<i class="fas fa-shield-halved"></i> KPIs from live stats API · charts use last 30 transactions (egress-safe)' + ageTxt;
+      }
+    }
     const s = (id,v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-    s('heroVolume', fmtMoney(series.heroGross, true));
-    s('heroTxns', series.heroTxns.toLocaleString());
-    s('heroSuccess', `${series.rate}%`);
-    const vD = document.getElementById('heroVolumeDelta'); if (vD) vD.textContent = `${series.rate}% success`;
-    const tD = document.getElementById('heroTxnsDelta'); if (tD) tD.textContent = `${series.totalSuccessCount} ok · ${series.totalFailedCount} failed`;
-    const sD = document.getElementById('heroSuccessDelta'); if (sD) sD.textContent = 'live ledger';
+
+    // Prefer accurate aggregated stats when available (no large table scans on client)
+    const heroVol = st.airtimeSales != null || st.dataSales != null
+      ? Number(st.airtimeSales || 0) + Number(st.dataSales || 0)
+      : series.heroGross;
+    const heroTx = st.totalTransactions != null ? Number(st.totalTransactions) : series.heroTxns;
+    const heroRate = st.successRate != null ? Number(st.successRate) : series.rate;
+
+    s('heroVolume', fmtMoney(heroVol, true));
+    s('heroTxns', heroTx.toLocaleString());
+    s('heroSuccess', `${heroRate}%`);
+    const vD = document.getElementById('heroVolumeDelta'); if (vD) vD.textContent = st.totalProfit != null ? `Profit ${fmtMoney(st.totalProfit, true)}` : `${series.rate}% sample success`;
+    const tD = document.getElementById('heroTxnsDelta'); if (tD) tD.textContent = st.successfulTransactions != null ? `${st.successfulTransactions} ok · ${st.failedTransactions || 0} failed` : `${series.totalSuccessCount} ok · ${series.totalFailedCount} failed`;
+    const sD = document.getElementById('heroSuccessDelta'); if (sD) sD.textContent = state.adminStats ? 'stats API' : 'sample ledger';
     const totalDen = series.totalSuccessCount + series.totalFailedCount;
     const failRate = totalDen > 0 ? Math.round(series.totalFailedCount/totalDen*100) : 0;
     s('miniSuccess', `${series.rate}%`); s('miniSuccessSub', `${series.totalSuccessCount} of ${totalDen} successful`);
@@ -3182,7 +3219,12 @@ window.getAmount = getAmount;
   async function refreshAll(silent = false) {
     if (!silent) toast('Refreshing…', 'info');
     const savedPages = { txn: state.txnPage, deposit: state.depositPage, withdrawal: state.withdrawalPage, recent: state.recentTxPage };
-    await Promise.all([fetchMe(), fetchUsers(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()]);
+    // Egress-safe: always refresh pending + lightweight data.
+    // Stats only when Analytics is open (or manual refresh).
+    const tasks = [fetchMe(), fetchTxn(), fetchDep(), fetchWd(), fetchDW()];
+    if (!silent || state.activeTab === 'users' || state.activeTab === 'fund') tasks.push(fetchUsers());
+    if (!silent || state.activeTab === 'analytics' || state.activeTab === 'overview') tasks.push(fetchStats());
+    await Promise.all(tasks);
     buildUnifiedTransactions();
     state.txnPage = savedPages.txn;
     state.depositPage = savedPages.deposit;
@@ -3192,7 +3234,7 @@ window.getAmount = getAmount;
     renderTransactions();
     renderDeposits();
     renderWithdrawals();
-    renderUsers();
+    if (!silent || state.activeTab === 'users') renderUsers();
     updateAnalytics();
     syncOverviewRangeUI();
     detectNewApprovals();
@@ -3431,7 +3473,8 @@ window.getAmount = getAmount;
 
   requestNotifPermission();
   renderAdminAlerts();
-  setInterval(() => { detectNewApprovals(); }, 2500);
+  // Local-only check (no network). Safe at moderate interval.
+  setInterval(() => { if (!document.hidden) detectNewApprovals(); }, 8000);
 
   async function checkForPendingOnReturn() {
     try {
@@ -3526,20 +3569,35 @@ window.getAmount = getAmount;
       state.adminAlerts.sort((a,b) => b.createdAt - a.createdAt);
       renderAdminAlerts();
     })();
-    // Full data refresh every 3s
-    setInterval(() => refreshAll(true), 3000);
+    // ── Egress-friendly polling ──────────────────────────────────────────
+    // Full refresh: every 45s when tab visible (Analytics uses /admin/stats, not bulk txs)
+    // Pending check: every 15s deposits/withdrawals only
+    // Analytics tab: extra stats refresh every 60s (lightweight aggregate query)
+    // Real-time alerts: SSE (almost zero egress)
+    setInterval(() => {
+      if (document.hidden) return;
+      refreshAll(true);
+    }, 45000);
 
-    // Tight pending-only poll every 2s while tab is visible (catches alerts even without SSE)
     setInterval(async () => {
       if (document.hidden) return;
       try {
         await Promise.all([fetchDep(), fetchWd()]);
         detectNewApprovals();
-        renderDeposits();
-        renderWithdrawals();
-        updateOverview();
+        if (state.activeTab === 'deposits') renderDeposits();
+        if (state.activeTab === 'withdrawals') renderWithdrawals();
+        if (state.activeTab === 'overview') updateOverview();
       } catch (_) {}
-    }, 2000);
+    }, 15000);
+
+    setInterval(async () => {
+      if (document.hidden) return;
+      if (state.activeTab !== 'analytics') return;
+      try {
+        await fetchStats();
+        updateAnalytics();
+      } catch (_) {}
+    }, 60000);
 
     // Robust live SSE — auto-reconnects for as long as the page is open
     (function startLiveEvents() {
