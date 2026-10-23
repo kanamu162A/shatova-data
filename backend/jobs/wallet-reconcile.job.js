@@ -1,8 +1,6 @@
 // jobs/wallet-reconcile.job.js
 // ============================================================
-// Wallet health job — matches REAL schema:
-//   wallet_holds (wallet_id, user_id, reference, amount, status, ...)
-//   NO transaction_id column
+// Wallet health job — egress-friendly (every 10 min, limited scans)
 // ============================================================
 import cron from 'node-cron';
 import { query } from '../config/database.js';
@@ -11,7 +9,7 @@ const AUTO_REPAIR = process.env.WALLET_AUTO_REPAIR === 'true';
 
 export async function reconcileWallets() {
   try {
-    // ── 1) Spendable balance drift ────────────────────────────
+    // ── 1) Spendable balance drift (capped) ───────────────────
     const { rows: drift } = await query(`
       WITH last_ledger AS (
         SELECT DISTINCT ON (wallet_id)
@@ -32,6 +30,8 @@ export async function reconcileWallets() {
       LEFT JOIN last_ledger ll ON ll.wallet_id = w.id
       LEFT JOIN users u ON u.id = w.user_id
       WHERE w.balance IS DISTINCT FROM COALESCE(ll.balance_after, 0)
+      ORDER BY ABS(w.balance - COALESCE(ll.balance_after, 0)) DESC
+      LIMIT 100
     `);
 
     let snapped = 0;
@@ -79,6 +79,8 @@ export async function reconcileWallets() {
          GROUP BY wallet_id
       ) h ON h.wallet_id = w.id
       WHERE COALESCE(w.held_balance, 0) IS DISTINCT FROM COALESCE(h.open_held, 0)
+      ORDER BY ABS(COALESCE(w.held_balance, 0) - COALESCE(h.open_held, 0)) DESC
+      LIMIT 100
     `);
 
     let heldSnapped = 0;
@@ -125,7 +127,7 @@ export async function reconcileWallets() {
       }
     }
 
-    // ── 4) Orphan HELD holds (tx already final) — join by reference ─
+    // ── 4) Orphan HELD holds (tx already final) ───────────────
     const { rows: orphanHolds } = await query(`
       SELECT h.id AS hold_id,
              h.wallet_id,
@@ -141,7 +143,7 @@ export async function reconcileWallets() {
        WHERE h.status = 'HELD'
          AND UPPER(t.status) IN ('SUCCESS', 'FAILED', 'REFUNDED')
        ORDER BY h.created_at ASC
-       LIMIT 100
+       LIMIT 50
     `);
 
     let orphansFixed = 0;
@@ -149,7 +151,6 @@ export async function reconcileWallets() {
       for (const h of orphanHolds) {
         const txSt = String(h.tx_status || '').toUpperCase();
         const newHoldStatus = txSt === 'SUCCESS' ? 'RELEASED' : 'DROPPED';
-
         if (AUTO_REPAIR) {
           await query(
             `UPDATE wallet_holds
@@ -157,7 +158,6 @@ export async function reconcileWallets() {
               WHERE id = $2 AND status = 'HELD'`,
             [newHoldStatus, h.hold_id]
           );
-
           if (txSt === 'FAILED' || txSt === 'REFUNDED') {
             await query(
               `UPDATE wallets
@@ -190,7 +190,6 @@ export async function reconcileWallets() {
               [Number(h.amount), h.wallet_id]
             );
           }
-
           orphansFixed++;
           console.warn(
             `[reconcile] ORPHAN hold fixed hold=${h.hold_id} ref=${h.reference} ` +
@@ -206,7 +205,7 @@ export async function reconcileWallets() {
       }
     }
 
-    // ── 5) Stuck PROCESSING + open hold > 15m ─────────────────
+    // ── 5) Stuck PROCESSING + open hold > 10m ─────────────────
     const { rows: stuck } = await query(`
       SELECT t.id, t.user_id, t.reference, t.status, t.created_at,
              h.id AS hold_id, h.amount AS hold_amount
@@ -221,9 +220,6 @@ export async function reconcileWallets() {
        LIMIT 50
     `);
 
-    // STUCK auto-fail is ALWAYS on (customer protection).
-    // PROCESSING + open hold older than 15m → refund + FAILED.
-    // Does not require WALLET_AUTO_REPAIR.
     let stuckFailed = 0;
     if (stuck.length) {
       for (const s of stuck) {
@@ -243,7 +239,6 @@ export async function reconcileWallets() {
               WHERE id = $1 AND status = 'HELD'`,
             [s.hold_id]
           );
-          // Ledger refund for continuity
           await query(
             `INSERT INTO wallet_ledger
                (wallet_id, user_id, transaction_id, reference, type, direction,
@@ -295,7 +290,6 @@ export async function reconcileWallets() {
     ) {
       console.warn('[reconcile] summary', summary);
     }
-
     return summary;
   } catch (err) {
     console.error('[reconcile] error:', err.message);
@@ -304,11 +298,13 @@ export async function reconcileWallets() {
 }
 
 export function startWalletReconcileJob() {
-  cron.schedule('*/2 * * * *', reconcileWallets, { timezone: 'Africa/Lagos' });
+  // Was every 2 min → now every 10 min (free-tier friendly)
+  cron.schedule('*/10 * * * *', reconcileWallets, { timezone: 'Africa/Lagos' });
   console.log(
-    `[reconcile] wallet health job every 2 min (auto-repair: ${AUTO_REPAIR ? 'ON' : 'OFF'})`
+    `[reconcile] wallet health job every 10 min (auto-repair: ${AUTO_REPAIR ? 'ON' : 'OFF'})`
   );
-  setTimeout(reconcileWallets, 5_000);
+  // First run after 30s (not 5s) so boot is not flooded
+  setTimeout(reconcileWallets, 30_000);
 }
 
 export default { reconcileWallets, startWalletReconcileJob };
