@@ -1,26 +1,21 @@
 // controllers/admin.controller.js
 // ============================================================
-// Shatova — Admin Controller
-//   • Users, transactions, stats
-//   • Datashop wallet: fetches LIVE balance from Datashop API
-//     Reads env vars: VTU_API_KEY + VTU_API_BASE (fallback:
-//     DATASHOP_API_KEY + DATASHOP_BASE_URL)
-//   • Manual fund/debit writes to BOTH wallet_ledger AND
-//     the transactions table so it appears in history.
-//   • Manual fund/debit broadcasts an SSE event so the
-//     admin dashboard updates instantly.
+// Shatova — Admin Controller (egress-friendly)
 // ============================================================
-
 import User from '../models/user.model.js';
 import { query } from '../config/database.js';
 import * as adminService from '../services/admin.service.js';
 import { archiveAndTrimTransactions } from '../jobs/daily-transaction-archive.job.js';
 import { adminEventBus } from '../events/adminEventBus.js';
 
-const MAX_LIMIT = 500;
+// ── HARD CAPS ──────────────────────────────────────────────
+const MAX_LIMIT = 30;          // never more than 30 rows
+const DEFAULT_LIMIT = 20;      // default page size
+
 const paging = (req) => ({
-  limit:  Math.min(Math.max(parseInt(req.query.limit, 10) || 100, 1), MAX_LIMIT),
+  limit:  Math.min(Math.max(parseInt(req.query.limit, 10) || DEFAULT_LIMIT, 1), MAX_LIMIT),
   offset: Math.max(parseInt(req.query.offset, 10) || 0, 0),
+  includeTotal: req.query.include_total === '1' || req.query.include_total === 'true',
 });
 
 /* ============================================================
@@ -28,20 +23,27 @@ const paging = (req) => ({
    ============================================================ */
 export async function getUsers(req, res) {
   try {
-    const { limit, offset } = paging(req);
+    const { limit, offset, includeTotal } = paging(req);
     const search = String(req.query.search || '').trim();
     const role   = req.query.role   ? String(req.query.role).trim()   : null;
     const status = req.query.status ? String(req.query.status).trim() : null;
 
-    const [users, total] = await Promise.all([
-      User.listForAdmin({ limit, offset, search, role, status }),
-      User.countForAdmin({ search, role, status }),
-    ]);
+    const users = await User.listForAdmin({ limit, offset, search, role, status });
+
+    let total = null;
+    if (includeTotal) {
+      total = await User.countForAdmin({ search, role, status });
+    }
 
     return res.json({
       success: true,
       data: { users, total, limit, offset },
-      meta: { total, limit, offset, hasMore: offset + users.length < total },
+      meta: {
+        total,
+        limit,
+        offset,
+        hasMore: total != null ? offset + users.length < total : users.length === limit,
+      },
     });
   } catch (err) {
     console.error('[admin] getUsers:', err);
@@ -75,10 +77,8 @@ export async function updateUserRole(req, res) {
     if (!allowed.includes(role)) {
       return res.status(422).json({ success: false, message: `Role must be: ${allowed.join(', ')}` });
     }
-
     const updated = await User.updateRole(req.params.id, role);
     if (!updated) return res.status(404).json({ success: false, message: 'User not found' });
-
     return res.json({ success: true, message: `Role set to ${role}`, data: { user: updated } });
   } catch (err) {
     console.error('[admin] updateUserRole:', err);
@@ -87,11 +87,11 @@ export async function updateUserRole(req, res) {
 }
 
 /* ============================================================
-   GET /api/v1/admin/transactions
+   GET /api/v1/admin/transactions  ⭐ MAIN FIX
    ============================================================ */
 export async function getTransactions(req, res) {
   try {
-    const { limit, offset } = paging(req);
+    const { limit, offset, includeTotal } = paging(req);
     const search  = String(req.query.search  || '').trim();
     const service = req.query.service ? String(req.query.service).trim().toLowerCase() : null;
     const status  = req.query.status  ? String(req.query.status).trim().toLowerCase()  : null;
@@ -102,18 +102,35 @@ export async function getTransactions(req, res) {
     const params = [];
     const where = [];
 
-    if (userId) { params.push(userId); where.push(`t.user_id = $${params.length}::int`); }
+    if (userId) {
+      params.push(userId);
+      where.push(`t.user_id = $${params.length}::int`);
+    }
     if (service) {
       params.push(service);
       where.push(`(LOWER(COALESCE(t.service,'')) = $${params.length} OR LOWER(COALESCE(t.type,'')) = $${params.length})`);
     }
-    if (status) { params.push(status); where.push(`LOWER(t.status) = $${params.length}`); }
-    if (from)   { params.push(from); where.push(`t.created_at >= $${params.length}::timestamptz`); }
-    if (to)     { params.push(to);   where.push(`t.created_at <= $${params.length}::timestamptz`); }
-
+    if (status) {
+      params.push(status);
+      where.push(`LOWER(t.status) = $${params.length}`);
+    }
+    if (from) {
+      params.push(from);
+      where.push(`t.created_at >= $${params.length}::timestamptz`);
+    }
+    if (to) {
+      params.push(to);
+      where.push(`t.created_at <= $${params.length}::timestamptz`);
+    }
     if (search) {
       params.push(`%${search}%`);
-      where.push(`(t.reference ILIKE $${params.length} OR t.provider_reference ILIKE $${params.length} OR t.description ILIKE $${params.length} OR t.metadata->>'phone' ILIKE $${params.length} OR t.metadata->>'product_name' ILIKE $${params.length})`);
+      where.push(`(
+        t.reference ILIKE $${params.length}
+        OR t.provider_reference ILIKE $${params.length}
+        OR t.description ILIKE $${params.length}
+        OR t.metadata->>'phone' ILIKE $${params.length}
+        OR t.metadata->>'product_name' ILIKE $${params.length}
+      )`);
     }
 
     params.push(limit, offset);
@@ -135,12 +152,18 @@ export async function getTransactions(req, res) {
       params
     );
 
-    const countParams = params.slice(0, params.length - 2);
-    const { rows: cnt } = await query(
-      `SELECT COUNT(*)::int AS total FROM transactions t ${where.length ? 'WHERE ' + where.join(' AND ') : ''}`,
-      countParams
-    );
-    const total = cnt[0]?.total || 0;
+    // COUNT only when explicitly requested (stops the 67k extra queries)
+    let total = null;
+    if (includeTotal) {
+      const countParams = params.slice(0, params.length - 2);
+      const { rows: cnt } = await query(
+        `SELECT COUNT(*)::int AS total
+         FROM transactions t
+         ${where.length ? 'WHERE ' + where.join(' AND ') : ''}`,
+        countParams
+      );
+      total = cnt[0]?.total || 0;
+    }
 
     return res.json({
       success: true,
@@ -153,9 +176,18 @@ export async function getTransactions(req, res) {
           profit:       t.profit       != null ? Number(t.profit)       : null,
           discount:     t.discount     != null ? Number(t.discount)     : null,
         })),
-        total, limit, offset,
+        total,
+        limit,
+        offset,
       },
-      meta: { total, limit, offset, hasMore: offset + transactions.length < total },
+      meta: {
+        total,
+        limit,
+        offset,
+        hasMore: total != null
+          ? offset + transactions.length < total
+          : transactions.length === limit,
+      },
     });
   } catch (err) {
     console.error('[admin] getTransactions:', err);
@@ -228,25 +260,21 @@ export async function getStats(req, res) {
         newUsers30d:  userStats.new_users_30d,
         totalBalance: userStats.total_balance,
         totalHeld:    userStats.total_held,
-
         totalDeposits:    Number(ledger.deposit_total || 0),
         depositCount:     ledger.deposit_count || 0,
         totalWithdrawals: Number(ledger.withdrawal_total || 0),
         withdrawalCount:  ledger.withdrawal_count || 0,
         pendingWithdrawals: 0,
-
         airtimeSales: Number(txns.airtime_volume || 0),
         airtimeCount: txns.airtime_count || 0,
         dataSales:    Number(txns.data_volume || 0),
         dataCount:    txns.data_count || 0,
-
         successRate,
         totalProfit: Number(txns.profit || 0),
         totalTransactions: txns.total || 0,
         successfulTransactions: txns.successful || 0,
         failedTransactions: txns.failed || 0,
         pendingTransactions: txns.pending || 0,
-
         counts: {
           users:        userStats.total_users,
           transactions: txns.total || 0,
@@ -262,16 +290,7 @@ export async function getStats(req, res) {
 }
 
 /* ============================================================
-   ⭐ GET /api/v1/admin/datashop/wallet
-   Fetches LIVE Datashop balance + local funding history.
-
-   Reads credentials from (in priority order):
-     1. VTU_API_KEY  / VTU_API_BASE          (your Render env)
-     2. DATASHOP_API_KEY / DATASHOP_BASE_URL (fallback)
-
-   Handles both base URL formats:
-     • https://app.datashop.africa          → appends /api/v2
-     • https://app.datashop.africa/api/v2   → uses as-is
+   GET /api/v1/admin/datashop/wallet
    ============================================================ */
 export async function getDatashopWallet(req, res) {
   const fallback = {
@@ -286,9 +305,6 @@ export async function getDatashopWallet(req, res) {
   };
 
   try {
-    // ---------------------------------------------------------
-    // 1. Local funding history (from our own DB)
-    // ---------------------------------------------------------
     let localFunded = 0, localSpent = 0, lastFundingAt = null;
     try {
       const { rows } = await query(
@@ -307,9 +323,6 @@ export async function getDatashopWallet(req, res) {
       console.warn('[admin] Datashop local history query failed:', dbErr.message);
     }
 
-    // ---------------------------------------------------------
-    // 2. Resolve credentials from env
-    // ---------------------------------------------------------
     const apiKey =
       process.env.VTU_API_KEY ||
       process.env.DATASHOP_API_KEY ||
@@ -321,7 +334,6 @@ export async function getDatashopWallet(req, res) {
       'https://app.datashop.africa'
     ).replace(/\/+$/, '');
 
-    // If base already ends with /api/vN, don't append again.
     const hasApiSuffix = /\/api\/v\d+$/i.test(rawBase);
     const apiPath = hasApiSuffix ? rawBase.match(/\/api\/v\d+$/i)[0] : '/api/v2';
     const baseUrl = hasApiSuffix ? rawBase.replace(/\/api\/v\d+$/i, '') : rawBase;
@@ -354,14 +366,7 @@ export async function getDatashopWallet(req, res) {
         let json = {};
         try { json = JSON.parse(raw); } catch (_) { json = { raw }; }
 
-        console.log('[admin] Datashop wallet response', {
-          endpoint,
-          status: resp.status,
-          body: json,
-        });
-
         if (resp.ok) {
-          // Tolerate multiple response shapes
           const candidate =
             json?.data?.balance ??
             json?.data?.wallet?.balance ??
@@ -374,22 +379,16 @@ export async function getDatashopWallet(req, res) {
             liveBalance = Number(candidate);
             liveSource  = 'datashop_api';
           } else {
-            console.warn('[admin] Datashop API returned 200 but no recognizable balance field. Body:', json);
             debugInfo = { endpoint, status: resp.status, body: json };
           }
         } else {
-          console.warn('[admin] Datashop API returned non-OK:', resp.status, json);
           debugInfo = { endpoint, status: resp.status, body: json };
         }
       } catch (apiErr) {
-        console.warn('[admin] Datashop API fetch failed:', apiErr.message, { endpoint });
         debugInfo = { endpoint, error: apiErr.message };
       }
     }
 
-    // ---------------------------------------------------------
-    // 3. Merge + respond
-    // ---------------------------------------------------------
     return res.json({
       success: true,
       data: {
@@ -408,7 +407,7 @@ export async function getDatashopWallet(req, res) {
 }
 
 /* ============================================================
-   ⭐ Dashboard
+   Dashboard
    ============================================================ */
 export async function getDashboard(req, res) {
   try {
@@ -425,7 +424,7 @@ export async function getDashboard(req, res) {
 }
 
 /* ============================================================
-   ⭐ Manual Fund — writes BOTH ledger + transactions
+   Manual Fund
    ============================================================ */
 export async function manualFund(req, res) {
   const admin = {
@@ -436,7 +435,6 @@ export async function manualFund(req, res) {
   if (!admin.id) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
   const { user_id, email, phone, amount, reason, source = 'support' } = req.body || {};
-
   if (!user_id && !email && !phone) {
     return res.status(400).json({ success: false, message: 'Provide user_id, email, or phone' });
   }
@@ -480,7 +478,7 @@ export async function manualFund(req, res) {
 }
 
 /* ============================================================
-   ⭐ Manual Debit — writes BOTH ledger + transactions
+   Manual Debit
    ============================================================ */
 export async function manualDebit(req, res) {
   const admin = {
@@ -491,7 +489,6 @@ export async function manualDebit(req, res) {
   if (!admin.id) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
   const { user_id, email, phone, amount, reason, source = 'correction' } = req.body || {};
-
   if (!user_id && !email && !phone) {
     return res.status(400).json({ success: false, message: 'Provide user_id, email, or phone' });
   }
@@ -548,7 +545,6 @@ export async function lookupUser(req, res) {
   if (!user_id && !email && !phone) {
     return res.status(400).json({ success: false, message: 'Provide user_id, email, or phone' });
   }
-
   try {
     const user = await adminService.findUser({ userId: user_id, email, phone });
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
@@ -580,7 +576,7 @@ export async function lookupUser(req, res) {
    ============================================================ */
 export async function listActions(req, res) {
   try {
-    const limit       = Math.min(Number(req.query.limit) || 50, 200);
+    const limit       = Math.min(Number(req.query.limit) || 30, 50);
     const action_type = req.query.action_type || null;
     const actions     = await adminService.listRecentActions({ limit, actionType: action_type });
     res.json({ success: true, data: { actions } });
@@ -610,7 +606,8 @@ export async function listArchivedTransactions(req, res) {
       query:  req.query.q,
       userId: req.query.user_id,
       page:   Number(req.query.page)  || 1,
-      limit:  Math.min(Number(req.query.limit) || 50, 200),
+      limit:  Math.min(Number(req.query.limit) || 20, 30),
+      includeTotal: req.query.include_total === '1',
     });
     res.json({ success: true, data: result });
   } catch (err) {
@@ -639,7 +636,7 @@ export async function listMismatches(req, res) {
   try {
     const rows = await adminService.listMismatches({
       resolved: req.query.resolved === 'true',
-      limit:    Math.min(Number(req.query.limit) || 100, 200),
+      limit:    Math.min(Number(req.query.limit) || 50, 100),
     });
     res.json({ success: true, data: { mismatches: rows } });
   } catch (err) {
