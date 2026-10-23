@@ -1,13 +1,34 @@
 import { query } from '../config/database.js';
 
-export async function listTransactions({ userId, limit = 20, offset = 0, type, status }) {
+/**
+ * List a user's transactions — hard-capped for low egress.
+ * Default / max limit = 10
+ */
+export async function listTransactions({
+  userId,
+  limit = 10,
+  offset = 0,
+  type,
+  status,
+  includeTotal = false, // only count when the client really needs it
+}) {
+  // Hard caps — never pull more than 10 rows
+  const safeLimit = Math.min(Math.max(Number(limit) || 10, 1), 10);
+  const safeOffset = Math.max(Number(offset) || 0, 0);
+
   const where = ['user_id = $1'];
   const params = [userId];
 
-  if (type) { params.push(type); where.push(`type = $${params.length}`); }
-  if (status) { params.push(status); where.push(`status = $${params.length}`); }
+  if (type) {
+    params.push(type);
+    where.push(`type = $${params.length}`);
+  }
+  if (status) {
+    params.push(status);
+    where.push(`status = $${params.length}`);
+  }
 
-  params.push(limit, offset);
+  params.push(safeLimit, safeOffset);
 
   const result = await query(
     `SELECT id, reference, type, service, direction, amount, status,
@@ -19,16 +40,22 @@ export async function listTransactions({ userId, limit = 20, offset = 0, type, s
     params
   );
 
-  const countResult = await query(
-    `SELECT COUNT(*)::int AS total FROM transactions WHERE ${where.join(' AND ')}`,
-    params.slice(0, params.length - 2)
-  );
+  let total = null;
+  if (includeTotal) {
+    const countResult = await query(
+      `SELECT COUNT(*)::int AS total
+       FROM transactions
+       WHERE ${where.join(' AND ')}`,
+      params.slice(0, params.length - 2)
+    );
+    total = countResult.rows[0].total;
+  }
 
   return {
     items: result.rows.map(formatTx),
-    total: countResult.rows[0].total,
-    limit,
-    offset,
+    total, // null when includeTotal = false
+    limit: safeLimit,
+    offset: safeOffset,
   };
 }
 
@@ -47,7 +74,13 @@ export async function getTransaction({ userId, reference }) {
 }
 
 export async function recentTransactions(userId, limit = 4) {
-  return listTransactions({ userId, limit, offset: 0 });
+  // recent is always small — never count
+  return listTransactions({
+    userId,
+    limit: Math.min(Number(limit) || 4, 10),
+    offset: 0,
+    includeTotal: false,
+  });
 }
 
 function formatTx(row) {
