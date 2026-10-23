@@ -1,18 +1,19 @@
 // controllers/transaction.controller.js
 // ============================================================
-// Transaction reads — user and admin
+// Transaction reads — user and admin (egress-friendly)
 // ============================================================
-
 import crypto from 'crypto';
 import { query } from '../config/database.js';
 import Transaction from '../models/transaction.model.js';
 
 /* ---------- USER ---------- */
-
 export async function getMyTransactions(req, res) {
   try {
-    const limit  = Math.min(Math.max(Number(req.query.limit) || 30, 1), 100);
+    // User history: default 20, hard max 50
+    const limit  = Math.min(Math.max(Number(req.query.limit) || 20, 1), 50);
     const offset = Math.max(Number(req.query.offset) || 0, 0);
+    const includeTotal =
+      req.query.include_total === '1' || req.query.include_total === 'true';
 
     const filters = {
       userId:  req.user.id,
@@ -25,15 +26,24 @@ export async function getMyTransactions(req, res) {
       search:  String(req.query.search || '').trim(),
     };
 
-    const [transactions, total] = await Promise.all([
-      Transaction.listForUser(filters),
-      Transaction.countForUser(filters),
-    ]);
+    const transactions = await Transaction.listForUser(filters);
+
+    let total = null;
+    if (includeTotal) {
+      total = await Transaction.countForUser(filters);
+    }
 
     return res.json({
       success: true,
       data: { transactions, total, limit, offset },
-      meta: { total, limit, offset, hasMore: offset + transactions.length < total },
+      meta: {
+        total,
+        limit,
+        offset,
+        hasMore: total != null
+          ? offset + transactions.length < total
+          : transactions.length === limit,
+      },
     });
   } catch (err) {
     console.error('[transaction] getMyTransactions:', err);
@@ -90,11 +100,13 @@ export async function getRecentRecipients(req, res) {
 }
 
 /* ---------- ADMIN ---------- */
-
 export async function adminList(req, res) {
   try {
-    const limit  = Math.min(Math.max(Number(req.query.limit) || 200, 1), 500);
+    // ⭐ HARD CAP — default 20, max 30 (was 200 / 500)
+    const limit  = Math.min(Math.max(Number(req.query.limit) || 20, 1), 30);
     const offset = Math.max(Number(req.query.offset) || 0, 0);
+    const includeTotal =
+      req.query.include_total === '1' || req.query.include_total === 'true';
 
     const filters = {
       limit,
@@ -107,15 +119,24 @@ export async function adminList(req, res) {
       userId:  req.query.userId  || null,
     };
 
-    const [transactions, total] = await Promise.all([
-      Transaction.listForAdmin(filters),
-      Transaction.countForAdmin(filters),
-    ]);
+    const transactions = await Transaction.listForAdmin(filters);
+
+    let total = null;
+    if (includeTotal) {
+      total = await Transaction.countForAdmin(filters);
+    }
 
     return res.json({
       success: true,
       data: { transactions, total, limit, offset },
-      meta: { total, limit, offset, hasMore: offset + transactions.length < total },
+      meta: {
+        total,
+        limit,
+        offset,
+        hasMore: total != null
+          ? offset + transactions.length < total
+          : transactions.length === limit,
+      },
     });
   } catch (err) {
     console.error('[transaction] adminList:', err);
@@ -148,7 +169,6 @@ export async function adminStats(req, res) {
 }
 
 /* ---------- WEBHOOK ---------- */
-
 const WEBHOOK_SECRET = process.env.TRANSACTION_WEBHOOK_SECRET;
 
 function verifyWebhookSignature(req) {
@@ -184,7 +204,6 @@ function pickWebhookStatus(payload) {
     payload.data?.status ||
     payload.transaction?.status ||
     '';
-
   const s = String(raw).toLowerCase();
 
   if (['success', 'successful', 'completed', 'complete', 'delivered', 'charge.success'].some((v) => s.includes(v))) {
